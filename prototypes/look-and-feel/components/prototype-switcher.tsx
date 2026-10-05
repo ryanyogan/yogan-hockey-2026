@@ -30,7 +30,6 @@ export function PrototypeSwitcher({
     return () => window.removeEventListener("keydown", onKey);
   });
 
-  if (process.env.NODE_ENV === "production") return null;
   const other = pathname.includes("dashboard") ? "game" : "dashboard";
 
   return (

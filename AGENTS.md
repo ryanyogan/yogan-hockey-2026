@@ -3,6 +3,7 @@ The 2026 rebuild of Yogan Hockey: Rust backend, vinext UI, one pnpm monorepo. Th
 ## Preferences
 
 - Prefer an established crate or npm package over hand-rolling, on both the Rust and TypeScript sides.
+- In the vinext app, use server components and Server Actions wherever they apply.
 
 ## Agent skills
 

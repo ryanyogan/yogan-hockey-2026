@@ -5,8 +5,12 @@ A family hockey dashboard: live NHL scores and stats, plus the seasons of the fa
 ## Language
 
 **Tracked Player**:
-A family member whose season the site follows outside the NHL. Currently Andrew Yogan and Rylan Flaherty.
+A family member whose season the site follows outside the NHL. Currently Andrew Yogan and Rylan Yogan.
 _Avoid_: Featured player, family player
+
+**Rylan Yogan**:
+The name the site and this project use for the younger Tracked Player. It is not his legal name; leagues list him as Rylan Flaherty.
+_Avoid_: Rylan Flaherty (except when looking him up in a league's own data)
 
 **Oberliga Süd**:
 The German third-tier league Andrew Yogan plays in, with ESV Kaufbeuren, from the 2026-27 season.

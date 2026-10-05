@@ -8,9 +8,9 @@ A family hockey dashboard: live NHL scores and stats, plus the seasons of the fa
 A family member whose season the site follows outside the NHL. Currently Andrew Yogan and Rylan Flaherty.
 _Avoid_: Featured player, family player
 
-**DEL2**:
-The German second-tier professional league Andrew Yogan plays in.
-_Avoid_: DEL (a different, top-tier league)
+**Oberliga Süd**:
+The German third-tier league Andrew Yogan plays in, with ESV Kaufbeuren, from the 2026-27 season.
+_Avoid_: DEL, DEL2 (higher tiers he no longer plays in)
 
 **Game Stream**:
 The live play-by-play of one in-progress game, pushed to viewers as events happen. Covers live games only, not finished ones.

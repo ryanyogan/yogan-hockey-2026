@@ -12,7 +12,8 @@ type PredictionRow = typeof predictions.$inferSelect;
 /**
  * Inserts a game's prediction row, a Prediction or the record of a failed attempt, unless the
  * game already has one. Returns whether this call's row is the one kept. The table's key decides,
- * so of two calls racing for one game exactly one returns true.
+ * so of two calls racing for one game exactly one returns true. Throws, and writes nothing, when
+ * the row does not fit `StoredPredictionSchema`.
  */
 export async function insertPredictionIfAbsent(
   db: Db,
@@ -20,7 +21,9 @@ export async function insertPredictionIfAbsent(
 ): Promise<boolean> {
   const inserted = await db
     .insert(predictions)
-    .values(toPredictionRow(prediction))
+    // Checked here because the row can never be replaced: one that could not be read back
+    // would leave its game without a Prediction for good.
+    .values(toPredictionRow(StoredPredictionSchema.parse(prediction)))
     .onConflictDoNothing({ target: predictions.gameId })
     .returning({ gameId: predictions.gameId });
   return inserted.length === 1;

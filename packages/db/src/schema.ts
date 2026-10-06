@@ -1,4 +1,4 @@
-import type { PlayParticipant } from "@yogan-hockey/schemas";
+import type { Play } from "@yogan-hockey/schemas";
 import { sql } from "drizzle-orm";
 import {
   check,
@@ -37,16 +37,11 @@ export const games = sqliteTable(
   (table) => [index("games_date_idx").on(table.date)],
 );
 
-/** What a play row keeps that nothing queries by. */
-export type PlayDetail = {
-  typeText: string;
-  periodText: string;
-  homeScore: number;
-  awayScore: number;
-  strength: string | null;
-  wallclock: string | null;
-  participants: PlayParticipant[];
-};
+/** What a play row keeps that nothing queries by: every field of a play without a column. */
+export type PlayDetail = Omit<
+  Play,
+  "id" | "type" | "period" | "clock" | "text" | "teamId" | "coordinate" | "scoring" | "penalty"
+>;
 
 /** One row per play of a finished game. */
 export const plays = sqliteTable(

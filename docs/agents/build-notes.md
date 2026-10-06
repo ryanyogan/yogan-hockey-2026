@@ -27,7 +27,7 @@ What earlier tickets learned that the code does not show. Read before building; 
 - **D1 takes at most 100 bound values in one statement.** A multi-row Drizzle insert of a 13-column table holds 7 rows, so `replaceGamePlays` sends a game as chunks inside one `db.batch`, which D1 runs as a transaction.
 - **`packages/db` has its own Workers-runtime Vitest project** (`pnpm exec vitest run --project db`) with a D1 binding and no Worker entry. Its tests share one database, so each test uses ids of its own.
 - **Write the game row before its plays**: `plays.game_id` references `games`. `predictions` references nothing, because a pick exists before its game is final.
-- **ESPN's final score for a shootout already gives the winner the extra goal** (the summary header and the scoreboard both), so no finished game is tied. The running score on the plays does not include it.
+- **ESPN's final score for a shootout already gives the winner the extra goal** (the summary header and the scoreboard both), so no finished game is tied. Do not take a final score from the last play: in event 401803652 the plays end 3-2 where the final is 4-3.
 - **ESPN has no "penalty" play type.** Each infraction is its own type ("High-sticking", "Hooking"), which is why `Play` carries a `penalty` flag for the translation in #35 to set.
 
 ## The skeleton is scaffolding

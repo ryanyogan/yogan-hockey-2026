@@ -49,6 +49,15 @@ test("a second Prediction for a game is refused and the first stands", async () 
   expect(await getPrediction(db, "pick-once")).toEqual(first);
 });
 
+test("a Prediction that does not fit the schema is refused, leaving the game free for a valid one", async () => {
+  const invalid = madePrediction({ gameId: "pick-invalid", winProbability: 158 });
+  await expect(insertPredictionIfAbsent(db, invalid)).rejects.toThrow();
+
+  const valid = madePrediction({ gameId: "pick-invalid" });
+  expect(await insertPredictionIfAbsent(db, valid)).toBe(true);
+  expect(await getPrediction(db, "pick-invalid")).toEqual(valid);
+});
+
 test("two Predictions inserted at once for one game leave one row", async () => {
   const one = madePrediction({ gameId: "pick-race", pickTeamId: "9" });
   const other = madePrediction({ gameId: "pick-race", pickTeamId: "2" });

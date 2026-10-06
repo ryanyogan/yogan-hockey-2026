@@ -1,9 +1,14 @@
 import { env } from "cloudflare:workers";
-import type { FailedPrediction, FinalGame } from "@yogan-hockey/schemas";
+import type { FailedPrediction, FinalGame, StoredPrediction } from "@yogan-hockey/schemas";
 import { expect, test } from "vitest";
 import { createDb } from "./client.ts";
 import { saveFinalGame } from "./games.ts";
-import { getPrediction, getSeasonRecord, insertPredictionIfAbsent } from "./predictions.ts";
+import {
+  getPrediction,
+  getPredictions,
+  getSeasonRecord,
+  insertPredictionIfAbsent,
+} from "./predictions.ts";
 import { finalGame, madePrediction } from "./test-fixtures.ts";
 
 const db = createDb(env.DB);
@@ -137,4 +142,32 @@ test("the season record leaves out picks for games that are not final and for ot
 
 test("a season with no picks has an empty record", async () => {
   expect(await getSeasonRecord(db, nextSeason++)).toEqual({ right: 0, wrong: 0 });
+});
+
+test("a slate's prediction rows are read together, keyed by game, with nothing for a game that has none", async () => {
+  const made = madePrediction({ gameId: "slate-made" });
+  const failed = failedPrediction("slate-failed");
+  await insertPredictionIfAbsent(db, made);
+  await insertPredictionIfAbsent(db, failed);
+
+  const rows = await getPredictions(db, ["slate-made", "slate-failed", "slate-none"]);
+
+  expect(rows).toEqual(
+    new Map<string, StoredPrediction>([
+      ["slate-made", made],
+      ["slate-failed", failed],
+    ]),
+  );
+});
+
+test("a slate of no games reads as no rows, and one longer than a statement holds is read whole", async () => {
+  expect(await getPredictions(db, [])).toEqual(new Map());
+
+  const made = madePrediction({ gameId: "slate-long" });
+  await insertPredictionIfAbsent(db, made);
+  const many = Array.from({ length: 150 }, (_unused, index) => `slate-absent-${index}`);
+
+  expect(await getPredictions(db, [...many, "slate-long"])).toEqual(
+    new Map([["slate-long", made]]),
+  );
 });

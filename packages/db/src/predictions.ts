@@ -3,7 +3,7 @@ import {
   type StoredPrediction,
   StoredPredictionSchema,
 } from "@yogan-hockey/schemas";
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, inArray, sql } from "drizzle-orm";
 import type { Db } from "./client.ts";
 import { games, predictions } from "./schema.ts";
 
@@ -33,6 +33,26 @@ export async function insertPredictionIfAbsent(
 export async function getPrediction(db: Db, gameId: string): Promise<StoredPrediction | null> {
   const [row] = await db.select().from(predictions).where(eq(predictions.gameId, gameId));
   return row ? toStoredPrediction(row) : null;
+}
+
+/** D1 takes at most 100 bound values in one statement. */
+const IDS_PER_STATEMENT = 90;
+
+/**
+ * The prediction rows of several games, one slate's for instance, keyed by game id. A game with
+ * no row is not in the map; a failed attempt is, as its `failed` row.
+ */
+export async function getPredictions(
+  db: Db,
+  gameIds: string[],
+): Promise<Map<string, StoredPrediction>> {
+  const found = new Map<string, StoredPrediction>();
+  for (let start = 0; start < gameIds.length; start += IDS_PER_STATEMENT) {
+    const ids = gameIds.slice(start, start + IDS_PER_STATEMENT);
+    const rows = await db.select().from(predictions).where(inArray(predictions.gameId, ids));
+    for (const row of rows) found.set(row.gameId, toStoredPrediction(row));
+  }
+  return found;
 }
 
 /**

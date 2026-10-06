@@ -16,6 +16,10 @@ export default defineConfig({
     }),
     cloudflare({
       viteEnvironment: { name: "rsc", childEnvironments: ["ssr"] },
+      // The AI binding is the one binding with nothing local behind it, and the plugin opens a
+      // session with the Cloudflare account for it as the dev server starts, which needs a
+      // login. Off, so `pnpm dev` and CI need none; `AI_REMOTE=1 pnpm dev` makes real calls.
+      remoteBindings: process.env.AI_REMOTE === "1",
     }),
   ],
 });

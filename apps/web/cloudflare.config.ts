@@ -39,6 +39,11 @@ export default defineConfig({
         // The permanent record.
         DB: bindings.d1({ id: target.d1Id, name: target.d1Name }),
         GameAgent: bindings.durableObject({ worker: NAME, exportName: "GameAgent" }),
+        // Workers AI, which makes the Predictions. It has no local simulation: under `pnpm dev`
+        // every call fails, and each scheduled game gets a failed row. `AI_REMOTE=1 pnpm dev`
+        // sends the calls to the account cf is logged in to (vite.config.ts reads the same
+        // switch). Left unset, not false: cf refuses an AI binding that says `remote: false`.
+        AI: bindings.ai(process.env.AI_REMOTE === "1" ? { dev: { remote: true } } : undefined),
         ScoreboardAgent: bindings.durableObject({ worker: NAME, exportName: "ScoreboardAgent" }),
         SkeletonAgent: bindings.durableObject({ worker: NAME, exportName: "SkeletonAgent" }),
       },

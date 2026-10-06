@@ -65,6 +65,12 @@ export function gameStatusLine(game: ScoreboardGame): string | null {
   }
 }
 
+/** "Scotiabank Arena · ESPN+, TNT": where a game is played and where it is shown. */
+export function gameWhere(game: Pick<ScoreboardGame, "venue" | "broadcasts">): string {
+  const broadcasts = game.broadcasts?.join(", ");
+  return [game.venue, broadcasts].filter(Boolean).join(" · ");
+}
+
 /** A slate split by where each game stands, each part in order of start time. */
 export type SlateSections = Record<"live" | "upcoming" | "final" | "postponed", ScoreboardGame[]>;
 

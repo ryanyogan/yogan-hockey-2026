@@ -31,7 +31,7 @@ function scoreboardSide(side: Game["home"]): ScoreboardSide {
 
 /** A game cut down to what the Scoreboard pushes to every open page. */
 export function scoreboardGame(game: Game): ScoreboardGame {
-  const { id, startTime, seasonType, status, period, clock, detail, venue } = game;
+  const { id, startTime, seasonType, status, period, clock, detail, venue, broadcasts } = game;
   return {
     id,
     startTime,
@@ -41,6 +41,7 @@ export function scoreboardGame(game: Game): ScoreboardGame {
     clock,
     detail,
     venue,
+    broadcasts,
     home: scoreboardSide(game.home),
     away: scoreboardSide(game.away),
   };

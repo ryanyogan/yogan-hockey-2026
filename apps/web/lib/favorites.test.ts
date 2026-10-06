@@ -2,6 +2,7 @@ import type { ScoreboardGame } from "@yogan-hockey/schemas";
 import { describe, expect, test } from "vitest";
 import {
   favoritesFirst,
+  favoritesToShow,
   isFavoriteGame,
   MAX_FAVORITES,
   readFavoriteIds,
@@ -92,4 +93,25 @@ test("a game is a favorite's when either side is a favorite team", () => {
   expect(isFavoriteGame(game("a", "1", "21"), ["21"])).toBe(true);
   expect(isFavoriteGame(game("a", "21", "1"), ["21"])).toBe(true);
   expect(isFavoriteGame(game("a", "1", "2"), ["21"])).toBe(false);
+});
+
+describe("favoritesToShow", () => {
+  const nobody =
+    (...dead: string[]) =>
+    (id: string) =>
+      dead.includes(id);
+
+  test("is the oldest favorites, as many as there is room for", () => {
+    expect(favoritesToShow(["1", "2", "3", "4", "5"], 4, nobody())).toEqual(["1", "2", "3", "4"]);
+    expect(favoritesToShow(["1", "2"], 4, nobody())).toEqual(["1", "2"]);
+  });
+
+  test("a favorite found to be nobody gives his place to the next", () => {
+    expect(favoritesToShow(["1", "2", "3", "4", "5", "6"], 4, nobody("2", "5"))).toEqual([
+      "1",
+      "3",
+      "4",
+      "6",
+    ]);
+  });
 });

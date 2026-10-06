@@ -86,7 +86,7 @@ Variant C, the "Tonight ledger": monospace type, one dense table per subject, no
 - **Tonight's games**, with the live count in its header. Live rows are tinted. A note column carries the pick ("TOR 58%", or "pick pending") and a marker for a favorite team. Favorite teams' games sort first.
 - **Family**: one row block for Rylan with his season totals, linking to `/family/rylan`.
 - **Favorites**: up to four favorite players, each with a "live now" marker when his team is playing.
-- **Standings**: a compact standings table linking to `/nhl`.
+- **Standings**: each conference's top eight in a compact table, rows linking to teams, with a link to `/nhl`.
 - **Season record of the picks**, in the header line of the Tonight's games table: "Picks: 34 right, 21 wrong".
 
 Dropped from the Parity Reference: Quick Links, the NHL Teams grid, the standalone live/total game counter.

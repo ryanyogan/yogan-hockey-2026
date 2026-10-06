@@ -32,6 +32,12 @@ const TEAMS: Record<string, [record: string, venue: string]> = {
   CBJ: ["0-0-0", "Nationwide Arena"],
 };
 
+/**
+ * Toronto has ESPN's own id, so a favorite player of the recorded fixtures (all Toronto's) is
+ * "live" on `/skeleton/dashboard`. The other teams are known by their abbreviations.
+ */
+const ESPN_IDS: Record<string, string> = { TOR: "21" };
+
 let nextId = 1;
 
 function game(
@@ -41,7 +47,7 @@ function game(
   over: Partial<ScoreboardGame> = {},
 ): ScoreboardGame {
   const side = ([abbreviation, score = 0]: Team, other: Team) => ({
-    id: abbreviation,
+    id: ESPN_IDS[abbreviation] ?? abbreviation,
     abbreviation,
     logo: null,
     logoDark: null,
@@ -67,7 +73,7 @@ function game(
 /**
  * An invented slate with a game in every state the Scoreboard can report, since no recorded ESPN
  * slate has a game in progress: play, an intermission, overtime, a shootout, finals in regulation
- * and beyond it, a postponement.
+ * and beyond it, a postponement. Two games say who shows them, one at length.
  */
 export const SAMPLE_SLATE: ScoreboardState = {
   date: "2026-10-06",
@@ -102,7 +108,7 @@ export const SAMPLE_SLATE: ScoreboardState = {
         ["TOR", 2],
         ["MTL", 1],
       ],
-      { period: 2, clock: "12:34" },
+      { period: 2, clock: "12:34", broadcasts: ["ESPN+", "TNT"] },
     ),
     game(
       "live",
@@ -133,7 +139,9 @@ export const SAMPLE_SLATE: ScoreboardState = {
     ),
     game("scheduled", "2026-10-07T00:00:00Z", [["BOS"], ["NYR"]]),
     game("scheduled", "2026-10-07T02:00:00Z", [["EDM"], ["VAN"]]),
-    game("scheduled", "2026-10-07T02:30:00Z", [["VGK"], ["LA"]]),
+    game("scheduled", "2026-10-07T02:30:00Z", [["VGK"], ["LA"]], {
+      broadcasts: ["ESPN+", "Scripps Sports", "KONG", "KING 5", "KHN", "Prime Video (Local)"],
+    }),
     game("postponed", "2026-10-06T23:30:00Z", [["CAR"], ["CBJ"]], { detail: "Postponed" }),
   ],
 };

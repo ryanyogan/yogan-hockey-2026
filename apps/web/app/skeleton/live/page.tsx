@@ -10,7 +10,7 @@ export const metadata: Metadata = { title: "Sample live scores" };
  * Scaffolding for #41: the score ticker and `/nhl/live` drawn from an invented slate with a game
  * in every state, because no recorded ESPN slate has a game in progress. `?slate=empty` is a day
  * with no games. The shell's own ticker, above, still shows the real slate. It goes with
- * `/skeleton/ledger` once a recorded slate has live games.
+ * `/skeleton/dashboard` once a recorded slate has live games.
  */
 export default async function SampleLiveScoresPage({
   searchParams,

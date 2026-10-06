@@ -52,11 +52,11 @@ test("/nhl/live lists the slate in sections, links each game, and follows the so
     "href",
     `/nhl/games/${GAME_ID}`,
   );
-  // Each team with its record, and where the game is played.
+  // Each team with its record, then where the game is played and who shows it.
   const row = upcoming.getByRole("row").filter({ hasText: "NSH" });
   await expect(row.getByRole("cell").nth(1)).toHaveText("NSH 1-1-0");
   await expect(row.getByRole("cell").nth(3)).toHaveText("TOR 1-2-0");
-  await expect(row.getByRole("cell").nth(5)).toHaveText("Scotiabank Arena");
+  await expect(row.getByRole("cell").nth(5)).toHaveText("Scotiabank Arena · ESPN+, Scripps Sports");
 
   // The ticker, on this page as on every other: a way to the scores, then one entry per game.
   const ticker = page.getByRole("navigation", { name: "Scores" });

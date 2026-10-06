@@ -14,13 +14,17 @@ export const seasonLine = (player: FavoritePlayer) =>
 export function FavoritePlayersLedger({
   players,
   note,
+  compact,
 }: {
   players: readonly FavoritePlayer[];
+  /** Half a page wide, as on the dashboard: see `PlayerLedger`. */
+  compact?: boolean;
   note?: (player: FavoritePlayer) => ReactNode;
 }) {
   return (
     <PlayerLedger
       players={players}
+      compact={compact}
       line={seasonLine}
       action={(player) => (
         <span className="inline-flex items-baseline gap-4 whitespace-nowrap">

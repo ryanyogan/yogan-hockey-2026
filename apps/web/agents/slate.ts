@@ -25,13 +25,13 @@ export function scoreboardPollSeconds(games: ScoreboardGame[], now: number): num
 }
 
 function scoreboardSide(side: Game["home"]): ScoreboardSide {
-  const { id, abbreviation, shortName, logo, logoDark, score, winner } = side;
-  return { id, abbreviation, shortName, logo, logoDark, score, winner };
+  const { id, abbreviation, logo, logoDark, score, winner, record } = side;
+  return { id, abbreviation, logo, logoDark, score, winner, record };
 }
 
 /** A game cut down to what the Scoreboard pushes to every open page. */
 export function scoreboardGame(game: Game): ScoreboardGame {
-  const { id, startTime, seasonType, status, period, clock, detail } = game;
+  const { id, startTime, seasonType, status, period, clock, detail, venue } = game;
   return {
     id,
     startTime,
@@ -40,6 +40,7 @@ export function scoreboardGame(game: Game): ScoreboardGame {
     period,
     clock,
     detail,
+    venue,
     home: scoreboardSide(game.home),
     away: scoreboardSide(game.away),
   };

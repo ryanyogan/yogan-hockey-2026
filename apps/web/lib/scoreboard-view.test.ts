@@ -1,25 +1,25 @@
-import type { ScoreboardGame, ScoreboardState } from "@yogan-hockey/schemas";
+import type { ScoreboardGame } from "@yogan-hockey/schemas";
 import { expect, test } from "vitest";
 import {
   gameHref,
   gameStatusLine,
   hasScore,
-  newFinals,
-  slateDateLabel,
+  heardAtFrom,
+  laterOf,
   slateSections,
   tickerGames,
-  updatedLabel,
+  wheelScrollLeft,
 } from "./scoreboard-view";
 
 function side(abbreviation: string, score = 0, winner = false): ScoreboardGame["home"] {
   return {
     id: abbreviation,
     abbreviation,
-    shortName: abbreviation,
     logo: null,
     logoDark: null,
     score,
     winner,
+    record: null,
   };
 }
 
@@ -33,6 +33,7 @@ function game(id: string, over: Partial<ScoreboardGame> = {}): ScoreboardGame {
     period: 0,
     clock: "0:00",
     detail: "10/6 - 7:00 PM EDT",
+    venue: null,
     home: side("MTL"),
     away: side("TOR"),
     ...over,
@@ -42,11 +43,8 @@ function game(id: string, over: Partial<ScoreboardGame> = {}): ScoreboardGame {
 const live = (id: string, period: number, clock: string, over: Partial<ScoreboardGame> = {}) =>
   game(id, { status: "live", period, clock, ...over });
 
-test("a game still to be played reads as its start time in Eastern time", () => {
-  expect(gameStatusLine(game("1"))).toBe("7:00 PM ET");
-  expect(gameStatusLine(game("2", { startTime: "2026-10-07T02:30:00Z" }))).toBe("10:30 PM ET");
-  // After the clocks go back: 7:00 PM Eastern is midnight UTC.
-  expect(gameStatusLine(game("3", { startTime: "2026-11-11T00:00:00Z" }))).toBe("7:00 PM ET");
+test("a game still to be played has no status line: its start time stands in for one", () => {
+  expect(gameStatusLine(game("1"))).toBeNull();
 });
 
 test("a game in progress reads as its period and the time left in it", () => {
@@ -130,34 +128,61 @@ test("the ticker leads with what is on, then what is to come, then what is over"
   expect(tickerGames([])).toEqual([]);
 });
 
-const state = (games: ScoreboardGame[]): ScoreboardState => ({
-  date: "2026-10-06",
-  games,
-  updatedAt: "2026-10-07T00:14:07.000Z",
+test("a page was last heard from at the later of the state's change and the last quiet poll", () => {
+  expect(laterOf("2026-10-07T00:14:07.000Z", "2026-10-07T00:19:07.000Z")).toBe(
+    "2026-10-07T00:19:07.000Z",
+  );
+  expect(laterOf("2026-10-07T00:19:37.000Z", "2026-10-07T00:19:07.000Z")).toBe(
+    "2026-10-07T00:19:37.000Z",
+  );
+  expect(laterOf(null, "2026-10-07T00:19:07.000Z")).toBe("2026-10-07T00:19:07.000Z");
+  expect(laterOf("2026-10-07T00:14:07.000Z", null)).toBe("2026-10-07T00:14:07.000Z");
+  expect(laterOf(null, null)).toBeNull();
 });
 
-test("a game that ends between two states is a new final; one already over is not", () => {
-  const before = state([live("a", 3, "0:10"), game("b", { status: "final", period: 3 })]);
-
-  expect(newFinals(before, before)).toEqual([]);
-  expect(
-    newFinals(before, state([live("a", 3, "0:02"), game("b", { status: "final", period: 3 })])),
-  ).toEqual([]);
-  expect(
-    newFinals(
-      before,
-      state([game("a", { status: "final", period: 3 }), game("b", { status: "final", period: 3 })]),
-    ),
-  ).toEqual(["a"]);
+test("only the Scoreboard's own word that it heard from ESPN carries a time", () => {
+  const at = "2026-10-07T00:19:07.000Z";
+  expect(heardAtFrom(JSON.stringify({ type: "scoreboard_heard", at }))).toBe(at);
+  expect(heardAtFrom(JSON.stringify({ type: "cf_agent_mcp_servers", at }))).toBeNull();
+  expect(heardAtFrom(JSON.stringify({ type: "scoreboard_heard" }))).toBeNull();
+  expect(heardAtFrom(JSON.stringify({ type: "scoreboard_heard", at: "lately" }))).toBeNull();
+  expect(heardAtFrom("not json")).toBeNull();
+  expect(heardAtFrom(new ArrayBuffer(4))).toBeNull();
 });
 
-test("a final on a slate the page has not shown before is not a new final", () => {
-  const yesterday = { ...state([live("a", 3, "0:10")]), date: "2026-10-05" };
-  const today = state([game("z", { status: "final", period: 3 })]);
+// A ticker 300 wide holding 1000 of entries, somewhere in the middle.
+const strip = { scrollLeft: 200, scrollWidth: 1000, clientWidth: 300 };
+const wheel = { deltaX: 0, deltaY: 0, deltaMode: 0, shiftKey: false, ctrlKey: false };
 
-  expect(newFinals(yesterday, today)).toEqual([]);
-  // A game that joins today's slate already over did end unseen, so the page's data is stale.
-  expect(newFinals(state([]), today)).toEqual(["z"]);
+test("a vertical wheel moves the ticker sideways, down to the right and up to the left", () => {
+  expect(wheelScrollLeft(strip, { ...wheel, deltaY: 120 })).toBe(320);
+  expect(wheelScrollLeft(strip, { ...wheel, deltaY: -120 })).toBe(80);
+  // A wheel that reports lines, as Firefox does: three lines of 16px.
+  expect(wheelScrollLeft(strip, { ...wheel, deltaY: 3, deltaMode: 1 })).toBe(248);
+  // A wheel that reports pages: one width of the strip.
+  expect(wheelScrollLeft(strip, { ...wheel, deltaY: 1, deltaMode: 2 })).toBe(500);
+});
+
+test("the wheel stops at the ticker's ends, and from there it scrolls the page again", () => {
+  expect(wheelScrollLeft(strip, { ...wheel, deltaY: 5000 })).toBe(700);
+  expect(wheelScrollLeft(strip, { ...wheel, deltaY: -5000 })).toBe(0);
+  expect(wheelScrollLeft({ ...strip, scrollLeft: 700 }, { ...wheel, deltaY: 120 })).toBeNull();
+  expect(wheelScrollLeft({ ...strip, scrollLeft: 0 }, { ...wheel, deltaY: -120 })).toBeNull();
+  // The slow tail of a trackpad's glide still belongs to the strip while it has room to move.
+  expect(wheelScrollLeft(strip, { ...wheel, deltaY: 0.4 })).toBe(200.4);
+  // A browser zoomed in reports a fraction short of the end.
+  expect(wheelScrollLeft({ ...strip, scrollLeft: 699.5 }, { ...wheel, deltaY: 120 })).toBeNull();
+});
+
+test("the wheel is left alone when the ticker fits or the gesture is not a plain vertical one", () => {
+  const fits = { scrollLeft: 0, scrollWidth: 300, clientWidth: 300 };
+  expect(wheelScrollLeft(fits, { ...wheel, deltaY: 120 })).toBeNull();
+  // A trackpad swiping sideways already scrolls the strip.
+  expect(wheelScrollLeft(strip, { ...wheel, deltaX: 40, deltaY: 10 })).toBeNull();
+  // Shift makes a browser scroll sideways itself; control is a zoom.
+  expect(wheelScrollLeft(strip, { ...wheel, deltaY: 120, shiftKey: true })).toBeNull();
+  expect(wheelScrollLeft(strip, { ...wheel, deltaY: 120, ctrlKey: true })).toBeNull();
+  expect(wheelScrollLeft(strip, wheel)).toBeNull();
 });
 
 test("every game links to its own page, and shows a score only once it has started", () => {
@@ -166,15 +191,4 @@ test("every game links to its own page, and shows a score only once it has start
   expect(hasScore(live("2", 1, "20:00"))).toBe(true);
   expect(hasScore(game("3", { status: "final", period: 3 }))).toBe(true);
   expect(hasScore(game("4", { status: "postponed" }))).toBe(false);
-});
-
-test("a slate's date reads as a day of the week and a date", () => {
-  expect(slateDateLabel("2026-10-06")).toBe("Tue, Oct 6");
-  expect(slateDateLabel("2027-01-01")).toBe("Fri, Jan 1");
-});
-
-test("the updated time is Eastern, to the second, and absent before the first poll", () => {
-  expect(updatedLabel("2026-10-07T00:14:07.000Z")).toBe("20:14:07 ET");
-  expect(updatedLabel("2026-11-11T05:03:09.000Z")).toBe("00:03:09 ET");
-  expect(updatedLabel(null)).toBeNull();
 });

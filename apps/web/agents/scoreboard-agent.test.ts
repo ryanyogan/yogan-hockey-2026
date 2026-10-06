@@ -19,7 +19,7 @@ const FAST = 30;
 
 type RecordedEvent = (typeof recordedSlate)["events"][number];
 type Push = { topic: string; title: string | null; body: string };
-type AgentMessage = { type: string; state?: ScoreboardState; error?: string };
+type AgentMessage = { type: string; state?: ScoreboardState; error?: string; at?: string };
 
 /** What ESPN answers a scoreboard request with. */
 let espn: () => Response;
@@ -319,23 +319,24 @@ describe("first paint", () => {
       period: 2,
       clock: "12:34",
       detail: "12:34 - 2nd",
+      venue: "Bell Centre",
       home: {
         id: "10",
         abbreviation: "MTL",
-        shortName: "Canadiens",
         logo: "https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/mtl.png",
         logoDark: null,
         score: 2,
         winner: false,
+        record: "1-0-1",
       },
       away: {
         id: "7",
         abbreviation: "CAR",
-        shortName: "Hurricanes",
         logo: "https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/car.png",
         logoDark: null,
         score: 0,
         winner: false,
+        record: "1-1-1",
       },
     });
   });
@@ -369,6 +370,38 @@ describe("what viewers are sent", () => {
     await vi.waitFor(() => expect(viewer.states().at(-1)?.games[0]?.home.score).toBe(2));
     expect(viewer.states()).toHaveLength(sent + 1);
     expect(espnRequests).toBe(3);
+  });
+
+  test("a poll that finds nothing new sends only the time ESPN was heard from", async () => {
+    const { agent, connect, later } = await scoreboard();
+    const viewer = await connect();
+    await later(0);
+    await vi.waitFor(() => expect(viewer.states().at(-1)?.games).toHaveLength(9));
+    const sent = viewer.states().length;
+    const changedAt = viewer.states().at(-1)?.updatedAt;
+    expect(changedAt).toBe(new Date(NOW).toISOString());
+
+    await later(SLOW);
+
+    // Read at once: waiting moves the faked clock on.
+    const heardAt = new Date(Date.now()).toISOString();
+    await vi.waitFor(() =>
+      expect(viewer.messages).toContainEqual({ type: "scoreboard_heard", at: heardAt }),
+    );
+    expect(viewer.states()).toHaveLength(sent);
+    // First paint for the next visitor says the same: heard from just now, changed back then.
+    expect(await agent.getScoreboard()).toMatchObject({ updatedAt: changedAt, heardAt });
+  });
+
+  test("a failed poll leaves the time ESPN was heard from where it was", async () => {
+    const { agent, later } = await scoreboard();
+    const { heardAt } = await agent.getScoreboard();
+    expect(heardAt).toBe(new Date(NOW).toISOString());
+    espn = espnDown;
+
+    await later(SLOW + 1);
+
+    expect((await agent.getScoreboard()).heardAt).toBe(heardAt);
   });
 
   test("a browser's attempt to write the state is refused", async () => {

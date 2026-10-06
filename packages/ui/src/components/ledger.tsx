@@ -153,10 +153,27 @@ function LedgerAside({ className, ...props }: ComponentProps<"span">) {
   );
 }
 
-/** A second line under a cell's main value: a Tracked Player's next game under his team. */
-function LedgerDetail({ className, ...props }: ComponentProps<"div">) {
+/**
+ * A second line under a cell's main value: a Tracked Player's next game under his team. `fine` is
+ * small print for a narrow column, such as a game's venue under its status on a phone: it wraps,
+ * and it keeps the room of two lines whatever it holds, so the rows of a table stay one height.
+ */
+function LedgerDetail({
+  className,
+  fine = false,
+  ...props
+}: ComponentProps<"div"> & { fine?: boolean }) {
   return (
-    <div data-slot="ledger-detail" className={cn("text-foreground/60", className)} {...props} />
+    <div
+      data-slot="ledger-detail"
+      className={cn(
+        fine
+          ? "line-clamp-2 h-6 whitespace-normal text-[10px] text-foreground/50 leading-3"
+          : "text-foreground/60",
+        className,
+      )}
+      {...props}
+    />
   );
 }
 

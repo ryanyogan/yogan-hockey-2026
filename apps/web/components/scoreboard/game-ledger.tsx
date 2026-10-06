@@ -5,6 +5,7 @@ import {
   LedgerBody,
   LedgerCell,
   LedgerColumn,
+  LedgerDetail,
   LedgerHead,
   LedgerRow,
   ledgerRowLink,
@@ -12,20 +13,29 @@ import {
 import { LiveMarker } from "@yogan-hockey/ui/components/marker";
 import Link from "next/link";
 import { gameHref, gameStatusLine, hasScore } from "../../lib/scoreboard-view";
+import { GameStatus } from "./game-status";
 
 function Team({ side }: { side: ScoreboardSide }) {
   return (
     <>
       <span className={side.winner ? "font-bold" : undefined}>{side.abbreviation}</span>{" "}
-      <LedgerAside className="max-sm:hidden">{side.shortName}</LedgerAside>
+      {/* Beside the team on a wide page; on a phone, where the two do not fit, under it. */}
+      {side.record && <LedgerAside className="max-sm:block">{side.record}</LedgerAside>}
     </>
   );
 }
 
+/** A cell of text: on a phone its first line stays level with its neighbours' first lines. */
+const TEXT_CELL = "whitespace-nowrap max-sm:align-top";
+
 /**
- * Games as ledger rows, the Reference UI's "tonight" table: status, away, home. Each row links to
- * the game's page, a game in progress is tinted, and the winner of a finished game is in bold.
- * The columns are fixed widths, so one ledger under another lines up.
+ * Games as ledger rows, the Reference UI's "tonight" table: status, away, home, each team with its
+ * record, then the venue. Each row links to the game's page, a game in progress is tinted, and the
+ * winner of a finished game is in bold. The columns are fixed widths, so one ledger under another
+ * lines up.
+ *
+ * A phone has no room for the last column or for a record beside its team, so there a row has a
+ * second line: the venue in small print under the status, each record under its team.
  */
 export function GameLedger({ games }: { games: ScoreboardGame[] }) {
   return (
@@ -37,14 +47,14 @@ export function GameLedger({ games }: { games: ScoreboardGame[] }) {
         <LedgerColumn className="sm:w-52">home</LedgerColumn>
         <LedgerColumn numeric className="w-10 sm:w-14" />
         {/* Takes the rest of a wide page, so a score stays beside its team. */}
-        <LedgerColumn className="max-sm:hidden" />
+        <LedgerColumn className="max-sm:hidden">venue</LedgerColumn>
       </LedgerHead>
       <LedgerBody>
         {games.map((game) => {
           const status = gameStatusLine(game);
           return (
             <LedgerRow key={game.id} live={game.status === "live"} interactive>
-              <LedgerCell className="whitespace-nowrap">
+              <LedgerCell className={TEXT_CELL}>
                 <Link href={gameHref(game)} className={ledgerRowLink}>
                   <span className="sr-only">
                     {game.away.abbreviation} at {game.home.abbreviation},{" "}
@@ -55,19 +65,24 @@ export function GameLedger({ games }: { games: ScoreboardGame[] }) {
                       {status === "live" ? null : status}
                     </LiveMarker>
                   ) : (
-                    status
+                    <GameStatus game={game} />
                   )}
                 </Link>
+                <LedgerDetail fine className="sm:hidden">
+                  {game.venue}
+                </LedgerDetail>
               </LedgerCell>
-              <LedgerCell>
+              <LedgerCell className={TEXT_CELL}>
                 <Team side={game.away} />
               </LedgerCell>
               <LedgerCell tone="score">{hasScore(game) ? game.away.score : null}</LedgerCell>
-              <LedgerCell>
+              <LedgerCell className={TEXT_CELL}>
                 <Team side={game.home} />
               </LedgerCell>
               <LedgerCell tone="score">{hasScore(game) ? game.home.score : null}</LedgerCell>
-              <LedgerCell className="max-sm:hidden" />
+              <LedgerCell tone="note" className="truncate max-sm:hidden">
+                {game.venue}
+              </LedgerCell>
             </LedgerRow>
           );
         })}

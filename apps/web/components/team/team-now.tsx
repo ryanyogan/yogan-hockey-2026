@@ -63,14 +63,14 @@ function NextGame({ teamId, game }: { teamId: string; game: Game }) {
           <LedgerRow interactive>
             <LedgerCell className="whitespace-nowrap">
               <Link href={gameHref(game)} className={ledgerRowLink}>
-                <LocalTime startTime={game.startTime} show="day" />
+                <LocalTime at={game.startTime} show="day" />
               </Link>
             </LedgerCell>
             <LedgerCell className="whitespace-nowrap">
               <Versus home={home} /> <TeamName team={opponent} />
             </LedgerCell>
             <LedgerCell className="whitespace-nowrap">
-              <LocalTime startTime={game.startTime} show="time" />
+              <LocalTime at={game.startTime} show="time" />
             </LedgerCell>
             <LedgerCell tone="note" className="whitespace-nowrap max-sm:hidden">
               {game.venue}

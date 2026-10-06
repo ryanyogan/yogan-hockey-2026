@@ -24,6 +24,10 @@ _Avoid_: Highlights, recap, rewind
 A goal, a penalty, a shot on goal, or the start or end of a period. A game page shows key plays first and every play on request.
 _Avoid_: Highlight, major event
 
+**Prediction**:
+The site's pick for an NHL game, made once before it starts: the team expected to win, a win probability, and a short reasoning. It never changes after it is made. Shown on the site as "the pick".
+_Avoid_: Forecast, odds, tip, Claude's pick
+
 **Parity Reference**:
 The Elixir app in `ryanyogan/yogan_hockey`, whose seven routes define the minimum functionality the rebuild must match.
 _Avoid_: Old site, legacy app

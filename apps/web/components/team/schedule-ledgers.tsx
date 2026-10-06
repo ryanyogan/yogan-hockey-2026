@@ -11,9 +11,11 @@ import {
 import { LiveMarker } from "@yogan-hockey/ui/components/marker";
 import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
 import Link from "next/link";
-import { gameHref, type ResultRow, type ScheduleRow } from "../../lib/team-schedule";
+import { gameHref } from "../../lib/scoreboard-view";
+import type { ResultRow, ScheduleRow } from "../../lib/team-schedule";
 import { LocalTime } from "../local-time";
 import { TeamName } from "../nhl/team-name";
+import { EmptyLedger } from "./empty-ledger";
 import { Versus } from "./versus";
 
 const games = (count: number) => (count === 1 ? "1 game" : `${count} games`);
@@ -45,16 +47,22 @@ function GameCells({ row }: { row: ScheduleRow }) {
 
 /**
  * The games a team has still to play, in date order, each linking to its game page. The day and
- * the time are the visitor's.
+ * the time are the visitor's. Postponed games follow the rest, uncounted: they have no date.
  */
-export function UpcomingLedger({ rows }: { rows: ScheduleRow[] }) {
+export function UpcomingLedger({
+  rows,
+  postponed,
+}: {
+  rows: ScheduleRow[];
+  postponed: ScheduleRow[];
+}) {
   return (
     <Section id="upcoming" className="scroll-mt-16">
       <SectionHeader title="Upcoming" count={games(rows.length)}>
         <Jump to="results">results</Jump>
       </SectionHeader>
-      {rows.length === 0 ? (
-        <Empty>No games left to play this season.</Empty>
+      {rows.length + postponed.length === 0 ? (
+        <EmptyLedger>No games left to play this season.</EmptyLedger>
       ) : (
         <Ledger density="compact">
           <LedgerHead>
@@ -69,11 +77,17 @@ export function UpcomingLedger({ rows }: { rows: ScheduleRow[] }) {
                 <LedgerCell numeric className="whitespace-nowrap">
                   {row.game.status === "live" ? (
                     <LiveMarker />
-                  ) : row.game.status === "postponed" ? (
-                    "postponed"
                   ) : (
                     <LocalTime startTime={row.game.startTime} show="time" />
                   )}
+                </LedgerCell>
+              </LedgerRow>
+            ))}
+            {postponed.map((row) => (
+              <LedgerRow key={row.game.id} interactive>
+                <GameCells row={row} />
+                <LedgerCell numeric tone="note" className="whitespace-nowrap">
+                  postponed
                 </LedgerCell>
               </LedgerRow>
             ))}
@@ -86,7 +100,7 @@ export function UpcomingLedger({ rows }: { rows: ScheduleRow[] }) {
 
 /**
  * A team's finished games this season, newest first, each linking to its Replay: won or lost,
- * the score with the team's own goals first, and whether it went past regulation.
+ * whether it went past regulation, and the score with the team's own goals first.
  */
 export function ResultsLedger({
   rows,
@@ -106,22 +120,29 @@ export function ResultsLedger({
         <Jump to="upcoming">upcoming</Jump>
       </SectionHeader>
       {rows.length === 0 ? (
-        <Empty>No games played yet this season.</Empty>
+        <EmptyLedger>No games played yet this season.</EmptyLedger>
       ) : (
         <Ledger density="compact">
           <LedgerHead>
             <LedgerColumn>date</LedgerColumn>
             <LedgerColumn className="w-full">opponent</LedgerColumn>
-            <LedgerColumn />
+            <LedgerColumn>
+              <span className="sr-only">result</span>
+            </LedgerColumn>
             <LedgerColumn numeric>score</LedgerColumn>
           </LedgerHead>
           <LedgerBody>
             {rows.map((row) => (
               <LedgerRow key={row.game.id} interactive>
                 <GameCells row={row} />
-                <LedgerCell className="whitespace-nowrap">
-                  <Outcome won={row.won} />
-                  {row.extraTime && <LedgerAside> {row.extraTime}</LedgerAside>}
+                <LedgerCell
+                  tone={row.won ? "positive" : "negative"}
+                  className="whitespace-nowrap font-bold"
+                >
+                  {row.won ? "W" : "L"}
+                  {row.extraTime && (
+                    <LedgerAside className="font-normal"> {row.extraTime}</LedgerAside>
+                  )}
                 </LedgerCell>
                 <LedgerCell numeric className="whitespace-nowrap">
                   {row.teamScore}-{row.opponentScore}
@@ -133,17 +154,4 @@ export function ResultsLedger({
       )}
     </Section>
   );
-}
-
-/** "W" or "L", coloured as a figure above or below zero is. */
-function Outcome({ won }: { won: boolean }) {
-  return (
-    <span className={won ? "font-bold text-positive" : "font-bold text-negative"}>
-      {won ? "W" : "L"}
-    </span>
-  );
-}
-
-function Empty({ children }: { children: string }) {
-  return <p className="border-foreground/20 border-t px-2 py-1.5 text-foreground/70">{children}</p>;
 }

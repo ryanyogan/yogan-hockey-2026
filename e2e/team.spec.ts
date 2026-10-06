@@ -97,20 +97,19 @@ test("a team's page shows each tab from a pasted URL, titled with the team's nam
 
   // An id that is no team's: "team not found", with the way back to the teams.
   await paste("/nhl/teams/leafs", async (page) => {
+    await expect(page).toHaveTitle("Team not found · Yogan Hockey");
     await expect(page.getByRole("heading", { name: /^Team not found/ })).toBeVisible();
     await expect(page.getByRole("link", { name: "All teams" })).toHaveAttribute(
       "href",
       "/nhl?tab=teams",
     );
-  });
-});
 
-// Unverified row 10 of the spec. A browser is sent the title late, in the body, and shows it; a
-// link preview reads the HTML alone, and for those the title is in <head>.
-test("the team's name is in the <head> a link preview reads", async ({ request }) => {
-  const response = await request.get("/nhl/teams/21?tab=stats", {
-    headers: { "user-agent": "Twitterbot/1.0" },
+    // Unverified row 10 of the spec. A browser is sent the title late, in the body, and shows
+    // it; a link preview reads the HTML alone, and for those the title is in <head>.
+    const response = await page.request.get("/nhl/teams/21?tab=stats", {
+      headers: { "user-agent": "Twitterbot/1.0" },
+    });
+    const head = (await response.text()).split("</head>")[0];
+    expect(head).toContain(`<title>${TITLE}</title>`);
   });
-  const head = (await response.text()).split("</head>")[0];
-  expect(head).toContain(`<title>${TITLE}</title>`);
 });

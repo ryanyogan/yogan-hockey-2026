@@ -23,6 +23,11 @@ describe("a roster's order", () => {
     expect(names(sortRoster(roster))).toEqual(["Rielly", "Tavares", "Callup"]);
   });
 
+  it("puts a number that is not one last too", () => {
+    const roster = [player("Odd", "TBD"), player("Blank", ""), player("Tavares", "91")];
+    expect(names(sortRoster(roster))).toEqual(["Tavares", "Odd", "Blank"]);
+  });
+
   it("keeps ESPN's order between players it cannot tell apart", () => {
     const roster = [player("Second", null), player("First", null), player("Low", "1")];
     expect(names(sortRoster(roster))).toEqual(["Low", "Second", "First"]);

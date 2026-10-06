@@ -9,6 +9,7 @@ import {
 } from "@yogan-hockey/ui/components/ledger";
 import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
 import type { ReactNode } from "react";
+import { EmptyLedger } from "./empty-ledger";
 
 /**
  * The head of a team's page: its name, where it plays and in which conference and division, and
@@ -45,9 +46,7 @@ export function TeamHeader({
         {action}
       </SectionHeader>
       {stats == null ? (
-        <p className="border-foreground/20 border-t px-2 py-1.5 text-foreground/70">
-          No games played yet this season.
-        </p>
+        <EmptyLedger>No games played yet this season.</EmptyLedger>
       ) : (
         <Ledger>
           <LedgerHead>

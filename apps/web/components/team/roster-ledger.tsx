@@ -12,6 +12,7 @@ import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { playerHref } from "../../lib/roster";
+import { EmptyLedger } from "./empty-ledger";
 
 /**
  * A team's players, each row linking to the player's page. The rows are drawn in the order given
@@ -36,9 +37,7 @@ export function RosterLedger({
         count={players.length === 1 ? "1 player" : `${players.length} players`}
       />
       {players.length === 0 ? (
-        <p className="border-foreground/20 border-t px-2 py-1.5 text-foreground/70">
-          No roster yet this season.
-        </p>
+        <EmptyLedger>No roster yet this season.</EmptyLedger>
       ) : (
         <Ledger density="compact">
           <LedgerHead>
@@ -62,7 +61,7 @@ export function RosterLedger({
                   </Link>
                 </LedgerCell>
                 <LedgerCell>{player.position}</LedgerCell>
-                {action && <LedgerCell className="py-0!">{action(player)}</LedgerCell>}
+                {action && <LedgerCell>{action(player)}</LedgerCell>}
               </LedgerRow>
             ))}
           </LedgerBody>

@@ -1,6 +1,6 @@
 import type { Game, GameSide, GameStatus } from "@yogan-hockey/schemas";
 import { describe, expect, it } from "vitest";
-import { gameHref, liveGame, nextGame, scheduleView } from "./team-schedule";
+import { liveGame, nextGame, scheduleView } from "./team-schedule";
 
 const side = (id: string, abbreviation: string, score = 0, winner = false): GameSide => ({
   id,
@@ -48,7 +48,7 @@ function game(
 const schedule = (games: Game[]) => ({ teamId: TOR, season: "2026-27", games });
 
 describe("a team's schedule", () => {
-  it("lists the games still to play in date order, each against its opponent", () => {
+  it("lists the games still to play in the schedule's order, each against its opponent", () => {
     const { upcoming } = scheduleView(
       schedule([
         game("3", "2026-10-06T23:00:00Z", "scheduled", "home"),
@@ -89,8 +89,8 @@ describe("a team's schedule", () => {
     expect(results.map((row) => row.extraTime)).toEqual(["2OT", "SO", "OT", null]);
   });
 
-  it("keeps a game in progress and a postponed one with the games still to play", () => {
-    const { upcoming, results } = scheduleView(
+  it("keeps a game in progress with the games still to play, and a postponed one apart", () => {
+    const { upcoming, postponed, results } = scheduleView(
       schedule([
         game("1", "2026-10-01T23:00:00Z", "postponed", "home"),
         game("2", "2026-10-06T23:00:00Z", "live", "home", [1, 0]),
@@ -98,10 +98,10 @@ describe("a team's schedule", () => {
       ]),
     );
     expect(upcoming.map((row) => [row.game.id, row.game.status])).toEqual([
-      ["1", "postponed"],
       ["2", "live"],
       ["3", "scheduled"],
     ]);
+    expect(postponed.map((row) => row.game.id)).toEqual(["1"]);
     expect(results).toEqual([]);
   });
 
@@ -118,7 +118,13 @@ describe("a team's schedule", () => {
   });
 
   it("is empty for a team with no games", () => {
-    expect(scheduleView(schedule([]))).toEqual({ upcoming: [], results: [], wins: 0, losses: 0 });
+    expect(scheduleView(schedule([]))).toEqual({
+      upcoming: [],
+      postponed: [],
+      results: [],
+      wins: 0,
+      losses: 0,
+    });
   });
 });
 
@@ -145,26 +151,36 @@ describe("whether the team is playing now", () => {
 });
 
 describe("the team's next game", () => {
+  // 7:00 PM Eastern on 6 October.
   const next = game("8", "2026-10-06T23:00:00Z", "scheduled", "home");
+  const slate = (date: string | null, ...games: Game[]) => ({ date, games });
 
   it("is the game ESPN lists as next, while it is still to be played", () => {
-    expect(nextGame(next, [])?.id).toBe("8");
-    expect(nextGame(next, [game("8", "2026-10-06T23:00:00Z", "scheduled", "home")])?.id).toBe("8");
+    expect(nextGame(next, slate("2026-10-06", next))?.id).toBe("8");
+    // A game on a later day is not on today's slate.
+    expect(nextGame(next, slate("2026-10-05"))?.id).toBe("8");
+    // The Scoreboard has not polled yet.
+    expect(nextGame(next, slate(null))?.id).toBe("8");
   });
 
   it("is none when the team has no next game", () => {
-    expect(nextGame(null, [])).toBeNull();
+    expect(nextGame(null, slate("2026-10-06"))).toBeNull();
   });
 
   it("is none once that game has started, which the cached team page learns late", () => {
-    expect(nextGame(next, [game("8", "2026-10-06T23:00:00Z", "live", "home")])).toBeNull();
-    expect(nextGame(next, [game("8", "2026-10-06T23:00:00Z", "final", "home", [2, 1])])).toBeNull();
-    expect(nextGame({ ...next, status: "live" }, [])).toBeNull();
+    expect(nextGame(next, slate("2026-10-06", { ...next, status: "live" }))).toBeNull();
+    expect(nextGame(next, slate("2026-10-06", { ...next, status: "final" }))).toBeNull();
+    expect(nextGame({ ...next, status: "live" }, slate("2026-10-06"))).toBeNull();
   });
-});
 
-describe("a game's page", () => {
-  it("is addressed by ESPN's event id", () => {
-    expect(gameHref({ id: "401892449" })).toBe("/nhl/games/401892449");
+  it("is none once the Scoreboard has moved on to a later day than the game's", () => {
+    expect(nextGame(next, slate("2026-10-07"))).toBeNull();
+  });
+
+  it("counts a late game on the day it starts in Eastern time, not in UTC", () => {
+    // 10:00 PM Eastern on 8 October is already the 9th in UTC.
+    const late = game("9", "2026-10-09T02:00:00Z", "scheduled", "away");
+    expect(nextGame(late, slate("2026-10-08"))?.id).toBe("9");
+    expect(nextGame(late, slate("2026-10-09"))).toBeNull();
   });
 });

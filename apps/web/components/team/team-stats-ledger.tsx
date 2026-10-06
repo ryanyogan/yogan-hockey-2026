@@ -9,6 +9,7 @@ import {
 } from "@yogan-hockey/ui/components/ledger";
 import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
 import { formatGoalDifference, goalDifferenceTone } from "../../lib/standings-table";
+import { EmptyLedger } from "./empty-ledger";
 
 /** "18.2" from 18.182; a dash until ESPN has the figure, early in a season. */
 const percent = (value: number | null) => (value == null ? "-" : value.toFixed(1));
@@ -22,9 +23,7 @@ export function TeamStatsLedger({ detail: { stats, record } }: { detail: TeamDet
     <Section>
       <SectionHeader title="Season stats" />
       {stats == null ? (
-        <p className="border-foreground/20 border-t px-2 py-1.5 text-foreground/70">
-          No games played yet this season.
-        </p>
+        <EmptyLedger>No games played yet this season.</EmptyLedger>
       ) : (
         <Ledger>
           <LedgerHead>

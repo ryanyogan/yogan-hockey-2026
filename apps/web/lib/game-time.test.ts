@@ -20,8 +20,8 @@ describe("a game's start, as a schedule shows it", () => {
     expect(gameTime(LATE, "Europe/Berlin")).toBe("4:00 AM");
   });
 
-  it("is in the NHL's own zone, Eastern, until the visitor's is known", () => {
-    expect(NHL_TIME_ZONE).toBe("America/New_York");
+  it("is Eastern time in the NHL's own zone, where the server writes it", () => {
     expect(gameTime(LATE, NHL_TIME_ZONE)).toBe("10:00 PM");
+    expect(gameDay(LATE, NHL_TIME_ZONE)).toBe("Thu Oct 8");
   });
 });

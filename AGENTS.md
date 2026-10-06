@@ -9,7 +9,7 @@ One ticket at a time, each by the `implement` skill (`~/.claude/skills/implement
 - **Context budget**: a subagent stays under 200k tokens of context. Approaching it, the subagent commits and pushes its work, posts a **handoff** comment on the issue, and ends its turn; the main session spawns a fresh subagent from that handoff.
 - **Handoff comment**: what is done, what is left against the issue's "Done when", the branch, how to run and verify, and anything learned that the code does not show.
 - **Done** for a ticket is every "Done when" line met, with the checks run and their output reported. Done for the project is every line of the parity checklist (#55) met or exceeded.
-- **Pixel perfect**: any UI ticket is finished by comparing screenshots, in light and dark and at phone and desktop widths, against the Parity Reference (run from `../yogan_hockey` or at `yogan-hockey.fly.dev`) or against the variant the spec names where the design changed.
+- **Pixel perfect**: the visual target is the **Reference UI**, variant C of the dashboard and of the game page in `prototypes/look-and-feel` on the `prototype/look-and-feel` branch (`pnpm dev` there), as described in `docs/spec.md`. Any UI ticket is finished by comparing screenshots against it, in light and dark and at phone and desktop widths; pages the prototype does not draw extend its type, spacing and colour. The Parity Reference is the target for features and behaviour only, since the look deliberately departs from it.
 
 ## Preferences
 

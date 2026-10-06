@@ -30,6 +30,10 @@ const TEAMS: Record<string, [record: string, venue: string]> = {
   LA: ["0-1-1", "crypto.com Arena"],
   CAR: ["1-1-1", "Lenovo Center"],
   CBJ: ["0-0-0", "Nationwide Arena"],
+  WPG: ["2-0-1", "Canada Life Centre"],
+  MIN: ["1-1-0", "Grand Casino Arena"],
+  SEA: ["1-1-0", "Climate Pledge Arena"],
+  SJ: ["0-2-1", "SAP Center at San Jose"],
 };
 
 /**
@@ -71,7 +75,7 @@ function game(
 }
 
 /**
- * An invented slate with a game in every state the Scoreboard can report, since no recorded ESPN
+ * An invented slate of thirteen games, one in every state the Scoreboard can report, since no recorded ESPN
  * slate has a game in progress: play, an intermission, overtime, a shootout, finals in regulation
  * and beyond it, a postponement. Two games say who shows them, one at length.
  */
@@ -101,6 +105,10 @@ export const SAMPLE_SLATE: ScoreboardState = {
       ],
       { period: 5 },
     ),
+    game("final", "2026-10-06T21:30:00Z", [
+      ["WPG", 1],
+      ["MIN", 6],
+    ]),
     game(
       "live",
       "2026-10-06T23:00:00Z",
@@ -142,9 +150,16 @@ export const SAMPLE_SLATE: ScoreboardState = {
     game("scheduled", "2026-10-07T02:30:00Z", [["VGK"], ["LA"]], {
       broadcasts: ["ESPN+", "Scripps Sports", "KONG", "KING 5", "KHN", "Prime Video (Local)"],
     }),
+    game("scheduled", "2026-10-07T02:30:00Z", [["SEA"], ["SJ"]]),
     game("postponed", "2026-10-06T23:30:00Z", [["CAR"], ["CBJ"]], { detail: "Postponed" }),
   ],
 };
 
 /** A day with nothing on it. */
 export const EMPTY_SLATE: ScoreboardState = { ...SAMPLE_SLATE, games: [] };
+
+/** A quiet day: two games, both still to be played, which the ticker shows whole on a phone. */
+export const QUIET_SLATE: ScoreboardState = {
+  ...SAMPLE_SLATE,
+  games: SAMPLE_SLATE.games.filter((game) => game.status === "scheduled").slice(0, 2),
+};

@@ -122,6 +122,13 @@ export function heardAtFrom(data: unknown): string | null {
   }
 }
 
+/**
+ * How high the ticker's strip is, as Tailwind classes: three short lines on a phone (52px), one
+ * line from `md` up (31.5px). The rule under it is the slot's, one pixel more. It is the same for
+ * any slate, so whatever stands in for the ticker while it loads takes these and nothing moves.
+ */
+export const TICKER_STRIP_HEIGHT = "h-13 md:h-[31.5px]";
+
 /** A box that scrolls sideways, as the DOM measures it. */
 type ScrollStrip = Pick<Element, "scrollLeft" | "scrollWidth" | "clientWidth">;
 /** What a wheel event says, as the DOM reports it. */
@@ -153,4 +160,33 @@ export function wheelScrollLeft(strip: ScrollStrip, wheel: WheelTurn): number | 
   // Within a pixel of an end is at it: a zoomed browser stops a fraction short.
   const atEnd = distance > 0 ? strip.scrollLeft >= end - 1 : strip.scrollLeft <= 1;
   return atEnd ? null : Math.min(end, Math.max(0, strip.scrollLeft + distance));
+}
+
+/** Where an entry sits in a strip's scrolled content: its left and right edges. */
+type StripSpan = { left: number; right: number };
+
+/** What a strip that scrolls sideways is not showing. */
+export type StripReach = {
+  /** There is more to the left of what shows. */
+  before: boolean;
+  /** There is more to the right of what shows. */
+  after: boolean;
+  /** How many entries are not wholly in view. */
+  hidden: number;
+};
+
+/**
+ * What a strip is hiding at the moment, so it can fade the edge it runs past and count what is
+ * out of view: the ticker's "+9". An entry cut by an edge is hidden. Within a pixel is in view,
+ * as in `wheelScrollLeft`.
+ */
+export function stripReach(strip: ScrollStrip, entries: StripSpan[]): StripReach {
+  const start = strip.scrollLeft;
+  const end = start + strip.clientWidth;
+  const inView = entries.filter((entry) => entry.left >= start - 1 && entry.right <= end + 1);
+  return {
+    before: start > 1,
+    after: start < strip.scrollWidth - strip.clientWidth - 1,
+    hidden: entries.length - inView.length,
+  };
 }

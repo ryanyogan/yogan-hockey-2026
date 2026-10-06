@@ -41,11 +41,9 @@ jobs:
 
       # Runs whether the check passed or failed: a failure opens the issue or comments on the
       # open one, a pass comments on an open issue that it cleared. Not when the steps before the
-      # check failed, since a broken install says nothing about ESPN. The push is skipped, with a
-      # notice on the run, until the NTFY_TOPIC secret exists (scripts/account-setup.sh sets it).
-      - name: File the issue and send the push
+      # check failed, since a broken install says nothing about ESPN.
+      - name: File the issue
         if: ${{ !cancelled() && steps.check.outcome != 'skipped' }}
         env:
           GH_TOKEN: ${{ github.token }}
-          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
         run: node packages/espn/scripts/report-check.ts

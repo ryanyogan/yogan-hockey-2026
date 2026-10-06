@@ -62,17 +62,8 @@ jobs:
           D1_ID: ${{ needs.gate.outputs.d1 }}
         run: pnpm exec cf d1 migrations apply "$D1_ID" --dir ../../packages/db/migrations </dev/null
 
-      # The Worker's one secret travels with the deploy, so a first deploy needs no second step.
+      # The Worker has no secrets, so the deploy uploads none.
       - name: Deploy the Worker
-        env:
-          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
         run: |
           subject=$(git log -1 --pretty=%s | cut -c1-100)
-          args=(--tag "${GITHUB_SHA::7}" --message "$subject")
-          if [[ -n "$NTFY_TOPIC" ]]; then
-            jq -n '{NTFY_TOPIC: env.NTFY_TOPIC}' >"$RUNNER_TEMP/worker-secrets.json"
-            args+=(--secrets-file "$RUNNER_TEMP/worker-secrets.json")
-          else
-            echo "::warning title=No ntfy topic::The NTFY_TOPIC secret is not set, so this deploy uploads no Worker secret."
-          fi
-          pnpm exec cf deploy "${args[@]}" </dev/null
+          pnpm exec cf deploy --tag "${GITHUB_SHA::7}" --message "$subject" </dev/null

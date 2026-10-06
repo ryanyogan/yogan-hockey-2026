@@ -28,7 +28,6 @@ import recordedScheduledGame from "../../../packages/espn/fixtures/summary-40189
  * of the 1st period, play 98 the start of the 2nd.
  */
 type RecordedGame = typeof recordedGame;
-type Push = { title: string | null };
 type StateMessage = { type: string; state?: GameStreamState; error?: string };
 
 /** The clock the Agent sees, ahead of the real one so that no schedule is due by itself. */
@@ -49,7 +48,8 @@ const db = createDb(env.DB);
 /** What ESPN answers a summary request with, by event id. */
 let espn: Map<string, () => Response | Promise<Response>>;
 let espnRequests: number;
-let pushes: Push[];
+/** The log lines that say a problem started or cleared, oldest first. */
+let alerts: string[];
 
 const espnDown = () => new Response("Bad gateway", { status: 502 });
 const espnHasNoSuchGame = () => new Response("Not found", { status: 404 });
@@ -111,7 +111,17 @@ beforeEach(() => {
   vi.useFakeTimers({ toFake: ["Date"], now: NOW });
   espn = new Map();
   espnRequests = 0;
-  pushes = [];
+  alerts = [];
+  // The alert shows in the Worker's logs and nowhere else, so its two lines are what is tested.
+  // Everything else logged still reaches the console.
+  for (const level of ["error", "log"] as const) {
+    const print = console[level];
+    vi.spyOn(console, level).mockImplementation((...args: unknown[]) => {
+      const line = String(args[0]);
+      if (/ESPN problem (started|cleared)/.test(line)) alerts.push(line);
+      else print(...args);
+    });
+  }
   vi.stubGlobal("fetch", async (input: RequestInfo | URL, init?: RequestInit) => {
     const request = new Request(input, init);
     const url = new URL(request.url);
@@ -119,10 +129,6 @@ beforeEach(() => {
       espnRequests += 1;
       const answer = espn.get(url.searchParams.get("event") ?? "");
       return answer ? answer() : espnHasNoSuchGame();
-    }
-    if (url.hostname === "ntfy.sh") {
-      pushes.push({ title: request.headers.get("Title") });
-      return new Response("{}");
     }
     throw new Error(`Unexpected fetch in a test: ${request.url}`);
   });
@@ -513,14 +519,15 @@ describe("the stall", () => {
     // The last state stays up under the warning.
     expect(viewer.states().at(-1)?.header?.status).toBe("live");
     expect(ids(viewer.plays())).toEqual(recordedIds(50));
-    expect(pushes).toEqual([{ title: `Game ${id}: ESPN problem` }]);
+    expect(alerts).toHaveLength(1);
+    expect(alerts[0]).toContain(`Game ${id}: ESPN problem started: `);
 
     espn.set(id, live(id, 51));
     await later(IN_PLAY);
 
     await vi.waitFor(() => expect(viewer.states().at(-1)?.delayed).toBe(false));
     expect(ids(viewer.plays())).toEqual(recordedIds(51));
-    expect(pushes.at(-1)).toEqual({ title: `Game ${id}: ESPN recovered` });
+    expect(alerts.at(-1)).toBe(`Game ${id}: ESPN problem cleared`);
   });
 
   test("a quiet stretch of good polls is not a stall", async () => {
@@ -536,7 +543,7 @@ describe("the stall", () => {
     expect(espnRequests).toBe(7);
     expect(viewer.states()).toHaveLength(sent);
     expect(viewer.states().at(-1)?.delayed).toBe(false);
-    expect(pushes).toEqual([]);
+    expect(alerts).toEqual([]);
   });
 });
 
@@ -724,7 +731,7 @@ describe("a game that is not in progress when someone arrives", () => {
 
     await later(IDLE);
     expect(espnRequests).toBe(2);
-    expect(pushes).toEqual([]);
+    expect(alerts).toEqual([]);
 
     // If ESPN was only late with it, a viewer who stayed sees the game.
     espn.set(id, live(id, 5));

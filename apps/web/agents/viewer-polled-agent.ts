@@ -122,7 +122,7 @@ export abstract class ViewerPolledAgent<State> extends Agent<Env, State> {
   }
 
   get #espnAlert(): EspnAlert {
-    this.#alert ??= new EspnAlert(this.ctx.storage, this.env.NTFY_TOPIC, this.alertSource);
+    this.#alert ??= new EspnAlert(this.ctx.storage, this.alertSource);
     return this.#alert;
   }
 

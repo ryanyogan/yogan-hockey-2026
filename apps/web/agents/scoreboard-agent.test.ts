@@ -18,13 +18,13 @@ const SLOW = 5 * MINUTE;
 const FAST = 30;
 
 type RecordedEvent = (typeof recordedSlate)["events"][number];
-type Push = { topic: string; title: string | null; body: string };
 type AgentMessage = { type: string; state?: ScoreboardState; error?: string; at?: string };
 
 /** What ESPN answers a scoreboard request with. */
 let espn: () => Response;
 let espnRequests: number;
-let pushes: Push[];
+/** The log lines that say a problem started or cleared, oldest first. */
+let alerts: string[];
 
 /**
  * ESPN's answer: the recorded slate, every game moved to start `startsInMinutes` from now, then
@@ -62,7 +62,17 @@ beforeEach(() => {
   vi.useFakeTimers({ toFake: ["Date"], now: NOW });
   espn = quietSlate();
   espnRequests = 0;
-  pushes = [];
+  alerts = [];
+  // The alert shows in the Worker's logs and nowhere else, so its two lines are what is tested.
+  // Everything else logged still reaches the console.
+  for (const level of ["error", "log"] as const) {
+    const print = console[level];
+    vi.spyOn(console, level).mockImplementation((...args: unknown[]) => {
+      const line = String(args[0]);
+      if (/ESPN problem (started|cleared)/.test(line)) alerts.push(line);
+      else print(...args);
+    });
+  }
   vi.stubGlobal("fetch", async (input: RequestInfo | URL, init?: RequestInit) => {
     const request = new Request(input, init);
     const url = new URL(request.url);
@@ -70,19 +80,12 @@ beforeEach(() => {
       espnRequests += 1;
       return espn();
     }
-    if (url.hostname === "ntfy.sh") {
-      pushes.push({
-        topic: url.pathname.slice(1),
-        title: request.headers.get("Title"),
-        body: await request.text(),
-      });
-      return new Response("{}");
-    }
     throw new Error(`Unexpected fetch in a test: ${request.url}`);
   });
 });
 
 afterEach(() => {
+  vi.restoreAllMocks();
   vi.unstubAllGlobals();
   vi.unstubAllEnvs();
   vi.useRealTimers();
@@ -437,7 +440,7 @@ describe("what viewers are sent", () => {
 });
 
 describe("alerts", () => {
-  test("three failed polls in a row send one push, and the next good poll sends one more", async () => {
+  test("three failed polls in a row log that a problem started, once, and the next good poll that it cleared", async () => {
     const { connect, later } = await scoreboard();
     await connect();
     await later(0);
@@ -445,27 +448,23 @@ describe("alerts", () => {
 
     await later(SLOW);
     await later(SLOW);
-    expect(pushes).toEqual([]);
+    expect(alerts).toEqual([]);
 
     await later(SLOW);
-    expect(pushes).toEqual([
-      {
-        topic: "test-topic",
-        title: "Scoreboard: ESPN problem",
-        body: "ESPN scoreboard could not be fetched: HTTP 502",
-      },
+    expect(alerts).toEqual([
+      "Scoreboard: ESPN problem started: ESPN scoreboard could not be fetched: HTTP 502",
     ]);
 
     await later(SLOW);
-    expect(pushes).toHaveLength(1);
+    expect(alerts).toHaveLength(1);
 
     espn = quietSlate();
     await later(SLOW);
-    expect(pushes).toHaveLength(2);
-    expect(pushes[1]).toMatchObject({ topic: "test-topic", title: "Scoreboard: ESPN recovered" });
+    expect(alerts).toHaveLength(2);
+    expect(alerts[1]).toBe("Scoreboard: ESPN problem cleared");
 
     await later(SLOW);
-    expect(pushes).toHaveLength(2);
+    expect(alerts).toHaveLength(2);
   });
 
   test("a good poll between failures starts the count again", async () => {
@@ -481,48 +480,73 @@ describe("alerts", () => {
     await later(SLOW);
     await later(SLOW);
 
-    expect(pushes).toEqual([]);
+    expect(alerts).toEqual([]);
   });
 
-  test("one response that does not parse sends one push, and the next good poll one more", async () => {
+  test("one response that does not parse logs that a problem started, and the next good poll that it cleared", async () => {
     const { connect, later } = await scoreboard();
     await connect();
     espn = espnChangedShape;
 
     await later(0);
-    expect(pushes).toHaveLength(1);
-    expect(pushes[0]?.title).toBe("Scoreboard: ESPN problem");
-    expect(pushes[0]?.body).toMatch(/^ESPN scoreboard did not parse: events: /);
+    expect(alerts).toHaveLength(1);
+    expect(alerts[0]).toMatch(
+      /^Scoreboard: ESPN problem started: ESPN scoreboard did not parse: events: /,
+    );
 
     await later(SLOW);
-    expect(pushes).toHaveLength(1);
+    expect(alerts).toHaveLength(1);
 
     espn = quietSlate();
     await later(SLOW);
-    expect(pushes.map((push) => push.title)).toEqual([
-      "Scoreboard: ESPN problem",
-      "Scoreboard: ESPN recovered",
-    ]);
+    expect(alerts).toHaveLength(2);
+    expect(alerts[1]).toBe("Scoreboard: ESPN problem cleared");
   });
 
-  test("with no topic the helper keeps its state and sends nothing", async () => {
+  test("an open problem is kept in storage: a restarted Agent neither repeats it nor forgets to clear it", async () => {
     const { agent } = await scoreboard();
 
     await runInDurableObject(agent, async (_instance, { storage }) => {
-      const silent = new EspnAlert(storage, undefined, "Test");
-      await silent.failed(new Error("first"));
-      await silent.failed(new Error("second"));
-      await silent.failed(new Error("third"));
-      expect(silent.failures).toBe(3);
-      expect(pushes).toEqual([]);
+      const alert = new EspnAlert(storage, "Test");
+      await alert.failed(new Error("first"));
+      await alert.failed(new Error("second"));
+      await alert.failed(new Error("third"));
+      expect(alert.failures).toBe(3);
+      expect(alerts).toEqual(["Test: ESPN problem started: third"]);
 
-      // A new helper over the same storage, as after a restart, finds the problem open and
-      // clears it.
-      await new EspnAlert(storage, "a-topic", "Test").succeeded();
+      // A new helper over the same storage, as after a restart.
+      const restarted = new EspnAlert(storage, "Test");
+      expect(restarted.failures).toBe(3);
+      await restarted.failed(new Error("fourth"));
+      expect(alerts).toHaveLength(1);
+      await restarted.succeeded();
+      expect(restarted.failures).toBe(0);
     });
 
-    expect(pushes).toEqual([
-      { topic: "a-topic", title: "Test: ESPN recovered", body: "Polls are working again." },
+    expect(alerts).toEqual(["Test: ESPN problem started: third", "Test: ESPN problem cleared"]);
+  });
+
+  test("an announcement that throws does not fail the poll, and is not made twice", async () => {
+    const { agent } = await scoreboard();
+    const logged: string[] = [];
+    vi.spyOn(console, "error").mockImplementation((...args: unknown[]) => {
+      const line = String(args[0]);
+      logged.push(line);
+      if (line.includes("ESPN problem started")) throw new Error("the channel is down");
+    });
+
+    await runInDurableObject(agent, async (_instance, { storage }) => {
+      const alert = new EspnAlert(storage, "Test");
+      await alert.failed(new Error("first"));
+      await alert.failed(new Error("second"));
+      await expect(alert.failed(new Error("third"))).resolves.toBeUndefined();
+      await alert.failed(new Error("fourth"));
+      expect(alert.failures).toBe(4);
+    });
+
+    expect(logged).toEqual([
+      "Test: ESPN problem started: third",
+      "Test: an alert could not be announced",
     ]);
   });
 });

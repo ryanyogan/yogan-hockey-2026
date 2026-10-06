@@ -58,8 +58,8 @@ const VIEWS = [
 ];
 
 test("/nhl shows each standings view and the teams from a pasted URL", async ({ browser }) => {
-  // Each address is opened in a browser of its own, as a pasted link is. It also has to be: a
-  // second hard navigation in one page fails on the dev server (see the build notes).
+  // Each address is opened in a browser of its own, as a pasted link is, which also keeps to one
+  // hard navigation per page (see the build notes).
   const paste = async (url: string, check: (page: Page) => Promise<void>) => {
     const context = await browser.newContext();
     const page = await context.newPage();

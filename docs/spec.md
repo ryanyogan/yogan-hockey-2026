@@ -44,10 +44,28 @@ The aim (#94): a page opens at once. A visitor almost never waits on ESPN, what 
 
 **How a page is rendered**
 
-- Every page is rendered per request (`dynamic = "force-dynamic"`) from cached data. No whole page is cached, at the edge or in KV. The reasons: every page's first paint carries today's slate from the Scoreboard and, on most, the picks from D1, neither of which is behind a cache tag; vinext's page cache is keyed by path alone and stores no page that reads `searchParams`, which `/nhl`, `/players`, `/family/:slug` and the game page do; and its partial prerendering (a cached shell with live holes) is unfinished. A rendered page therefore answers `cache-control: private, no-store` and the edge keeps nothing but the static assets. Nothing a visitor sees is per-visitor on the server (favorites live in the browser), so this is a choice about freshness, not privacy; revisit it when the picks ride the Scoreboard's socket and vinext's partial prerendering is done.
+- **A page whose HTML depends only on its address and on slow data is kept whole in Cloudflare's edge cache** (#103), in front of vinext, by the Worker's entry (`apps/web/lib/page-cache.ts`). These are `/nhl` (every view and tab), a team's three pages, `/players/:id` and `/family/:slug`. Such a page reads nothing on the server that changes by the minute: today's games reach it on the Scoreboard's socket and a pick from `GET /picks`, both after first paint, into places already held for them. The table below says how it is kept.
+- **Every other page is rendered per request** from cached data: `/`, `/nhl/live` and a game's page draw the slate itself, and `/players` is a search. #95 moves what it can of these behind first paint and adds them to `pagePolicy`.
+- Every page answers the browser `cache-control: private, no-store`, cached or not: the edge keeps the page, the browser asks each time. Nothing a visitor sees is per-visitor on the server (favorites live in the browser), and a page that sets a cookie is never stored.
+- vinext's own page cache and partial prerendering are not used: the first is keyed by path alone and stores no page that reads `searchParams`, the second is unfinished.
 - The root layout waits for nothing. It hands the Scoreboard's first paint to the page as a promise, the shell is sent at once, and the score ticker streams in behind an empty strip of its own height (`TICKER_STRIP_HEIGHT`).
 - A page waits only for what decides its outline (the team behind a team page: its header's height, and whether there is such a team, which sets the status code). Everything else streams in under a `loading.tsx` or a `<Suspense>` whose placeholder is the size of what replaces it.
 - A page with a header and tabs is a nested layout: the header and the tab bar are the layout's, each tab is a page beneath it at its own path, and changing tab leaves the header where it is. The team page is built this way. Tabs and views are still held in the URL: as a path segment where the tab is a page, as a query parameter elsewhere.
+
+**The page cache**
+
+| | |
+| --- | --- |
+| Where | The Workers Cache API (`caches.open("pages")`), which is per data center: each one renders a page once |
+| Key | The build's id, document or RSC, the path, the query parameters the page reads (`view` and `tab` on `/nhl`, `games` on a player, `tab` on a Tracked Player; any other is ignored), the version of each tag the page depends on, and for an RSC answer a hash of the headers vinext varies it by |
+| Tags | `/nhl`: `standings`. A team's pages: `team:{id}`. A player's and a Tracked Player's: `standings`, which is every final. All of them: `pages`, moved only by hand |
+| Fresh for | 60 seconds. Older, it is still answered at once and rendered again behind the response (`waitUntil`) |
+| Kept for | 12 hours since it was last rendered |
+| Never stored | Anything but a whole 200: a 404, the error page (#84), a redirect, a page whose render failed after its first byte, a page that set a cookie |
+| Says | `x-page-cache: hit`, `stale`, `miss`, `bypass` (the browser knew of a later invalidation) or `off` (no build id: `pnpm dev`), and `x-page-cache-age` in seconds |
+
+- **A tag's version is a KV value** (`page-cache:version:{tag}`), moved wherever the tag is invalidated (`invalidateTag`). The edge cache cannot be purged by tag from a Worker, so nothing is purged: a final changes the key and the page before it is never asked for again. The cost is one KV read per tag on every request for a cacheable page (two or three, side by side, answered from the data center's own copy for 30 seconds), where a render cost 100 to 700 ms.
+- **A deploy starts a new cache**: the build's id is compiled in, so no page is served that names the build before's assets.
 
 **Where each read is cached**
 
@@ -62,12 +80,13 @@ Every cached read is `unstable_cache` over vinext's data cache on KV (`apps/web/
 | Team list | 24 hours | `teams` | nothing: its time limit |
 | A scheduled game's pregame facts | 15 minutes | `game:{id}` | that game's final |
 | Player search results | 10 minutes | none | nothing |
-| Today's slate, scores, the live banner | not cached | | read from the Scoreboard Agent for first paint, then pushed over its socket |
-| Picks and the season record | not cached | | read from D1 on each render; the Scoreboard moves `invalidatedAt` when a pick is written |
+| Today's slate, scores, the live banner | not cached | | pushed over the Scoreboard's socket; a page that is not in the page cache also reads the Agent for first paint |
+| Picks and the season record | not cached | | read from D1: on each render of `/`, `/nhl/live` and a game's page, and by `GET /picks` for a cached page; the Scoreboard moves `invalidatedAt` when a pick is written |
 | A finished game's plays | D1, permanent | | |
 
 - **Stale while it refreshes.** Past its time limit an entry is still answered at once, and the read is made again behind the response (`waitUntil`); the next visitor gets the new answer. KV keeps an entry for 30 days, so a page nobody has opened for a week still opens from the cache. Only two things make a visitor wait on ESPN: a read nobody has made in 30 days, and the first read after its tag was invalidated.
-- **A final still reaches every page.** The Scoreboard invalidates the tags, then moves `invalidatedAt`. An invalidated entry is never served stale: the next read goes to ESPN. An open page hears `invalidatedAt` on the socket, compares it with the one it was rendered with, and renders its server components again when the socket's is later.
+- **A final still reaches every page.** The Scoreboard invalidates the tags, which also moves their page-cache versions, then moves `invalidatedAt`. An invalidated data entry is never served stale: the next read goes to ESPN. An open page hears `invalidatedAt` on the socket and renders its server components again when it is later than the one the page was rendered with (for a cached page: than the first the socket reported). Before it asks, the browser sets the cookie `yh-inv` to the invalidation's time for two minutes, and the page cache serves that browser nothing stored earlier.
+- **How long a final takes.** A page that is open: at once. A visitor arriving afterwards: KV takes up to a minute to carry a new version to every data center, so within a minute he may be answered the page from before the final, once. The Scoreboard's second invalidation, five minutes after a final, moves the versions again, which also replaces any page rendered in that first minute from data KV had not yet invalidated. So: at once for an open page, within about a minute for most, and within six minutes for all.
 
 **In the browser**
 

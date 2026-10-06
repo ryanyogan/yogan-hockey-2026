@@ -14,7 +14,8 @@
  *   and one older than `FRESH_MS` is rendered again behind the response. The edge drops an entry
  *   after `KEEP_SECONDS`.
  *
- * Only a whole 200 that set no cookie and whose render did not fail is stored.
+ * Only a whole 200 of the kind asked for, that set no cookie and whose render did not fail, is
+ * stored.
  */
 
 /** Set on the request the Worker hands to vinext for a cacheable page. */
@@ -131,7 +132,8 @@ export async function pageCacheKey(
   if (found == null) return null;
 
   const isRsc = request.headers.has("RSC") || url.pathname.endsWith(".rsc");
-  const key = new URL(`/__page-cache/${build}/${isRsc ? "rsc" : "html"}${url.pathname}`, url);
+  const kind = isRsc ? "rsc" : "html";
+  const key = new URL(`/__page-cache/${encodeURIComponent(build)}/${kind}${url.pathname}`, url);
   for (const name of [...found.query].sort()) {
     for (const value of url.searchParams.getAll(name)) key.searchParams.append(name, value);
   }
@@ -179,7 +181,12 @@ export async function servePage(request: Request, deps: PageCacheDeps): Promise<
   if (entry != null && Number.isFinite(storedAt)) {
     if (storedAt >= invalidatedAtOf(request)) {
       const age = deps.now() - storedAt;
-      if (age > FRESH_MS) deps.waitUntil(renderAndStore(cacheable, key, deps));
+      if (age > FRESH_MS) {
+        // Nobody reads this render's answer; its copy is what is stored.
+        deps.waitUntil(
+          renderAndStore(cacheable, key, deps).then((unread) => unread.body?.cancel()),
+        );
+      }
       const response = withStatus(entry, age > FRESH_MS ? "stale" : "hit");
       response.headers.set(PAGE_CACHE_AGE_HEADER, String(Math.max(0, Math.round(age / 1000))));
       response.headers.set("cache-control", BROWSER_CACHE_CONTROL);
@@ -198,7 +205,16 @@ async function renderAndStore(
   deps: PageCacheDeps,
 ): Promise<Response> {
   const { response, failed } = await deps.render(request);
-  if (response.status !== 200 || response.body == null || response.headers.has("set-cookie")) {
+  // The key says document or RSC from the request; an answer of the other kind, whatever header
+  // brought it about, is not kept under it.
+  const wanted = key.includes("/rsc/") ? "text/x-component" : "text/html";
+  const isWanted = response.headers.get("content-type")?.startsWith(wanted) ?? false;
+  if (
+    response.status !== 200 ||
+    response.body == null ||
+    !isWanted ||
+    response.headers.has("set-cookie")
+  ) {
     return response;
   }
   const [answer, copy] = response.body.tee();

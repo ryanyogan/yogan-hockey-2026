@@ -199,19 +199,22 @@ describe("serving a page", () => {
     expect((await get("/nhl/teams/3")).status).toBe("hit");
   });
 
-  it("does not store an error page, a 404, a redirect or a page that sets a cookie", async () => {
+  it("does not store an error page, a 404, a redirect, a page that sets a cookie or the wrong kind", async () => {
     const { get, state, entries } = worker();
     for (const page of [
       () => new Response("unavailable", { status: 503 }),
       () => new Response("no such team", { status: 404 }),
       () => new Response(null, { status: 308, headers: { location: "/nhl" } }),
-      () => new Response("hello", { headers: { "set-cookie": "a=b" } }),
+      () =>
+        new Response("hello", { headers: { "set-cookie": "a=b", "content-type": "text/html" } }),
+      // Not the kind the key names: a document was asked for.
+      () => new Response("0:{}", { headers: { "content-type": "text/x-component" } }),
     ]) {
       state.page = page;
       await get("/nhl/teams/1");
     }
     expect(entries.size).toBe(0);
-    expect(state.renders).toBe(4);
+    expect(state.renders).toBe(5);
   });
 
   it("does not store a page whose render failed after the response had started", async () => {

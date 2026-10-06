@@ -12,6 +12,8 @@ One ticket at a time, each by the `implement` skill (`~/.claude/skills/implement
 - **Done** for a ticket is every "Done when" line met, with the checks run and their output reported. Done for the project is every line of the parity checklist (#55) met or exceeded.
 - **Pixel perfect**: the visual target is the **Reference UI**, variant C of the dashboard and of the game page in `prototypes/look-and-feel` on the `prototype/look-and-feel` branch (`pnpm dev` there), as described in `docs/spec.md`. Any UI ticket is finished by comparing screenshots against it, in light and dark and at phone and desktop widths; pages the prototype does not draw extend its type, spacing and colour. The Parity Reference is the target for features and behaviour only, since the look deliberately departs from it.
 
+- **Build notes**: `docs/agents/build-notes.md` holds what earlier tickets learned the hard way. Read it before building; add to it in your pull request.
+
 ## Preferences
 
 - Prefer an established npm package over hand-rolling.

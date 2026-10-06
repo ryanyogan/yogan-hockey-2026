@@ -1,4 +1,4 @@
-import { applyD1Migrations, runDurableObjectAlarm, runInDurableObject } from "cloudflare:test";
+import { applyD1Migrations, runInDurableObject } from "cloudflare:test";
 import { env, exports } from "cloudflare:workers";
 import { createDb, getPrediction, insertPredictionIfAbsent } from "@yogan-hockey/db";
 import type { StoredPrediction } from "@yogan-hockey/schemas";
@@ -131,14 +131,18 @@ async function scoreboard(...answers: unknown[]) {
   /** A visit with nobody connected: first paint alone, which only notes what there is to do. */
   const firstPaint = () => agent.getScoreboard();
 
-  /** Runs the Agent's timers until no Prediction is being worked on. */
+  /**
+   * Runs the Agent's timers until no Prediction is being worked on. The alarm handler is called
+   * inside the Agent, so a day's forty steps cost one trip into it and not eighty.
+   */
   async function work(): Promise<void> {
-    for (let runs = 0; runs < 100; runs += 1) {
-      const schedules = await runInDurableObject(agent, (instance) => instance.listSchedules());
-      if (!schedules.some((schedule) => schedule.callback === "makePredictions")) return;
-      await runDurableObjectAlarm(agent);
-    }
-    throw new Error("The Predictions never finished");
+    const finished = await runInDurableObject(agent, async (instance) => {
+      const waiting = async () =>
+        (await instance.listSchedules()).some(({ callback }) => callback === "makePredictions");
+      for (let runs = 0; runs < 100 && (await waiting()); runs += 1) await instance.alarm();
+      return !(await waiting());
+    });
+    if (!finished) throw new Error("The Predictions never finished");
   }
 
   /** A visit, and everything it sets off. */
@@ -483,7 +487,8 @@ describe("one Prediction per game", () => {
   });
 });
 
-describe("the daily cap of 40 model calls", () => {
+// Forty model calls are forty timer runs, about two seconds on a busy machine: room to spare.
+describe("the daily cap of 40 model calls", { timeout: 20_000 }, () => {
   /** Fourteen games whose every answer is invalid would take 42 calls. */
   const ids = Array.from(
     { length: 14 },

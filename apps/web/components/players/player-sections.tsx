@@ -13,6 +13,7 @@ import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import {
+  type BioFact,
   bioFacts,
   type CareerView,
   type GameLogView,
@@ -28,7 +29,7 @@ import { teamHref } from "../nhl/team-name";
  */
 
 /** A stat column's heading, spelled out for a pointer and a screen reader where it is known. */
-function StatColumn({ column }: { column: ShownColumn }) {
+export function StatColumn({ column }: { column: ShownColumn }) {
   return (
     <LedgerColumn numeric className="whitespace-nowrap">
       {column.title ? (
@@ -43,7 +44,7 @@ function StatColumn({ column }: { column: ShownColumn }) {
 }
 
 /** The cells of one row of stats. Points are the key figure of a row that has them. */
-function StatCells({
+export function StatCells({
   columns,
   values,
 }: {
@@ -63,25 +64,55 @@ function StatCells({
  * There is no photo: the page is drawn to read without one.
  */
 export function PlayerHeader({ profile, action }: { profile: PlayerProfile; action?: ReactNode }) {
-  const facts = bioFacts(profile);
+  return (
+    <HeaderLine
+      name={profile.name}
+      detail={
+        <>
+          {profile.positionName ?? profile.position}
+          {profile.jersey ? ` · #${profile.jersey}` : null}
+          {profile.team ? (
+            <>
+              {" · "}
+              <Link href={teamHref(profile.team)} className="underline">
+                {profile.team.name}
+              </Link>
+            </>
+          ) : null}
+        </>
+      }
+      facts={bioFacts(profile)}
+      action={action}
+    />
+  );
+}
+
+/**
+ * The header line itself, for anybody with a name: `detail` is the quiet text after it, `facts`
+ * the labelled row under it. A Tracked Player's page (#46) is headed by this directly.
+ */
+export function HeaderLine({
+  name,
+  detail,
+  facts,
+  action,
+}: {
+  name: string;
+  detail?: ReactNode;
+  facts: readonly BioFact[];
+  action?: ReactNode;
+}) {
   return (
     <header data-slot="player-header">
       <div className="mb-1 flex flex-wrap items-baseline justify-between gap-x-4">
         <h1 className="font-bold text-base uppercase">
-          {profile.name}
-          <span className="font-normal text-[13px] text-foreground/50 normal-case max-sm:block">
-            {" "}
-            {profile.positionName ?? profile.position}
-            {profile.jersey ? ` · #${profile.jersey}` : null}
-            {profile.team ? (
-              <>
-                {" · "}
-                <Link href={teamHref(profile.team)} className="underline">
-                  {profile.team.name}
-                </Link>
-              </>
-            ) : null}
-          </span>
+          {name}
+          {detail ? (
+            <span className="font-normal text-[13px] text-foreground/50 normal-case max-sm:block">
+              {" "}
+              {detail}
+            </span>
+          ) : null}
         </h1>
         {action}
       </div>
@@ -184,6 +215,8 @@ export function CareerSection({ career }: { career: CareerView }) {
                     {row.team.abbreviation}
                   </Link>
                 </LedgerCell>
+              ) : row.club ? (
+                <LedgerCell className="whitespace-nowrap">{row.club}</LedgerCell>
               ) : (
                 <LedgerCell tone="note">total</LedgerCell>
               )}

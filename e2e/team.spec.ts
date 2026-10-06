@@ -64,12 +64,13 @@ test("a team's page shows each tab from a pasted URL, titled with the team's nam
   await paste("/nhl/teams/21?tab=roster", async (page) => {
     await expect(page).toHaveTitle(TITLE);
     await expect(tabs(page).locator('[aria-current="page"]')).toHaveText("roster");
-    await expect(section(page, /^Roster/).getByRole("heading")).toHaveText(/24 players/);
-    await expect(rows(page, /^Roster/)).toHaveCount(24);
-    // In jersey order, each player linking to his page.
+    // ESPN's 24 and, ahead of them, the fictional player of #46 (`e2e/family.spec.ts`).
+    await expect(section(page, /^Roster/).getByRole("heading")).toHaveText(/25 players/);
+    await expect(rows(page, /^Roster/)).toHaveCount(25);
+    // After him in jersey order, each player linking to his page.
     await expect(
       rows(page, /^Roster/)
-        .first()
+        .nth(1)
         .getByRole("cell"),
     ).toHaveText(["3", "Nick Blankenburg", "D"]);
     await expect(page.getByRole("link", { name: "Auston Matthews" })).toHaveAttribute(

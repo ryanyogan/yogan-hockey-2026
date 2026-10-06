@@ -11,6 +11,7 @@ import { TeamNow } from "../../../../components/team/team-now";
 import { TeamStatsLedger } from "../../../../components/team/team-stats-ledger";
 import { cachedStandings, cachedTeamSchedule } from "../../../../lib/espn";
 import { findTeam } from "../../../../lib/find-team";
+import { rosterWithLegend } from "../../../../lib/legend";
 import type { Query } from "../../../../lib/nhl-page";
 import { sortRoster } from "../../../../lib/roster";
 import { readTeamPage, TEAM_TABS, teamPageHref } from "../../../../lib/team-page";
@@ -78,7 +79,7 @@ function Roster({ detail }: { detail: TeamDetail }) {
         The list given is the roster: a player put in front of the sorted list (#46) is drawn
         first and counted. Each row's heart (#45) is RosterLedger's `action`.
       */}
-      <RosterLedger players={sortRoster(detail.roster)} />
+      <RosterLedger players={rosterWithLegend(detail.team.id, sortRoster(detail.roster))} />
     </div>
   );
 }

@@ -104,3 +104,67 @@ test("a search ESPN answers in a shape the site cannot read is unavailable too",
 
   expect((await findPlayers("zzz-garbled")).status).toBe("unavailable");
 });
+
+const LEGEND_RESULT = {
+  id: "rylan-yogan",
+  name: "Rylan Yogan",
+  jersey: "99",
+  position: "C",
+  headshot: null,
+  team: { id: "21", abbreviation: "TOR", name: "Toronto Maple Leafs" },
+};
+
+test("the fictional Rylan Yogan is found by any part of his name, with ESPN down", async () => {
+  espnAnswers(503);
+
+  for (const query of ["ry", "yogan", "rylan", "RYLAN YOGAN", "lan yo", "  Rylan   Yogan "]) {
+    const search = await findPlayers(query);
+
+    expect(search.status, query).toBe("found");
+    expect(search.players, query).toEqual([LEGEND_RESULT]);
+  }
+});
+
+test("he is found where fixture mode has no recording of the search", async () => {
+  const search = await findPlayers("yog");
+
+  expect(search.status).toBe("found");
+  expect(search.players).toEqual([LEGEND_RESULT]);
+  expect(fetchMock).not.toHaveBeenCalled();
+});
+
+test("he leads ESPN's players, and the list stays ten long", async () => {
+  // The recorded answer to "mar", given to a query that is part of his name.
+  vi.stubEnv("ESPN_FIXTURES", "");
+  const { default: recorded } = await import("../../../packages/espn/fixtures/search-mar.json");
+  fetchMock.mockImplementation(async () => Response.json(recorded));
+
+  const search = await findPlayers("an");
+
+  expect(search.players).toHaveLength(10);
+  expect(search.players[0]).toEqual(LEGEND_RESULT);
+  expect(search.players[1]?.name).toBe("Brad Marchand");
+});
+
+test("a search for somebody else does not find him", async () => {
+  const search = await findPlayers("mar");
+
+  expect(search.players.map((player) => player.name)).not.toContain("Rylan Yogan");
+});
+
+test("his player page loads without asking ESPN", async () => {
+  espnAnswers(503);
+
+  const player = await loadPlayer("rylan-yogan");
+
+  expect(player?.profile).toMatchObject({
+    id: "rylan-yogan",
+    name: "Rylan Yogan",
+    jersey: "99",
+    position: "C",
+    headshot: null,
+    team: { id: "21", name: "Toronto Maple Leafs" },
+  });
+  expect(player?.gameLog.games).toEqual([]);
+  expect(fetchMock).not.toHaveBeenCalled();
+});

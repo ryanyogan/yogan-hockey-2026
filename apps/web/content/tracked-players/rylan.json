@@ -1,0 +1,145 @@
+{
+  "slug": "rylan",
+  "name": "Rylan Yogan",
+  "note": "stats may be slightly exaggerated",
+  "profile": {
+    "jersey": "99",
+    "position": "C",
+    "positionName": "Center",
+    "hand": "Right"
+  },
+  "team": { "name": "Chicago Falcons" },
+  "currentSeason": {
+    "season": "2026-27",
+    "columns": [
+      { "name": "games", "label": "GP" },
+      { "name": "goals", "label": "G" },
+      { "name": "assists", "label": "A" },
+      { "name": "points", "label": "PTS" },
+      { "name": "plusMinus", "label": "+/-" },
+      { "name": "penaltyMinutes", "label": "PIM" }
+    ],
+    "values": ["6", "44", "35", "79", "+60", "0"]
+  },
+  "career": {
+    "columns": [
+      { "name": "games", "label": "GP" },
+      { "name": "goals", "label": "G" },
+      { "name": "assists", "label": "A" },
+      { "name": "points", "label": "PTS" },
+      { "name": "plusMinus", "label": "+/-" },
+      { "name": "penaltyMinutes", "label": "PIM" }
+    ],
+    "seasons": [
+      {
+        "season": "23-24",
+        "team": "Chicago Falcons",
+        "values": ["40", "212", "180", "392", "+310", "2"]
+      },
+      {
+        "season": "24-25",
+        "team": "Chicago Falcons",
+        "values": ["44", "261", "233", "494", "+388", "0"]
+      },
+      {
+        "season": "25-26",
+        "team": "Chicago Falcons",
+        "values": ["48", "307", "290", "597", "+471", "2"]
+      },
+      {
+        "season": "26-27",
+        "team": "Chicago Falcons",
+        "values": ["6", "44", "35", "79", "+60", "0"]
+      }
+    ],
+    "totals": ["138", "824", "738", "1,562", "+1,229", "4"]
+  },
+  "gameLog": {
+    "season": "2026-27",
+    "columns": [
+      { "name": "goals", "label": "G" },
+      { "name": "assists", "label": "A" },
+      { "name": "points", "label": "PTS" },
+      { "name": "plusMinus", "label": "+/-" },
+      { "name": "shotsTotal", "label": "SOG" }
+    ],
+    "games": [
+      {
+        "date": "2026-09-19",
+        "opponent": "Atlantis Krakens",
+        "home": false,
+        "played": {
+          "result": "W",
+          "goalsFor": 20,
+          "goalsAgainst": 4,
+          "values": ["8", "12", "20", "+16", "10"]
+        }
+      },
+      {
+        "date": "2026-09-20",
+        "opponent": "Bermuda Triangles",
+        "home": true,
+        "played": {
+          "result": "W",
+          "goalsFor": 12,
+          "goalsAgainst": 1,
+          "values": ["7", "5", "12", "+9", "7"]
+        }
+      },
+      {
+        "date": "2026-09-26",
+        "opponent": "Mount Olympus Thunder",
+        "home": false,
+        "played": {
+          "result": "OTL",
+          "goalsFor": 6,
+          "goalsAgainst": 7,
+          "values": ["6", "0", "6", "+3", "6"]
+        }
+      },
+      {
+        "date": "2026-09-27",
+        "opponent": "Area 51 Saucers",
+        "home": true,
+        "played": {
+          "result": "W",
+          "goalsFor": 17,
+          "goalsAgainst": 0,
+          "values": ["9", "8", "17", "+13", "9"]
+        }
+      },
+      {
+        "date": "2026-10-03",
+        "opponent": "Yukon Yetis",
+        "home": false,
+        "played": {
+          "result": "W",
+          "goalsFor": 11,
+          "goalsAgainst": 3,
+          "values": ["6", "5", "11", "+8", "8"]
+        }
+      },
+      {
+        "date": "2026-10-04",
+        "opponent": "Loch Ness Monsters",
+        "home": true,
+        "played": {
+          "result": "W",
+          "goalsFor": 14,
+          "goalsAgainst": 2,
+          "values": ["8", "5", "13", "+11", "9"]
+        }
+      },
+      { "date": "2026-10-10", "opponent": "North Pole Blizzard", "home": true, "played": null },
+      {
+        "date": "2026-10-11",
+        "opponent": "Sasquatch Valley Stompers",
+        "home": false,
+        "played": null
+      },
+      { "date": "2026-10-17", "opponent": "Moon Base Comets", "home": true, "played": null },
+      { "date": "2026-10-18", "opponent": "Camelot Knights", "home": false, "played": null }
+    ]
+  },
+  "projection": { "label": "career projection", "playerId": "rylan-yogan" }
+}

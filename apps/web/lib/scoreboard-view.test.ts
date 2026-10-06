@@ -8,6 +8,7 @@ import {
   heardAtFrom,
   laterOf,
   slateSections,
+  stripReach,
   tickerGames,
   wheelScrollLeft,
 } from "./scoreboard-view";
@@ -184,6 +185,29 @@ test("the wheel is left alone when the ticker fits or the gesture is not a plain
   expect(wheelScrollLeft(strip, { ...wheel, deltaY: 120, shiftKey: true })).toBeNull();
   expect(wheelScrollLeft(strip, { ...wheel, deltaY: 120, ctrlKey: true })).toBeNull();
   expect(wheelScrollLeft(strip, wheel)).toBeNull();
+});
+
+// Entries 100 wide, side by side from the strip's start.
+const entries = (count: number) =>
+  Array.from({ length: count }, (_, at) => ({ left: at * 100, right: at * 100 + 100 }));
+
+test("a strip says how many of its entries are not wholly in view, and which way they lie", () => {
+  // 300 wide at its start, holding ten: three show, seven lie to the right.
+  const atStart = { scrollLeft: 0, scrollWidth: 1000, clientWidth: 300 };
+  expect(stripReach(atStart, entries(10))).toEqual({ before: false, after: true, hidden: 7 });
+  // Part way along, an entry cut by either edge counts as hidden.
+  const midway = { scrollLeft: 250, scrollWidth: 1000, clientWidth: 300 };
+  expect(stripReach(midway, entries(10))).toEqual({ before: true, after: true, hidden: 8 });
+  const atEnd = { scrollLeft: 700, scrollWidth: 1000, clientWidth: 300 };
+  expect(stripReach(atEnd, entries(10))).toEqual({ before: true, after: false, hidden: 7 });
+});
+
+test("a strip that fits hides nothing, to within the pixel a zoomed browser is out by", () => {
+  const fits = { scrollLeft: 0, scrollWidth: 300, clientWidth: 300 };
+  expect(stripReach(fits, entries(3))).toEqual({ before: false, after: false, hidden: 0 });
+  expect(stripReach(fits, [])).toEqual({ before: false, after: false, hidden: 0 });
+  const zoomed = { scrollLeft: 0.4, scrollWidth: 300.6, clientWidth: 300 };
+  expect(stripReach(zoomed, entries(3))).toEqual({ before: false, after: false, hidden: 0 });
 });
 
 test("every game links to its own page, and shows a score only once it has started", () => {

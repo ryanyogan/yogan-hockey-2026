@@ -73,6 +73,22 @@ test("/nhl/live lists the slate in sections, links each game, and follows the so
     expect(await strip.evaluate((list) => list.scrollLeft)).toBeGreaterThan(0);
   }).toPass();
 
+  // On a phone the strip shows three games at a time, so the count at its end opens the whole
+  // slate beneath it: every game a row, none of them past the edge of the page.
+  const desktop = page.viewportSize();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await ticker.getByRole("button", { name: "All 9 games" }).click();
+  const wholeSlate = ticker.getByRole("list", { name: "All of today's games" });
+  await expect(wholeSlate.getByRole("link")).toHaveCount(9);
+  await expect(wholeSlate.locator(`a[href="/nhl/games/${GAME_ID}"]`)).toBeInViewport({ ratio: 1 });
+  const sideways = await page.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  );
+  expect(sideways).toBe(0);
+  await page.keyboard.press("Escape");
+  await expect(wholeSlate).toBeHidden();
+  if (desktop != null) await page.setViewportSize(desktop);
+
   // The Scoreboard pushes a change: the game is on, and the page follows without a refresh.
   await expect.poll(() => slate, { message: "the socket delivered the slate" }).toBeDefined();
   const games = (slate as Slate).games.map((game) =>

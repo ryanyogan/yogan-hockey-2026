@@ -1,4 +1,4 @@
-import type { ScoreboardState } from "@yogan-hockey/schemas";
+import type { ScoreboardReading } from "@yogan-hockey/schemas";
 import type { Metadata } from "next";
 import { Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "next-themes";
@@ -18,12 +18,12 @@ export const metadata: Metadata = {
  * Today's games for the first paint of every page. A page is still worth showing when the
  * Scoreboard cannot be reached: it starts without games and the socket supplies them.
  */
-async function scoreboardForFirstPaint(): Promise<ScoreboardState> {
+async function scoreboardForFirstPaint(): Promise<ScoreboardReading> {
   try {
     return await readScoreboard();
   } catch (error) {
     console.error("Layout: could not read the Scoreboard", error);
-    return { date: null, games: [], updatedAt: null };
+    return { date: null, games: [], updatedAt: null, heardAt: null };
   }
 }
 

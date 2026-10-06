@@ -2,6 +2,36 @@ import type { ScoreboardGame, ScoreboardState } from "@yogan-hockey/schemas";
 
 type Team = [abbreviation: string, shortName: string, score?: number];
 
+/**
+ * Each team's record and its building, by abbreviation. The records run from the shortest ESPN
+ * sends to the longest a season reaches, and Tampa's building has the longest name in the league,
+ * so the rows show what happens when either is too long for its place.
+ */
+const TEAMS: Record<string, [record: string, venue: string]> = {
+  FLA: ["48-26-8", "Amerant Bank Arena"],
+  TB: ["45-25-12", "Benchmark International Arena"],
+  COL: ["2-0-0", "Ball Arena"],
+  DAL: ["1-0-1", "American Airlines Center"],
+  BUF: ["0-2-0", "KeyBank Center"],
+  OTT: ["2-0-0", "Canadian Tire Centre"],
+  TOR: ["1-2-0", "Scotiabank Arena"],
+  MTL: ["1-0-1", "Bell Centre"],
+  CHI: ["0-3-0", "United Center"],
+  DET: ["0-2-0", "Little Caesars Arena"],
+  PIT: ["1-1-0", "PPG Paints Arena"],
+  WSH: ["2-0-0", "Capital One Arena"],
+  NJ: ["1-1-0", "Prudential Center"],
+  NYI: ["1-1-0", "UBS Arena"],
+  BOS: ["10-12-3", "TD Garden"],
+  NYR: ["3-1-0", "Madison Square Garden"],
+  EDM: ["2-1-0", "Rogers Place"],
+  VAN: ["1-1-1", "Rogers Arena"],
+  VGK: ["2-1-0", "T-Mobile Arena"],
+  LA: ["0-1-1", "crypto.com Arena"],
+  CAR: ["1-1-1", "Lenovo Center"],
+  CBJ: ["0-0-0", "Nationwide Arena"],
+};
+
 let nextId = 1;
 
 function game(
@@ -18,6 +48,7 @@ function game(
     logoDark: null,
     score,
     winner: status === "final" && score > (other[2] ?? 0),
+    record: TEAMS[abbreviation]?.[0] ?? null,
   });
   return {
     id: `sample-${nextId++}`,
@@ -27,6 +58,7 @@ function game(
     period: 0,
     clock: "0:00",
     detail: "",
+    venue: TEAMS[home[0]]?.[1] ?? null,
     away: side(away, home),
     home: side(home, away),
     ...over,

@@ -21,9 +21,9 @@ function Games({ title, games }: { title: string; games: ScoreboardGame[] }) {
 
 /** `/nhl/live`: today's games by where each stands, kept current by the Scoreboard socket. */
 export function LiveScores() {
-  const { date, games, updatedAt } = useScoreboard();
+  const { date, games, heardAt } = useScoreboard();
   const sections = slateSections(games);
-  const updated = updatedLabel(updatedAt);
+  const updated = updatedLabel(heardAt);
   const summary = [
     date && slateDateLabel(date),
     games.length > 0 && plural(games.length, "game"),
@@ -39,7 +39,7 @@ export function LiveScores() {
         </h1>
         {updated && (
           <p className="text-foreground/50">
-            updated <time dateTime={updatedAt ?? undefined}>{updated}</time>
+            updated <time dateTime={heardAt ?? undefined}>{updated}</time>
           </p>
         )}
       </header>

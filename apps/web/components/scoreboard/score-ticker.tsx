@@ -2,7 +2,13 @@
 
 import type { ScoreboardGame, ScoreboardSide } from "@yogan-hockey/schemas";
 import Link from "next/link";
-import { gameHref, gameStatusLine, hasScore, tickerGames } from "../../lib/scoreboard-view";
+import {
+  gameHref,
+  gameStatusLine,
+  hasScore,
+  tickerGames,
+  wheelScrollLeft,
+} from "../../lib/scoreboard-view";
 import { useScoreboard } from "./scoreboard-provider";
 
 function Side({ side, scored }: { side: ScoreboardSide; scored: boolean }) {
@@ -42,9 +48,27 @@ function Entry({ game }: { game: ScoreboardGame }) {
 }
 
 /**
+ * A ref for a strip that scrolls sideways: a vertical wheel over it scrolls it, so a mouse with
+ * no sideways wheel reaches the entries past the edge. At either end the page scrolls as usual.
+ */
+function scrollSidewaysByWheel(strip: HTMLElement | null) {
+  if (strip == null) return;
+  const onWheel = (event: WheelEvent) => {
+    const to = wheelScrollLeft(strip, event);
+    if (to == null) return;
+    event.preventDefault();
+    strip.scrollLeft = to;
+  };
+  // Not passive, which React's own `onWheel` is: the page must not scroll as well.
+  strip.addEventListener("wheel", onWheel, { passive: false });
+  return () => strip.removeEventListener("wheel", onWheel);
+}
+
+/**
  * The score ticker: today's games on one line across the top of every page, each linking to its
  * game. Away then home, the winner in bold, a game in progress tinted. It scrolls sideways inside
- * its own strip; "scores" stays put at its start and leads to `/nhl/live`.
+ * its own strip, by touch, a sideways wheel or a plain vertical one; "scores" stays put at its
+ * start and leads to `/nhl/live`.
  */
 export function ScoreTicker() {
   const { date, games } = useScoreboard();
@@ -62,7 +86,10 @@ export function ScoreTicker() {
         <p className="px-3 py-1.5 text-foreground/50">No games today</p>
       ) : (
         // Positioned, so the entries' text for screen readers stays inside the scrolling strip.
-        <ul className="relative flex min-w-0 overflow-x-auto [scrollbar-width:none]">
+        <ul
+          ref={scrollSidewaysByWheel}
+          className="relative flex min-w-0 overflow-x-auto [scrollbar-width:none]"
+        >
           {tickerGames(games).map((game) => (
             <Entry key={game.id} game={game} />
           ))}

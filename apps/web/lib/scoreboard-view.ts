@@ -1,4 +1,4 @@
-import type { ScoreboardGame, ScoreboardState } from "@yogan-hockey/schemas";
+import type { ScoreboardGame, ScoreboardHeard } from "@yogan-hockey/schemas";
 
 /*
  * How the Scoreboard's games read on a page: the status line of a game, the sections of
@@ -29,7 +29,7 @@ function startTimeLabel(startTime: string): string {
   return `${hour}:${minute} ${dayPeriod} ${ZONE_LABEL}`;
 }
 
-/** "20:14:07 ET": when the Scoreboard last saw a change. Null before its first poll. */
+/** "20:14:07 ET": a moment as the "updated" stamp shows it. Null when there is none yet. */
 export function updatedLabel(updatedAt: string | null): string | null {
   if (updatedAt == null) return null;
   const { hour, minute, second } = timeParts(updatedAt, {
@@ -133,17 +133,60 @@ export function tickerGames(games: ScoreboardGame[]): ScoreboardGame[] {
   return [...live, ...upcoming, ...final, ...postponed];
 }
 
+/** The later of two times (ISO, UTC), either of which may be missing. */
+export function laterOf(a: string | null, b: string | null): string | null {
+  if (a == null || b == null) return a ?? b;
+  return Date.parse(a) >= Date.parse(b) ? a : b;
+}
+
 /**
- * The ids of the games that are final in `next` and were not in `previous`: what a page shows
- * about them from the server (standings, a team's record, the Replay) is now out of date. A change
- * of slate is not a final: the page has not shown the new day's games as anything else.
+ * The time in a message on the Scoreboard's socket that says a poll reached ESPN and found nothing
+ * new (`ScoreboardHeard`). Null for any other message.
  */
-export function newFinals(previous: ScoreboardState, next: ScoreboardState): string[] {
-  if (previous.date !== next.date) return [];
-  const alreadyFinal = new Set(
-    previous.games.filter((game) => game.status === "final").map((game) => game.id),
-  );
-  return next.games
-    .filter((game) => game.status === "final" && !alreadyFinal.has(game.id))
-    .map((game) => game.id);
+export function heardAtFrom(data: unknown): string | null {
+  if (typeof data !== "string") return null;
+  try {
+    const message: unknown = JSON.parse(data);
+    if (typeof message !== "object" || message === null) return null;
+    const { type, at } = message as Partial<ScoreboardHeard>;
+    return type === "scoreboard_heard" && typeof at === "string" ? at : null;
+  } catch {
+    return null;
+  }
+}
+
+/** A box that scrolls sideways, as the DOM measures it. */
+export type ScrollStrip = Pick<Element, "scrollLeft" | "scrollWidth" | "clientWidth">;
+/** What a wheel event says, as the DOM reports it. */
+export type WheelTurn = Pick<
+  WheelEvent,
+  "deltaX" | "deltaY" | "deltaMode" | "shiftKey" | "ctrlKey"
+>;
+
+/** `WheelEvent.deltaMode`: the wheel reports lines, or pages, where most report pixels. */
+const WHEEL_LINES = 1;
+const WHEEL_PAGES = 2;
+/** The height a wheel means by one line. */
+const WHEEL_LINE_PX = 16;
+
+/** How many pixels one unit of a wheel's turn is worth. */
+function wheelUnitPx(deltaMode: number, pagePx: number): number {
+  if (deltaMode === WHEEL_LINES) return WHEEL_LINE_PX;
+  return deltaMode === WHEEL_PAGES ? pagePx : 1;
+}
+
+/**
+ * Where a turn of a vertical wheel puts a strip that scrolls sideways, so a mouse with no sideways
+ * wheel reaches what is past the edge: its new `scrollLeft`. Null when the wheel is the browser's
+ * to handle: the strip fits, the gesture is sideways already, shift or control is held, or the
+ * strip is at the end the wheel is turning towards, from where the page scrolls as usual.
+ */
+export function wheelScrollLeft(strip: ScrollStrip, wheel: WheelTurn): number | null {
+  if (wheel.ctrlKey || wheel.shiftKey) return null;
+  if (wheel.deltaY === 0 || Math.abs(wheel.deltaX) >= Math.abs(wheel.deltaY)) return null;
+  const end = strip.scrollWidth - strip.clientWidth;
+  const distance = wheel.deltaY * wheelUnitPx(wheel.deltaMode, strip.clientWidth);
+  const to = Math.min(end, Math.max(0, strip.scrollLeft + distance));
+  // Less than a pixel is no move: a zoomed browser stops a fraction short of the end.
+  return Math.abs(to - strip.scrollLeft) < 1 ? null : to;
 }

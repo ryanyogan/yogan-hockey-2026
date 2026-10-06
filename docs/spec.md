@@ -40,7 +40,7 @@ Data comes from ESPN's unauthenticated site API and nowhere else (ADR 0003). One
 
 ### Rendering and caching
 
-- Every page is rendered per request (`dynamic = "force-dynamic"`) and reads through the tagged KV cache. There is no page-level caching. `/family/rylan` is the one static page.
+- Every page is rendered per request (`dynamic = "force-dynamic"`) and reads through the tagged KV cache. There is no page-level caching, and no page is static: the root layout reads the Scoreboard for the first paint of the score ticker, which every page has. `/family/rylan` is rendered per request like the rest; what is static about it is its data, a file in the site (see [Rylan](#7-rylan)).
 - Every cached read sets its own time limit. Nothing relies on vinext's default, which caches for a year.
 
 | Data | Time limit | Tag |
@@ -97,7 +97,7 @@ Dropped from the Parity Reference: Quick Links, the NHL Teams grid, the standalo
 
 ### `/nhl/live`
 
-In Progress, Upcoming and Final sections, with an "updated" timestamp. Final games link to their Replay.
+In Progress, Upcoming and Final sections. Each game row shows both teams with their records and the venue. An "updated" timestamp shows when the Scoreboard last heard from ESPN, so it moves on every good poll, changed or not. Final games link to their Replay.
 
 ### `/nhl/teams/:id`
 
@@ -129,7 +129,7 @@ Every site deploy restarts the Agents. They resume from stored state.
 
 One instance. Every page connects to it.
 
-- **Synced state**: today's games (teams, score, period, clock, status, start time).
+- **Synced state**: today's games (teams with their records, score, period, clock, status, start time, venue). It is sent whole to every open page, so it is set only when a poll finds a difference; a poll that finds none sends open pages one small message with the time, which is what the "updated" timestamp follows.
 - **Cadence**: every 30 seconds while a game is live or within 15 minutes of a scheduled start; every 5 minutes otherwise.
 - **A visitor arriving while it is asleep**: if its stored state is older than one polling interval, it fetches from ESPN before answering, so first paint is current.
 - **Game state** is read from ESPN's `status.type.state` (`pre`, `in`, `post`) and `status.type.completed`, never from the status name.

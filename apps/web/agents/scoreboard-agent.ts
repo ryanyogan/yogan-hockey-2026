@@ -1,6 +1,11 @@
 import { createDb } from "@yogan-hockey/db";
 import { getScoreboard as fetchScoreboard } from "@yogan-hockey/espn";
-import type { Game, ScoreboardState } from "@yogan-hockey/schemas";
+import type {
+  Game,
+  ScoreboardHeard,
+  ScoreboardReading,
+  ScoreboardState,
+} from "@yogan-hockey/schemas";
 import {
   invalidateForFinal,
   invalidateStandingsAndTeams,
@@ -33,6 +38,8 @@ const CATCH_UP_DATE_ATTEMPTS = 3;
 const PENDING_FINAL_PREFIX = "pending-final:";
 /** Storage key of the oldest date a catch-up has still to fetch (`YYYY-MM-DD`). */
 const CATCH_UP_FROM_KEY = "catch-up-from";
+/** Storage key of when a poll last reached ESPN, changed or not (an ISO time, UTC). */
+const HEARD_AT_KEY = "heard-at";
 /** Storage key of how many times in a row catch-up has failed at the date it starts from. */
 const CATCH_UP_FAILURES_KEY = "catch-up-failures";
 
@@ -59,11 +66,11 @@ export class ScoreboardAgent extends ViewerPolledAgent<ScoreboardState> {
   /**
    * First paint, called by a server component over Durable Object RPC. With nobody watching the
    * stored games are old, so this asks ESPN first when they are older than one polling interval.
-   * If ESPN fails, the answer is the games as last seen.
+   * If ESPN fails, the answer is the games as last seen. `heardAt` is when ESPN last answered.
    */
-  async getScoreboard(): Promise<ScoreboardState> {
+  async getScoreboard(): Promise<ScoreboardReading> {
     await this.pollIfStale();
-    return this.state;
+    return { ...this.state, heardAt: this.ctx.storage.kv.get<string>(HEARD_AT_KEY) ?? null };
   }
 
   protected override get alertSource(): string {
@@ -78,9 +85,15 @@ export class ScoreboardAgent extends ViewerPolledAgent<ScoreboardState> {
     const slate = await fetchScoreboard();
     const previous = this.state;
     const games = slate.games.map(scoreboardGame);
+    const heardAt = new Date().toISOString();
+    this.ctx.storage.kv.put(HEARD_AT_KEY, heardAt);
     // State is sent whole to every open page, so it is set only when a poll finds a difference.
+    // A poll that finds none sends only the time, which is what keeps "updated" moving.
     if (slate.date !== previous.date || JSON.stringify(games) !== JSON.stringify(previous.games)) {
-      this.setState({ ...previous, date: slate.date, games, updatedAt: new Date().toISOString() });
+      this.setState({ ...previous, date: slate.date, games, updatedAt: heardAt });
+    } else {
+      const heard: ScoreboardHeard = { type: "scoreboard_heard", at: heardAt };
+      this.broadcast(JSON.stringify(heard));
     }
     // What follows is the site's own work, not ESPN's: a failure in it is not a failed poll.
     try {

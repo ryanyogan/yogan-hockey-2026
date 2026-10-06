@@ -19,16 +19,32 @@ export class GameAgent extends Agent<unknown, GameState> {
     return Response.json({ bootId: this.bootId, viewers: [...this.getConnections()].length, polls: this.state.polls, schedules: this.getSchedules().length });
   }
 
-  // Called by the page's server component over Durable Object RPC.
+  // Called by the page's server component over Durable Object RPC, for first paint.
+  // It does not start polling: only a connected viewer does that.
   async watch(eventId: string, replay: boolean): Promise<GameState> {
     const mode = replay ? "replay" : "live";
     if (this.state.eventId !== eventId || this.state.mode !== mode) {
-      for (const s of this.getSchedules()) await this.cancelSchedule(s.id);
+      await this.stop();
       this.setState({ ...EMPTY, eventId, mode });
       await this.poll();
-      await this.scheduleEvery(POLL_SECONDS, "poll");
     }
     return this.state;
+  }
+
+  // Poll only while someone is watching.
+  async onConnect() {
+    if (this.state.eventId && !this.state.finished && this.getSchedules().length === 0) {
+      await this.scheduleEvery(POLL_SECONDS, "poll");
+    }
+  }
+
+  async onClose(connection: { id: string }) {
+    const others = [...this.getConnections()].filter((c) => c.id !== connection.id);
+    if (others.length === 0) await this.stop();
+  }
+
+  private async stop() {
+    for (const s of this.getSchedules()) await this.cancelSchedule(s.id);
   }
 
   async poll() {
@@ -54,7 +70,7 @@ export class GameAgent extends Agent<unknown, GameState> {
       lastPoll = { at: new Date().toISOString(), httpStatus: 0, cacheControl: null, bytes: 0, fetchMs: Date.now() - started, colo: null, error: String(e) };
     }
     this.setState({ ...s, ...next, polls: s.polls + 1, lastPoll });
-    if (this.state.finished) for (const sch of this.getSchedules()) await this.cancelSchedule(sch.id);
+    if (this.state.finished) await this.stop();
   }
 
   private read(j: any): Partial<GameState> {

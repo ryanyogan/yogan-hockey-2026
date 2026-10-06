@@ -141,7 +141,7 @@ export function TrackedPlayerView({ player, tab }: { player: TrackedPlayer; tab:
               {career && <CareerSection career={career} />}
               {!season && !career && <p className="px-2 text-foreground/70">No stats yet.</p>}
             </>
-          ) : schedule ? (
+          ) : schedule && schedule.upcoming.length + schedule.results.length > 0 ? (
             <>
               {schedule.upcoming.length > 0 && <UpcomingSection schedule={schedule} />}
               {schedule.results.length > 0 && <ResultsSection schedule={schedule} />}

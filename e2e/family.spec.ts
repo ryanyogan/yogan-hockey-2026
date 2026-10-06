@@ -43,7 +43,7 @@ test("/family/rylan shows each tab from a pasted URL, and /yogan leads to it", a
 
   await paste("/family/rylan?tab=schedule", async (page) => {
     await expect(tabs(page).locator('[aria-current="page"]')).toHaveText("schedule");
-    await expect(section(page, /^Upcoming/).locator("tbody tr")).toHaveCount(4);
+    // The games to come depend on today's date (Vitest covers them); the games played do not.
     await expect(section(page, /^Games/).locator("tbody tr")).toHaveCount(6);
     await expect(
       section(page, /^Games/)

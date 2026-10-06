@@ -1,5 +1,6 @@
 import { type TrackedPlayer, TrackedPlayerSchema } from "@yogan-hockey/schemas";
 import rylan from "../content/tracked-players/rylan.json";
+import { calendarDay } from "./game-time";
 import {
   type BioFact,
   type CareerView,
@@ -127,28 +128,28 @@ export type ScheduleView = {
   results: ResultRow[];
 };
 
-// A date in a file has no time or zone: it is read and written as UTC, so it never moves a day.
-const gameDate = new Intl.DateTimeFormat("en-US", {
-  month: "short",
-  day: "numeric",
-  timeZone: "UTC",
-});
+/** Today as a file writes a date: `YYYY-MM-DD`, in UTC. */
+const todayUtc = () => new Date().toISOString().slice(0, 10);
 
-/** The Schedule tab: the games to come and the games played, each with his line. */
-export function scheduleOf(player: TrackedPlayer): ScheduleView | null {
+/**
+ * The Schedule tab: the games to come and the games played, each with his line. A game with no
+ * result whose day has passed is left out: the file is edited by hand, and an old date must not
+ * stay listed as upcoming.
+ */
+export function scheduleOf(player: TrackedPlayer, today: string = todayUtc()): ScheduleView | null {
   const log = player.gameLog;
   if (!log) return null;
-  // ISO dates sort as text.
+  // ISO dates sort, and compare, as text.
   const games = log.games.toSorted((a, b) => a.date.localeCompare(b.date));
   const row = (game: (typeof games)[number]): ScheduleRow => ({
     key: game.date,
-    date: gameDate.format(new Date(game.date)),
+    date: calendarDay(game.date),
     opponent: `${game.home ? "vs" : "at"} ${game.opponent}`,
   });
   return {
     season: log.season,
     columns: statColumns(log.columns),
-    upcoming: games.filter((game) => game.played === null).map(row),
+    upcoming: games.filter((game) => game.played === null && game.date >= today).map(row),
     results: games
       .flatMap((game) =>
         game.played

@@ -125,7 +125,7 @@ function profile(today: Date): PlayerProfile {
     weight: "195 lbs",
     birthDate: BIRTH_DATE,
     age: ageOn(BIRTH_DATE, today),
-    birthPlace: "Chicago, Illinois",
+    birthPlace: "Center Ice, Ontario",
     draft: "2016: Rd 1, Pk 1 (TOR)",
     experience: `${SEASONS.length}th Season`,
     hand: "Right",

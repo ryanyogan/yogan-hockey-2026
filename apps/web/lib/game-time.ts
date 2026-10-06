@@ -48,3 +48,11 @@ export function clockTime(at: string, timeZone?: string): string {
 export function slateDay(date: string): string {
   return gameDay(`${date}T00:00:00Z`, "UTC");
 }
+
+/** "Oct 6": a calendar day (`YYYY-MM-DD`) in a table that has no room for the weekday. */
+export function calendarDay(date: string): string {
+  const parts = formatter("UTC", { month: "short", day: "numeric" }).formatToParts(
+    new Date(`${date}T00:00:00Z`),
+  );
+  return `${part(parts, "month")} ${part(parts, "day")}`;
+}

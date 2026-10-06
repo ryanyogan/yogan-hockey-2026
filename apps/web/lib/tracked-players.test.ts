@@ -106,7 +106,15 @@ test("his career is newest first, each season with its club, then the totals", (
 });
 
 test("his schedule is the games to come, soonest first, and the games played, newest first", () => {
-  const schedule = scheduleOf(rylan());
+  const schedule = scheduleOf(rylan(), "2026-10-06");
+
+  // Once a day has passed, a game still without a result is no longer upcoming.
+  expect(scheduleOf(rylan(), "2026-10-17")?.upcoming.map((row) => row.date)).toEqual([
+    "Oct 17",
+    "Oct 18",
+  ]);
+  expect(scheduleOf(rylan(), "2027-01-01")?.upcoming).toEqual([]);
+  expect(scheduleOf(rylan(), "2027-01-01")?.results).toHaveLength(6);
 
   expect(schedule?.season).toBe("2026-27");
   expect(schedule?.columns.map((column) => column.label)).toEqual(["G", "A", "PTS", "+/-", "SOG"]);

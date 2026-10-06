@@ -36,5 +36,12 @@ export const ScoreboardStateSchema = z.object({
   games: z.array(ScoreboardGameSchema),
   /** When a poll last found something different, in UTC. Null until the first poll. */
   updatedAt: z.iso.datetime().nullable(),
+  /**
+   * When the Scoreboard last invalidated cached data because of a finished game, in UTC: at a
+   * final, five minutes after it, and after a catch-up. An open page that sees this change
+   * re-renders (`useRefreshOnInvalidation`). Null until it first happens; absent from state
+   * stored before the field existed.
+   */
+  invalidatedAt: z.iso.datetime().nullable().optional(),
 });
 export type ScoreboardState = z.infer<typeof ScoreboardStateSchema>;

@@ -1,7 +1,7 @@
 import { env } from "cloudflare:workers";
 import { expect, test } from "vitest";
 import { createDb } from "./client.ts";
-import { getGameWithPlays, replaceGamePlays, saveFinalGame } from "./games.ts";
+import { gameHasPlays, getGameWithPlays, replaceGamePlays, saveFinalGame } from "./games.ts";
 import { finalGame, goal, periodStart } from "./test-fixtures.ts";
 
 const db = createDb(env.DB);
@@ -90,4 +90,14 @@ test("a failed replacement leaves the plays that were there", async () => {
 
 test("plays cannot be written for a game that has no row", async () => {
   await expect(replaceGamePlays(db, "game-missing", [goal()])).rejects.toThrow();
+});
+
+test("a game has plays only once they are archived, and an unknown game has none", async () => {
+  await saveFinalGame(db, finalGame({ id: "game-archived" }));
+  await saveFinalGame(db, finalGame({ id: "game-row-only" }));
+  await replaceGamePlays(db, "game-archived", [periodStart({ id: "start" }), goal({ id: "goal" })]);
+
+  expect(await gameHasPlays(db, "game-archived")).toBe(true);
+  expect(await gameHasPlays(db, "game-row-only")).toBe(false);
+  expect(await gameHasPlays(db, "game-never-written")).toBe(false);
 });

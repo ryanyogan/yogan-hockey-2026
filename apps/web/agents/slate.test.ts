@@ -1,6 +1,6 @@
 import { getScoreboard } from "@yogan-hockey/espn";
 import { beforeAll, expect, test, vi } from "vitest";
-import { scoreboardGame, slateTransitions } from "./slate";
+import { dayAfter, missedDates, scoreboardGame, slateTransitions } from "./slate";
 
 // The recorded slate of 2026-10-03, where every game is final.
 const FINALS = "2026-10-03";
@@ -46,4 +46,27 @@ test("a scheduled game seen for the first time is first seen only", async () => 
   expect(transitions.map((transition) => transition.kind)).toEqual(
     slate.games.map(() => "first-seen"),
   );
+});
+
+test("the missed dates run from the last slate seen to yesterday, oldest first", () => {
+  expect(missedDates("2026-10-30", "2026-11-02", 30)).toEqual([
+    "2026-10-30",
+    "2026-10-31",
+    "2026-11-01",
+  ]);
+  expect(missedDates("2026-11-02", "2026-11-02", 30)).toEqual([]);
+  expect(missedDates("2026-11-03", "2026-11-02", 30)).toEqual([]);
+});
+
+test("a long gap gives only as many dates as the limit, the oldest ones", () => {
+  const dates = missedDates("2026-06-01", "2026-10-06", 30);
+
+  expect(dates).toHaveLength(30);
+  expect(dates[0]).toBe("2026-06-01");
+  expect(dates[29]).toBe("2026-06-30");
+});
+
+test("the day after the last of a month or a year is the first of the next", () => {
+  expect(dayAfter("2028-02-28")).toBe("2028-02-29");
+  expect(dayAfter("2026-12-31")).toBe("2027-01-01");
 });

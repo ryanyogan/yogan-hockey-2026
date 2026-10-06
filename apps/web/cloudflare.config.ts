@@ -19,7 +19,8 @@ export default defineConfig({
       domains: target.domains,
       workersDev: false,
       // Said outright: left unset, the account's default decides whether each version also gets a
-      // public `<version>-yogan-hockey.<subdomain>.workers.dev` address, which Access does not cover.
+      // public `<version>-yogan-hockey.<subdomain>.workers.dev` address. hockey.yogan.dev is the
+      // site's only address.
       previewUrls: false,
       observability: {
         enabled: true,

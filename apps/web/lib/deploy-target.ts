@@ -28,7 +28,7 @@ export function deployTarget(
     kvId: local ? undefined : (stores.kv ?? undefined),
     d1Id: local ? LOCAL_D1_ID : (stores.d1 ?? undefined),
     d1Name: build.isPreview ? "yogan-hockey-preview" : "yogan-hockey",
-    // Production answers on the custom domain alone: workers.dev would be a way round Access.
+    // Production answers on the custom domain alone: workers.dev would be a second address for the site.
     domains: build.isPreview ? [] : ["hockey.yogan.dev"],
   };
 }

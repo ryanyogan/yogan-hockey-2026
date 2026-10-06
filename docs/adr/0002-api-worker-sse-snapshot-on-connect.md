@@ -1,5 +1,5 @@
 ---
-status: superseded in part by ADR-0006 (the API Worker as a container proxy, SSE, the REST surface and generated types no longer hold; server components and Server Actions still do)
+status: superseded by ADR-0006 and ADR-0007 (server components and Server Actions carry over; everything else here is void)
 ---
 
 # A separate API Worker fronts the Rust service; live updates are SSE with a snapshot on every connect

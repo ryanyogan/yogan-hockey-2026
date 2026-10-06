@@ -62,7 +62,7 @@ Data comes from ESPN's unauthenticated site API and nowhere else (ADR 0003). One
 | `/nhl/games/:id` | Scheduled: matchup and the pick. Live: the Game Stream. Final: the Replay |
 | `/nhl/teams/:id` | Team header, Schedule / Roster / Stats tabs |
 | `/players` | Player search and favorite players |
-| `/players/:id` | Season stats and career table |
+| `/players/:id` | Season stats, the recent-games log and the career table |
 | `/family/rylan` | Rylan's page |
 | `/yogan` | Redirects to `/family/rylan` |
 
@@ -109,10 +109,11 @@ In Progress, Upcoming and Final sections, with an "updated" timestamp. Final gam
 
 ### `/players` and `/players/:id`
 
-- Search starts at two characters and runs through a Server Action. The page reads `searchParams` in a server component.
+- Search starts at two characters and runs through a Server Action (`searchPlayers`) as the visitor types. The page reads `searchParams` in a server component: the search is held in the URL as `?q=`, so a search can be pasted, linked and reloaded, and works as a plain form without JavaScript. Each result shows name, number, position and team. ESPN failing to answer is said in words on the page, never an error page.
 - The visitor's favorite players are listed.
-- A player page shows season stats and the career table.
-- A recent-games log: his games this season, newest first, each with the result and his line. It is one extra ESPN request, cached with the rest of the page (proved in #35).
+- A player page has a header line (name, position, number, team link, then born, birthplace, height, weight, shoots or catches, draft and experience where ESPN has them) and no photo. Season stats come from the career table's row for the season ESPN's summary names, with the summary's league ranks under them; a skater's shots are counted from his game log, since ESPN's career table has none. The career table is every column ESPN sends for a skater or a goalie, newest season first, a season split between clubs as a total ahead of its clubs, with career totals and, for a skater, points per game. ESPN's headings are corrected where they mislead: `SOG` (shootout goals) is shown as `S/O G`, `S` (shots) as `SOG`, `SPCT` as `S%`, `WINS` as `W`, a game's `TOI/G` as `TOI`, and `PROD` is dropped.
+- A recent-games log: the latest ten games of the latest season he played, newest first, each with the result and his line and linking to the game; `?games=all` shows the whole season. It is one extra ESPN request, cached with the rest of the page (proved in #35).
+- An unknown id gets "Player not found" inside the layout, with a 404.
 
 ### `/nhl/games/:id`
 
@@ -299,6 +300,9 @@ Each line is something the design assumes and nobody has run. The build issue na
 | 10 | **Proved (#43), with one correction.** An async `generateMetadata` titles the page: `/nhl/teams/21` is "Toronto Maple Leafs · Yogan Hockey" in the browser, in `pnpm dev` and in a production build. Where the `<title>` sits depends on who asks, as in Next.js. A browser is sent it late, in a hidden `<div>` at the end of `<body>`, and it stays there (`document.title` reads it; nothing moves it into `<head>`). A link preview or crawler (vinext's list: Slackbot, WhatsApp, Twitterbot, facebookexternalhit, Applebot, Googlebot and others, matched on the user agent) gets it in `<head>`. `e2e/team.spec.ts` asserts both. Not yet seen on Cloudflare | Not needed | Team page |
 | 11 | A page reading `searchParams` in a server component is not cached | `dynamic = "force-dynamic"` in the layout | Players |
 | 12 | Server Actions survive a deploy in an open tab (vinext #3604) | Reload the tab on a failed action | Players |
+| 10 | Async `generateMetadata` lands in `<head>` (vinext #1492, #2007) | Static `metadata` with generic titles | Team page |
+| 11 | **Proved (#44).** A page reading `searchParams` in a server component is not cached. In a production build under `vite preview`, `/players` without `force-dynamic` answered every `?q=` with its own render and `cache-control: private, no-cache, no-store`, where `/`, which reads nothing from the request, answered `x-vinext-cache: HIT` with `s-maxage=31536000`. `/players` declares `force-dynamic` anyway, as every page does. The contrast is the finding to keep: a page that reads nothing from the request and omits `force-dynamic` is cached for a year | Not needed | Players |
+| 12 | **Failed as assumed; the fallback is in (#44).** A Server Action does not survive a deploy in an open tab under vinext 1.0.1. Rebuilding (even the same code) and restarting `vite preview` under an open `/players`: the action's id is unchanged (`9e17e12527c0#searchPlayers`) and the new Worker runs it and answers 200, but every build has a new `x-vinext-rsc-compatibility-id`, so the old tab's client drops the answer, resolves the call with `undefined`, and hard-navigates to the URL the action was called from. The search box therefore writes the search into the URL before calling the action, treats no answer as a failed call, and loads the search's URL, which the server renders without an action: seen to recover to the ten results with no error. Any other Server Action called from a client component must expect `undefined`. Not yet seen on Cloudflare: that a real deploy changes the id in the same way, and what a tab does while two versions are being served during a gradual rollout | Reload the tab on a failed action: applied | Players |
 | 13 | **Proved (#35).** ESPN's athlete game log is one request (`athletes/{id}/gamelog`, 10 to 30 KB) and parses cleanly for a skater and a goalie: `getPlayerGameLog` in `packages/espn` | Not needed | ESPN: players, search and the game summary |
 | 14 | **Proved (#39).** The Scoreboard starts and stops polling with viewers, as the Game Agent did in the prototype. `apps/web/agents/scoreboard-agent.test.ts` proves it in the Workers runtime: the first socket sets a one-off timer, each poll sets the next while a socket is open, the last socket to close cancels it, and the timer and the sockets outlive a restart of the Agent. Not yet seen on Cloudflare with a real browser, which comes with the score ticker (#41) | Not needed | Scoreboard Agent: live scores |
 | 15 | The short gap in polls seen around a deploy does not lose plays | The first poll after resume diffs the whole game, so nothing is lost; confirm | Game Agent |

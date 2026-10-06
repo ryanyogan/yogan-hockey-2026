@@ -2,7 +2,6 @@
 
 import type { ScoreboardGame, ScoreboardSide } from "@yogan-hockey/schemas";
 import { FavoriteMarker } from "@yogan-hockey/ui/components/marker";
-import { Link } from "../link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { favoritesFirst, isFavoriteGame } from "../../lib/favorites";
@@ -17,6 +16,7 @@ import {
   wheelScrollLeft,
 } from "../../lib/scoreboard-view";
 import { useFavorites } from "../../lib/use-favorites";
+import { Link } from "../link";
 import { GameStatus } from "./game-status";
 import { useScoreboard } from "./scoreboard-provider";
 

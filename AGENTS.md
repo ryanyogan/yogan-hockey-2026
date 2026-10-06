@@ -1,8 +1,8 @@
-The 2026 rebuild of Yogan Hockey: Rust backend, vinext UI, one pnpm monorepo. The Elixir app at `ryanyogan/yogan_hockey` (local clone: `../yogan_hockey`) is the parity reference.
+The 2026 rebuild of Yogan Hockey: TypeScript on Cloudflare (a backend on the Agents SDK, a vinext UI), one pnpm monorepo. The Elixir app at `ryanyogan/yogan_hockey` (local clone: `../yogan_hockey`) is the parity reference.
 
 ## Preferences
 
-- Prefer an established crate or npm package over hand-rolling, on both the Rust and TypeScript sides.
+- Prefer an established npm package over hand-rolling.
 - In the vinext app, use server components and Server Actions wherever they apply.
 
 ## Agent skills

@@ -1,3 +1,7 @@
+---
+status: superseded in part by ADR-0006 (the API Worker as a container proxy, SSE, the REST surface and generated types no longer hold; server components and Server Actions still do)
+---
+
 # A separate API Worker fronts the Rust service; live updates are SSE with a snapshot on every connect
 
 The container can only be reached through a Worker. We put a small API Worker on its own hostname in front of it, apart from the vinext site Worker, so the site's Worker never holds a long-lived connection and the container stays out of vinext's pre-release build tooling. Live updates use Server-Sent Events on two streams, a site-wide scoreboard stream and the per-game Game Stream, and every connection (including reconnects) begins with a full snapshot followed by changes.

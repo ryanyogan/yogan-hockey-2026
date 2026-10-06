@@ -1,3 +1,7 @@
+---
+status: superseded by ADR-0006
+---
+
 # The Rust service runs on Cloudflare Containers and is kept always awake
 
 The Rust service is one long-lived process holding live state in memory, and it must poll with no viewers. We run it on Cloudflare Containers (the `lite` size, about $6.74/month including Workers Paid) to keep the whole site on one platform and to try Containers out, although Railway is a flat $5/month and always on by default. Containers sleep after 10 minutes without inbound requests, so a Worker on a cron trigger renews the container's activity timeout through its Durable Object; the same cron restarts it after a host move or deploy.

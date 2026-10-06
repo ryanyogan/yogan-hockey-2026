@@ -1,7 +1,7 @@
 import { createDb, recordSkeletonBump } from "@yogan-hockey/db";
 import type { Pulse } from "@yogan-hockey/schemas";
 import { Agent } from "agents";
-import { revalidateTag } from "next/cache";
+import { invalidateTag } from "../lib/invalidate-tag";
 import { SKELETON_TAG } from "../lib/skeleton";
 
 /**
@@ -29,7 +29,7 @@ export class SkeletonAgent extends Agent<Env, Pulse> {
       bumpedAt: pulse.lastBumpAt ?? "",
     });
     this.setState(pulse);
-    await revalidateTag(SKELETON_TAG, { expire: 0 });
+    await invalidateTag(SKELETON_TAG);
     return pulse;
   }
 }

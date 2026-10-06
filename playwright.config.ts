@@ -1,5 +1,6 @@
 import { defineConfig, devices } from "@playwright/test";
 
+// The port the dev server is pinned to in apps/web/vite.config.ts.
 const PORT = 5173;
 
 export default defineConfig({
@@ -13,7 +14,7 @@ export default defineConfig({
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   webServer: {
-    command: `pnpm dev --port ${PORT} --strictPort`,
+    command: "pnpm dev",
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

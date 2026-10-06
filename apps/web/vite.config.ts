@@ -4,6 +4,8 @@ import vinext from "vinext";
 import { defineConfig } from "vite";
 
 export default defineConfig({
+  // Pinned: left alone, the dev server moves from 5173 to 3000 when it restarts on a config change.
+  server: { port: 5173, strictPort: true },
   plugins: [
     vinext({
       cache: { data: kvDataAdapter() },

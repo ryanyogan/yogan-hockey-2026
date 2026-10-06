@@ -3,6 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import { type FormEvent, useEffect, useId, useRef, useState, useTransition } from "react";
 import { useDebouncedCallback } from "use-debounce";
+import { FavoriteHeart } from "../../components/favorites/favorite-heart";
 import { PlayerLedger } from "../../components/players/player-ledger";
 import { MAX_SEARCH_LENGTH, MIN_SEARCH_LENGTH, searchHref } from "../../lib/player-search";
 import type { PlayerSearch as Search } from "../../lib/players";
@@ -117,7 +118,12 @@ export function PlayerSearch({ initial }: { initial: Search }) {
         >
           {searchSummary(search)}
         </p>
-        {search.players.length > 0 && <PlayerLedger players={search.players} />}
+        {search.players.length > 0 && (
+          <PlayerLedger
+            players={search.players}
+            action={(player) => <FavoriteHeart kind="player" id={player.id} name={player.name} />}
+          />
+        )}
       </div>
     </>
   );

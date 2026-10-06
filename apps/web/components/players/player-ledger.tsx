@@ -5,6 +5,7 @@ import {
   LedgerBody,
   LedgerCell,
   LedgerColumn,
+  LedgerDetail,
   LedgerHead,
   LedgerRow,
   ledgerRowLink,
@@ -13,25 +14,32 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 
 /**
- * A list of players, each row leading to his page: search results now, and the favorite players
- * of #45. It has no state, so a server component and a client component can both render it.
+ * A list of players, each row leading to his page: search results and favorite players. It has
+ * no state, so a server component and a client component can both render it.
  *
- * `action` draws something at the end of each row, which is where #45's heart goes. The cell it
+ * `action` draws something at the end of each row: the heart that makes him a favorite. The cell it
  * sits in is raised above the row's link, so a button there takes its own clicks.
  */
-export function PlayerLedger({
+export function PlayerLedger<P extends PlayerSearchResult>({
   players,
+  line,
   action,
 }: {
-  players: readonly PlayerSearchResult[];
-  action?: (player: PlayerSearchResult) => ReactNode;
+  players: readonly P[];
+  /** A "season" column between the team and the action: a favorite player's figures. */
+  line?: (player: P) => ReactNode;
+  action?: (player: P) => ReactNode;
 }) {
+  // On a phone the season line goes under the name and needs the position's room: a goalie's
+  // line ("1 GP · 1 W · 1.03 GAA · .963 SV%") is 250px, and says he is a goalie.
+  const narrow = line ? "max-sm:hidden" : undefined;
   return (
     <Ledger>
       <LedgerHead>
         <LedgerColumn>player</LedgerColumn>
-        <LedgerColumn>pos</LedgerColumn>
+        <LedgerColumn className={narrow}>pos</LedgerColumn>
         <LedgerColumn>team</LedgerColumn>
+        {line ? <LedgerColumn className="max-sm:hidden">season</LedgerColumn> : null}
         {action ? <LedgerColumn /> : null}
       </LedgerHead>
       <LedgerBody>
@@ -42,14 +50,23 @@ export function PlayerLedger({
                 {player.name}
               </Link>
               {player.jersey ? <LedgerAside> #{player.jersey}</LedgerAside> : null}
+              {/* A phone has no room for the column, so the line goes under his name. */}
+              {line ? (
+                <LedgerDetail className="whitespace-nowrap sm:hidden">{line(player)}</LedgerDetail>
+              ) : null}
             </LedgerCell>
-            <LedgerCell>{player.position}</LedgerCell>
+            <LedgerCell className={narrow}>{player.position}</LedgerCell>
             <LedgerCell>
               {player.team?.abbreviation}
               {player.team ? (
                 <LedgerAside className="max-sm:hidden"> {player.team.name}</LedgerAside>
               ) : null}
             </LedgerCell>
+            {line ? (
+              <LedgerCell tone="note" className="whitespace-nowrap max-sm:hidden">
+                {line(player)}
+              </LedgerCell>
+            ) : null}
             {action ? (
               <LedgerCell numeric className="relative z-10">
                 {action(player)}

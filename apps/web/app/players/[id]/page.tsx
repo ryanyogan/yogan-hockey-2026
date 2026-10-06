@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cache } from "react";
+import { FavoriteHeart } from "../../../components/favorites/favorite-heart";
 import {
   CareerSection,
   GameLogSection,
@@ -46,7 +47,12 @@ export default async function PlayerPage({ params, searchParams }: Props) {
 
   return (
     <>
-      <PlayerHeader profile={profile} />
+      <PlayerHeader
+        profile={profile}
+        action={
+          <FavoriteHeart kind="player" id={profile.id} name={profile.name} className="mr-2" />
+        }
+      />
       {season && <SeasonSection season={season} />}
       {log && (
         <GameLogSection

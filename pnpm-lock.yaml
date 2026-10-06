@@ -220,6 +220,9 @@ importers:
       use-debounce:
         specifier: 10.1.1
         version: 10.1.1(react@19.3.0)
+      use-local-storage-state:
+        specifier: 20.0.0
+        version: 20.0.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       vinext:
         specifier: 1.0.1
         version: 1.0.1(6ce45900056ec4d4d70d79fd4aca5c35)
@@ -4364,6 +4367,13 @@ packages:
     peerDependencies:
       react: '*'
 
+  use-local-storage-state@20.0.0:
+    resolution: {integrity: sha512-PSaIAivHEv1+XtOr7FwyCYRx5fVf+3uW0d2rr/pbc7zWarHu7U4JQZs5KPaHxAaUVTwPYVJyL0ysdChVV0GR2Q==}
+    engines: {node: '>=14'}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+
   use-sync-external-store@1.7.0:
     resolution: {integrity: sha512-6L+EeigHMQhdaIPNIFUKwfWJSwWFQ8gJbJ2DLOs5sDIegTwR9fRxvnM3uciHKjIZhFz+KAv2emhWMRvDmMcY8A==}
     peerDependencies:
@@ -8069,6 +8079,11 @@ snapshots:
   use-debounce@10.1.1(react@19.3.0):
     dependencies:
       react: 19.3.0
+
+  use-local-storage-state@20.0.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0):
+    dependencies:
+      react: 19.3.0
+      react-dom: 19.3.0(react@19.3.0)
 
   use-sync-external-store@1.7.0(react@19.3.0):
     dependencies:

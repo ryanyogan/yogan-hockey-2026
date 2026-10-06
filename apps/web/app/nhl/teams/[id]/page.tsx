@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cache } from "react";
+import { FavoriteHeart } from "../../../../components/favorites/favorite-heart";
 import { RosterLedger } from "../../../../components/team/roster-ledger";
 import { ResultsLedger, UpcomingLedger } from "../../../../components/team/schedule-ledgers";
 import { TeamHeader } from "../../../../components/team/team-header";
@@ -43,8 +44,12 @@ export default async function TeamPage({ params, searchParams }: Props) {
   return (
     <>
       <div className="grid gap-8 xl:grid-cols-2">
-        {/* The heart that makes the team a favorite (#45) is TeamHeader's `action`. */}
-        <TeamHeader detail={detail} standing={standing} />
+        <TeamHeader
+          detail={detail}
+          standing={standing}
+          // In line with the hearts of the roster's rows, which sit inside a cell's padding.
+          action={<FavoriteHeart kind="team" id={id} name={detail.team.name} className="mr-2" />}
+        />
         <TeamNow teamId={id} listed={detail.nextGame} />
       </div>
       <div className="space-y-2">
@@ -77,9 +82,12 @@ function Roster({ detail }: { detail: TeamDetail }) {
     <div className="grid gap-8 xl:grid-cols-2">
       {/*
         The list given is the roster: a player put in front of the sorted list (#46) is drawn
-        first and counted. Each row's heart (#45) is RosterLedger's `action`.
+        first and counted, and gets a heart like any other.
       */}
-      <RosterLedger players={rosterWithLegend(detail.team.id, sortRoster(detail.roster))} />
+      <RosterLedger
+        players={rosterWithLegend(detail.team.id, sortRoster(detail.roster))}
+        action={(player) => <FavoriteHeart kind="player" id={player.id} name={player.name} />}
+      />
     </div>
   );
 }

@@ -1,7 +1,9 @@
 "use client";
 
 import type { ScoreboardGame, ScoreboardSide } from "@yogan-hockey/schemas";
+import { FavoriteMarker } from "@yogan-hockey/ui/components/marker";
 import Link from "next/link";
+import { favoritesFirst, isFavoriteGame } from "../../lib/favorites";
 import {
   gameHref,
   gameStatusLine,
@@ -9,6 +11,7 @@ import {
   tickerGames,
   wheelScrollLeft,
 } from "../../lib/scoreboard-view";
+import { useFavorites } from "../../lib/use-favorites";
 import { GameStatus } from "./game-status";
 import { useScoreboard } from "./scoreboard-provider";
 
@@ -21,7 +24,7 @@ function Side({ side, scored }: { side: ScoreboardSide; scored: boolean }) {
   );
 }
 
-function Entry({ game }: { game: ScoreboardGame }) {
+function Entry({ game, favorite }: { game: ScoreboardGame; favorite: boolean }) {
   const live = game.status === "live";
   const scored = hasScore(game);
   const status = gameStatusLine(game);
@@ -30,8 +33,14 @@ function Entry({ game }: { game: ScoreboardGame }) {
       <Link
         href={gameHref(game)}
         data-live={live ? "" : undefined}
+        data-favorite={favorite ? "" : undefined}
         className={`flex items-baseline gap-2 whitespace-nowrap px-3 py-1.5 hover:bg-highlight ${live ? "bg-live-tint" : ""}`}
       >
+        {favorite && (
+          <FavoriteMarker>
+            <span className="sr-only">favorite team, </span>
+          </FavoriteMarker>
+        )}
         <Side side={game.away} scored={scored} />
         <span className="text-foreground/40">
           <span aria-hidden="true">@</span>
@@ -73,6 +82,7 @@ function scrollSidewaysByWheel(strip: HTMLElement | null) {
  */
 export function ScoreTicker() {
   const { date, games } = useScoreboard();
+  const favoriteTeamIds = useFavorites("team").ids;
   // Before the Scoreboard has a slate there is nothing to say, and the strip takes no room.
   if (date == null) return null;
   return (
@@ -91,8 +101,9 @@ export function ScoreTicker() {
           ref={scrollSidewaysByWheel}
           className="relative flex min-w-0 overflow-x-auto [scrollbar-width:none]"
         >
-          {tickerGames(games).map((game) => (
-            <Entry key={game.id} game={game} />
+          {/* Favorite teams' games lead the whole strip, whatever their status. */}
+          {favoritesFirst(tickerGames(games), favoriteTeamIds).map((game) => (
+            <Entry key={game.id} game={game} favorite={isFavoriteGame(game, favoriteTeamIds)} />
           ))}
         </ul>
       )}

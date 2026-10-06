@@ -10,8 +10,9 @@ import {
   LedgerRow,
   ledgerRowLink,
 } from "@yogan-hockey/ui/components/ledger";
-import { LiveMarker } from "@yogan-hockey/ui/components/marker";
+import { FavoriteMarker, LiveMarker } from "@yogan-hockey/ui/components/marker";
 import Link from "next/link";
+import { isFavoriteGame } from "../../lib/favorites";
 import { gameHref, gameStatusLine, hasScore } from "../../lib/scoreboard-view";
 import { GameStatus } from "./game-status";
 
@@ -37,7 +38,18 @@ const TEXT_CELL = "whitespace-nowrap max-sm:align-top";
  * A phone has no room for the last column or for a record beside its team, so there a row has a
  * second line: the venue in small print under the status, each record under its team.
  */
-export function GameLedger({ games }: { games: ScoreboardGame[] }) {
+export function GameLedger({
+  games,
+  favoriteTeamIds = [],
+}: {
+  games: ScoreboardGame[];
+  /**
+   * The visitor's favorite teams: a game of theirs says "★ favorite team" in the last column,
+   * ahead of the venue, as the Reference UI's note column does. A phone has no room for the
+   * words and puts the star before the venue under the status.
+   */
+  favoriteTeamIds?: readonly string[];
+}) {
   return (
     <Ledger className="table-fixed">
       <LedgerHead>
@@ -52,6 +64,7 @@ export function GameLedger({ games }: { games: ScoreboardGame[] }) {
       <LedgerBody>
         {games.map((game) => {
           const status = gameStatusLine(game);
+          const favorite = isFavoriteGame(game, favoriteTeamIds);
           return (
             <LedgerRow key={game.id} live={game.status === "live"} interactive>
               <LedgerCell className={TEXT_CELL}>
@@ -69,6 +82,11 @@ export function GameLedger({ games }: { games: ScoreboardGame[] }) {
                   )}
                 </Link>
                 <LedgerDetail fine className="sm:hidden">
+                  {favorite && (
+                    <FavoriteMarker>
+                      <span className="sr-only">favorite team, </span>
+                    </FavoriteMarker>
+                  )}
                   {game.venue}
                 </LedgerDetail>
               </LedgerCell>
@@ -81,6 +99,7 @@ export function GameLedger({ games }: { games: ScoreboardGame[] }) {
               </LedgerCell>
               <LedgerCell tone="score">{hasScore(game) ? game.home.score : null}</LedgerCell>
               <LedgerCell tone="note" className="truncate max-sm:hidden">
+                {favorite && <FavoriteMarker className="mr-4">favorite team</FavoriteMarker>}
                 {game.venue}
               </LedgerCell>
             </LedgerRow>

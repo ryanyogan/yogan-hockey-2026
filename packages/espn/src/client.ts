@@ -25,10 +25,17 @@ import { translateTeam, translateTeamSchedule, translateTeams } from "./team.ts"
 
 const TIMEOUT_MS = 10_000;
 
-async function fetchJson(endpoint: Endpoint): Promise<unknown> {
+/**
+ * One request to ESPN, answered as parsed JSON. `fetcher` is the `fetch` to use: the daily live
+ * check passes its own, the site's reads use the global one.
+ */
+export async function fetchJson(
+  endpoint: Endpoint,
+  fetcher: typeof fetch = fetch,
+): Promise<unknown> {
   let response: Response;
   try {
-    response = await fetch(endpoint.url, {
+    response = await fetcher(endpoint.url, {
       headers: { accept: "application/json" },
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });

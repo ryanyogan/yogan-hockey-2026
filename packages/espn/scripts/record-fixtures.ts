@@ -7,32 +7,11 @@
  */
 import { existsSync } from "node:fs";
 import { writeFile } from "node:fs/promises";
+import { SAMPLES } from "../check/samples.ts";
 import { type Endpoint, endpoints } from "../src/endpoints.ts";
 
-/** Toronto: its page is the one the smoke tests visit, and its roster is where Rylan goes. */
-const TEAM_ID = "21";
-
-/** Auston Matthews, a skater, and Anthony Stolarz, a goalie: their stat tables have different columns. */
-const PLAYER_IDS = ["4024123", "3067313"];
-
-const RECORDED: Endpoint[] = [
-  endpoints.scoreboard(),
-  // A fixed slate of thirteen finished games, three of them decided in overtime.
-  endpoints.scoreboard("2026-10-03"),
-  endpoints.standings(),
-  endpoints.teams(),
-  endpoints.team(TEAM_ID),
-  endpoints.teamSchedule(TEAM_ID),
-  // A finished game decided in a shootout: its plays end 3-2 where the final is 4-3.
-  endpoints.summary("401803652"),
-  ...PLAYER_IDS.flatMap((id) => [
-    endpoints.player(id),
-    endpoints.playerCareer(id),
-    endpoints.playerGameLog(id),
-  ]),
-  // Ten players, the most a search returns.
-  endpoints.playerSearch("mar"),
-];
+/** The same requests the daily live check makes: `check/samples.ts` is the one list of them. */
+const RECORDED: Endpoint[] = SAMPLES.map((sample) => sample.endpoint);
 
 /**
  * Recorded once and kept: a game is only scheduled until it is played, so recording it again

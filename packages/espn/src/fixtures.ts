@@ -13,7 +13,7 @@ export async function loadFixture(endpoint: Endpoint): Promise<unknown> {
     throw new EspnFetchError(
       endpoint.name,
       null,
-      `fixture mode has no recorded response fixtures/${endpoint.fixture}.json; add the endpoint to scripts/record-fixtures.ts and run pnpm record:fixtures`,
+      `fixture mode has no recorded response fixtures/${endpoint.fixture}.json; add a sample of the endpoint to check/samples.ts and run pnpm record:fixtures`,
     );
   }
   return (await load()).default;

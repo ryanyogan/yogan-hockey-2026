@@ -19,6 +19,9 @@ dist/
 next-env.d.ts
 *.tsbuildinfo
 
+# Written by `pnpm check:espn`: the run as JSON.
+espn-check.json
+
 # Playwright.
 test-results/
 playwright-report/

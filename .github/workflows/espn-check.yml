@@ -1,0 +1,51 @@
+name: ESPN check
+
+# The early warning for ESPN changing shape (spec section 10): nothing watches the site while
+# nobody is on it. Fetches every endpoint the site reads, live, and runs the site's parsers on
+# each. All of the logic is in packages/espn (`pnpm check:espn`, then scripts/report-check.ts),
+# where it is tested; this file only runs the two.
+on:
+  schedule:
+    # 16:17 UTC every day, which is 12:17 in Toronto in summer and 11:17 in winter: the day's
+    # slate is up and still to be played, hours before the evening games (23:00 UTC onwards), so
+    # a failure can be fixed before anyone watches one. Off the hour, when GitHub's schedule is
+    # least delayed.
+    - cron: "17 16 * * *"
+  # By hand, from any branch: `gh workflow run espn-check.yml --ref <branch>`.
+  workflow_dispatch:
+
+# One at a time, so two runs cannot both find no open issue and open two.
+concurrency:
+  group: espn-check
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    name: Live ESPN check
+    runs-on: ubuntu-24.04
+    # The check alone can take ten minutes when ESPN hangs: sixteen endpoints, three tries each
+    # of up to ten seconds. The report step has to come after that, so the limit is well past it.
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+
+      # Exits 1 if any endpoint failed, which fails the run. Writes espn-check.json either way.
+      - id: check
+        name: Fetch and parse every endpoint
+        run: pnpm check:espn
+
+      # Runs whether the check passed or failed: a failure opens the issue or comments on the
+      # open one, a pass comments on an open issue that it cleared. Not when the steps before the
+      # check failed, since a broken install says nothing about ESPN. The push is skipped, with a
+      # notice on the run, until the NTFY_TOPIC secret exists (scripts/account-setup.sh sets it).
+      - name: File the issue and send the push
+        if: ${{ !cancelled() && steps.check.outcome != 'skipped' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+        run: node packages/espn/scripts/report-check.ts

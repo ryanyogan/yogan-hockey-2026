@@ -42,7 +42,7 @@ test("the dashboard shows its four blocks, puts favorites first and follows the 
   const first = tonight.getByRole("row").nth(1);
   await expect(first).toContainText("NSH at TOR");
   await expect(first.getByRole("cell").last()).toHaveText(
-    "★ favorite teamScotiabank Arena · ESPN+, Scripps Sports",
+    "★ favorite teamTOR 58%Scotiabank Arena · ESPN+, Scripps Sports",
   );
   await expect(first.getByRole("link")).toHaveAttribute("href", `/nhl/games/${GAME_ID}`);
   await expect(tonight.getByRole("row").nth(2)).not.toContainText("favorite team");

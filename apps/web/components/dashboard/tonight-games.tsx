@@ -4,6 +4,7 @@ import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { tonightGames, tonightSummary } from "../../lib/dashboard";
+import { pickNote } from "../../lib/picks";
 import { useFavorites } from "../../lib/use-favorites";
 import { GameLedger } from "../scoreboard/game-ledger";
 import { useScoreboard } from "../scoreboard/scoreboard-provider";
@@ -46,7 +47,15 @@ export function TonightGames({
           fitted
           games={tonightGames(games, favoriteTeamIds)}
           favoriteTeamIds={favoriteTeamIds}
-          pick={picks && ((game) => picks[game.id])}
+          pick={
+            picks &&
+            ((game) => {
+              const pick = picks[game.id];
+              // The picks are as old as the page's render: a game that has started since is no
+              // longer waiting for one.
+              return typeof pick === "string" ? pickNote(pick, game.status) : pick;
+            })
+          }
         />
       ) : (
         // Without a date the Scoreboard has not answered yet, which is not a day off.

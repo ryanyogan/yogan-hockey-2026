@@ -62,6 +62,15 @@ export async function getGameWithPlays(
 }
 
 /**
+ * A finished game's row alone: its final score, which is what says whether its pick was right.
+ * Null until the game is written.
+ */
+export async function getFinalGame(db: Db, gameId: string): Promise<FinalGame | null> {
+  const [row] = await db.select().from(games).where(eq(games.id, gameId));
+  return row ? toFinalGame(row) : null;
+}
+
+/**
  * Whether a game's plays were ever archived. It reads one column of one row, where
  * `getGameWithPlays` loads every play. False for a game with no row.
  */

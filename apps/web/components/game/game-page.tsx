@@ -7,6 +7,7 @@ import type { FoundGame } from "../../lib/find-game";
 import { gamePhase, streamReading, streamStarts } from "../../lib/game/page-state";
 import type { GameTab } from "../../lib/game/tabs";
 import { useGameStream } from "../../lib/game/use-game-stream";
+import { PICK_PENDING } from "../../lib/picks";
 import { useScoreboard } from "../scoreboard/scoreboard-provider";
 import { FinishedGame } from "./finished-game";
 import { MatchupRink } from "./game-rink";
@@ -19,8 +20,13 @@ type Slots = {
   pathname: string;
   /** The matchup facts under a scheduled game's rink, drawn by the server. */
   matchup: ReactNode;
-  /** The pick: a section of the scheduled page, and "the pick" tab once the game is on. */
+  /**
+   * The pick: a section of the scheduled page, and "the pick" tab once the game is on. Null when
+   * there is none to show, and then there is no section and no tab.
+   */
   pick: ReactNode;
+  /** No Prediction yet: a game still to come says "pick pending" until one arrives. */
+  pickPending: boolean;
 };
 
 /**
@@ -83,6 +89,7 @@ function GameInPhase({
   pathname,
   matchup,
   pick,
+  pickPending,
 }: {
   gameId: string;
   header: GameHeader;
@@ -94,7 +101,14 @@ function GameInPhase({
   const { status, notice } = streamReading({ header, plays, delayed, scoreboard });
   switch (gamePhase(header.status)) {
     case "scheduled":
-      return <ScheduledGame header={header} matchup={matchup} pick={pick} />;
+      return (
+        <ScheduledGame
+          header={header}
+          matchup={matchup}
+          // Only a game still to be played waits for a pick: one called off gets none.
+          pick={pick ?? (pickPending && header.status === "scheduled" ? <GamePickPending /> : null)}
+        />
+      );
     case "live":
       return (
         <GameView
@@ -124,6 +138,15 @@ function GameInPhase({
 }
 
 const noSelection = () => {};
+
+/** What a game still to come says in the pick's place until its Prediction arrives. */
+function GamePickPending() {
+  return (
+    <p data-slot="game-pick-pending" className="max-w-prose text-foreground/70">
+      {PICK_PENDING}
+    </p>
+  );
+}
 
 /**
  * A game still to come (or called off): the rink and the timeline where the Game Stream will
@@ -158,10 +181,12 @@ function ScheduledGame({
         </p>
       </div>
       <div className="mt-6 space-y-8">
-        <Section data-slot="game-pick">
-          <SectionHeader title="The pick" />
-          {pick}
-        </Section>
+        {pick != null && (
+          <Section data-slot="game-pick">
+            <SectionHeader title="The pick" />
+            {pick}
+          </Section>
+        )}
         {matchup}
       </div>
     </div>

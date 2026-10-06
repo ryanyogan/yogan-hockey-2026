@@ -11,6 +11,7 @@ import { cachedGamePregame } from "../../../../lib/espn";
 import { findGame } from "../../../../lib/find-game";
 import { gamePhase } from "../../../../lib/game/page-state";
 import { gameTabFrom } from "../../../../lib/game/tabs";
+import { readGamePick } from "../../../../lib/game-pick";
 import { replayGame } from "../../../../lib/replay";
 import { gameHref } from "../../../../lib/scoreboard-view";
 
@@ -79,6 +80,8 @@ export default async function GameRoute({ params, searchParams }: Props) {
   // here, on its first open, and every later open is one read of D1.
   const game = await replayGame(found.game);
   const scheduled = gamePhase(game.header.status) === "scheduled";
+  // After `replayGame`: a finished game's row is in D1 by now, which is what marks its pick.
+  const pick = await readGamePick(game.header);
 
   return (
     <GamePage
@@ -88,7 +91,12 @@ export default async function GameRoute({ params, searchParams }: Props) {
       tab={gameTabFrom(tab)}
       pathname={gameHref({ id })}
       matchup={scheduled ? <Matchup header={game.header} /> : null}
-      pick={<GamePick gameId={id} header={game.header} />}
+      pick={
+        pick.state === "made" ? (
+          <GamePick prediction={pick.prediction} header={game.header} final={pick.final} />
+        ) : null
+      }
+      pickPending={pick.state === "pending"}
     />
   );
 }

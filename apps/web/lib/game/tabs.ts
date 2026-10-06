@@ -12,9 +12,17 @@ export function gameTabFrom(value: string | string[] | undefined): GameTab {
   return GAME_TABS.find((tab) => tab.value === value)?.value ?? "plays";
 }
 
-/** The tabs as links for `UrlTabs`, on the page at `pathname`. */
-export function gameTabLinks(pathname: string) {
-  return GAME_TABS.map((tab) => ({
+/**
+ * The tab a game shows: a game with no pick has no "the pick" tab, and an address that names it
+ * shows the plays.
+ */
+export function shownGameTab(tab: GameTab, hasPick: boolean): GameTab {
+  return tab === "pick" && !hasPick ? "plays" : tab;
+}
+
+/** The tabs as links for `UrlTabs`, on the page at `pathname`: "the pick" only when there is one. */
+export function gameTabLinks(pathname: string, hasPick = true) {
+  return GAME_TABS.filter((tab) => hasPick || tab.value !== "pick").map((tab) => ({
     ...tab,
     href: tab.value === "plays" ? pathname : `${pathname}?tab=${tab.value}`,
   }));

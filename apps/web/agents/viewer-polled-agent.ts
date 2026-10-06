@@ -8,8 +8,9 @@ const POLLED_AT_KEY = "polled-at";
  * socket: polling starts on the first connection and stops when the last one leaves.
  *
  * A subclass says how to poll once (`poll`) and how long to wait before the next one
- * (`pollIntervalSeconds`); this class owns the timer, the staleness check for first paint, the
- * alert, and the rule that a browser never writes state.
+ * (`pollIntervalSeconds`), and may act on each poll's outcome (`afterPoll`); this class owns the
+ * timer, the staleness check for first paint, the alert, and the rule that a browser never writes
+ * state.
  *
  * The timer is a one-off schedule that each poll sets again while a viewer is connected. It is
  * never an interval, so the cadence can change from one poll to the next, and a poll that finds
@@ -29,12 +30,23 @@ export abstract class ViewerPolledAgent<State> extends Agent<Env, State> {
   /** Seconds from one poll to the next, as things stand. Null when there is nothing left to poll for. */
   protected abstract pollIntervalSeconds(): number | null;
 
+  /**
+   * Called after every poll, good or bad, once its outcome is counted: `failedPolls` is current.
+   * A throw here is logged and goes no further.
+   */
+  protected async afterPoll(): Promise<void> {}
+
+  /** Failed polls in a row so far: 0 after a good one. It is in storage, so a restart keeps it. */
+  protected get failedPolls(): number {
+    return this.#espnAlert.failures;
+  }
+
   /** Browsers only ever read an Agent's state. */
   override shouldConnectionBeReadonly(): boolean {
     return true;
   }
 
-  override async onConnect(): Promise<void> {
+  override async onConnect(_connection: Connection): Promise<void> {
     if ((await this.#pendingTicks()).length > 0) return;
     await this.#scheduleTick(this.#secondsUntilDue());
   }
@@ -82,9 +94,11 @@ export abstract class ViewerPolledAgent<State> extends Agent<Env, State> {
       } catch (error) {
         console.error(`${this.alertSource}: poll failed`, error);
         await this.#espnAlert.failed(error);
+        await this.afterPoll();
         return;
       }
       await this.#espnAlert.succeeded();
+      await this.afterPoll();
     } catch (error) {
       // Nothing here may reach the timer: a tick that throws is retried and then dropped.
       console.error(`${this.alertSource}: could not record a poll`, error);

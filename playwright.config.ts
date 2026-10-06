@@ -15,6 +15,8 @@ export default defineConfig({
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   webServer: {
     command: "pnpm dev",
+    // Fixture mode: the smoke tests see ESPN's recorded responses, not tonight's games.
+    env: { ESPN_FIXTURES: "1" },
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

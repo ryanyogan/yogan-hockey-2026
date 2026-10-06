@@ -1,8 +1,13 @@
 import { z } from "zod";
 
 export * from "./final-game.ts";
+export * from "./game.ts";
 export * from "./play.ts";
+export * from "./standings.ts";
+export * from "./standings-views.ts";
 export * from "./stored-prediction.ts";
+export * from "./team.ts";
+export * from "./team-page.ts";
 
 /**
  * Walking-skeleton shapes (#31). They stand in for the site's real shapes and

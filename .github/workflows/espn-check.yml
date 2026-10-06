@@ -27,7 +27,9 @@ jobs:
   check:
     name: Live ESPN check
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    # The check alone can take ten minutes when ESPN hangs: sixteen endpoints, three tries each
+    # of up to ten seconds. The report step has to come after that, so the limit is well past it.
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup

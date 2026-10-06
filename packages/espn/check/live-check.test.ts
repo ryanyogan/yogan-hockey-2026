@@ -4,8 +4,15 @@ import { loadFixture } from "../src/fixtures.ts";
 import { describeCheck, runLiveCheck } from "./live-check.ts";
 import { SAMPLES, unfinishedSummaries } from "./samples.ts";
 
-/** The first scheduled game on the recorded slate; its pre-game summary is not the recorded one. */
-const FIRST_SCHEDULED = endpoints.summary("401891815");
+/**
+ * The first scheduled game on the recorded slate, read from the recording so that recording the
+ * slate again does not break these tests. Its own pre-game summary is not recorded.
+ */
+const slate = (await loadFixture(endpoints.scoreboard())) as {
+  events: { id: string; status: { type: { state: string } } }[];
+};
+const scheduledId = slate.events.find((event) => event.status.type.state === "pre")?.id ?? "";
+const FIRST_SCHEDULED = endpoints.summary(scheduledId);
 /** The recorded pre-game summary, standing in for whichever scheduled game the check picks. */
 const PREGAME = endpoints.summary("401892449");
 
@@ -69,7 +76,7 @@ describe("the daily live check", () => {
       "ok athletes/4024123/gamelog",
       "ok athletes/3067313/gamelog",
       "ok search",
-      "ok summary?event=401891815",
+      `ok ${FIRST_SCHEDULED.name}`,
     ]);
     // The recorded slate has no game under way, and the check says so rather than pass in silence.
     expect(summary.notChecked).toEqual(["the summary of a live game: none on today's slate"]);
@@ -118,9 +125,12 @@ describe("the daily live check", () => {
       "search",
     ]);
     expect(summary.results).toHaveLength(15);
+    // A page that is not JSON is ESPN being down, not ESPN changing shape, and is tried again.
     expect(summary.results.find((r) => r.endpoint === "search")).toMatchObject({
-      outcome: "parse-failure",
-      issues: [],
+      outcome: "fetch-failure",
+      attempts: 3,
+      status: null,
+      message: expect.stringContaining("ESPN search did not parse"),
     });
   });
 
@@ -200,6 +210,29 @@ describe("the daily live check", () => {
     const summary = await check(fetcher);
 
     expect(summary.ok).toBe(false);
+    expect(summary.results.find((r) => r.outcome !== "ok")).toMatchObject({
+      endpoint: "athletes/4024123/stats",
+      outcome: "fetch-failure",
+      status: 404,
+    });
+  });
+
+  test("a response that breaks off part way is tried again", async () => {
+    const { recorded } = await recordedEspn();
+    const { fetcher } = await recordedEspn({
+      [endpoints.teams().url]: (attempt) => {
+        const response = new Response(recorded.get(endpoints.teams().url));
+        if (attempt === 1) response.text = () => Promise.reject(new TypeError("terminated"));
+        return response;
+      },
+    });
+
+    const summary = await check(fetcher);
+
+    expect(summary.results.find((r) => r.endpoint === "teams")).toMatchObject({
+      outcome: "ok",
+      attempts: 2,
+    });
   });
 
   test("when today's slate does not parse, the summary it would have chosen is listed as not checked", async () => {

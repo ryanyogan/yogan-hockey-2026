@@ -68,9 +68,21 @@ function issuesOf(error: unknown): string[] {
   return more > 0 ? [...listed, `and ${more} more`] : listed;
 }
 
-/** A 4xx is ESPN's answer and will not change; no response, a 429 and a 5xx may. */
+/**
+ * A 4xx is ESPN's answer and will not change. No response, a 5xx, a 429 and a response that broke
+ * off part way may all be different on the next try.
+ */
 function worthAnotherTry(error: EspnFetchError): boolean {
-  return error.status === null || error.status === 429 || error.status >= 500;
+  const { status } = error;
+  return status === null || status === 429 || status < 400 || status >= 500;
+}
+
+/**
+ * A body that is not JSON at all: an error page from ESPN or something in front of it. That is
+ * ESPN being down, not ESPN changing shape, though the client calls both an `EspnParseError`.
+ */
+function notJson(error: unknown): error is EspnParseError {
+  return error instanceof EspnParseError && error.cause instanceof SyntaxError;
 }
 
 /** Fetches and translates one sample. Answers the translated value too, for the caller to read. */
@@ -93,8 +105,8 @@ async function checkOne(
       const value = sample.translate(await fetchJson(sample.endpoint, fetcher));
       return { result: { ...passed, attempts }, value };
     } catch (error) {
-      if (error instanceof EspnFetchError) {
-        if (attempts < TRIES && worthAnotherTry(error)) {
+      if (error instanceof EspnFetchError || notJson(error)) {
+        if (attempts < TRIES && (notJson(error) || worthAnotherTry(error))) {
           await sleep(RETRY_WAIT_MS * attempts);
           continue;
         }
@@ -102,7 +114,7 @@ async function checkOne(
           ...passed,
           outcome: "fetch-failure",
           attempts,
-          status: error.status,
+          status: error instanceof EspnFetchError ? error.status : null,
           message: error.message,
         };
         return { result, value: undefined };
@@ -148,6 +160,7 @@ export async function runLiveCheck(options: LiveCheckOptions = {}): Promise<Chec
       notChecked.push("the summary of a live or scheduled game: today's scoreboard failed");
       continue;
     }
+    // The translation has just promised this shape; parsing it again is how the type is known here.
     const { games } = ScoreboardSchema.parse(value);
     fromTodaysSlate = unfinishedSummaries(games);
     for (const status of ["live", "scheduled"] as const) {
@@ -163,6 +176,11 @@ export async function runLiveCheck(options: LiveCheckOptions = {}): Promise<Chec
   return { ok: results.every((result) => result.outcome === "ok"), checkedAt, results, notChecked };
 }
 
+/** " (3 tries)" for a result that took more than one, for the end of its message. */
+export function triesNote(result: CheckResult): string {
+  return result.attempts > 1 ? ` (${result.attempts} tries)` : "";
+}
+
 function count(n: number, noun: string): string {
   return `${n} ${noun}${n === 1 ? "" : "s"}`;
 }
@@ -175,10 +193,9 @@ export function describeCheck(summary: CheckSummary): string {
       lines.push(`ok    ${result.endpoint}`);
       continue;
     }
-    const tries = result.attempts > 1 ? ` (${result.attempts} tries)` : "";
     lines.push(`${result.outcome === "parse-failure" ? "PARSE" : "FETCH"} ${result.endpoint}`);
     lines.push(`        ${result.url}`);
-    if (result.issues.length === 0) lines.push(`        ${result.message}${tries}`);
+    if (result.issues.length === 0) lines.push(`        ${result.message}${triesNote(result)}`);
     for (const issue of result.issues) lines.push(`        ${issue}`);
   }
   for (const gap of summary.notChecked) lines.push(`not checked: ${gap}`);

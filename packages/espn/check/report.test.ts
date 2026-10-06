@@ -251,8 +251,20 @@ describe("a check that passes", () => {
     expect(calls.some(({ args }) => args[1] === "close")).toBe(false);
     expect((ntfy.mock.calls[0] as [string, RequestInit])[1]).toMatchObject({
       headers: { Title: "ESPN daily check recovered", Tags: "white_check_mark", Click: ISSUE_URL },
-      body: "All 3 endpoints parse again.",
+      body: "All 3 endpoints fetched parse again.",
     });
+  });
+
+  test("says what the passing run did not look at, since that may be what had failed", async () => {
+    const { gh, writes } = tracker([EXISTING]);
+    const gap = "the summary of a live game: none on today's slate";
+
+    await report({ ...PASSED, notChecked: [gap] }, gh);
+
+    expect(writes()[0]?.input).toContain(`Not checked by this run:\n\n- ${gap}`);
+    expect((ntfy.mock.calls[0] as [string, RequestInit])[1].body).toBe(
+      `All 3 endpoints fetched parse again. Not checked: ${gap}.`,
+    );
   });
 
   test("says it cleared once, not on every passing day the issue stays open", async () => {

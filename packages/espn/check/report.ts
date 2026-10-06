@@ -9,11 +9,12 @@
  *   one pass does not prove the cause is gone.
  * - A push goes out with each failure and with the comment that it cleared.
  */
-import type { CheckResult, CheckSummary } from "./live-check.ts";
+import { z } from "zod";
+import { type CheckResult, type CheckSummary, triesNote } from "./live-check.ts";
 
 /** The open issue with exactly this title is the check's. Rename it and the next failure opens another. */
 export const ISSUE_TITLE = "ESPN daily check is failing";
-const LABEL = "needs-triage";
+export const LABEL = "needs-triage";
 const NTFY = "https://ntfy.sh";
 
 // Each thing the check writes carries one of these, so the next run can tell where things stand
@@ -46,6 +47,11 @@ export type Reported = {
 
 type OpenIssue = { number: number; url: string };
 
+// What `gh --json` answers, for the three questions asked of it.
+const GhIssues = z.array(z.object({ number: z.number(), title: z.string(), url: z.string() }));
+const GhLabels = z.array(z.object({ name: z.string() }));
+const GhComments = z.object({ comments: z.array(z.object({ body: z.string() })) });
+
 async function findOpenIssue(gh: Gh): Promise<OpenIssue | null> {
   // Listed, not searched: GitHub's search lags behind an issue just opened.
   const listed = await gh([
@@ -58,14 +64,13 @@ async function findOpenIssue(gh: Gh): Promise<OpenIssue | null> {
     "--json",
     "number,title,url",
   ]);
-  const issues = JSON.parse(listed) as { number: number; title: string; url: string }[];
-  return issues.find((issue) => issue.title === ISSUE_TITLE) ?? null;
+  return GhIssues.parse(JSON.parse(listed)).find((issue) => issue.title === ISSUE_TITLE) ?? null;
 }
 
 /** `gh issue create` refuses a label the tracker does not have, so a missing one is made first. */
 async function ensureLabel(gh: Gh): Promise<void> {
   const listed = await gh(["label", "list", "--limit", "1000", "--json", "name"]);
-  const labels = JSON.parse(listed) as { name: string }[];
+  const labels = GhLabels.parse(JSON.parse(listed));
   if (labels.some((label) => label.name === LABEL)) return;
   await gh([
     "label",
@@ -81,7 +86,7 @@ async function ensureLabel(gh: Gh): Promise<void> {
 /** Whether the last thing the check wrote on its issue was that it had cleared. */
 async function alreadyCleared(gh: Gh, issue: OpenIssue): Promise<boolean> {
   const viewed = await gh(["issue", "view", String(issue.number), "--json", "comments"]);
-  const { comments } = JSON.parse(viewed) as { comments: { body: string }[] };
+  const { comments } = GhComments.parse(JSON.parse(viewed));
   const last = comments.findLast(
     ({ body }) => body.includes(FAILED_MARK) || body.includes(CLEARED_MARK),
   );
@@ -93,8 +98,8 @@ const failuresOf = (summary: CheckSummary, outcome: CheckResult["outcome"]) =>
 
 function failureList(results: CheckResult[]): string[] {
   return results.flatMap((result) => {
-    const tries = result.attempts > 1 ? ` (${result.attempts} tries)` : "";
-    const detail = result.issues.length > 0 ? result.issues : [`${result.message}${tries}`];
+    const detail =
+      result.issues.length > 0 ? result.issues : [`${result.message}${triesNote(result)}`];
     return [`**\`${result.endpoint}\`** <${result.url}>`, "", "```", ...detail, "```", ""];
   });
 }
@@ -113,7 +118,7 @@ function failureDetail(summary: CheckSummary | null): string[] {
       ? [
           "### Fetch failures: ESPN or the network was down",
           "",
-          "Each was tried three times. One that passes tomorrow needs nothing done.",
+          "One that passes tomorrow needs nothing done.",
           "",
           ...failureList(fetched),
         ]
@@ -158,8 +163,12 @@ function failedAgainBody(summary: CheckSummary | null, runUrl: string | undefine
 function clearedBody(summary: CheckSummary, runUrl: string | undefined): string {
   return [
     CLEARED_MARK,
-    `The check passed${when(summary)}: all ${summary.results.length} endpoints parse.${runLink(runUrl)}`,
+    `The check passed${when(summary)}: all ${summary.results.length} endpoints it fetched parse.${runLink(runUrl)}`,
     "",
+    // A failure in a live game's summary is not cleared by a run that had no live game to fetch.
+    ...(summary.notChecked.length > 0
+      ? ["Not checked by this run:", "", ...summary.notChecked.map((gap) => `- ${gap}`), ""]
+      : []),
     "Left open for a person to close. A parse failure can depend on what is on that day, so one pass does not prove the cause is gone.",
   ].join("\n");
 }
@@ -227,7 +236,12 @@ export async function reportCheck(options: ReportOptions): Promise<Reported> {
     const cleared: Push = {
       title: "ESPN daily check recovered",
       tag: "white_check_mark",
-      message: `All ${summary.results.length} endpoints parse again.`,
+      message: [
+        `All ${summary.results.length} endpoints fetched parse again.`,
+        ...(summary.notChecked.length > 0
+          ? [`Not checked: ${summary.notChecked.join("; ")}.`]
+          : []),
+      ].join(" "),
     };
     return { issue: "cleared", issueUrl: open.url, push: await push(cleared, open.url, sender) };
   }

@@ -71,20 +71,36 @@ p { margin: 0; padding: 6px 8px;
  * A `handle` that throws is answered with the page of last resort, never the platform's own.
  */
 export async function answerWithRenderStatus(handle: () => Promise<Response>): Promise<Response> {
+  return (await watchRender(handle)).response;
+}
+
+/**
+ * `answerWithRenderStatus`, and with the answer a way to ask later whether a render failed:
+ * a failure can come after the response has started, when its status has gone but the page
+ * cache can still decline to keep the page (`lib/page-cache.ts`).
+ */
+export async function watchRender(
+  handle: () => Promise<Response>,
+): Promise<{ response: Response; failed(): boolean }> {
   const render: Render = { status: null };
+  const failed = () => render.status != null;
   let response: Response;
   try {
     response = await renders.run(render, handle);
   } catch (error) {
     console.error("The site could not answer a request", error);
-    return new Response(LAST_RESORT_PAGE, {
-      status: OWN_FAULT,
-      headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" },
-    });
+    render.status = OWN_FAULT;
+    return {
+      response: new Response(LAST_RESORT_PAGE, {
+        status: OWN_FAULT,
+        headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" },
+      }),
+      failed,
+    };
   }
   const isPage = response.headers.get("content-type")?.startsWith("text/html") ?? false;
-  if (render.status == null || response.status !== 200 || !isPage) return response;
+  if (render.status == null || response.status !== 200 || !isPage) return { response, failed };
   const headers = new Headers(response.headers);
   headers.set("cache-control", "no-store");
-  return new Response(response.body, { status: render.status, headers });
+  return { response: new Response(response.body, { status: render.status, headers }), failed };
 }

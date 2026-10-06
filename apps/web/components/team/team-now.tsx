@@ -15,6 +15,7 @@ import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
 import { pickNote } from "../../lib/picks";
 import { gameHref } from "../../lib/scoreboard-view";
 import { liveGame, nextGame, nextGamePick, scheduleRow } from "../../lib/team-schedule";
+import { useSlatePicks } from "../../lib/use-slate-picks";
 import { Link } from "../link";
 import { LocalTime } from "../local-time";
 import { TeamName } from "../nhl/team-name";
@@ -31,19 +32,14 @@ import { Versus } from "./versus";
  * `listed` is the next game as the cached team page has it, which can be an hour old: the
  * Scoreboard says whether that game has started since.
  *
- * `picks` is each game of today's slate's pick in one line, by game id, as the page's server
- * component read them (see `LiveScores`). Both the banner's row and the card show the team's.
+ * The team's page is served from the page cache, so the server renders none of this: it belongs
+ * inside a `ScoreboardGate`, and the pick is asked for after first paint (`useSlatePicks`), only
+ * when the team has a game on today's slate. The pick lands in a cell that is already there.
  */
-export function TeamNow({
-  teamId,
-  listed,
-  picks = {},
-}: {
-  teamId: string;
-  listed: Game | null;
-  picks?: Readonly<Record<string, string>>;
-}) {
+export function TeamNow({ teamId, listed }: { teamId: string; listed: Game | null }) {
   const scoreboard = useScoreboard();
+  const plays = scoreboard.games.some((game) => game.home.id === teamId || game.away.id === teamId);
+  const picks = useSlatePicks(plays, scoreboard.invalidatedAt);
   const live = liveGame(teamId, scoreboard.games);
   if (live != null) {
     return (

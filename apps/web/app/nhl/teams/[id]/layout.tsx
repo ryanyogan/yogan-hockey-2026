@@ -1,15 +1,14 @@
-import type { Game } from "@yogan-hockey/schemas";
 import type { Metadata } from "next";
-import { type ReactNode, Suspense } from "react";
+import type { ReactNode } from "react";
 import { FavoriteHeart } from "../../../../components/favorites/favorite-heart";
 import { Link } from "../../../../components/link";
+import { ScoreboardGate } from "../../../../components/scoreboard/scoreboard-provider";
 import { TeamHeader } from "../../../../components/team/team-header";
 import { TeamNow } from "../../../../components/team/team-now";
 import { NextGameSkeleton } from "../../../../components/team/team-skeletons";
 import { TeamTabs } from "../../../../components/team/team-tabs";
 import { cachedStandings } from "../../../../lib/espn";
 import { loadTeam } from "../../../../lib/find-team";
-import { readSlatePicks } from "../../../../lib/slate-picks";
 
 type Props = { params: Promise<{ id: string }>; children: ReactNode };
 
@@ -26,8 +25,11 @@ export async function generateMetadata({ params }: Pick<Props, "params">): Promi
  *
  * It waits for two reads, both answered from the cache (spec section 2): the team, and the
  * standings for its conference and division. The header's height depends on them (a long name
- * wraps on a phone), so no placeholder could stand in for it without the page moving. What the
- * team is doing now needs D1 and the Scoreboard as well, has one size, and streams in.
+ * wraps on a phone), so no placeholder could stand in for it without the page moving.
+ *
+ * The page is served from the page cache (`lib/page-cache.ts`), so nothing here may read what
+ * changes by the minute: what the team is doing now comes from the Scoreboard's socket and its
+ * pick from `GET /picks`, both after first paint, behind a placeholder of the card's size.
  */
 export default async function TeamLayout({ params, children }: Props) {
   const { id } = await params;
@@ -59,9 +61,9 @@ export default async function TeamLayout({ params, children }: Props) {
             />
           }
         />
-        <Suspense fallback={<NextGameSkeleton />}>
-          <Now teamId={id} listed={detail.nextGame} />
-        </Suspense>
+        <ScoreboardGate fallback={<NextGameSkeleton />}>
+          <TeamNow teamId={id} listed={detail.nextGame} />
+        </ScoreboardGate>
       </div>
       <div className="space-y-2">
         <TeamTabs teamId={id} />
@@ -75,10 +77,4 @@ export default async function TeamLayout({ params, children }: Props) {
       </p>
     </>
   );
-}
-
-/** The picks are today's slate's, from D1; a read that fails gives none (`readSlatePicks`). */
-async function Now({ teamId, listed }: { teamId: string; listed: Game | null }) {
-  const { picks } = await readSlatePicks();
-  return <TeamNow teamId={teamId} listed={listed} picks={picks} />;
 }

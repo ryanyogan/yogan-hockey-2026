@@ -1,0 +1,40 @@
+import { z } from "zod";
+import { GameSchema, GameSideSchema } from "./game.ts";
+
+/** One team's side of a game on the Scoreboard: enough to draw a ticker entry or a game row. */
+export const ScoreboardSideSchema = GameSideSchema.pick({
+  id: true,
+  abbreviation: true,
+  shortName: true,
+  logo: true,
+  logoDark: true,
+  score: true,
+  winner: true,
+});
+export type ScoreboardSide = z.infer<typeof ScoreboardSideSchema>;
+
+/**
+ * One game as the Scoreboard Agent pushes it to every open page. It is a `Game` with what the
+ * ticker and `/nhl/live` do not draw left out (venue, broadcasts, records, team colours), because
+ * the whole state is sent again on every change.
+ */
+export const ScoreboardGameSchema = GameSchema.pick({
+  id: true,
+  startTime: true,
+  seasonType: true,
+  status: true,
+  period: true,
+  clock: true,
+  detail: true,
+}).extend({ home: ScoreboardSideSchema, away: ScoreboardSideSchema });
+export type ScoreboardGame = z.infer<typeof ScoreboardGameSchema>;
+
+/** The Scoreboard Agent's synced state: today's games. */
+export const ScoreboardStateSchema = z.object({
+  /** The slate's date as the NHL counts it (Eastern time). Null until the first poll. */
+  date: z.iso.date().nullable(),
+  games: z.array(ScoreboardGameSchema),
+  /** When a poll last found something different, in UTC. Null until the first poll. */
+  updatedAt: z.iso.datetime().nullable(),
+});
+export type ScoreboardState = z.infer<typeof ScoreboardStateSchema>;

@@ -21,6 +21,27 @@ What earlier tickets learned that the code does not show. Read before building; 
 - **The Workers-runtime tests do not read `cloudflare.config.ts`.** `apps/web/vitest.config.ts` repeats the bindings: each new Agent or binding goes in both. Its entry is `apps/web/agents/index.ts`, it aliases `next/cache` to `vinext/shims/cache`, and it runs on compatibility date 2026-08-22, the newest the pool's workerd accepts.
 - **vitest is held at 4.x** because `@cloudflare/vitest-pool-workers` 0.22 requires it.
 
+## Agents that poll
+
+- **A polling Agent extends `ViewerPolledAgent`** (`apps/web/agents/viewer-polled-agent.ts`) and writes `poll()`, `pollIntervalSeconds()` and `alertSource`. The base class owns the timer, the staleness check for first paint (`pollIfStale()`), the alert and the read-only rule. Its timer is a one-off `schedule()` that each poll sets again, never `scheduleEvery`, so the cadence can change between polls.
+- **A subclass that overrides `onConnect` or `onClose` must call `super`**, or polling never starts or never stops.
+- **Connecting a page**: a server component calls `readScoreboard()` (`apps/web/lib/scoreboard.ts`) and passes the result to a client component, which calls `useAgent<ScoreboardState>({ ...SCOREBOARD_CONNECTION, onStateUpdate })` with `SCOREBOARD_CONNECTION` from `apps/web/lib/scoreboard-connection.ts`. A client component must not import `lib/scoreboard.ts`: it imports `cloudflare:workers`.
+- **Worker secrets are typed by hand** in `apps/web/env.d.ts`; `cloudflare.config.ts` has no way to declare one. `NTFY_TOPIC` is the only one. Tests get it from `bindings` in `apps/web/vitest.config.ts`.
+
+## Testing an Agent in the Workers pool
+
+`apps/web/agents/scoreboard-agent.test.ts` is the worked example.
+
+- **The Agent runs in the test's own isolate**, so `vi.stubGlobal("fetch", ...)`, `vi.stubEnv` and `vi.useFakeTimers` all reach it. Stubbing `fetch` puts recorded ESPN responses through the real parser and catches the ntfy pushes.
+- **Fake only the clock**: `vi.useFakeTimers({ toFake: ["Date"], now })`. The Agents SDK decides what is due from `Date.now()`, so `vi.setSystemTime(...)` followed by `runDurableObjectAlarm(stub)` runs whatever schedule has come due. The alarm helper returns `false` when no alarm is set, which is how a test sees that polling has stopped. Leave `setTimeout` real, or `vi.waitFor` never ticks.
+- **Set the faked clock ahead of the real one.** A schedule made by a clock that is behind is an alarm already due, and workerd fires it by itself.
+- **A socket**: `routeAgentRequest(new Request("http://localhost/agents/<kebab-class>/<name>", { headers: { Upgrade: "websocket" } }), env)`, then `response.webSocket.accept()`. `onConnect` has run by the time it returns. On connect the SDK sends `cf_agent_identity`, `cf_agent_state` and `cf_agent_mcp_servers`; a write from the client is `{ type: "cf_agent_state", state }` and is answered with `cf_agent_state_error`.
+- **`onClose` runs some time after `socket.close()`.** Wait for it: `vi.waitFor` on `runInDurableObject(stub, (agent) => [...agent.getConnections()].length)`.
+- **A restart is `evictDurableObject(stub)`**: memory goes, storage, schedules and hibernated sockets stay. It needs a default export on the test entry, which is why the entry is `agents/test-worker.ts`. It hangs under a faked clock (switch to real timers around it) and it hangs for good once the Agent has awaited a `fetch` stubbed by the test, so a restart test uses `ESPN_FIXTURES=1` up to the restart.
+- **`console.log` in a test does not reach the terminal.** `console.error` from the Agent does, so the failing-poll tests are noisy by design.
+- **Biome reads a helper named `after` as a test hook** (`noDuplicateTestHooks`). Call it something else.
+- **The tests of one file share Durable Object storage.** Give each test its own instance name.
+
 ## D1
 
 - **Migrations are additive only from `0000_init`.** #37 replaced the skeleton's migration with it, since nothing had been deployed. Change `packages/db/src/schema.ts`, run `pnpm db:generate`, commit the new file; never edit or regenerate an old one. A local database made before #37 has the old migration recorded: delete `apps/web/.cloudflare/state` once.

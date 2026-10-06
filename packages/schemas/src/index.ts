@@ -5,6 +5,7 @@ export * from "./game.ts";
 export * from "./game-summary.ts";
 export * from "./play.ts";
 export * from "./player.ts";
+export * from "./scoreboard-state.ts";
 export * from "./standings.ts";
 export * from "./standings-views.ts";
 export * from "./stored-prediction.ts";

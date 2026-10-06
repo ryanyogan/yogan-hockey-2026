@@ -17,6 +17,7 @@ export default defineConfig({
     assets: { notFoundHandling: "none" },
     observability: { enabled: true },
     exports: {
+      ScoreboardAgent: exports.durableObject({ storage: "sqlite" }),
       SkeletonAgent: exports.durableObject({ storage: "sqlite" }),
     },
     env: {
@@ -25,6 +26,7 @@ export default defineConfig({
       VINEXT_KV_CACHE: bindings.kv(),
       // The permanent record. Real ids arrive with account setup (#32).
       DB: bindings.d1({ id: LOCAL_D1_ID, name: "yogan-hockey" }),
+      ScoreboardAgent: bindings.durableObject({ worker: NAME, exportName: "ScoreboardAgent" }),
       SkeletonAgent: bindings.durableObject({ worker: NAME, exportName: "SkeletonAgent" }),
     },
   }),

@@ -9,8 +9,8 @@ A family member whose season the site follows outside the NHL. Currently only Ry
 _Avoid_: Featured player, family player
 
 **Rylan Yogan**:
-The name the site and this project use for the younger Tracked Player. It is not his legal name; leagues list him as Rylan Flaherty.
-_Avoid_: Rylan Flaherty (except when looking him up in a league's own data)
+The name the site and this project use for the younger Tracked Player. It is not his legal name, which leagues list him under and which is never written in this repo, its issues or the site (ADR 0005).
+_Avoid_: his legal surname, anywhere
 
 **Game Stream**:
 The live play-by-play of one in-progress game, pushed to viewers as plays happen. It runs only while someone is watching that game.

@@ -1,5 +1,6 @@
 import { EspnFetchError } from "@yogan-hockey/espn";
 import type { TeamDetail } from "@yogan-hockey/schemas";
+import { cache } from "react";
 import { cachedTeam } from "./espn";
 import { isTeamId } from "./team-page";
 
@@ -16,3 +17,9 @@ export async function findTeam(id: string): Promise<TeamDetail | null> {
     throw error;
   }
 }
+
+/**
+ * `findTeam`, once per request: a team's layout, its title and the tab's page each want the team,
+ * and share one read.
+ */
+export const loadTeam = cache(findTeam);

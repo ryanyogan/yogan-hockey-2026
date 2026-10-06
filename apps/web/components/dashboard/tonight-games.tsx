@@ -1,11 +1,11 @@
 "use client";
 
 import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
-import Link from "next/link";
 import type { ReactNode } from "react";
 import { tonightGames, tonightSummary } from "../../lib/dashboard";
 import { pickNote } from "../../lib/picks";
 import { useFavorites } from "../../lib/use-favorites";
+import { Link } from "../link";
 import { GameLedger } from "../scoreboard/game-ledger";
 import { useScoreboard } from "../scoreboard/scoreboard-provider";
 import { EmptyLedger } from "../team/empty-ledger";

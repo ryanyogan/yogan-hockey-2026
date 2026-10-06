@@ -12,10 +12,10 @@ import {
   ledgerRowLink,
 } from "@yogan-hockey/ui/components/ledger";
 import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
-import Link from "next/link";
 import { pickNote } from "../../lib/picks";
 import { gameHref } from "../../lib/scoreboard-view";
 import { liveGame, nextGame, nextGamePick, scheduleRow } from "../../lib/team-schedule";
+import { Link } from "../link";
 import { LocalTime } from "../local-time";
 import { TeamName } from "../nhl/team-name";
 import { GameLedger } from "../scoreboard/game-ledger";

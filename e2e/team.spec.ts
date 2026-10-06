@@ -108,7 +108,7 @@ test("a team's page shows each tab from a pasted URL, titled with the team's nam
     standBetween,
   );
 
-  await paste("/nhl/teams/21?tab=roster", async (page) => {
+  await paste("/nhl/teams/21/roster", async (page) => {
     await expect(page).toHaveTitle(TITLE);
     await expect(tabs(page).locator('[aria-current="page"]')).toHaveText("roster");
     // ESPN's 24 and, ahead of them, the fictional player of #46 (`e2e/family.spec.ts`).
@@ -128,7 +128,7 @@ test("a team's page shows each tab from a pasted URL, titled with the team's nam
     await expect(back(page)).toHaveAttribute("href", "/nhl");
   });
 
-  await paste("/nhl/teams/21?tab=stats", async (page) => {
+  await paste("/nhl/teams/21/stats", async (page) => {
     await expect(page).toHaveTitle(TITLE);
     await expect(tabs(page).locator('[aria-current="page"]')).toHaveText("stats");
     // Played, goals for, goals against, difference, power play, penalty kill, home, road.
@@ -157,7 +157,7 @@ test("a team's page shows each tab from a pasted URL, titled with the team's nam
 
     // Unverified row 10 of the spec. A browser is sent the title late, in the body, and shows
     // it; a link preview reads the HTML alone, and for those the title is in <head>.
-    const response = await page.request.get("/nhl/teams/21?tab=stats", {
+    const response = await page.request.get("/nhl/teams/21/stats", {
       headers: { "user-agent": "Twitterbot/1.0" },
     });
     const head = (await response.text()).split("</head>")[0];

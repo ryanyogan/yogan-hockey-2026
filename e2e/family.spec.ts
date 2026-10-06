@@ -62,7 +62,7 @@ test("/family/rylan shows each tab from a pasted URL, and /yogan leads to it", a
 test("the fictional Rylan Yogan leads Toronto's roster, is found by search and has a page", async ({
   page,
 }) => {
-  await page.goto("/nhl/teams/21?tab=roster");
+  await page.goto("/nhl/teams/21/roster");
 
   // Toronto as recorded has 24 players; he is the 25th, and the first row.
   const roster = section(page, /^Roster/);

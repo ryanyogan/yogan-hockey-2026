@@ -1,6 +1,6 @@
 import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
 import type { Metadata } from "next";
-import Link from "next/link";
+import { Link } from "../../../../components/link";
 import { nhlHref } from "../../../../lib/nhl-page";
 
 export const metadata: Metadata = { title: "Team not found" };

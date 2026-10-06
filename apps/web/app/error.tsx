@@ -1,9 +1,9 @@
 "use client";
 
 import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
-import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
+import { Link } from "../components/link";
 import { unreadPage } from "../lib/error-page";
 
 /**

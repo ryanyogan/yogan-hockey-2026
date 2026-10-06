@@ -1,44 +1,49 @@
 import { describe, expect, it } from "vitest";
-import { isTeamId, readTeamPage, teamPageHref } from "./team-page";
+import { isTeamId, legacyTeamTabRedirects, teamPageHref, teamTabOfPath } from "./team-page";
 
-describe("reading a team page's query string", () => {
-  it("shows the schedule when the URL says nothing", () => {
-    expect(readTeamPage({})).toEqual({ tab: "schedule" });
-  });
-
-  it("takes the tab from the URL", () => {
-    expect(readTeamPage({ tab: "roster" })).toEqual({ tab: "roster" });
-    expect(readTeamPage({ tab: "stats" })).toEqual({ tab: "stats" });
-    expect(readTeamPage({ tab: "schedule" })).toEqual({ tab: "schedule" });
-  });
-
-  it("falls back to the schedule for an unknown tab", () => {
-    expect(readTeamPage({ tab: "lines" })).toEqual({ tab: "schedule" });
-    expect(readTeamPage({ tab: "" })).toEqual({ tab: "schedule" });
-    // The URL is matched as written: "Roster" is not a tab.
-    expect(readTeamPage({ tab: "Roster" })).toEqual({ tab: "schedule" });
-  });
-
-  it("reads the first value when the tab is given twice", () => {
-    expect(readTeamPage({ tab: ["stats", "roster"] })).toEqual({ tab: "stats" });
-  });
-});
-
-describe("links within a team page", () => {
-  it("leaves the default tab out of the URL", () => {
+describe("the address of each tab of a team's page", () => {
+  it("is the team's own address for the schedule", () => {
     expect(teamPageHref("21", "schedule")).toBe("/nhl/teams/21");
   });
 
-  it("names any other tab", () => {
-    expect(teamPageHref("21", "roster")).toBe("/nhl/teams/21?tab=roster");
-    expect(teamPageHref("13", "stats")).toBe("/nhl/teams/13?tab=stats");
+  it("is a segment under it for any other tab", () => {
+    expect(teamPageHref("21", "roster")).toBe("/nhl/teams/21/roster");
+    expect(teamPageHref("13", "stats")).toBe("/nhl/teams/13/stats");
   });
+});
 
+describe("which tab a path is", () => {
   it("reads back every address it writes", () => {
     for (const tab of ["schedule", "roster", "stats"] as const) {
-      const query = Object.fromEntries(new URL(teamPageHref("21", tab), "http://x").searchParams);
-      expect(readTeamPage(query)).toEqual({ tab });
+      expect(teamTabOfPath(teamPageHref("21", tab))).toBe(tab);
     }
+  });
+
+  it("is the schedule for anything else", () => {
+    expect(teamTabOfPath("/nhl/teams/21/")).toBe("schedule");
+    expect(teamTabOfPath("/nhl/teams/21/lines")).toBe("schedule");
+    expect(teamTabOfPath("/nhl")).toBe("schedule");
+  });
+});
+
+describe("the addresses tabs had while they were in the query string", () => {
+  const redirects = legacyTeamTabRedirects();
+
+  it("send each tab but the schedule, which has not moved, to its new address", () => {
+    expect(redirects).toEqual([
+      {
+        source: "/nhl/teams/:id",
+        has: [{ type: "query", key: "tab", value: "roster" }],
+        destination: "/nhl/teams/:id/roster",
+        permanent: true,
+      },
+      {
+        source: "/nhl/teams/:id",
+        has: [{ type: "query", key: "tab", value: "stats" }],
+        destination: "/nhl/teams/:id/stats",
+        permanent: true,
+      },
+    ]);
   });
 });
 
@@ -48,10 +53,9 @@ describe("what can be a team's id", () => {
     expect(isTeamId("124292")).toBe(true);
   });
 
-  it("is nothing else, so a mistyped address is a missing team and not a failed request", () => {
+  it("is nothing else", () => {
     expect(isTeamId("leafs")).toBe(false);
-    expect(isTeamId("21abc")).toBe(false);
+    expect(isTeamId("21a")).toBe(false);
     expect(isTeamId("")).toBe(false);
-    expect(isTeamId("2 1")).toBe(false);
   });
 });

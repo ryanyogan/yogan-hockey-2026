@@ -10,9 +10,9 @@ import {
 } from "@yogan-hockey/ui/components/ledger";
 import { LiveMarker } from "@yogan-hockey/ui/components/marker";
 import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
-import Link from "next/link";
 import { gameHref } from "../../lib/scoreboard-view";
 import type { ResultRow, ScheduleRow } from "../../lib/team-schedule";
+import { Link } from "../link";
 import { LocalTime } from "../local-time";
 import { TeamName } from "../nhl/team-name";
 import { EmptyLedger } from "./empty-ledger";

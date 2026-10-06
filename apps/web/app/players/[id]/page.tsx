@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 import { FavoriteHeart } from "../../../components/favorites/favorite-heart";
+import { Link } from "../../../components/link";
 import {
   CareerSection,
   GameLogSection,

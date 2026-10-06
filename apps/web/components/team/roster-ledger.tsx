@@ -9,9 +9,9 @@ import {
   ledgerRowLink,
 } from "@yogan-hockey/ui/components/ledger";
 import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
-import Link from "next/link";
 import type { ReactNode } from "react";
 import { playerHref } from "../../lib/roster";
+import { Link } from "../link";
 import { EmptyLedger } from "./empty-ledger";
 
 /**

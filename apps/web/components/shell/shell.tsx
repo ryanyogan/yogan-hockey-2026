@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { type ReactNode, Suspense } from "react";
+import { Link } from "../link";
 import { MobileMenu } from "./mobile-menu";
 import { NavLinks } from "./nav-links";
 import { ScoreTickerSlot } from "./score-ticker-slot";

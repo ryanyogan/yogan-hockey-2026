@@ -10,8 +10,8 @@ import {
   LedgerRow,
   ledgerRowLink,
 } from "@yogan-hockey/ui/components/ledger";
-import Link from "next/link";
 import type { ReactNode } from "react";
+import { Link } from "../link";
 
 /**
  * A list of players, each row leading to his page: search results and favorite players. It has
@@ -53,7 +53,7 @@ export function PlayerLedger<P extends PlayerSearchResult>({
         {players.map((player) => (
           <LedgerRow key={player.id} interactive>
             <LedgerCell>
-              <Link href={`/players/${player.id}`} prefetch={false} className={ledgerRowLink}>
+              <Link href={`/players/${player.id}`} className={ledgerRowLink}>
                 {player.name}
               </Link>
               {player.jersey && !compact ? <LedgerAside> #{player.jersey}</LedgerAside> : null}

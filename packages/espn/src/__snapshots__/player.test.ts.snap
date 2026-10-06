@@ -1009,6 +1009,7 @@ exports[`a player's game log > matches the snapshot, skater and goalie 1`] = `
     },
   ],
   "playerId": "4024123",
+  "season": "2026-27 Regular Season",
 }
 `;
 
@@ -1094,6 +1095,7 @@ exports[`a player's game log > matches the snapshot, skater and goalie 2`] = `
     },
   ],
   "playerId": "3067313",
+  "season": "2026-27 Regular Season",
 }
 `;
 

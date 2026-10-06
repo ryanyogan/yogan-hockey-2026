@@ -83,9 +83,14 @@ export const PlayerCareerSchema = z.object({
 });
 export type PlayerCareer = z.infer<typeof PlayerCareerSchema>;
 
-/** A player's games this season, newest first, each with his line in it. */
+/**
+ * A player's games in the latest season he played, newest first, each with his line in it. Before
+ * he plays in a new season that is still last season's.
+ */
 export const PlayerGameLogSchema = z.object({
   playerId: z.string().min(1),
+  /** "2026-27 Regular Season". Null when he has no games. */
+  season: z.string().nullable(),
   columns: z.array(StatColumnSchema),
   games: z.array(
     RecentGameSchema.extend({

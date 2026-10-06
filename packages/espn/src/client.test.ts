@@ -160,6 +160,33 @@ describe("against ESPN", () => {
     });
   });
 
+  test("a player yet to play in the NHL has an empty career and game log", async () => {
+    // What ESPN answers for the stats and game log of Sam O'Reilly (5216901), who has a profile.
+    fetchMock.mockImplementation(
+      async () => new Response('{"code":404,"message":"Game log not found"}', { status: 404 }),
+    );
+
+    expect(await getPlayerCareer("5216901")).toEqual({
+      playerId: "5216901",
+      columns: [],
+      seasons: [],
+      totals: [],
+    });
+    expect(await getPlayerGameLog("5216901")).toEqual({
+      playerId: "5216901",
+      season: null,
+      columns: [],
+      games: [],
+    });
+  });
+
+  test("a career that could not be fetched for any other reason is still an error", async () => {
+    fetchMock.mockImplementation(async () => new Response("", { status: 503 }));
+
+    await expect(getPlayerCareer("4024123")).rejects.toMatchObject({ status: 503 });
+    await expect(getPlayerGameLog("4024123")).rejects.toMatchObject({ status: 503 });
+  });
+
   test("an answer in a shape ESPN did not use before is a parse error naming the endpoint", async () => {
     fetchMock.mockResolvedValue(Response.json({ sports: "hockey" }));
 

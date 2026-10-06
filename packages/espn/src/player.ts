@@ -52,11 +52,12 @@ const EspnAthleteProfile = z.object({
   }),
 });
 
-/** "17/9/1997" to "1997-09-17". Null for anything else. */
+/** "17/9/1997" to "1997-09-17". Null for anything that is not a real day written that way. */
 function birthDateFrom(displayDOB: string | null | undefined): string | null {
   const [, day, month, year] = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(displayDOB ?? "") ?? [];
   if (!day || !month || !year) return null;
-  return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+  const date = `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+  return z.iso.date().safeParse(date).success ? date : null;
 }
 
 /** Translates an athlete response into a player page's header and season summary. */
@@ -172,6 +173,7 @@ const EspnAthleteGameLog = z.object({
   seasonTypes: z
     .array(
       z.object({
+        displayName: z.string().nullish(),
         // One per month, newest first.
         categories: z.array(
           z.object({
@@ -185,7 +187,7 @@ const EspnAthleteGameLog = z.object({
     .nullish(),
 });
 
-/** Translates an athlete's game log response into his games this season, newest first. */
+/** Translates an athlete's game log response into his latest season's games, newest first. */
 export function translatePlayerGameLog(json: unknown, athleteId: string): PlayerGameLog {
   return translateResponse(
     endpoints.playerGameLog(athleteId),
@@ -194,6 +196,7 @@ export function translatePlayerGameLog(json: unknown, athleteId: string): Player
     PlayerGameLogSchema,
     (log) => ({
       playerId: athleteId,
+      season: log.seasonTypes?.[0]?.displayName ?? null,
       columns: columnsFrom(log.names ?? [], log.labels ?? []),
       games: (log.seasonTypes ?? [])
         .flatMap((seasonType) => seasonType.categories)

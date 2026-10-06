@@ -8,8 +8,15 @@ import {
   type SeasonSeries,
 } from "@yogan-hockey/schemas";
 import { z } from "zod";
-import { endpoints } from "./endpoints.ts";
-import { EspnCompetitor, EspnStatusType, espnInstant, sideFrom, statusFrom } from "./espn-game.ts";
+import { endpoints, slug } from "./endpoints.ts";
+import {
+  EspnCompetitor,
+  EspnStatusType,
+  espnInstant,
+  OVERALL_RECORD_TYPES,
+  sideFrom,
+  statusFrom,
+} from "./espn-game.ts";
 import { EspnRecentGame, recentGameFrom } from "./espn-recent-game.ts";
 import { espnStats, recordOnly, statValue } from "./espn-stats.ts";
 import { EspnTeam } from "./espn-team.ts";
@@ -196,17 +203,10 @@ const EspnSummary = z.object({
 });
 type EspnSummary = z.infer<typeof EspnSummary>;
 
-/** "End of Game" to "end-of-game", for the one play type ESPN gives no abbreviation. */
-function slug(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-}
-
 function playFrom(play: EspnPlay): Play {
   return {
     id: play.id,
+    // "End of Game" has no abbreviation, so it is named from its wording: "end-of-game".
     type: play.type.abbreviation ?? slug(play.type.text),
     typeText: play.type.text,
     period: play.period.number,
@@ -294,8 +294,8 @@ function pregameSideFrom(
 ): PregameSide {
   const teamId = competitor.team.id;
   const records = new Map((competitor.record ?? []).map((record) => [record.type, record]));
-  const record = (type: string) => {
-    const text = records.get(type)?.displayValue;
+  const record = (...types: string[]) => {
+    const text = types.map((type) => records.get(type)?.displayValue).find((found) => found);
     return text === undefined ? null : recordOnly(text);
   };
 
@@ -316,7 +316,11 @@ function pregameSideFrom(
 
   return {
     teamId,
-    record: { overall: record("total"), home: record("home"), road: record("road") },
+    record: {
+      overall: record(...OVERALL_RECORD_TYPES),
+      home: record("home"),
+      road: record("road"),
+    },
     standing,
     lastFive: (mine(summary.lastFiveGames)?.events ?? []).map((event) =>
       recentGameFrom(event, teamId),

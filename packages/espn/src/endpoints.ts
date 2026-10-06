@@ -23,6 +23,14 @@ const SEARCH = "https://site.api.espn.com/apis/common/v3/search";
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 const ESPN_ID = /^\d+$/;
 
+/** "End of Game" to "end-of-game". */
+export function slug(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
 function teamPath(teamId: string): string {
   if (!ESPN_ID.test(teamId)) throw new RangeError(`Not an ESPN team id: ${teamId}`);
   return `teams/${teamId}`;
@@ -104,10 +112,6 @@ export const endpoints = {
       league: "nhl",
       limit: String(PLAYER_SEARCH_LIMIT),
     });
-    const slug = query
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "");
-    return { name: "search", url: `${SEARCH}?${params}`, fixture: `search-${slug}` };
+    return { name: "search", url: `${SEARCH}?${params}`, fixture: `search-${slug(query)}` };
   },
 };

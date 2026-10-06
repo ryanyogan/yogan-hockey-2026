@@ -104,14 +104,27 @@ export async function getPlayer(playerId: string): Promise<PlayerProfile> {
   return translatePlayer(await read(endpoints.player(playerId)), playerId);
 }
 
-/** A player's career table: one row per regular season, with totals. */
-export async function getPlayerCareer(playerId: string): Promise<PlayerCareer> {
-  return translatePlayerCareer(await read(endpoints.playerCareer(playerId)), playerId);
+/**
+ * ESPN has a profile for a player who has yet to play in the NHL, and answers 404 for his stats
+ * and his game log. That is an empty table, not a missing player: the profile says who exists.
+ */
+async function readTable(endpoint: Endpoint): Promise<unknown> {
+  try {
+    return await read(endpoint);
+  } catch (error) {
+    if (error instanceof EspnFetchError && error.status === 404) return {};
+    throw error;
+  }
 }
 
-/** A player's games this season, newest first. */
+/** A player's career table: one row per regular season, with totals. Empty before his first game. */
+export async function getPlayerCareer(playerId: string): Promise<PlayerCareer> {
+  return translatePlayerCareer(await readTable(endpoints.playerCareer(playerId)), playerId);
+}
+
+/** A player's games in his latest season, newest first. Empty before his first game. */
 export async function getPlayerGameLog(playerId: string): Promise<PlayerGameLog> {
-  return translatePlayerGameLog(await read(endpoints.playerGameLog(playerId)), playerId);
+  return translatePlayerGameLog(await readTable(endpoints.playerGameLog(playerId)), playerId);
 }
 
 /** Up to ten NHL players whose names match. A blank query finds nobody and asks ESPN nothing. */

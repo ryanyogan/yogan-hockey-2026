@@ -11,7 +11,7 @@ const FINISHED = "401803652";
 const SCHEDULED = "401892449";
 
 type Recorded = {
-  plays?: { id: string; sequenceNumber: string }[];
+  plays?: { id: string; sequenceNumber: string; period: { number: number } }[];
   pickcenter?: { provider: { name: string } }[];
 };
 const recorded = (gameId: string) => loadFixture(endpoints.summary(gameId)) as Promise<Recorded>;
@@ -57,6 +57,38 @@ describe("the header of a finished game", () => {
     const { header } = await finished();
 
     expect(header.period).toBe(5);
+  });
+});
+
+describe("the header of a game being played", () => {
+  type Status = { type: Record<string, unknown>; period?: number; displayClock?: string };
+  /** The finished game as it stood late in the second period. No live summary is recorded yet. */
+  async function live(clock: Pick<Status, "period" | "displayClock">) {
+    const espn = structuredClone(await recorded(FINISHED)) as Recorded & {
+      header: { competitions: { status: Status }[] };
+    };
+    const competition = espn.header.competitions[0];
+    if (!competition) throw new Error("the recorded summary has no competition");
+    competition.status = {
+      type: { ...competition.status.type, state: "in", completed: false, shortDetail: "2nd" },
+      ...clock,
+    };
+    espn.plays = (espn.plays ?? []).filter((play) => play.period.number <= 2);
+    return translateGameSummary(espn, FINISHED).header;
+  }
+
+  test("is live, with the period and the clock ESPN gives", async () => {
+    const header = await live({ period: 2, displayClock: "4:31" });
+
+    expect(header).toMatchObject({ status: "live", period: 2, clock: "4:31", detail: "2nd" });
+    expect(header.home.winner).toBe(false);
+    expect(header.away.winner).toBe(false);
+  });
+
+  test("takes the period from the last play when ESPN's status has none", async () => {
+    const header = await live({});
+
+    expect(header).toMatchObject({ status: "live", period: 2, clock: "0:00" });
   });
 });
 
@@ -132,6 +164,18 @@ describe("the plays of a finished game", () => {
         { name: "Josh Norris", role: null },
       ],
     });
+  });
+
+  test("a shootout goal is a goal that leaves the running score where it was", async () => {
+    const { plays } = await finished();
+
+    const shootout = plays.filter((play) => play.periodText === "SO");
+
+    expect(shootout.filter((play) => play.scoring)).toHaveLength(5);
+    expect(plays.filter((play) => play.scoring && play.periodText !== "SO")).toHaveLength(6);
+    expect(new Set(shootout.map((play) => `${play.awayScore}-${play.homeScore}`))).toEqual(
+      new Set(["3-2"]),
+    );
   });
 
   test("a play of a type ESPN gives no abbreviation is named from its wording", async () => {

@@ -39,7 +39,7 @@ export const RecentGameSchema = z.object({
 });
 export type RecentGame = z.infer<typeof RecentGameSchema>;
 
-/** Where a team sits in its division going into a game. */
+/** Where a team sits in its division when the summary is read: today, even for an old game. */
 export const PregameStandingSchema = z.object({
   /** 1 is first in the division. */
   position: z.number().int().positive(),
@@ -151,7 +151,10 @@ export const GameSummarySchema = z.object({
   header: GameHeaderSchema,
   /** Every play so far, in ESPN's order. Empty before the game starts. */
   plays: z.array(PlaySchema),
-  /** Filled for a scheduled game; ESPN drops the goalies and the last five games once it starts. */
+  /**
+   * Filled for a scheduled game. ESPN drops the goalies and the last five games once it starts,
+   * and a finished game's standings, injuries and leaders are today's, not that night's.
+   */
   pregame: PregameSchema,
 });
 export type GameSummary = z.infer<typeof GameSummarySchema>;

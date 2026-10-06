@@ -102,7 +102,7 @@ function scoreFrom(score: EspnCompetitor["score"]): number {
 }
 
 /** ESPN calls the overall record "total" on a slate still to be played and "ytd" everywhere else. */
-const OVERALL_RECORD_TYPES = ["total", "ytd"];
+export const OVERALL_RECORD_TYPES = ["total", "ytd"];
 
 function recordFrom(competitor: EspnCompetitor): string | null {
   const records = [

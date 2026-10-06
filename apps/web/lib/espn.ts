@@ -90,7 +90,7 @@ export function cachedPlayerCareer(playerId: string): Promise<PlayerCareer> {
   })();
 }
 
-/** A player's games this season. Six hours. */
+/** A player's games in his latest season. Six hours. */
 export function cachedPlayerGameLog(playerId: string): Promise<PlayerGameLog> {
   return unstable_cache(() => getPlayerGameLog(playerId), ["espn-player-game-log", playerId], {
     tags: [playerTag(playerId)],

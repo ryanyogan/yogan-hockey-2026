@@ -37,7 +37,10 @@ export const PlaySchema = z.object({
   teamId: z.string().min(1).nullable(),
   /** ESPN gives one on about 93% of plays. */
   coordinate: PlayCoordinateSchema.nullable(),
-  /** The play put a goal on the board. */
+  /**
+   * The play is a goal. A shootout goal is one too, though it leaves the running score where it
+   * was: the shootout's plays have `periodText` "SO".
+   */
   scoring: z.boolean(),
   /** The play is a penalty. ESPN has one type per infraction, so the type alone does not say. */
   penalty: z.boolean(),

@@ -46,6 +46,17 @@ describe("a player's profile", () => {
     });
   });
 
+  test("has no birth date when ESPN's is not a real day written day first", async () => {
+    const espn = structuredClone(await loadFixture(endpoints.player(SKATER))) as {
+      athlete: { displayDOB: string };
+    };
+
+    espn.athlete.displayDOB = "9/17/1997";
+    expect(translatePlayer(espn, SKATER).birthDate).toBeNull();
+    espn.athlete.displayDOB = "31/2/1997";
+    expect(translatePlayer(espn, SKATER).birthDate).toBeNull();
+  });
+
   test("has a skater's season summary: goals, assists, points and plus-minus", async () => {
     const { seasonSummary } = await profile(SKATER);
 
@@ -223,8 +234,9 @@ describe("a player's game log", () => {
     translatePlayerGameLog(await loadFixture(endpoints.playerGameLog(id)), id);
 
   test("is his games this season, newest first, each with the result and his line", async () => {
-    const { columns, games } = await gameLog(SKATER);
+    const { season, columns, games } = await gameLog(SKATER);
 
+    expect(season).toBe("2026-27 Regular Season");
     expect(columns).toHaveLength(14);
     expect(columns.slice(0, 6).map((column) => column.label)).toEqual([
       "G",
@@ -258,6 +270,7 @@ describe("a player's game log", () => {
   test("a player who has not played this season has no games", () => {
     expect(translatePlayerGameLog({}, SKATER)).toEqual({
       playerId: "4024123",
+      season: null,
       columns: [],
       games: [],
     });
@@ -318,8 +331,19 @@ describe("a player search", () => {
 
     const players = translatePlayerSearch(response, "mar");
 
-    expect(players).toHaveLength(10);
-    expect(players.map((player) => player.id)).not.toEqual(expect.arrayContaining(["1", "2", "3"]));
+    // The team and the AHL player are dropped, and the eleventh NHL player is one too many.
+    expect(players.map((player) => player.id)).toEqual([
+      "3852",
+      "4272192",
+      "4233586",
+      "4233884",
+      "4587996",
+      "4587985",
+      "5545",
+      "5103547",
+      "3899937",
+      "5452",
+    ]);
   });
 
   test("that finds nobody is an empty list", () => {

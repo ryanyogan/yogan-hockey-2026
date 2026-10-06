@@ -17,6 +17,7 @@ import {
 } from "../../lib/scoreboard-view";
 import { useFavorites } from "../../lib/use-favorites";
 import { Link } from "../link";
+import { TeamMark } from "../team-mark";
 import { GameStatus } from "./game-status";
 import { useScoreboard } from "./scoreboard-provider";
 
@@ -32,7 +33,11 @@ function Side({
 }) {
   return (
     <span className={`${side.winner ? "font-bold" : ""} ${className}`}>
-      <span data-slot="team">{side.abbreviation}</span>
+      <span className="whitespace-nowrap">
+        {/* The gap is 4px on a phone: a cell's 68px then holds the mark, "WSH" and "10". */}
+        <TeamMark teamId={side.id} eager className="mr-1 md:mr-1.5" />
+        <span data-slot="team">{side.abbreviation}</span>
+      </span>
       {scored && <span className="tabular-nums"> {side.score}</span>}
     </span>
   );

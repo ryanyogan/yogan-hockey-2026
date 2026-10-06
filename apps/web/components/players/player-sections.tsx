@@ -21,6 +21,7 @@ import {
 } from "../../lib/player-view";
 import { Link } from "../link";
 import { teamHref } from "../nhl/team-name";
+import { TeamMark } from "../team-mark";
 
 /*
  * The parts of a player page, in the ledger's language: a header line, then one dense table per
@@ -74,7 +75,8 @@ export function PlayerHeader({ profile, action }: { profile: PlayerProfile; acti
           {profile.team ? (
             <>
               {" · "}
-              <Link href={teamHref(profile.team)} className="underline">
+              <Link href={teamHref(profile.team)} className="whitespace-nowrap underline">
+                <TeamMark teamId={profile.team.id} eager />
                 {profile.team.name}
               </Link>
             </>
@@ -313,6 +315,7 @@ export function TeamSection({ team }: { team: Team }) {
           <LedgerRow interactive className="border-t border-t-foreground/20">
             <LedgerCell>
               <Link href={teamHref(team)} className={ledgerRowLink}>
+                <TeamMark teamId={team.id} />
                 {team.name}
               </Link>{" "}
               <LedgerAside>{team.abbreviation}</LedgerAside>

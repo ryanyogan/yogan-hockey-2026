@@ -15,6 +15,7 @@ import type { ResultRow, ScheduleRow } from "../../lib/team-schedule";
 import { Link } from "../link";
 import { LocalTime } from "../local-time";
 import { TeamName } from "../nhl/team-name";
+import { TeamMark } from "../team-mark";
 import { EmptyLedger } from "./empty-ledger";
 import { Versus } from "./versus";
 
@@ -39,7 +40,8 @@ function GameCells({ row }: { row: ScheduleRow }) {
         </Link>
       </LedgerCell>
       <LedgerCell className="whitespace-nowrap">
-        <Versus home={row.home} /> <TeamName team={row.opponent} />
+        <Versus home={row.home} /> <TeamMark teamId={row.opponent.id} />
+        <TeamName team={row.opponent} />
       </LedgerCell>
     </>
   );

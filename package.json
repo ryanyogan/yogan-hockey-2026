@@ -15,6 +15,7 @@
     "typecheck": "tsc --noEmit && pnpm -r typecheck",
     "test": "vitest run",
     "test:e2e": "playwright test",
+    "team-marks": "node scripts/team-marks.ts",
     "record:fixtures": "node packages/espn/scripts/record-fixtures.ts",
     "check:espn": "node packages/espn/scripts/check-live.ts",
     "db:generate": "pnpm --filter @yogan-hockey/db generate"
@@ -23,6 +24,7 @@
     "@biomejs/biome": "2.5.15",
     "@playwright/test": "1.63.0",
     "@types/node": "26.6.4",
+    "sharp": "0.35.5",
     "typescript": "7.0.2",
     "vitest": "4.1.11"
   }

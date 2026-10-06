@@ -16,8 +16,8 @@ export type ScoreboardSide = z.infer<typeof ScoreboardSideSchema>;
 /**
  * One game as the Scoreboard Agent pushes it to every open page. It is a `Game` with what the
  * ticker and the game rows do not draw left out (the season, and of each team its names, location
- * and colours), because the whole state is sent again on every change. The logos are carried for
- * the pages that will draw them, though the ledger and the ticker do not.
+ * and colours), because the whole state is sent again on every change. The logos are carried
+ * though nothing draws them: a team's mark is the site's own file, found by the team's id (#97).
  */
 export const ScoreboardGameSchema = GameSchema.pick({
   id: true,

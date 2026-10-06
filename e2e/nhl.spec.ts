@@ -53,6 +53,13 @@ const VIEWS = [
         "6",
       ]);
       await expect(leader.getByRole("link")).toHaveAttribute("href", "/nhl/teams/13");
+      // Every row has its team's mark: a file of the site's own, drawn, 14px square.
+      await expect(page.locator("main [data-slot=team-mark]")).toHaveCount(32);
+      const mark = leader.locator("[data-slot=team-mark] img");
+      await expect(mark).toHaveAttribute("src", /^\/team-marks\/13-28\.[0-9a-f]{8}\.webp$/);
+      await expect(mark).toHaveJSProperty("complete", true);
+      expect(await mark.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBe(28);
+      expect(await mark.boundingBox()).toMatchObject({ width: 14, height: 14 });
     },
   },
 ];
@@ -63,8 +70,14 @@ test("/nhl shows each standings view and the teams from a pasted URL", async ({ 
   const paste = async (url: string, check: (page: Page) => Promise<void>) => {
     const context = await browser.newContext();
     const page = await context.newPage();
+    // No image is ESPN's: the marks are the site's own files.
+    const abroad: string[] = [];
+    page.on("request", (request) => {
+      if (new URL(request.url()).hostname !== "localhost") abroad.push(request.url());
+    });
     await page.goto(url);
     await check(page);
+    expect(abroad).toEqual([]);
     await context.close();
   };
 

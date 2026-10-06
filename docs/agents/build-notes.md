@@ -77,6 +77,7 @@ What earlier tickets learned that the code does not show. Read before building; 
 - **Biome reads a helper named `after` as a test hook** (`noDuplicateTestHooks`). Call it something else.
 - **The tests of one file share Durable Object storage.** Give each test its own instance name.
 - **`runDurableObjectAlarm` runs what is due and no more.** A schedule a callback sets for "now" waits for the next call, so after a poll that leaves work a test calls it once more (`visit()` in `scoreboard-finals.test.ts`). It returns true whenever any alarm was set, due or not.
+- **A test's first call to an Agent starts it cold**, 2 to 5 seconds when other worktrees are running their suites, against Vitest's 5-second default. `lib/scoreboard.test.ts` timed out in the full suite for that reason and has a longer timeout; a test that fails only in the full run is likely this.
 - **A hook on the Agent can be spied on**: `runInDurableObject(stub, (instance) => vi.spyOn(instance, "method"))` reaches the live instance, since it is in the test's isolate.
 
 ## D1

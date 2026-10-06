@@ -105,3 +105,16 @@ export function nextGame(
   if (today != null) return today.status === "scheduled" ? listed : null;
   return date != null && slateDate(listed.startTime) < date ? null : listed;
 }
+
+/**
+ * The pick to show on the team's next game: the slate's line for it ("TOR 58%", "pick pending"),
+ * and nothing for a game with no line or one that is not on today's slate. `picks` is as old as
+ * the page's last render, so it is the Scoreboard's slate now that says which games are today's.
+ */
+export function nextGamePick(
+  next: Pick<Game, "id">,
+  picks: Readonly<Record<string, string>>,
+  slate: readonly Pick<ScoreboardGame, "id">[],
+): string | undefined {
+  return slate.some((game) => game.id === next.id) ? picks[next.id] : undefined;
+}

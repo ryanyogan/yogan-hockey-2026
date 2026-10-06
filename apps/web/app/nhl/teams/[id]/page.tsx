@@ -15,6 +15,7 @@ import { findTeam } from "../../../../lib/find-team";
 import { rosterWithLegend } from "../../../../lib/legend";
 import type { Query } from "../../../../lib/nhl-page";
 import { sortRoster } from "../../../../lib/roster";
+import { readSlatePicks } from "../../../../lib/slate-picks";
 import { readTeamPage, TEAM_TABS, teamPageHref } from "../../../../lib/team-page";
 import { scheduleView } from "../../../../lib/team-schedule";
 
@@ -38,7 +39,8 @@ export default async function TeamPage({ params, searchParams }: Props) {
   if (detail == null) notFound();
 
   const { tab } = readTeamPage(query);
-  const standings = await cachedStandings();
+  // The picks are today's slate's, from D1; a read that fails gives none (`readSlatePicks`).
+  const [standings, { picks }] = await Promise.all([cachedStandings(), readSlatePicks()]);
   const standing = standings.rows.find((row) => row.team.id === id) ?? null;
 
   return (
@@ -57,7 +59,7 @@ export default async function TeamPage({ params, searchParams }: Props) {
             />
           }
         />
-        <TeamNow teamId={id} listed={detail.nextGame} />
+        <TeamNow teamId={id} listed={detail.nextGame} picks={picks} />
       </div>
       <div className="space-y-2">
         <UrlTabs
@@ -78,6 +80,12 @@ export default async function TeamPage({ params, searchParams }: Props) {
           <Schedule teamId={id} />
         )}
       </div>
+      {/* The foot of the page on every tab, as the player page has "back to players". */}
+      <p className="px-2">
+        <Link href="/nhl" className="underline">
+          back to NHL
+        </Link>
+      </p>
     </>
   );
 }

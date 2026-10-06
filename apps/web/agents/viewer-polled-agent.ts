@@ -79,9 +79,12 @@ export abstract class ViewerPolledAgent<State> extends Agent<Env, State> {
 
   /**
    * For first paint: polls first when the last poll is older than one polling interval, which it
-   * is whenever nobody has been watching.
+   * is whenever nobody has been watching. A poll already under way is waited for: it counts as
+   * the last poll from the moment it starts, and until it ends the state is what it will replace
+   * (nothing at all, on an Agent's first poll).
    */
   protected async pollIfStale(): Promise<void> {
+    if (this.#polling) return this.#polling;
     const interval = this.pollIntervalSeconds();
     if (interval !== null && this.#secondsSincePoll() > interval) await this.pollNow();
   }

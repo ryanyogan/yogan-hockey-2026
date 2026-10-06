@@ -47,7 +47,7 @@ const END_OF_FIRST = 98;
 const db = createDb(env.DB);
 
 /** What ESPN answers a summary request with, by event id. */
-let espn: Map<string, () => Response>;
+let espn: Map<string, () => Response | Promise<Response>>;
 let espnRequests: number;
 let pushes: Push[];
 
@@ -731,6 +731,53 @@ describe("a game that is not in progress when someone arrives", () => {
     await later(IDLE);
     await vi.waitFor(() => expect(viewer.states().at(-1)?.header?.status).toBe("live"));
     expect((await agent.getGame()).notFound).toBe(false);
+  });
+});
+
+describe("the first read of a game nobody has opened", () => {
+  /** ESPN's answer for `id`, kept back until `arrive()`. */
+  function slow(id: string, answer: () => Response): { arrive: () => void } {
+    let arrive = () => {};
+    const held = new Promise<void>((resolve) => {
+      arrive = resolve;
+    });
+    espn.set(id, async () => {
+      await held;
+      return answer();
+    });
+    return { arrive };
+  }
+
+  test("a read that arrives while ESPN is still answering the first waits for that answer", async () => {
+    const { id, agent } = await game();
+    const espnAnswer = slow(id, scheduled(id, 3));
+
+    const first = agent.getGame();
+    await vi.waitFor(() => expect(espnRequests).toBe(1));
+    const second = agent.getGame();
+    const waiting = new Promise<string>((resolve) => setTimeout(resolve, 250, "still waiting"));
+    expect(await Promise.race([second, waiting])).toBe("still waiting");
+
+    espnAnswer.arrive();
+    expect((await first).header).toMatchObject({ status: "scheduled", id });
+    expect((await second).header).toMatchObject({ status: "scheduled", id });
+    expect(espnRequests).toBe(1);
+  });
+
+  test("a first read ESPN fails is not remembered: the next read asks again", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    const { id, agent } = await game();
+    espn.set(id, espnDown);
+
+    expect(await agent.getGame()).toMatchObject({ header: null, plays: [], notFound: false });
+
+    espn.set(id, scheduled(id, 3));
+    expect((await agent.getGame()).header).toMatchObject({ status: "scheduled", id });
+    expect(espnRequests).toBe(2);
+
+    // With a header to show, a read inside the interval is answered from what is kept.
+    await agent.getGame();
+    expect(espnRequests).toBe(2);
   });
 });
 

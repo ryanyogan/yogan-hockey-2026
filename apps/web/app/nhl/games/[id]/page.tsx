@@ -46,9 +46,9 @@ async function Matchup({ header }: { header: GameHeader }) {
 }
 
 /**
- * A game that could not be read just now: the Game Agent answered twice with nothing, which is
- * ESPN failing on a game it has not seen before, or an Agent that had only just started. It is
- * not "not found", and the next request usually has it.
+ * A game that could not be read just now: ESPN did not answer for a game its Agent has never
+ * seen, or the Agent could not be reached. It is not "not found", and nothing is remembered: the
+ * next request asks ESPN again.
  */
 function GameUnreadable({ pathname }: { pathname: string }) {
   return (

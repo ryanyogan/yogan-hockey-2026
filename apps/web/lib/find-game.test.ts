@@ -37,29 +37,27 @@ test("a game with a header is found", async () => {
   expect(read).toHaveBeenCalledTimes(1);
 });
 
-test("a read that comes back with no header and no 'not found' is made once more", async () => {
-  const snapshot = { ...nothing, header: await header() };
-  const read = vi.fn().mockResolvedValueOnce(nothing).mockResolvedValueOnce(snapshot);
-
-  expect(await findGame("401803652", read)).toEqual({ state: "found", game: snapshot });
-  expect(read).toHaveBeenCalledTimes(2);
-});
-
-test("a read that throws is made once more as well", async () => {
+test("a read that throws is made once more", async () => {
+  vi.spyOn(console, "error").mockImplementation(() => {});
   const snapshot = { ...nothing, header: await header() };
   const read = vi.fn().mockRejectedValueOnce(new Error("cold")).mockResolvedValueOnce(snapshot);
 
   expect(await findGame("401803652", read)).toEqual({ state: "found", game: snapshot });
+  expect(read).toHaveBeenCalledTimes(2);
 });
 
-test("twice without a header is a game that could not be read, not an error", async () => {
+test("no header and no 'not found' is a game ESPN could not give: unreadable, and not asked again", async () => {
   vi.spyOn(console, "error").mockImplementation(() => {});
   const read = vi.fn().mockResolvedValue(nothing);
 
   expect(await findGame("401803652", read)).toEqual({ state: "unreadable" });
-  expect(read).toHaveBeenCalledTimes(2);
+  expect(read).toHaveBeenCalledTimes(1);
+});
 
+test("a read that throws twice is a game that could not be read, not an error", async () => {
+  vi.spyOn(console, "error").mockImplementation(() => {});
   const failing = vi.fn().mockRejectedValue(new Error("down"));
+
   expect(await findGame("401803652", failing)).toEqual({ state: "unreadable" });
   expect(failing).toHaveBeenCalledTimes(2);
 });

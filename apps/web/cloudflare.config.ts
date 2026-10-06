@@ -28,6 +28,7 @@ export default defineConfig({
         issues: { enabled: true },
       },
       exports: {
+        GameAgent: exports.durableObject({ storage: "sqlite" }),
         ScoreboardAgent: exports.durableObject({ storage: "sqlite" }),
         SkeletonAgent: exports.durableObject({ storage: "sqlite" }),
       },
@@ -37,6 +38,7 @@ export default defineConfig({
         VINEXT_KV_CACHE: bindings.kv({ id: target.kvId }),
         // The permanent record.
         DB: bindings.d1({ id: target.d1Id, name: target.d1Name }),
+        GameAgent: bindings.durableObject({ worker: NAME, exportName: "GameAgent" }),
         ScoreboardAgent: bindings.durableObject({ worker: NAME, exportName: "ScoreboardAgent" }),
         SkeletonAgent: bindings.durableObject({ worker: NAME, exportName: "SkeletonAgent" }),
       },

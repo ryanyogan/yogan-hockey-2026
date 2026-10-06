@@ -18,6 +18,7 @@ export default defineConfig(async () => ({
         compatibilityDate: "2026-08-22",
         compatibilityFlags: ["nodejs_compat"],
         durableObjects: {
+          GameAgent: { className: "GameAgent", useSQLite: true },
           ScoreboardAgent: { className: "ScoreboardAgent", useSQLite: true },
           SkeletonAgent: { className: "SkeletonAgent", useSQLite: true },
         },

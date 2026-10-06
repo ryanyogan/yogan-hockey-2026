@@ -24,6 +24,7 @@ export function PeriodTimeline({
   game,
   plays,
   ticks = plays,
+  upcoming = [],
   focusId,
   selectedId,
   onSelect,
@@ -34,6 +35,8 @@ export function PeriodTimeline({
   plays: readonly Play[];
   /** The plays to draw a tick for: the Key plays, or every play. All of `plays` if left out. */
   ticks?: readonly Play[];
+  /** Ticks for plays a Replay has not reached: drawn faint, and clickable like the rest. */
+  upcoming?: readonly Play[];
   /** The play in focus, whose tick is ringed: the picked play, or the latest. */
   focusId: string | null;
   /** The play the visitor picked, if any. */
@@ -55,8 +58,9 @@ export function PeriodTimeline({
           </span>
         </div>
       ))}
-      {ticks.map((play) => {
+      {[...ticks, ...upcoming].map((play, index) => {
         const kind = markKind(play);
+        const ahead = index >= ticks.length;
         const focused = play.id === focusId;
         return (
           <button
@@ -64,13 +68,14 @@ export function PeriodTimeline({
             type="button"
             data-slot="timeline-tick"
             data-kind={kind}
+            data-upcoming={ahead || undefined}
             aria-label={`${playTime(play)} ${play.text}`}
             aria-pressed={play.id === selectedId}
             title={play.text}
             onClick={() => onSelect(play.id)}
             className={`absolute bottom-1 -translate-x-1/2 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring ${tickClass(
               kind,
-            )} ${focused ? "z-30 ring-2 ring-foreground" : ""}`}
+            )} ${focused ? "z-30 ring-2 ring-foreground" : ""} ${ahead ? "opacity-30" : ""}`}
             style={{ left: `${(positions.get(play.id) ?? 0) * 100}%` }}
           />
         );

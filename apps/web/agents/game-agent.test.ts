@@ -758,6 +758,27 @@ describe("the Replay's first open of a game nobody watched", () => {
 
     expect(await getGameWithPlays(db, id)).toBeNull();
   });
+
+  test("a game seen to end keeps its last poll: an open in that half minute archives nothing", async () => {
+    const { id, agent, connect, later } = await game();
+    espn.set(id, live(id, 300));
+    const viewer = await connect();
+    await later(0);
+    const early = recorded(id, EVERY_PLAY - 2);
+    espn.set(id, () => Response.json(early));
+    await later(IN_PLAY);
+    await vi.waitFor(() => expect(viewer.states().at(-1)?.header?.status).toBe("final"));
+
+    expect(await agent.ensureArchived()).toBe(false);
+    expect(await gameHasPlays(db, id)).toBe(false);
+
+    // The last poll still brings the closing plays, and its write is the archive.
+    espn.set(id, final(id));
+    await later(LAST_POLL);
+    await vi.waitFor(() => expect(viewer.states().at(-1)?.archived).toBe(true));
+    expect(ids((await getGameWithPlays(db, id))?.plays ?? [])).toEqual(recordedIds(EVERY_PLAY));
+    expect(await agent.ensureArchived()).toBe(true);
+  });
 });
 
 describe("a restart in the middle of a game", () => {

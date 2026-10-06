@@ -395,11 +395,25 @@ function seasonSeriesFrom(summary: EspnSummary): SeasonSeries | null {
   };
 }
 
+/**
+ * A team's goalies: the list ESPN put that team's id on. Each list carries a `teamId`, which is
+ * trusted over the `homeTeam` or `awayTeam` key it arrives under; the key decides only when
+ * neither list names the team.
+ */
+function goaliesOf(
+  summary: EspnSummary,
+  competitor: EspnHeaderCompetitor,
+  key: "homeTeam" | "awayTeam",
+): z.infer<typeof EspnGoalies> | null | undefined {
+  const lists = [summary.goalies?.homeTeam, summary.goalies?.awayTeam];
+  return lists.find((list) => list?.teamId === competitor.team.id) ?? summary.goalies?.[key];
+}
+
 function pregameFrom(summary: EspnSummary): Pregame {
   const { home, away } = sides(summary);
   return {
-    home: pregameSideFrom(summary, home, summary.goalies?.homeTeam),
-    away: pregameSideFrom(summary, away, summary.goalies?.awayTeam),
+    home: pregameSideFrom(summary, home, goaliesOf(summary, home, "homeTeam")),
+    away: pregameSideFrom(summary, away, goaliesOf(summary, away, "awayTeam")),
     seasonSeries: seasonSeriesFrom(summary),
   };
 }

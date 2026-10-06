@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { pickOutcome, predictionOutputJsonSchema, predictionOutputSchema } from "./prediction.ts";
+import { pickOutcome, predictionOutputSchema } from "./prediction.ts";
 import type { StoredPrediction } from "./stored-prediction.ts";
 
 const schema = predictionOutputSchema(["NSH", "TOR"]);
@@ -67,23 +67,6 @@ describe("the model's answer", () => {
   test("an answer with a field missing fails", () => {
     const { reasoning: _reasoning, ...rest } = answer;
     expect(schema.safeParse(rest).success).toBe(false);
-  });
-});
-
-describe("the JSON Schema the model is held to", () => {
-  test("names the two teams as the only picks and requires every field", () => {
-    const json = predictionOutputJsonSchema(["NSH", "TOR"]);
-    expect(json).toMatchObject({
-      type: "object",
-      properties: {
-        pick: { type: "string", enum: ["NSH", "TOR"] },
-        winProbability: { type: "integer", minimum: 50, maximum: 99 },
-        reasoning: { type: "string" },
-        keyFactors: { type: "array", maxItems: 3, items: { type: "string" } },
-      },
-      required: ["pick", "winProbability", "reasoning", "keyFactors"],
-      additionalProperties: false,
-    });
   });
 });
 

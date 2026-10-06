@@ -310,6 +310,26 @@ describe("a model answer that is not a Prediction", () => {
     expect(calls).toHaveLength(3);
   });
 
+  test("a game whose third call was cut short by a restart is marked failed, not asked again", async () => {
+    const { agent, calls, firstPaint, work } = await scoreboard(valid);
+    espnSlate = slate(TODAY, [scheduledEvent("520106")]);
+    await firstPaint();
+    // What a restart during the last call leaves in storage: every call counted, no row.
+    await runInDurableObject(agent, (_instance, state) => {
+      const key = "pending-prediction:520106";
+      const noted = state.storage.kv.get<Record<string, unknown>>(key);
+      state.storage.kv.put(key, { ...noted, calls: 3, inputs: { home: {}, away: {} } });
+    });
+
+    await work();
+
+    expect(calls).toHaveLength(0);
+    expect(await getPrediction(db, "520106")).toMatchObject({
+      status: "failed",
+      model: FALLBACK_MODEL,
+    });
+  });
+
   test("a failed game is never tried again", async () => {
     const { calls, visit, visitLater } = await scoreboard(invalid, invalid, invalid, valid);
     espnSlate = slate(TODAY, [scheduledEvent("520105")]);
@@ -358,6 +378,33 @@ describe("a game that has already started", () => {
 
     expect(calls).toHaveLength(0);
     expect(await getPrediction(db, "520203")).toBeNull();
+  });
+
+  test("gets none when it starts while the model is answering", async () => {
+    const { calls, visit } = await scoreboard(() => {
+      vi.setSystemTime(NOW + 61 * 1000);
+      return valid;
+    });
+    espnSlate = slate(TODAY, [scheduledEvent("520205", 60)]);
+
+    await visit();
+
+    expect(calls).toHaveLength(1);
+    expect(await getPrediction(db, "520205")).toBeNull();
+  });
+
+  test("a game put back to a later start still gets its Prediction before it", async () => {
+    const { visit, visitLater } = await scoreboard(valid);
+    espnSlate = slate(TODAY, [scheduledEvent("520206", 60)]);
+    espnSummary = () => new Response("Bad gateway", { status: 502 });
+    await visit();
+
+    // Two minutes on, past the start first given, ESPN has the game an hour later.
+    espnSlate = slate(TODAY, [scheduledEvent("520206", 60 * 60)]);
+    espnSummary = () => Response.json(recordedSummary);
+    await visitLater(120);
+
+    expect(await getPrediction(db, "520206")).toMatchObject({ status: "made" });
   });
 
   test("gets none when ESPN's summary says it is under way", async () => {

@@ -1,5 +1,5 @@
 import { env } from "cloudflare:workers";
-import type { FailedPrediction, FinalGame } from "@yogan-hockey/schemas";
+import type { FailedPrediction, FinalGame, StoredPrediction } from "@yogan-hockey/schemas";
 import { expect, test } from "vitest";
 import { createDb } from "./client.ts";
 import { saveFinalGame } from "./games.ts";
@@ -153,7 +153,7 @@ test("a slate's prediction rows are read together, keyed by game, with nothing f
   const rows = await getPredictions(db, ["slate-made", "slate-failed", "slate-none"]);
 
   expect(rows).toEqual(
-    new Map([
+    new Map<string, StoredPrediction>([
       ["slate-made", made],
       ["slate-failed", failed],
     ]),

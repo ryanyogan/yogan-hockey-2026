@@ -95,6 +95,15 @@ async function scoreboard() {
   instances += 1;
   const name = `test-${instances}`;
   const agent = await getAgentByName(exports.ScoreboardAgent, name);
+  // These slates are of games still to come, each of which would start a Prediction and leave
+  // its one-off timer behind. Predictions have a file of their own
+  // (`scoreboard-predictions.test.ts`); here the only timer is the poll's.
+  await runInDurableObject(agent, (instance) => {
+    vi.spyOn(
+      instance as unknown as { startPrediction(): Promise<void> },
+      "startPrediction",
+    ).mockResolvedValue();
+  });
 
   const viewers = () =>
     runInDurableObject(agent, (instance) => [...instance.getConnections()].length);

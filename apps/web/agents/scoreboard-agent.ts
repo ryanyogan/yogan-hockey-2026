@@ -17,6 +17,7 @@ import {
 import {
   AI_GATEWAY_ID,
   DAILY_MODEL_CALLS,
+  FALLBACK_MODEL,
   MODEL_OF_EACH_CALL,
   type PredictionInputs,
   type PredictionRequest,
@@ -174,7 +175,9 @@ export class ScoreboardAgent extends ViewerPolledAgent<ScoreboardState> {
     }
     // Every good poll looks, not only one that found something: this is the retry.
     if (this.#pendingFinals().length > 0) await this.#runAtOnce("recordFinals");
-    if (this.#readyPredictions().length > 0) await this.#runAtOnce("makePredictions");
+    // Not with the day's model calls spent: the timer would find nothing it may do.
+    const callsLeft = this.#modelCallsToday() < DAILY_MODEL_CALLS;
+    if (callsLeft && this.#readyPredictions().length > 0) await this.#runAtOnce("makePredictions");
     if (this.#catchUpDates().length > 0) await this.#runAtOnce("catchUp");
   }
 
@@ -378,11 +381,22 @@ export class ScoreboardAgent extends ViewerPolledAgent<ScoreboardState> {
    */
   async #nextPendingPrediction(db: Db): Promise<[string, PendingPrediction] | null> {
     for (const [key, pending] of this.#readyPredictions()) {
-      const started = Date.parse(pending.startTime) <= Date.now();
+      const started = this.#hasStarted(pending);
       if (!started && (await getPrediction(db, pending.gameId)) === null) return [key, pending];
       this.ctx.storage.kv.delete(key);
     }
     return null;
+  }
+
+  /**
+   * Whether a game is past the point of a Prediction. The slate as last polled decides while
+   * the game is on it, since a start time moves; the time noted when it was first seen decides
+   * once it is not.
+   */
+  #hasStarted(pending: PendingPrediction): boolean {
+    const game = this.state.games.find(({ id }) => id === pending.gameId);
+    if (game && game.status !== "scheduled") return true;
+    return Date.parse(game?.startTime ?? pending.startTime) <= Date.now();
   }
 
   /**
@@ -427,7 +441,10 @@ export class ScoreboardAgent extends ViewerPolledAgent<ScoreboardState> {
     }
 
     const { inputs } = pending;
-    const model = MODEL_OF_EACH_CALL[pending.calls] ?? MODEL_OF_EACH_CALL[0];
+    const model = MODEL_OF_EACH_CALL[pending.calls];
+    // Every call was made and the row was not written: a restart during the last call, or D1
+    // failing. The game has had its calls, so it is marked failed and no model is asked again.
+    if (model === undefined) return await failed(FALLBACK_MODEL, inputs);
     // Counted before the call is made, so a call cut short by a restart is still counted.
     pending.calls += 1;
     this.ctx.storage.kv.put(key, pending);
@@ -440,6 +457,11 @@ export class ScoreboardAgent extends ViewerPolledAgent<ScoreboardState> {
       if (!answer) console.error(`Scoreboard: ${model} gave game ${gameId} no valid Prediction`);
     } catch (error) {
       console.error(`Scoreboard: ${model} failed for game ${gameId}`, error);
+    }
+    if (answer && this.#hasStarted(pending)) {
+      // The puck dropped while the model was answering: a pick now would not be a Prediction.
+      this.ctx.storage.kv.delete(key);
+      return false;
     }
     if (answer) {
       return await settle({
@@ -464,6 +486,7 @@ export class ScoreboardAgent extends ViewerPolledAgent<ScoreboardState> {
     return calls?.date === this.#modelCallsDate() ? calls.count : 0;
   }
 
+  /** Adds one to the count of the day's model calls. */
   #countModelCall(): void {
     const calls: ModelCalls = { date: this.#modelCallsDate(), count: this.#modelCallsToday() + 1 };
     this.ctx.storage.kv.put(MODEL_CALLS_KEY, calls);

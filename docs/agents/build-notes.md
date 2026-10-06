@@ -51,7 +51,7 @@ The Worker `yogan-hockey` has been live on `hockey.yogan.dev` since 2026-10-06, 
 - **`revalidateTag` outside a page request** returns `undefined` and leaves the write floating. Use `apps/web/lib/invalidate-tag.ts`, which makes it awaitable through an undocumented vinext import.
 - **A Server Action that changes data through an Agent** must call `refresh()` from `next/cache`, or the page does not re-render.
 - **shadcn Base UI components arrive without `"use client"`.** Rendered by a server component they fail with `createContext is not a function`. Add the line to each new component a server component renders.
-- **The Workers-runtime tests do not read `cloudflare.config.ts`.** `apps/web/vitest.config.ts` repeats the bindings: each new Agent or binding goes in both. Its entry is `apps/web/agents/index.ts`, it aliases `next/cache` to `vinext/shims/cache`, and it runs on compatibility date 2026-08-22, the newest the pool's workerd accepts.
+- **The Workers-runtime tests do not read `cloudflare.config.ts`.** `apps/web/vitest.config.ts` repeats the bindings: each new Agent or binding goes in both (except `AI`, which the pool cannot provide without a login; see "Predictions"). Its entry is `apps/web/agents/index.ts`, it aliases `next/cache` to `vinext/shims/cache`, and it runs on compatibility date 2026-08-22, the newest the pool's workerd accepts.
 - **vitest is held at 4.x** because `@cloudflare/vitest-pool-workers` 0.22 requires it.
 
 ## Agents that poll

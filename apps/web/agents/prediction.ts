@@ -16,7 +16,7 @@ export const FALLBACK_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast";
 export const MODEL_OF_EACH_CALL = [PRIMARY_MODEL, PRIMARY_MODEL, FALLBACK_MODEL] as const;
 /** The AI Gateway every call goes through, for its log of prompts and answers. */
 export const AI_GATEWAY_ID = "yogan-hockey";
-/** How many model calls the site makes in one day, whatever the slate. */
+/** The most model calls the site makes in one day, whatever the slate. */
 export const DAILY_MODEL_CALLS = 40;
 
 /**
@@ -175,9 +175,12 @@ export function predictionRequest(inputs: PredictionInputs) {
     ],
     response_format: { type: "json_schema", json_schema: predictionOutputJsonSchema(teams) },
     max_tokens: MAX_TOKENS,
+    // Below the binding's default of 0.6: the pick should follow from the facts, and a second
+    // try should still be free to word its answer differently.
     temperature: 0.4,
   };
 }
+/** The body of one model call. Both models are sent the same one. */
 export type PredictionRequest = ReturnType<typeof predictionRequest>;
 
 /** Finds the model's words in what the binding answered: the two models answer in two shapes. */

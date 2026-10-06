@@ -55,6 +55,7 @@ export function predictionOutputSchema(teams: readonly [string, string]) {
     keyFactors: z.array(z.string().trim().min(1).max(MAX_KEY_FACTOR_LENGTH)).max(MAX_KEY_FACTORS),
   });
 }
+/** A model's answer that passed: a Prediction, but for the row's own fields. */
 export type PredictionOutput = z.infer<ReturnType<typeof predictionOutputSchema>>;
 
 /**

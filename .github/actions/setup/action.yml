@@ -9,7 +9,9 @@ runs:
 
     - id: store
       shell: bash
-      run: echo "path=$(pnpm store path --silent)" >>"$GITHUB_OUTPUT"
+      run: |
+        path=$(pnpm store path --silent)
+        echo "path=$path" >>"$GITHUB_OUTPUT"
 
     # A cache saved on a pull request is readable only by that pull request; one saved on main is
     # readable by all of them. The Deploy workflow runs these jobs on main, which keeps it warm.

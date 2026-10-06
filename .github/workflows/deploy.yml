@@ -39,7 +39,8 @@ jobs:
     if: needs.gate.outputs.enabled == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 10
-    # One deploy at a time, and never one cancelled between its migrations and its upload.
+    # One deploy at a time, and never one cancelled between its migrations and its upload. Of
+    # several waiting, GitHub keeps the newest.
     concurrency:
       group: deploy-production
       cancel-in-progress: false
@@ -66,7 +67,8 @@ jobs:
         env:
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
         run: |
-          args=(--tag "${GITHUB_SHA::7}" --message "$(git log -1 --pretty=%s | cut -c1-100)")
+          subject=$(git log -1 --pretty=%s | cut -c1-100)
+          args=(--tag "${GITHUB_SHA::7}" --message "$subject")
           if [[ -n "$NTFY_TOPIC" ]]; then
             jq -n '{NTFY_TOPIC: env.NTFY_TOPIC}' >"$RUNNER_TEMP/worker-secrets.json"
             args+=(--secrets-file "$RUNNER_TEMP/worker-secrets.json")

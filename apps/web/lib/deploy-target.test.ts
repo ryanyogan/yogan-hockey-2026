@@ -34,8 +34,9 @@ test("a preview never falls back to a production store whose own id is missing",
   expect(target.d1Id).toBeUndefined();
 });
 
-test("local dev keys its simulated database by the id the local migrations use", () => {
+test("local dev names no store on Cloudflare: its simulated ones keep their local keys", () => {
   const target = deployTarget({ isPreview: false, mode: "development" }, resources);
 
   expect(target.d1Id).toBe(LOCAL_D1_ID);
+  expect(target.kvId).toBeUndefined();
 });

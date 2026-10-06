@@ -27,6 +27,15 @@ skip() {
   exit 0
 }
 
+# Previews are switched off until two things found in #33 are settled (docs/spec.md, Unverified
+# row 7). The Agent bindings name the production Worker, which `cf previews deploy` sends as it
+# stands, so a preview's page may drive production's Agents and through them production's KV and
+# D1. And a preview answers on a public workers.dev address. Take this block out once a preview
+# is known to get Agents of its own.
+if [[ "$target" == "preview" ]]; then
+  skip notice "Previews are off until a preview is known not to reach production's Agents. See Unverified row 7 in docs/spec.md."
+fi
+
 missing=()
 [[ -n "${CLOUDFLARE_API_TOKEN:-}" ]] || missing+=("CLOUDFLARE_API_TOKEN")
 [[ -n "${CLOUDFLARE_ACCOUNT_ID:-}" ]] || missing+=("CLOUDFLARE_ACCOUNT_ID")

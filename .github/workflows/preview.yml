@@ -2,6 +2,9 @@ name: Preview
 
 # A preview of each pull request, on the preview KV and D1, never the production pair
 # (apps/web/lib/deploy-target.ts). It does not wait for CI and CI does not wait for it.
+#
+# Switched off for now by scripts/deploy-gate.sh, which says why: the gate answers no, so the
+# deploy job below is skipped and has never run against Cloudflare.
 on:
   pull_request:
 

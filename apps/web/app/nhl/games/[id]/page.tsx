@@ -1,5 +1,7 @@
 import type { GameHeader } from "@yogan-hockey/schemas";
+import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 import { GameMatchup } from "../../../../components/game/game-matchup";
@@ -9,6 +11,7 @@ import { cachedGamePregame } from "../../../../lib/espn";
 import { findGame } from "../../../../lib/find-game";
 import { gamePhase } from "../../../../lib/game/page-state";
 import { gameTabFrom } from "../../../../lib/game/tabs";
+import { replayGame } from "../../../../lib/replay";
 import { gameHref } from "../../../../lib/scoreboard-view";
 
 // Rendered per request: first paint is the Game Agent's answer as it is now.
@@ -23,10 +26,12 @@ type Props = {
 const loadGame = cache(findGame);
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const game = await loadGame((await params).id);
+  const found = await loadGame((await params).id);
   // A missing game's title is `not-found.tsx`'s; this one is never shown.
-  if (game == null) return { title: "Game not found" };
-  return { title: `${game.header.away.abbreviation} at ${game.header.home.abbreviation}` };
+  if (found.state === "missing") return { title: "Game not found" };
+  if (found.state === "unreadable") return { title: "Game" };
+  const { away, home } = found.game.header;
+  return { title: `${away.abbreviation} at ${home.abbreviation}` };
 }
 
 /** The matchup facts, which only a game still to come shows. They never take the page down. */
@@ -39,14 +44,40 @@ async function Matchup({ header }: { header: GameHeader }) {
   }
 }
 
+/**
+ * A game that could not be read just now: the Game Agent answered twice with nothing, which is
+ * ESPN failing on a game it has not seen before, or an Agent that had only just started. It is
+ * not "not found", and the next request usually has it.
+ */
+function GameUnreadable({ pathname }: { pathname: string }) {
+  return (
+    <Section data-slot="game-unreadable">
+      <SectionHeader title="Game" />
+      <p className="border-foreground/20 border-t px-2 py-1.5">
+        This game could not be read just now.{" "}
+        {/* A plain link: the page is rendered again from nothing, which is the retry. */}
+        <a href={pathname} className="font-bold underline">
+          Try again
+        </a>{" "}
+        or see the{" "}
+        <Link href="/nhl/live" className="font-bold underline">
+          live scores
+        </Link>
+        .
+      </p>
+    </Section>
+  );
+}
+
 export default async function GameRoute({ params, searchParams }: Props) {
   const [{ id }, { tab }] = await Promise.all([params, searchParams]);
-  const game = await loadGame(id);
-  if (game == null) notFound();
+  const found = await loadGame(id);
+  if (found.state === "missing") notFound();
+  if (found.state === "unreadable") return <GameUnreadable pathname={gameHref({ id })} />;
 
-  // The Replay (#51) starts here for a game already over: when `game.archived` is false, call
-  // `archiveGame(id)` (lib/game.ts), then read the plays from D1 and hand them to `GamePage` in
-  // place of the snapshot's. `FinishedGame` is the component that draws them.
+  // A game already over is the Replay, which draws D1's plays: a game nobody watched is archived
+  // here, on its first open, and every later open is one read of D1.
+  const game = await replayGame(found.game);
   const scheduled = gamePhase(game.header.status) === "scheduled";
 
   return (

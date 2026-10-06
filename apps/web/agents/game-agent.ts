@@ -111,11 +111,19 @@ export class GameAgent extends ViewerPolledAgent<GameStreamState> {
   /**
    * For the Replay's first open of a game nobody watched: reads the finished game from ESPN once,
    * writes its row and plays to D1 and sets the 24-hour re-read. True when the game is in D1 as
-   * this returns; false when it is not finished, has no plays or the write failed, and a later
-   * call tries again. A game not known to be final is asked about no more often than it is polled.
+   * this returns; false when it is not finished, has no plays, is waiting on its last poll or the
+   * write failed, and a later call tries again. A game not known to be final is asked about no more
+   * often than it is polled.
    */
   async ensureArchived(): Promise<boolean> {
     if (this.state.archived) return true;
+    // A game seen to end is archived by its last poll, half a minute after the final: writing it
+    // now would settle the plays before ESPN's closing ones are in.
+    const timers = await this.listSchedules();
+    const lastPollToCome = timers.some(
+      (timer) => timer.callback === "archive" && (timer.payload as Archive).lastPoll,
+    );
+    if (lastPollToCome) return false;
     // A final is never stale, but one ESPN sent without plays is worth asking about again.
     const finalWithoutPlays =
       this.state.header?.status === "final" && this.#livePlays().length === 0;

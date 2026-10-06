@@ -298,6 +298,25 @@ describe("a scheduled game", () => {
     });
   });
 
+  // The recording lists Sergei Bobrovsky under Toronto (team 21): that is ESPN's own answer, not
+  // the translation's. What the translation owes is that a list goes to the team ESPN names on it.
+  test("gives each team the goalies ESPN lists under its id, whichever key they arrive on", async () => {
+    const raw = structuredClone(await recorded(SCHEDULED)) as {
+      goalies: { homeTeam: { teamId: string }; awayTeam: { teamId: string } };
+    };
+    expect([raw.goalies.homeTeam.teamId, raw.goalies.awayTeam.teamId]).toEqual(["21", "27"]);
+    raw.goalies = { homeTeam: raw.goalies.awayTeam, awayTeam: raw.goalies.homeTeam };
+
+    const { header, pregame } = translateGameSummary(raw, SCHEDULED);
+
+    expect(header.home.id).toBe("21");
+    expect(pregame.home.goalies.map((goalie) => goalie.name)).toEqual([
+      "Sergei Bobrovsky",
+      "Anthony Stolarz",
+    ]);
+    expect(pregame.away.goalies.map((goalie) => goalie.name)).toEqual(["Juuse Saros"]);
+  });
+
   test("has the goalies, injuries and leaders of each team", async () => {
     const { pregame } = await scheduled();
 

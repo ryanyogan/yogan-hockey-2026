@@ -196,9 +196,9 @@ finish() {
 # Safe to rerun: every stage looks for what already exists before it creates
 # anything, and asks before each change. Names and ids are remembered in
 # .env.local (gitignored). No secret is ever printed: the API token is typed
-# hidden, and the ntfy topic is read from .env.local when the phone needs it.
+# hidden.
 
-TOTAL_STAGES=11
+TOTAL_STAGES=10
 
 ISSUE=32
 ZONE_NAME="yogan.dev"
@@ -231,8 +231,7 @@ REPO=""; CLOUDFLARE_ACCOUNT_ID=""; CI_TOKEN=""; WORKERS_PAID=""
 KV_ID=""; KV_PREVIEW_ID=""; D1_ID=""; D1_PREVIEW_ID=""; AI_GATEWAY_ID=""
 ZONE_ID=""; ZONE_STATUS=""; DNS_RECORDS=""
 ACCESS_EMAIL=""; ACCESS_APP_ID=""; ACCESS_AUD=""; ACCESS_TEAM_DOMAIN=""; ACCESS_POLICY=""
-NTFY_TOPIC=""; NTFY_PHONE=""; WORKER_NAME=""; WORKER_SECRET=""
-TOKEN_SECRET=""; ACCOUNT_SECRET=""; NTFY_SECRET=""; BRANCH_PROTECTION=""
+WORKER_NAME=""; TOKEN_SECRET=""; ACCOUNT_SECRET=""; BRANCH_PROTECTION=""
 
 cd "$(git rev-parse --show-toplevel)"
 ENV_FILE=".env.local"
@@ -334,12 +333,6 @@ verify_token() {
   return 1
 }
 
-# ntfy_push TOPIC MESSAGE: send a push. The topic reaches curl on stdin.
-ntfy_push() {
-  printf 'url = "https://ntfy.sh/%s"\n' "$1" |
-    curl -fsS -K - -H "Title: Yogan Hockey" -d "$2" >/dev/null 2>&1
-}
-
 # ──────────────────────────────────────────────────────────────────────────
 
 banner "Yogan Hockey 2026: Cloudflare account setup (issue #$ISSUE)"
@@ -347,10 +340,10 @@ banner "Yogan Hockey 2026: Cloudflare account setup (issue #$ISSUE)"
 # ── 1 ─────────────────────────────────────────────────────────────────────
 stage "Preflight"
 say "Checking the tools and logins this wizard drives."
-for tool in cf gh jq openssl curl; do
+for tool in cf gh jq curl; do
   command -v "$tool" >/dev/null 2>&1 || die "$tool is not installed."
 done
-git check-ignore -q "$ENV_FILE" || die "$ENV_FILE is not gitignored; refusing to write ids and the ntfy topic to it."
+git check-ignore -q "$ENV_FILE" || die "$ENV_FILE is not gitignored; refusing to write ids to it."
 ok "$ENV_FILE is gitignored"
 
 cfq auth whoami >"$TMP/whoami.json" || die "cf is not logged in. Run: cf auth login"
@@ -583,99 +576,14 @@ fi
 pause
 
 # ── 8 ─────────────────────────────────────────────────────────────────────
-stage "ntfy topic"
-say "Alerts go to a topic on ntfy.sh. Anyone who knows the topic can read and"
-say "send to it, so it is long, random and treated as a secret."
-NTFY_TOPIC=$(_existing NTFY_TOPIC || true)
-if [[ -n "$NTFY_TOPIC" ]]; then
-  ok "reusing the topic already in $ENV_FILE"
-elif has_gh_secret NTFY_TOPIC && ! confirm "GitHub already has NTFY_TOPIC but $ENV_FILE does not. Make a new topic, replacing it everywhere?"; then
-  note "Leaving the existing topic alone. This machine does not know its value,"
-  note "so the phone test and the Worker secret are skipped."
-  NTFY_SECRET="set"
-else
-  NTFY_TOPIC="yogan-hockey-$(openssl rand -hex 24)"
-  write_env NTFY_TOPIC "$NTFY_TOPIC"
-  ok "generated a new topic (not shown)"
-fi
-
-if [[ -n "$NTFY_TOPIC" ]]; then
-  set_secret NTFY_TOPIC "$NTFY_TOPIC"
-  has_gh_secret NTFY_TOPIC && NTFY_SECRET="set"
-  # A fingerprint of the topic, so a rerun knows the phone was checked against
-  # this topic without keeping a second copy of it.
-  topic_hash=$(printf '%s' "$NTFY_TOPIC" | openssl dgst -sha256 -r | cut -d' ' -f1)
-  if [[ "$(_existing NTFY_PHONE_CONFIRMED || true)" == "$topic_hash" ]]; then
-    ok "your phone was already confirmed on this topic"
-    NTFY_PHONE="subscribed, test push received"
-  else
-    say "Now your phone. The topic is not printed here: open $ENV_FILE in your"
-    say "editor and copy the value of NTFY_TOPIC."
-    step "Install the ntfy app (Android or iOS) and tap +."
-    step "Subscribe to that topic on the default server, ntfy.sh."
-    if ! confirm "Subscribed? Send a test push to the topic now"; then
-      todo "ntfy: phone subscription not confirmed (rerun to test it)"
-    elif ! ntfy_push "$NTFY_TOPIC" "Account setup wizard: test push"; then
-      todo "ntfy: could not send the test push (is ntfy.sh reachable?)"
-    elif confirm "Did it arrive on your phone?"; then
-      ok "phone is subscribed"
-      NTFY_PHONE="subscribed, test push received"
-      write_env NTFY_PHONE_CONFIRMED "$topic_hash"
-    else
-      todo "ntfy: the test push did not reach the phone (rerun to try again)"
-    fi
-  fi
-fi
+stage "Worker name"
+say "The Worker is created by the first deploy (#33). Its name is recorded on"
+say "the issue with the ids."
+ask_default WORKER_NAME "Worker name (the name in apps/web/cloudflare.config.ts):" "yogan-hockey"
+write_env WORKER_NAME "$WORKER_NAME"
 pause
 
 # ── 9 ─────────────────────────────────────────────────────────────────────
-stage "ntfy topic as a Worker secret"
-say "The Worker reads the topic from a secret named NTFY_TOPIC. A secret can"
-say "only be put on a Worker that has been deployed once."
-ask_default WORKER_NAME "Worker name (the name in apps/web/cloudflare.config.ts):" "yogan-hockey"
-write_env WORKER_NAME "$WORKER_NAME"
-if [[ -z "$NTFY_TOPIC" ]]; then
-  todo "Worker secret NTFY_TOPIC (no topic known on this machine)"
-elif ! cfq workers secrets list --worker "$WORKER_NAME" >"$TMP/worker-secrets.json"; then
-  # 10007 is Cloudflare's "this Worker does not exist".
-  if grep -q '10007' "$CF_ERR"; then
-    note "There is no Worker called \"$WORKER_NAME\" yet. That is expected before"
-    note "the first deploy (#33). Rerun this wizard afterwards: the stages before"
-    note "this one will find everything in place and this one will set the secret."
-    note "Or #33 can upload it at deploy time: cf deploy --secrets-file <file>."
-    WORKER_SECRET="pending the first deploy"
-    todo "Worker secret NTFY_TOPIC on \"$WORKER_NAME\" (rerun after the first deploy)"
-  else
-    cf_error
-    todo "Worker secret NTFY_TOPIC on \"$WORKER_NAME\" (could not read the Worker's secrets; rerun)"
-  fi
-else
-  if jq -e 'any(.[]?; .name == "NTFY_TOPIC")' "$TMP/worker-secrets.json" >/dev/null 2>&1; then
-    WORKER_SECRET="set"
-    question="\"$WORKER_NAME\" already has NTFY_TOPIC. Overwrite it with the topic in $ENV_FILE? This deploys a new version."
-  else
-    question="Set NTFY_TOPIC on \"$WORKER_NAME\"? This deploys a new version of the Worker."
-  fi
-  if confirm "$question"; then
-    # The value travels in jq's environment and a file in a 0700 directory,
-    # never in argv.
-    NTFY_TOPIC="$NTFY_TOPIC" jq -n '{name: "NTFY_TOPIC", type: "secret_text", text: env.NTFY_TOPIC}' >"$TMP/secret.json"
-    if cf workers secrets update NTFY_TOPIC --worker "$WORKER_NAME" --body "@$TMP/secret.json" </dev/null >/dev/null 2>&1; then
-      ok "set NTFY_TOPIC on \"$WORKER_NAME\""
-      WORKER_SECRET="set"
-    else
-      todo "Worker secret NTFY_TOPIC on \"$WORKER_NAME\" (cf refused; output hidden because it may hold the value)"
-    fi
-    rm -f "$TMP/secret.json"
-  elif [[ "$WORKER_SECRET" == "set" ]]; then
-    ok "keeping the Worker's existing NTFY_TOPIC"
-  else
-    todo "Worker secret NTFY_TOPIC on \"$WORKER_NAME\""
-  fi
-fi
-pause
-
-# ── 10 ────────────────────────────────────────────────────────────────────
 stage "Branch protection on main"
 say "main takes changes only through a pull request with green CI. No reviewer"
 say "is required."
@@ -772,10 +680,10 @@ else
 fi
 pause
 
-# ── 11 ────────────────────────────────────────────────────────────────────
+# ── 10 ────────────────────────────────────────────────────────────────────
 stage "Record names and ids on issue #$ISSUE"
 say "The issues that follow read these from the issue. Names and ids only: no"
-say "token, no topic, no email address."
+say "token, no email address."
 or_not_done() { printf '%s' "${1:-NOT DONE}"; }
 # The backticks below are Markdown, not command substitutions.
 # shellcheck disable=SC2016
@@ -804,11 +712,8 @@ or_not_done() { printf '%s' "${1:-NOT DONE}"; }
   printf '| Worker | `%s` | created by the first deploy (#33) |\n' "$(or_not_done "$WORKER_NAME")"
   printf '| GitHub Actions secret | `CLOUDFLARE_API_TOKEN` | %s (token named "%s") |\n' "$(or_not_done "$TOKEN_SECRET")" "$API_TOKEN_NAME"
   printf '| GitHub Actions secret | `CLOUDFLARE_ACCOUNT_ID` | %s |\n' "$(or_not_done "$ACCOUNT_SECRET")"
-  printf '| GitHub Actions secret | `NTFY_TOPIC` | %s |\n' "$(or_not_done "$NTFY_SECRET")"
-  printf '| Worker secret | `NTFY_TOPIC` | %s |\n' "$(or_not_done "$WORKER_SECRET")"
-  printf '| ntfy on the phone | server `ntfy.sh` | %s |\n' "$(or_not_done "$NTFY_PHONE")"
   printf '| Branch protection on `main` | | %s |\n' "$(or_not_done "$BRANCH_PROTECTION")"
-  printf '| Local env file | `%s` (gitignored) | holds the ids above, the Worker name and the ntfy topic |\n' "$ENV_FILE"
+  printf '| Local env file | `%s` (gitignored) | holds the ids above and the Worker name |\n' "$ENV_FILE"
   if (( ${#SKIPPED[@]} )); then
     printf '\n### Still to do\n\n'
     for item in "${SKIPPED[@]}"; do printf -- '- %s\n' "$item"; done

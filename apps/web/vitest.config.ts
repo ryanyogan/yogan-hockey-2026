@@ -24,11 +24,7 @@ export default defineConfig(async () => ({
         },
         d1Databases: ["DB"],
         kvNamespaces: ["VINEXT_KV_CACHE"],
-        bindings: {
-          TEST_MIGRATIONS: await readD1Migrations(MIGRATIONS),
-          // A Worker secret in production. Tests replace `fetch`, so nothing reaches ntfy.sh.
-          NTFY_TOPIC: "test-topic",
-        },
+        bindings: { TEST_MIGRATIONS: await readD1Migrations(MIGRATIONS) },
       },
     }),
   ],

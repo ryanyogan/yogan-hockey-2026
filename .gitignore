@@ -1,4 +1,4 @@
-# Local env files: ids, the Worker name and the ntfy topic. Never committed.
+# Local env files: ids and the Worker name. Never committed.
 .env
 .env.*
 !.env.example

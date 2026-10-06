@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 import type { CheckResult, CheckSummary } from "./live-check.ts";
 import { ISSUE_TITLE, reportCheck } from "./report.ts";
 
@@ -76,20 +76,8 @@ function tracker(
   return { gh, calls, writes };
 }
 
-const ntfy = vi.fn<typeof fetch>(async () => new Response("{}"));
-const log = vi.fn<(line: string) => void>();
-
-beforeEach(() => {
-  ntfy.mockClear();
-  log.mockClear();
-});
-
-function report(
-  summary: CheckSummary | null,
-  gh: ReturnType<typeof tracker>["gh"],
-  ntfyTopic: string | undefined = "topic-123",
-) {
-  return reportCheck({ summary, gh, fetch: ntfy, ntfyTopic, runUrl: RUN_URL, log });
+function report(summary: CheckSummary | null, gh: ReturnType<typeof tracker>["gh"]) {
+  return reportCheck({ summary, gh, runUrl: RUN_URL });
 }
 
 const EXISTING = { number: 90, title: ISSUE_TITLE, url: ISSUE_URL };
@@ -100,7 +88,7 @@ describe("a failed check", () => {
 
     const reported = await report(FAILED, gh);
 
-    expect(reported).toEqual({ issue: "opened", issueUrl: ISSUE_URL, push: "sent" });
+    expect(reported).toEqual({ issue: "opened", issueUrl: ISSUE_URL });
     expect(writes()).toHaveLength(1);
     const [{ args, input }] = writes() as [{ args: string[]; input: string }];
     expect(args).toEqual([
@@ -145,47 +133,17 @@ describe("a failed check", () => {
     expect(calls.some(({ args }) => args[0] === "label" && args[1] === "create")).toBe(false);
   });
 
-  test("sends an ntfy push naming the endpoints, which opens the issue when tapped", async () => {
-    const { gh } = tracker([]);
-
-    await report(FAILED, gh);
-
-    expect(ntfy).toHaveBeenCalledTimes(1);
-    const [url, init] = ntfy.mock.calls[0] as [string, RequestInit];
-    expect(url).toBe("https://ntfy.sh/topic-123");
-    expect(init.method).toBe("POST");
-    expect(init.headers).toEqual({
-      Title: "ESPN daily check failed",
-      Tags: "warning",
-      Click: ISSUE_URL,
-    });
-    expect(init.body).toBe("Changed shape: standings. Could not be fetched: teams.");
-  });
-
   test("comments on the open issue instead of opening a second one", async () => {
     const { gh, writes } = tracker([EXISTING]);
 
     const reported = await report(FAILED, gh);
 
-    expect(reported).toEqual({ issue: "commented", issueUrl: ISSUE_URL, push: "sent" });
+    expect(reported).toEqual({ issue: "commented", issueUrl: ISSUE_URL });
     expect(writes()).toHaveLength(1);
     const [{ args, input }] = writes() as [{ args: string[]; input: string }];
     expect(args).toEqual(["issue", "comment", "90", "--body-file", "-"]);
     expect(input).toContain("failed again on 2026-10-07");
     expect(input).toContain("`standings`");
-  });
-
-  test("with no ntfy topic, skips the push with a notice and still files the issue", async () => {
-    const { gh, writes } = tracker([]);
-
-    const reported = await report(FAILED, gh, "");
-
-    expect(reported).toEqual({ issue: "opened", issueUrl: ISSUE_URL, push: "skipped" });
-    expect(ntfy).not.toHaveBeenCalled();
-    expect(writes()).toHaveLength(1);
-    expect(log).toHaveBeenCalledWith(
-      "::notice title=ntfy push skipped::The NTFY_TOPIC secret is not set, so no push was sent. scripts/account-setup.sh sets it.",
-    );
   });
 
   test("a check that wrote no summary is reported as a failure too", async () => {
@@ -195,34 +153,14 @@ describe("a failed check", () => {
 
     expect(reported.issue).toBe("opened");
     expect(writes()[0]?.input).toContain("did not finish");
-    expect((ntfy.mock.calls[0] as [string, RequestInit])[1].body).toBe(
-      "The check did not finish. See the run's log.",
-    );
   });
 
-  test("still sends the push when the issue cannot be filed, and then fails", async () => {
+  test("fails when the issue cannot be filed, so the run is red", async () => {
     const gh = vi.fn(async () => {
       throw new Error("gh: HTTP 403");
     });
 
     await expect(report(FAILED, gh)).rejects.toThrow("gh: HTTP 403");
-
-    expect(ntfy).toHaveBeenCalledTimes(1);
-    expect((ntfy.mock.calls[0] as [string, RequestInit])[1].headers).toEqual({
-      Title: "ESPN daily check failed",
-      Tags: "warning",
-      Click: RUN_URL,
-    });
-  });
-
-  test("a push ntfy refuses is a warning, not a second failure", async () => {
-    const { gh } = tracker([]);
-    ntfy.mockResolvedValueOnce(new Response("no", { status: 429 }));
-
-    const reported = await report(FAILED, gh);
-
-    expect(reported.push).toBe("failed");
-    expect(log).toHaveBeenCalledWith("::warning title=ntfy push failed::ntfy answered HTTP 429");
   });
 });
 
@@ -232,27 +170,21 @@ describe("a check that passes", () => {
 
     const reported = await report(PASSED, gh);
 
-    expect(reported).toEqual({ issue: "none", issueUrl: null, push: "none" });
+    expect(reported).toEqual({ issue: "none", issueUrl: null });
     expect(writes()).toEqual([]);
-    expect(ntfy).not.toHaveBeenCalled();
-    expect(log).not.toHaveBeenCalledWith(expect.stringContaining("::notice"));
   });
 
-  test("comments that it cleared on the open issue, leaves it open, and sends a push", async () => {
+  test("comments that it cleared on the open issue, and leaves it open", async () => {
     const { gh, calls, writes } = tracker([EXISTING]);
 
     const reported = await report(PASSED, gh);
 
-    expect(reported).toEqual({ issue: "cleared", issueUrl: ISSUE_URL, push: "sent" });
+    expect(reported).toEqual({ issue: "cleared", issueUrl: ISSUE_URL });
     const [{ args, input }] = writes() as [{ args: string[]; input: string }];
     expect(args).toEqual(["issue", "comment", "90", "--body-file", "-"]);
     expect(input).toContain("passed on 2026-10-08");
     expect(input).toContain("3 endpoints");
     expect(calls.some(({ args }) => args[1] === "close")).toBe(false);
-    expect((ntfy.mock.calls[0] as [string, RequestInit])[1]).toMatchObject({
-      headers: { Title: "ESPN daily check recovered", Tags: "white_check_mark", Click: ISSUE_URL },
-      body: "All 3 endpoints fetched parse again.",
-    });
   });
 
   test("says what the passing run did not look at, since that may be what had failed", async () => {
@@ -262,23 +194,18 @@ describe("a check that passes", () => {
     await report({ ...PASSED, notChecked: [gap] }, gh);
 
     expect(writes()[0]?.input).toContain(`Not checked by this run:\n\n- ${gap}`);
-    expect((ntfy.mock.calls[0] as [string, RequestInit])[1].body).toBe(
-      `All 3 endpoints fetched parse again. Not checked: ${gap}.`,
-    );
   });
 
   test("says it cleared once, not on every passing day the issue stays open", async () => {
     const first = tracker([EXISTING]);
     await report(PASSED, first.gh);
     const cleared = first.writes()[0]?.input ?? "";
-    ntfy.mockClear();
     const { gh, writes } = tracker([{ ...EXISTING, comments: [{ body: cleared }] }]);
 
     const reported = await report(PASSED, gh);
 
-    expect(reported).toEqual({ issue: "none", issueUrl: ISSUE_URL, push: "none" });
+    expect(reported).toEqual({ issue: "none", issueUrl: ISSUE_URL });
     expect(writes()).toEqual([]);
-    expect(ntfy).not.toHaveBeenCalled();
   });
 
   test("says it cleared again after a failure that followed a pass", async () => {

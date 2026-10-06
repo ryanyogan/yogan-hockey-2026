@@ -1,11 +1,11 @@
 /**
- * Files the result of `pnpm check:espn` in the tracker and sends the ntfy push. Run by
+ * Files the result of `pnpm check:espn` in the tracker. Run by
  * `.github/workflows/espn-check.yml` after the check, whether it passed or failed:
  * `node packages/espn/scripts/report-check.ts [--summary <file>] [--dry-run]`.
  *
- * Reads `NTFY_TOPIC`, and the run's address from the variables Actions sets. `gh` needs
- * `GH_TOKEN` with `issues: write`. With `--dry-run` nothing is written and nothing is sent: the
- * `gh` commands and the push are printed, as if no issue were open.
+ * Reads the run's address from the variables Actions sets. `gh` needs `GH_TOKEN` with
+ * `issues: write`. With `--dry-run` nothing is written: the `gh` commands are printed, as if no
+ * issue were open.
  */
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
@@ -40,11 +40,6 @@ const printedGh: Gh = async (args, input) => {
   return args[1] === "create" ? "https://github.com/OWNER/REPO/issues/0" : "";
 };
 
-const printedFetch: typeof fetch = async (_url, init) => {
-  console.log(`[dry run] ntfy push ${JSON.stringify(init?.headers)}: ${String(init?.body)}`);
-  return new Response("{}");
-};
-
 const { GITHUB_SERVER_URL, GITHUB_REPOSITORY, GITHUB_RUN_ID } = process.env;
 const runUrl =
   GITHUB_SERVER_URL && GITHUB_REPOSITORY && GITHUB_RUN_ID
@@ -54,10 +49,6 @@ const runUrl =
 const reported = await reportCheck({
   summary: readSummary(),
   gh: values["dry-run"] ? printedGh : gh,
-  fetch: values["dry-run"] ? printedFetch : fetch,
-  ntfyTopic: process.env.NTFY_TOPIC,
   runUrl,
 });
-console.log(
-  `issue: ${reported.issue}${reported.issueUrl ? ` (${reported.issueUrl})` : ""}; push: ${reported.push}`,
-);
+console.log(`issue: ${reported.issue}${reported.issueUrl ? ` (${reported.issueUrl})` : ""}`);

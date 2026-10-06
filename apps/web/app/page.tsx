@@ -1,6 +1,7 @@
 import { env, exports } from "cloudflare:workers";
 import { createDb, latestSkeletonBumps } from "@yogan-hockey/db";
 import { PulseSchema } from "@yogan-hockey/schemas";
+import { Badge } from "@yogan-hockey/ui/components/badge";
 import { Button } from "@yogan-hockey/ui/components/button";
 import {
   Card,
@@ -33,7 +34,9 @@ export default async function SkeletonPage() {
 
       <Card data-testid="join-ui">
         <CardHeader>
-          <CardTitle>1. Shared UI package</CardTitle>
+          <CardTitle>
+            1. Shared UI package <Badge variant="secondary">packages/ui</Badge>
+          </CardTitle>
           <CardDescription>
             These cards and the button come from packages/ui, styled by its Tailwind theme.
           </CardDescription>
@@ -55,9 +58,7 @@ export default async function SkeletonPage() {
         </CardHeader>
         <CardContent className="text-sm">
           <p data-testid="reading-serial">{reading.serial}</p>
-          <p className="text-muted-foreground" data-testid="reading-taken-at">
-            taken {reading.takenAt}
-          </p>
+          <p className="text-muted-foreground">taken {reading.takenAt}</p>
         </CardContent>
       </Card>
 

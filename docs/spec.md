@@ -136,7 +136,7 @@ One instance. Every page connects to it.
 When it sees a game go final:
 
 1. Writes the game row to D1 (teams, date, final score).
-2. Invalidates the cache tags for standings, both teams, the players on both rosters, and the game. It does this directly **(unverified)**; the fallback is a small internal route in the same Worker.
+2. Invalidates the cache tags for standings, both teams, the players on both rosters, and the game. It does this directly, in-process (proved locally in #31; Unverified row 4 has what is left to confirm on Cloudflare).
 3. Tells open pages, which re-render.
 4. Sets two one-off timers: at 5 minutes, a second invalidation of standings and both teams; at 24 hours, a re-read of the game's plays into D1 if they were archived.
 
@@ -287,7 +287,7 @@ Each line is something the design assumes and nobody has run. The build issue na
 
 | # | Assumption | Fallback if it fails | Proved by |
 | --- | --- | --- | --- |
-| 1 | **Proved (#31).** A shared `packages/ui` renders in the vinext app, with Tailwind scanning the package. The package's `theme.css` carries the `@source` line, and a component that uses a Base UI primitive starts with `"use client"` | Not needed | Walking skeleton |
+| 1 | **Proved (#31).** A shared `packages/ui` renders in the vinext app, with Tailwind scanning the package. The package's `theme.css` carries the `@source` line. shadcn's Base UI components arrive without `"use client"`, and one rendered directly by a server component needs it added (Button and Badge have it) | Not needed | Walking skeleton |
 | 2 | **Proved (#31).** KV and D1 work locally under `pnpm dev`, which applies the D1 migrations with `cf d1 migrations apply --local` before it starts | Not needed | Walking skeleton |
 | 3 | **Proved (#31).** vinext's data cache runs on KV through `kvDataAdapter`, with tags and time limits, using `unstable_cache` | Not needed | Walking skeleton |
 | 4 | **Proved locally (#31).** An Agent can invalidate vinext's cache tags directly, by calling `revalidateTag` in-process and awaiting the write (`invalidateTag` in `apps/web/lib`). Not yet seen on Cloudflare, where the Agent and a page render may be separate isolates: confirm in the deploy pipeline that the Agent's isolate has the KV cache registered, and measure how long a page takes to see the invalidation (the adapter remembers a tag for 5 seconds, and KV itself can serve a marker up to 60 seconds old) | Not needed locally. If the deployed check fails, the Agent calls an internal route in the same Worker | Walking skeleton; deploy pipeline and Access |

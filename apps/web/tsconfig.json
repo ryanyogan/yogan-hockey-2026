@@ -1,10 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "types": ["vinext/types", "node", "@cloudflare/vitest-pool-workers/types"],
-    "paths": {
-      "@/*": ["./*"]
-    }
+    "types": ["vinext/types", "node", "@cloudflare/vitest-pool-workers/types"]
   },
   "include": ["**/*.ts", "**/*.tsx", ".cloudflare/types"],
   "exclude": ["node_modules", "dist"]

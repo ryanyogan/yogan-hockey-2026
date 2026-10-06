@@ -5,12 +5,12 @@ import { Badge } from "@yogan-hockey/ui/components/badge";
 import { useAgent } from "agents/react";
 import { useState } from "react";
 
-type Socket = "connecting" | "open" | "closed";
+type SocketStatus = "connecting" | "open" | "closed";
 
 export function PulseLive({ name, initial }: { name: string; initial: Pulse }) {
   const [pulse, setPulse] = useState(initial);
   const [pushes, setPushes] = useState(0);
-  const [socket, setSocket] = useState<Socket>("connecting");
+  const [socket, setSocket] = useState<SocketStatus>("connecting");
 
   useAgent<Pulse>({
     agent: "skeleton-agent",

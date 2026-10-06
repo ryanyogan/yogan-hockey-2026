@@ -2,7 +2,7 @@
 
 The 2026 rebuild of [Yogan Hockey](https://github.com/ryanyogan/yogan_hockey): TypeScript on Cloudflare, with a backend on the Agents SDK and a vinext (shadcn + Tailwind) UI, in one pnpm monorepo.
 
-The design is decided and the build is about to start. Nothing is built yet.
+The design is decided and the build has started: the walking skeleton (#31) is in, and the site itself is not built yet.
 
 - **Spec:** [`docs/spec.md`](docs/spec.md) states the whole design, and ends with the assumptions nobody has run yet.
 - **Why:** the larger choices are recorded in [`docs/adr/`](docs/adr), and the vocabulary in [`GLOSSARY.md`](GLOSSARY.md).

@@ -23,12 +23,11 @@ export class SkeletonAgent extends Agent<Env, Pulse> {
   }
 
   async bump(): Promise<Pulse> {
-    const pulse: Pulse = { count: this.state.count + 1, lastBumpAt: new Date().toISOString() };
-    await recordSkeletonBump(createDb(this.env.DB), {
-      count: pulse.count,
-      bumpedAt: pulse.lastBumpAt ?? "",
-    });
+    const bumpedAt = new Date().toISOString();
+    // State moves on before the first await, so two bumps at once cannot take the same count.
+    const pulse: Pulse = { count: this.state.count + 1, lastBumpAt: bumpedAt };
     this.setState(pulse);
+    await recordSkeletonBump(createDb(this.env.DB), { count: pulse.count, bumpedAt });
     await invalidateTag(SKELETON_TAG);
     return pulse;
   }

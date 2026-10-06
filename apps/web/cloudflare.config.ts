@@ -4,7 +4,8 @@ import * as entrypoint from "./worker.ts" with { type: "cf-worker" };
 
 const NAME = "yogan-hockey";
 // A placeholder until account setup (#32) creates the real database. `cf d1 migrations apply`
-// accepts only an id, and local dev keys its simulated database by it.
+// accepts only an id, and local dev keys its simulated database by it. The `db:migrate:local`
+// script in package.json repeats it.
 const LOCAL_D1_ID = "00000000-0000-4000-8000-000000000031";
 
 export default defineConfig({

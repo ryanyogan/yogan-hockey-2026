@@ -19,14 +19,13 @@ import {
   type SeasonView,
   type ShownColumn,
 } from "../../lib/player-view";
+import { teamHref } from "../nhl/team-name";
 
 /*
  * The parts of a player page, in the ledger's language: a header line, then one dense table per
  * subject. Each takes what `lib/player-view.ts` works out, so a player who is not ESPN's (the
  * Tracked Player's page, and the fictional player, of #46) is drawn by the same parts.
  */
-
-const teamHref = (teamId: string) => `/nhl/teams/${teamId}`;
 
 /** A stat column's heading, spelled out for a pointer and a screen reader where it is known. */
 function StatColumn({ column }: { column: ShownColumn }) {
@@ -77,7 +76,7 @@ export function PlayerHeader({ profile, action }: { profile: PlayerProfile; acti
             {profile.team ? (
               <>
                 {" · "}
-                <Link href={teamHref(profile.team.id)} className="underline">
+                <Link href={teamHref(profile.team)} className="underline">
                   {profile.team.name}
                 </Link>
               </>
@@ -181,7 +180,7 @@ export function CareerSection({ career }: { career: CareerView }) {
               <LedgerCell className="whitespace-nowrap">{row.season}</LedgerCell>
               {row.team ? (
                 <LedgerCell>
-                  <Link href={teamHref(row.team.id)} prefetch={false} className="hover:underline">
+                  <Link href={teamHref(row.team)} prefetch={false} className="hover:underline">
                     {row.team.abbreviation}
                   </Link>
                 </LedgerCell>
@@ -280,7 +279,7 @@ export function TeamSection({ team }: { team: Team }) {
         <LedgerBody>
           <LedgerRow interactive className="border-t border-t-foreground/20">
             <LedgerCell>
-              <Link href={teamHref(team.id)} className={ledgerRowLink}>
+              <Link href={teamHref(team)} className={ledgerRowLink}>
                 {team.name}
               </Link>{" "}
               <LedgerAside>{team.abbreviation}</LedgerAside>

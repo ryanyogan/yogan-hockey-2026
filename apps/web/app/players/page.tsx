@@ -25,10 +25,7 @@ export default async function PlayersPage({
             or browse a team's roster
           </Link>
         </SectionHeader>
-        {/* A new key with every render of the page, so arriving by a link (the sidebar, Back)
-            starts the box from this URL. Typing renders nothing here: it calls the action and
-            rewrites the address, so the box keeps its place while it is typed in. */}
-        <PlayerSearch key={crypto.randomUUID()} initial={search} />
+        <PlayerSearch initial={search} />
       </Section>
       <FavoritePlayers />
     </>

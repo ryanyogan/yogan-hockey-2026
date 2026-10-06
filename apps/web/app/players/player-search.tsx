@@ -1,6 +1,7 @@
 "use client";
 
-import { type FormEvent, useId, useRef, useState, useTransition } from "react";
+import { useSearchParams } from "next/navigation";
+import { type FormEvent, useEffect, useId, useRef, useState, useTransition } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { PlayerLedger } from "../../components/players/player-ledger";
 import { MAX_SEARCH_LENGTH, MIN_SEARCH_LENGTH, searchHref } from "../../lib/player-search";
@@ -51,6 +52,19 @@ export function PlayerSearch({ initial }: { initial: Search }) {
       else if (ticket === asked.current) setSearch({ status: "unavailable", query, players: [] });
     });
   }, TYPING_PAUSE_MS);
+
+  // Arriving by a link (the sidebar, Back) starts the box from that URL. The box's own rewrites
+  // of the address match what is typed, and a refresh of the page (the shell asks for one when a
+  // game goes final) leaves the address alone, so neither disturbs the typing.
+  const urlQuery = (useSearchParams().get("q") ?? "").trim();
+  useEffect(() => {
+    if (urlQuery === typed.current.trim()) return;
+    ask.cancel();
+    asked.current++;
+    typed.current = initial.query;
+    setText(initial.query);
+    setSearch(initial);
+  }, [urlQuery, initial, ask]);
 
   const onType = (value: string) => {
     typed.current = value;

@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
-import { ResultsLedger, UpcomingLedger } from "../../../../components/team/schedule-ledgers";
-import { cachedTeamSchedule } from "../../../../lib/espn";
-import { loadTeam } from "../../../../lib/find-team";
-import { scheduleView } from "../../../../lib/team-schedule";
+import { ResultsLedger, UpcomingLedger } from "../../../../../components/team/schedule-ledgers";
+import { cachedTeamSchedule } from "../../../../../lib/espn";
+import { loadTeam } from "../../../../../lib/find-team";
+import { scheduleView } from "../../../../../lib/team-schedule";
 
 // Rendered per request; the ESPN reads behind it are cached and tagged (spec §2).
 export const dynamic = "force-dynamic";

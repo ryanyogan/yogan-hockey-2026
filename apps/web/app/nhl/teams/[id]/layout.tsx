@@ -31,10 +31,17 @@ export async function generateMetadata({ params }: Pick<Props, "params">): Promi
  */
 export default async function TeamLayout({ params, children }: Props) {
   const { id } = await params;
-  const [detail, standings] = await Promise.all([loadTeam(id), cachedStandings()]);
+  const [detail, standings] = await Promise.all([
+    // A layout that throws takes the whole shell with it (build notes, #84). The tab's page
+    // makes the same read and reports its failure inside the shell, so here it only means
+    // "no header".
+    loadTeam(id).catch(() => null),
+    // The header can do without its conference and division.
+    cachedStandings().catch(() => null),
+  ]);
   // No such team: the tab's page says so (`notFound()`), under no header.
   if (detail == null) return children;
-  const standing = standings.rows.find((row) => row.team.id === id) ?? null;
+  const standing = standings?.rows.find((row) => row.team.id === id) ?? null;
 
   return (
     <>

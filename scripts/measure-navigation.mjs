@@ -32,7 +32,9 @@ const watchShifts = () => {
       window.__shifts.push({
         value: entry.value,
         at: Math.round(entry.startTime),
-        nodes: entry.sources.map((source) => source.node?.nodeName ?? "?").join(","),
+        nodes: entry.sources
+          .map((source) => `${source.node?.nodeName ?? "?"}.${source.node?.dataset?.slot ?? ""}`)
+          .join(","),
       });
     }
   }).observe({ type: "layout-shift", buffered: true });
@@ -52,7 +54,16 @@ const contentReady = () => {
 const browser = await chromium.launch();
 
 async function newPage() {
-  const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  const context = await browser.newContext({
+    viewport: { width: 1440, height: 900 },
+    // The router prefetches nothing for a crawler, and headless Chromium says it is one.
+    userAgent: (
+      await browser
+        .newContext()
+        .then((c) => c.newPage())
+        .then((p) => p.evaluate(() => navigator.userAgent))
+    ).replace("HeadlessChrome", "Chrome"),
+  });
   const page = await context.newPage();
   await page.addInitScript(watchShifts);
   if (Number(slow) > 0) {
@@ -70,6 +81,7 @@ async function newPage() {
 const load = { ttfb: [], fcp: [], ready: [], shift: [] };
 const click = { toContent: [], shift: [], documents: [], rsc: [], rscAfterClick: [] };
 let shiftsSeen = [];
+let loadShiftsSeen = [];
 
 for (let run = 0; run < Number(runs); run++) {
   // A first load of the page.
@@ -81,11 +93,17 @@ for (let run = 0; run < Number(runs); run++) {
     const seen = await page.evaluate(() => {
       const [nav] = performance.getEntriesByType("navigation");
       const [fcp] = performance.getEntriesByName("first-contentful-paint");
-      return { ttfb: nav.responseStart, fcp: fcp?.startTime ?? -1, shift: window.__shift };
+      return {
+        ttfb: nav.responseStart,
+        fcp: fcp?.startTime ?? -1,
+        shift: window.__shift,
+        shifts: window.__shifts,
+      };
     });
     load.ttfb.push(seen.ttfb);
     load.fcp.push(seen.fcp);
     load.shift.push(seen.shift);
+    loadShiftsSeen = seen.shifts;
     await context.close();
   }
   // A click from the list.
@@ -101,7 +119,7 @@ for (let run = 0; run < Number(runs); run++) {
     page.on("request", (request) => {
       const url = new URL(request.url());
       if (request.resourceType() === "document") documents++;
-      if (url.pathname.endsWith(".rsc") && url.pathname.startsWith(to.split("?")[0])) {
+      if (request.headers().rsc === "1" && url.pathname.startsWith(to.split("?")[0])) {
         rsc++;
         if (clicked) rscAfterClick++;
       }
@@ -141,6 +159,7 @@ console.log(
         ttfbMs: median(load.ttfb),
         firstContentfulPaintMs: median(load.fcp),
         layoutShift: Math.max(...load.shift),
+        lastRunShifts: loadShiftsSeen,
       },
       click: {
         clickToContentMs: median(click.toContent),

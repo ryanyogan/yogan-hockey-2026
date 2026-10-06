@@ -50,13 +50,8 @@ function SkeletonBar({
     <span
       data-slot="skeleton-bar"
       aria-hidden="true"
-      className={cn(
-        "relative inline-block max-w-full select-none align-baseline",
-        "after:absolute after:inset-x-0 after:top-1/2 after:h-[0.6em] after:-translate-y-1/2 after:bg-foreground/10 after:content-['']",
-        "motion-safe:after:animate-pulse",
-        barWidth[width],
-        className,
-      )}
+      // Its shape is in `theme.css`, under this slot's name: only the width is said here.
+      className={cn(barWidth[width], className)}
       {...props}
     >
       {" "}

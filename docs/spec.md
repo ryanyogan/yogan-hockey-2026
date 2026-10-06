@@ -40,17 +40,40 @@ Data comes from ESPN's unauthenticated site API and nowhere else (ADR 0003). One
 
 ### Rendering and caching
 
-- Every page is rendered per request (`dynamic = "force-dynamic"`) and reads through the tagged KV cache. There is no page-level caching, and no page is static: the root layout reads the Scoreboard for the first paint of the score ticker, which every page has. `/family/rylan` is rendered per request like the rest; what is static about it is its data, a file in the site (see [Rylan](#7-rylan)).
-- Every cached read sets its own time limit. Nothing relies on vinext's default, which caches for a year.
+The aim (#94): a page opens at once. A visitor almost never waits on ESPN, what changes during a game arrives over the socket or streams in, and nothing on the page moves when it does.
 
-| Data | Time limit | Tag |
-| --- | --- | --- |
-| Standings | 5 minutes | `standings` |
-| Team page (record, roster, team stats) | 1 hour | `team:{id}` |
-| Team schedule | 1 hour | `team:{id}` |
-| Player page, career stats and game log | 6 hours | `player:{id}` |
-| Team list | 24 hours | `teams` |
-| Player search results | 10 minutes | none |
+**How a page is rendered**
+
+- Every page is rendered per request (`dynamic = "force-dynamic"`) from cached data. No whole page is cached, at the edge or in KV. The reasons: every page's first paint carries today's slate from the Scoreboard and, on most, the picks from D1, neither of which is behind a cache tag; vinext's page cache is keyed by path alone and stores no page that reads `searchParams`, which `/nhl`, `/players`, `/family/:slug` and the game page do; and its partial prerendering (a cached shell with live holes) is unfinished. A rendered page therefore answers `cache-control: private, no-store` and the edge keeps nothing but the static assets. Nothing a visitor sees is per-visitor on the server (favorites live in the browser), so this is a choice about freshness, not privacy; revisit it when the picks ride the Scoreboard's socket and vinext's partial prerendering is done.
+- The root layout waits for nothing. It hands the Scoreboard's first paint to the page as a promise, the shell is sent at once, and the score ticker streams in behind a placeholder that is its own frame.
+- A page waits only for what decides its outline (the team behind a team page: its header's height, and whether there is such a team, which sets the status code). Everything else streams in under a `loading.tsx` or a `<Suspense>` whose placeholder is the size of what replaces it.
+- A page with a header and tabs is a nested layout: the header and the tab bar are the layout's, each tab is a page beneath it at its own path, and changing tab leaves the header where it is. The team page is built this way. Tabs and views are still held in the URL: as a path segment where the tab is a page, as a query parameter elsewhere.
+
+**Where each read is cached**
+
+Every cached read is `unstable_cache` over vinext's data cache on KV (`apps/web/lib/espn.ts`), with its own time limit and tag. Nothing relies on vinext's default, which caches for a year.
+
+| Data | Fresh for | Tag | Invalidated by |
+| --- | --- | --- | --- |
+| Standings | 5 minutes | `standings` | every final |
+| Team (record, roster, team stats) | 1 hour | `team:{id}` | a final of that team |
+| Team schedule | 1 hour | `team:{id}` | a final of that team |
+| Player, career stats and game log | 6 hours | `player:{id}` | a final he was on the roster for |
+| Team list | 24 hours | `teams` | nothing: its time limit |
+| A scheduled game's pregame facts | 15 minutes | `game:{id}` | that game's final |
+| Player search results | 10 minutes | none | nothing |
+| Today's slate, scores, the live banner | not cached | | read from the Scoreboard Agent for first paint, then pushed over its socket |
+| Picks and the season record | not cached | | read from D1 on each render; the Scoreboard moves `invalidatedAt` when a pick is written |
+| A finished game's plays | D1, permanent | | |
+
+- **Stale while it refreshes.** Past its time limit an entry is still answered at once, and the read is made again behind the response (`waitUntil`); the next visitor gets the new answer. KV keeps an entry for 30 days, so a page nobody has opened for a week still opens from the cache. Only two things make a visitor wait on ESPN: a read nobody has made in 30 days, and the first read after its tag was invalidated.
+- **A final still reaches every page.** The Scoreboard invalidates the tags, then moves `invalidatedAt`. An invalidated entry is never served stale: the next read goes to ESPN. An open page hears `invalidatedAt` on the socket, compares it with the one it was rendered with, and renders its server components again when the socket's is later.
+
+**In the browser**
+
+- **Links prefetch on intent.** A link to a page of the site fetches that page when the pointer has rested on it for 65ms, when the keyboard's focus arrives, or when a finger or a button goes down; never because it is on screen. The whole page is fetched, not its placeholder, so the click draws content, with no request of its own. One link at a time: drawing the pointer down a list fetches the row it stops on.
+- **The router's cache.** A prefetched page is kept for 5 minutes and a visited one for 30 seconds (`experimental.staleTimes`); back and forward restore the page as it was left. Every refresh on `invalidatedAt` empties these, so a page fetched before a final is not drawn from memory after it. Scores are never from this cache: they are the socket's.
+- **No layout shift.** A placeholder is the real component's markup with a bar where each value would be (`packages/ui`'s skeletons), so its rows and headers are the real heights. A list of unknown length gets enough rows to pass the foot of the window.
 
 ## 3. Routes
 
@@ -60,7 +83,7 @@ Data comes from ESPN's unauthenticated site API and nowhere else (ADR 0003). One
 | `/nhl` | Standings and Teams tabs |
 | `/nhl/live` | In Progress, Upcoming and Final sections |
 | `/nhl/games/:id` | Scheduled: matchup and the pick. Live: the Game Stream. Final: the Replay |
-| `/nhl/teams/:id` | Team header, Schedule / Roster / Stats tabs |
+| `/nhl/teams/:id` | Team header and the Schedule tab; `/nhl/teams/:id/roster` and `/nhl/teams/:id/stats` are the other tabs |
 | `/players` | Player search and favorite players |
 | `/players/:id` | Season stats, the recent-games log and the career table |
 | `/family/rylan` | Rylan's page |
@@ -77,7 +100,7 @@ Site-wide:
 - Times are shown in the visitor's own time zone. The server writes Eastern time marked "ET", and the browser replaces it as the page loads.
 - Scores update on every page without a refresh, through the Scoreboard socket.
 - Every game card or game row, wherever it appears, links to that game's page.
-- Tabs and standings views are held in the URL, so they survive a reload and can be linked.
+- Tabs and standings views are held in the URL, so they survive a reload and can be linked: a query parameter, or a path segment where each tab is a page under a shared layout (the team page).
 
 ### `/` Dashboard
 
@@ -103,7 +126,7 @@ In Progress, Upcoming and Final sections. Each game row shows both teams with th
 ### `/nhl/teams/:id`
 
 - Header with the team's record.
-- Tabs held in the URL: Schedule, Roster, Stats. Finished games on the schedule link to their Replay; this season only.
+- Tabs, each a page under the team's layout: Schedule (the team's own address), Roster (`/roster`), Stats (`/stats`). The addresses they had before #94, `?tab=roster` and `?tab=stats`, redirect there (308). Finished games on the schedule link to their Replay; this season only.
 - Hearts on the roster to favorite a player, and one on the header to favorite the team.
 - A banner linking to the game page when the team is playing now, and a Next Game card linking to the scheduled game's page.
 - Toronto's roster has Rylan Yogan, #99, at the top (see [Rylan](#7-rylan)).

@@ -3,6 +3,7 @@ import { expect, test } from "vitest";
 import {
   gameHref,
   gameStatusLine,
+  gameWhere,
   hasScore,
   heardAtFrom,
   laterOf,
@@ -191,4 +192,14 @@ test("every game links to its own page, and shows a score only once it has start
   expect(hasScore(live("2", 1, "20:00"))).toBe(true);
   expect(hasScore(game("3", { status: "final", period: 3 }))).toBe(true);
   expect(hasScore(game("4", { status: "postponed" }))).toBe(false);
+});
+
+test("a game's note says where it is played and where it is shown", () => {
+  expect(gameWhere({ venue: "Scotiabank Arena", broadcasts: ["ESPN+", "TNT"] })).toBe(
+    "Scotiabank Arena · ESPN+, TNT",
+  );
+  expect(gameWhere({ venue: "Scotiabank Arena", broadcasts: [] })).toBe("Scotiabank Arena");
+  expect(gameWhere({ venue: null, broadcasts: ["ESPN+"] })).toBe("ESPN+");
+  // State stored by the Scoreboard before it carried broadcasts has none.
+  expect(gameWhere({ venue: null })).toBe("");
 });

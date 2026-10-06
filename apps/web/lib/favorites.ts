@@ -77,3 +77,15 @@ export function favoritesFirst<T extends GameSides>(
     ...games.filter((game) => !isFavoriteGame(game, teamIds)),
   ];
 }
+
+/**
+ * The favorites a list with room for `limit` shows: the oldest ones, passing over any that
+ * `isNobody` says resolved to no player, so a dead id does not leave the list one short.
+ */
+export function favoritesToShow(
+  ids: readonly string[],
+  limit: number,
+  isNobody: (id: string) => boolean,
+): string[] {
+  return ids.filter((id) => !isNobody(id)).slice(0, limit);
+}

@@ -15,9 +15,9 @@ export type ScoreboardSide = z.infer<typeof ScoreboardSideSchema>;
 
 /**
  * One game as the Scoreboard Agent pushes it to every open page. It is a `Game` with what the
- * ticker and `/nhl/live` do not draw left out (broadcasts, the season, and of each team its
- * names, location and colours), because the whole state is sent again on every change. The logos
- * are carried for the pages that will draw them, though the ledger and the ticker do not.
+ * ticker and the game rows do not draw left out (the season, and of each team its names, location
+ * and colours), because the whole state is sent again on every change. The logos are carried for
+ * the pages that will draw them, though the ledger and the ticker do not.
  */
 export const ScoreboardGameSchema = GameSchema.pick({
   id: true,
@@ -28,7 +28,12 @@ export const ScoreboardGameSchema = GameSchema.pick({
   clock: true,
   detail: true,
   venue: true,
-}).extend({ home: ScoreboardSideSchema, away: ScoreboardSideSchema });
+}).extend({
+  home: ScoreboardSideSchema,
+  away: ScoreboardSideSchema,
+  /** Who shows the game ("ESPN+", "TNT"). Absent from state stored before the field existed. */
+  broadcasts: GameSchema.shape.broadcasts.optional(),
+});
 export type ScoreboardGame = z.infer<typeof ScoreboardGameSchema>;
 
 /** The Scoreboard Agent's synced state: today's games. */

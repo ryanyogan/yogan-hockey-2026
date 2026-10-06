@@ -329,6 +329,7 @@ describe("first paint", () => {
       clock: "12:34",
       detail: "12:34 - 2nd",
       venue: "Bell Centre",
+      broadcasts: ["ESPN+", "CARNHL"],
       home: {
         id: "10",
         abbreviation: "MTL",

@@ -1,0 +1,61 @@
+"use client";
+
+import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
+import Link from "next/link";
+import type { ReactNode } from "react";
+import { tonightGames, tonightSummary } from "../../lib/dashboard";
+import { useFavorites } from "../../lib/use-favorites";
+import { GameLedger } from "../scoreboard/game-ledger";
+import { useScoreboard } from "../scoreboard/scoreboard-provider";
+import { EmptyLedger } from "../team/empty-ledger";
+import { headerLink } from "./header-link";
+
+/**
+ * The dashboard's first block: tonight's games, kept current by the Scoreboard socket, with the
+ * favorite teams' games first.
+ *
+ * The picks are not this component's to read (they are in D1, and this is the browser). The
+ * page, a server component, hands them in:
+ *
+ * - `picks`: what to say of each game's pick in its note, by game id: "TOR 58%", "pick pending".
+ *   A game with no entry says nothing, which is what a failed Prediction shows.
+ * - `record`: the season record of the picks, "picks: 34 right, 21 wrong", at the right-hand end
+ *   of the header line.
+ */
+export function TonightGames({
+  picks,
+  record,
+}: {
+  picks?: Readonly<Record<string, ReactNode>>;
+  record?: ReactNode;
+}) {
+  const { date, games } = useScoreboard();
+  const favoriteTeamIds = useFavorites("team").ids;
+  return (
+    <Section aria-label="Tonight">
+      <SectionHeader title="Tonight" count={tonightSummary(games)}>
+        <span className="flex flex-wrap gap-x-4">
+          {record != null && <span data-slot="picks-record">{record}</span>}
+          <Link href="/nhl/live" className={headerLink}>
+            all scores
+          </Link>
+        </span>
+      </SectionHeader>
+      {games.length > 0 ? (
+        <GameLedger
+          fitted
+          games={tonightGames(games, favoriteTeamIds)}
+          favoriteTeamIds={favoriteTeamIds}
+          pick={picks && ((game) => picks[game.id])}
+        />
+      ) : (
+        // Without a date the Scoreboard has not answered yet, which is not a day off.
+        <EmptyLedger>
+          {date == null
+            ? "Today's games could not be read. They appear here as soon as they can be."
+            : "No games scheduled today."}
+        </EmptyLedger>
+      )}
+    </Section>
+  );
+}

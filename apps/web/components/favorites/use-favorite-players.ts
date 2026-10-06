@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { resolveFavoritePlayers } from "../../app/players/actions";
 import type { FavoritePlayer } from "../../lib/favorite-players";
-import { MAX_FAVORITES } from "../../lib/favorites";
+import { favoritesToShow, MAX_FAVORITES } from "../../lib/favorites";
 import { useFavorites } from "../../lib/use-favorites";
 
 export type ResolvedFavoritePlayers = {
@@ -25,8 +25,8 @@ type Answer = FavoritePlayer | "unread" | null;
 /**
  * The visitor's favorite players as rows to show: the ids from the browser, resolved by the
  * `resolveFavoritePlayers` Server Action. `limit` is how many the caller shows (the dashboard's
- * four): the oldest `limit` favorites are asked for, so one of them that is nobody's leaves the
- * list one short.
+ * four): the oldest `limit` favorites are asked for, and when one of them turns out to be nobody's
+ * the next is asked for in its place. One that could not be read just now keeps its place.
  *
  * A player is asked for once. Taking a heart off removes his row at once without asking again,
  * and a new favorite, made on this page or in another tab, asks for him alone. One that could
@@ -36,7 +36,11 @@ export function useFavoritePlayers(limit: number = MAX_FAVORITES): ResolvedFavor
   const { ids, ready } = useFavorites("player");
   const [known, setKnown] = useState<ReadonlyMap<string, Answer>>(new Map());
 
-  const wanted = useMemo(() => ids.slice(0, limit), [ids, limit]);
+  // An id found to be nobody's is passed over, so the next favorite is asked for in its place.
+  const wanted = useMemo(
+    () => favoritesToShow(ids, limit, (id) => known.get(id) === null),
+    [ids, limit, known],
+  );
   const missing = wanted.filter((id) => !known.has(id)).join(",");
 
   useEffect(() => {

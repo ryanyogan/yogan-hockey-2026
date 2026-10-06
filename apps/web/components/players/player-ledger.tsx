@@ -24,8 +24,14 @@ export function PlayerLedger<P extends PlayerSearchResult>({
   players,
   line,
   action,
+  compact = false,
 }: {
   players: readonly P[];
+  /**
+   * Half a page wide, as on the dashboard, in the Reference UI's four columns: no sweater number,
+   * and the team is its abbreviation with the position beside it in place of a column.
+   */
+  compact?: boolean;
   /** A "season" column between the team and the action: a favorite player's figures. */
   line?: (player: P) => ReactNode;
   action?: (player: P) => ReactNode;
@@ -37,7 +43,7 @@ export function PlayerLedger<P extends PlayerSearchResult>({
     <Ledger>
       <LedgerHead>
         <LedgerColumn>player</LedgerColumn>
-        <LedgerColumn className={narrow}>pos</LedgerColumn>
+        {compact ? null : <LedgerColumn className={narrow}>pos</LedgerColumn>}
         <LedgerColumn>team</LedgerColumn>
         {line ? <LedgerColumn className="max-sm:hidden">season</LedgerColumn> : null}
         {action ? <LedgerColumn /> : null}
@@ -49,16 +55,20 @@ export function PlayerLedger<P extends PlayerSearchResult>({
               <Link href={`/players/${player.id}`} prefetch={false} className={ledgerRowLink}>
                 {player.name}
               </Link>
-              {player.jersey ? <LedgerAside> #{player.jersey}</LedgerAside> : null}
+              {player.jersey && !compact ? <LedgerAside> #{player.jersey}</LedgerAside> : null}
               {/* A phone has no room for the column, so the line goes under his name. */}
               {line ? (
-                <LedgerDetail className="whitespace-nowrap sm:hidden">{line(player)}</LedgerDetail>
+                <LedgerDetail className={compact ? "sm:hidden" : "whitespace-nowrap sm:hidden"}>
+                  {line(player)}
+                </LedgerDetail>
               ) : null}
             </LedgerCell>
-            <LedgerCell className={narrow}>{player.position}</LedgerCell>
-            <LedgerCell>
+            {compact ? null : <LedgerCell className={narrow}>{player.position}</LedgerCell>}
+            <LedgerCell className={compact ? "whitespace-nowrap" : undefined}>
               {player.team?.abbreviation}
-              {player.team ? (
+              {compact ? (
+                <LedgerAside> {player.position}</LedgerAside>
+              ) : player.team ? (
                 <LedgerAside className="max-sm:hidden"> {player.team.name}</LedgerAside>
               ) : null}
             </LedgerCell>

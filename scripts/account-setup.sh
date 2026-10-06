@@ -187,7 +187,11 @@ finish() {
 
 # Issue #32, "Cloudflare account setup". Run from anywhere inside the repo:
 #
-#   ./scripts/account-setup.sh
+#   ./scripts/account-setup.sh [--with-access]
+#
+# The Access stage is skipped unless --with-access is given (or WITH_ACCESS=1):
+# the site has been public since 2026-10-06, when Ryan had Access removed, and
+# a plain rerun must not put the lock back.
 #
 # Safe to rerun: every stage looks for what already exists before it creates
 # anything, and asks before each change. Names and ids are remembered in
@@ -208,6 +212,19 @@ ACCESS_APP_NAME="Yogan Hockey"
 ACCESS_POLICY_NAME="Owner only"
 API_TOKEN_NAME="yogan-hockey-2026 GitHub Actions"
 COMMENT_MARKER="<!-- account-setup-wizard -->"
+ACCESS_REMOVED_ON="2026-10-06"
+
+# Off by default: see the note at the top.
+WITH_ACCESS="${WITH_ACCESS:-0}"
+for arg in "$@"; do
+  case "$arg" in
+    --with-access) WITH_ACCESS=1 ;;
+    *)
+      printf 'Unknown argument: %s\nUsage: ./scripts/account-setup.sh [--with-access]\n' "$arg" >&2
+      exit 2
+      ;;
+  esac
+done
 
 # Everything the last stage records. Empty means "not done".
 REPO=""; CLOUDFLARE_ACCOUNT_ID=""; CI_TOKEN=""; WORKERS_PAID=""
@@ -437,84 +454,90 @@ pause
 
 # ── 5 ─────────────────────────────────────────────────────────────────────
 stage "Cloudflare Access in front of $SITE_HOST"
-say "One Access application on $SITE_HOST with one policy: allow your email,"
-say "nobody else. The address is kept in $ENV_FILE and is not recorded on the issue."
-ask ACCESS_EMAIL "Your email, the only one allowed in:"
-while [[ ! "$ACCESS_EMAIL" =~ ^[^@[:space:]]+@[^@[:space:]]+\.[^@[:space:]]+$ ]]; do
-  [[ -n "$ACCESS_EMAIL" ]] || die "No email given. Rerun when ready; nothing done so far is lost."
-  warn "that does not look like an email address."
-  ask ACCESS_EMAIL "Your email, the only one allowed in:"
-done
-write_env ACCESS_EMAIL "$ACCESS_EMAIL"
-
-find_access_app() {
-  cfq zero-trust access applications list --domain "$SITE_HOST" |
-    jq -c --arg d "$SITE_HOST" 'first(.[] | select(
-        .domain == $d or ((.domain // "") | startswith($d + "/"))
-        or ((.self_hosted_domains // []) | any(. == $d or startswith($d + "/")))
-      )) // empty'
-}
-access_dashboard="https://one.dash.cloudflare.com/$CLOUDFLARE_ACCOUNT_ID/access/apps"
-app=""
-if ! app=$(find_access_app); then
-  cf_error; todo "Access application (could not list; rerun)"
-elif [[ -n "$app" ]]; then
-  ok "an Access application for $SITE_HOST already exists"
-elif confirm "Create the Access application \"$ACCESS_APP_NAME\" on $SITE_HOST?"; then
-  jq -n --arg n "$ACCESS_APP_NAME" --arg d "$SITE_HOST" \
-    '{name: $n, domain: $d, type: "self_hosted", session_duration: "730h"}' >"$TMP/app.json"
-  if cfq zero-trust access applications create --body "@$TMP/app.json" >/dev/null &&
-    app=$(find_access_app) && [[ -n "$app" ]]; then
-    ok "created the Access application"
-  else
-    cf_error; app=""
-    todo "Access application (create failed; make a self-hosted application for $SITE_HOST at $access_dashboard and rerun)"
-  fi
+if [[ "$WITH_ACCESS" != "1" ]]; then
+  say "Skipped. Access was removed on $ACCESS_REMOVED_ON at Ryan's request: the site"
+  say "is public, and this stage would put the lock back. Nothing was read or"
+  say "changed. To lock the site again on purpose, rerun with --with-access."
 else
-  todo "Access application for $SITE_HOST"
-fi
+  say "One Access application on $SITE_HOST with one policy: allow your email,"
+  say "nobody else. The address is kept in $ENV_FILE and is not recorded on the issue."
+  ask ACCESS_EMAIL "Your email, the only one allowed in:"
+  while [[ ! "$ACCESS_EMAIL" =~ ^[^@[:space:]]+@[^@[:space:]]+\.[^@[:space:]]+$ ]]; do
+    [[ -n "$ACCESS_EMAIL" ]] || die "No email given. Rerun when ready; nothing done so far is lost."
+    warn "that does not look like an email address."
+    ask ACCESS_EMAIL "Your email, the only one allowed in:"
+  done
+  write_env ACCESS_EMAIL "$ACCESS_EMAIL"
 
-if [[ -n "$app" ]]; then
-  ACCESS_APP_ID=$(jq -r '.id' <<<"$app")
-  ACCESS_AUD=$(jq -r '.aud' <<<"$app")
-  if [[ "$(jq '.policies // [] | length' <<<"$app")" == "0" ]]; then
-    say "The application has no policy yet, so nobody can get in."
-    if confirm "Add the policy \"$ACCESS_POLICY_NAME\": allow only $ACCESS_EMAIL?"; then
-      jq -n --arg n "$ACCESS_POLICY_NAME" --arg e "$ACCESS_EMAIL" \
-        '{name: $n, decision: "allow", include: [{email: {email: $e}}]}' >"$TMP/policy.json"
-      if cfq zero-trust access applications policies create "$ACCESS_APP_ID" --body "@$TMP/policy.json" >/dev/null; then
-        ok "added the policy"
-        refreshed=$(find_access_app || true)
-        [[ -n "$refreshed" ]] && app="$refreshed"
-      else
-        cf_error
+  find_access_app() {
+    cfq zero-trust access applications list --domain "$SITE_HOST" |
+      jq -c --arg d "$SITE_HOST" 'first(.[] | select(
+          .domain == $d or ((.domain // "") | startswith($d + "/"))
+          or ((.self_hosted_domains // []) | any(. == $d or startswith($d + "/")))
+        )) // empty'
+  }
+  access_dashboard="https://one.dash.cloudflare.com/$CLOUDFLARE_ACCOUNT_ID/access/apps"
+  app=""
+  if ! app=$(find_access_app); then
+    cf_error; todo "Access application (could not list; rerun)"
+  elif [[ -n "$app" ]]; then
+    ok "an Access application for $SITE_HOST already exists"
+  elif confirm "Create the Access application \"$ACCESS_APP_NAME\" on $SITE_HOST?"; then
+    jq -n --arg n "$ACCESS_APP_NAME" --arg d "$SITE_HOST" \
+      '{name: $n, domain: $d, type: "self_hosted", session_duration: "730h"}' >"$TMP/app.json"
+    if cfq zero-trust access applications create --body "@$TMP/app.json" >/dev/null &&
+      app=$(find_access_app) && [[ -n "$app" ]]; then
+      ok "created the Access application"
+    else
+      cf_error; app=""
+      todo "Access application (create failed; make a self-hosted application for $SITE_HOST at $access_dashboard and rerun)"
+    fi
+  else
+    todo "Access application for $SITE_HOST"
+  fi
+
+  if [[ -n "$app" ]]; then
+    ACCESS_APP_ID=$(jq -r '.id' <<<"$app")
+    ACCESS_AUD=$(jq -r '.aud' <<<"$app")
+    if [[ "$(jq '.policies // [] | length' <<<"$app")" == "0" ]]; then
+      say "The application has no policy yet, so nobody can get in."
+      if confirm "Add the policy \"$ACCESS_POLICY_NAME\": allow only $ACCESS_EMAIL?"; then
+        jq -n --arg n "$ACCESS_POLICY_NAME" --arg e "$ACCESS_EMAIL" \
+          '{name: $n, decision: "allow", include: [{email: {email: $e}}]}' >"$TMP/policy.json"
+        if cfq zero-trust access applications policies create "$ACCESS_APP_ID" --body "@$TMP/policy.json" >/dev/null; then
+          ok "added the policy"
+          refreshed=$(find_access_app || true)
+          [[ -n "$refreshed" ]] && app="$refreshed"
+        else
+          cf_error
+        fi
       fi
     fi
+    # Exactly one policy, an allow, whose only rule is that one email.
+    if jq -e --arg e "$ACCESS_EMAIL" '
+        (.policies // []) as $p
+        | ($p | length) == 1
+        and $p[0].decision == "allow"
+        and ($p[0].include | length) == 1
+        and (($p[0].include[0].email.email // "") | ascii_downcase) == ($e | ascii_downcase)
+        and (($p[0].exclude // []) | length) == 0
+        and (($p[0].require // []) | length) == 0' <<<"$app" >/dev/null 2>&1; then
+      ok "the only policy allows that one email and nothing else"
+      ACCESS_POLICY="one allow policy, one email"
+    else
+      warn "the policies on this application are not \"allow that one email only\":"
+      jq -r '(.policies // [])[] | "      \(.name): \(.decision), \(.include | length) include rule(s)"' <<<"$app" || true
+      open_url "$access_dashboard"
+      step "Open the $SITE_HOST application, then its Policies tab."
+      step "Leave exactly one policy: action Allow, one Include rule, Emails, your address."
+      todo "Access policy needs fixing by hand, then rerun to confirm"
+    fi
+    if org=$(cfq zero-trust organizations list); then
+      ACCESS_TEAM_DOMAIN=$(jq -r '(if type == "array" then .[0] else . end) | .auth_domain // empty' <<<"$org")
+    fi
+    note "Login is by one-time PIN to your email unless you have set up another"
+    note "identity provider. It gets its real test in #33, once the site answers."
   fi
-  # Exactly one policy, an allow, whose only rule is that one email.
-  if jq -e --arg e "$ACCESS_EMAIL" '
-      (.policies // []) as $p
-      | ($p | length) == 1
-      and $p[0].decision == "allow"
-      and ($p[0].include | length) == 1
-      and (($p[0].include[0].email.email // "") | ascii_downcase) == ($e | ascii_downcase)
-      and (($p[0].exclude // []) | length) == 0
-      and (($p[0].require // []) | length) == 0' <<<"$app" >/dev/null 2>&1; then
-    ok "the only policy allows that one email and nothing else"
-    ACCESS_POLICY="one allow policy, one email"
-  else
-    warn "the policies on this application are not \"allow that one email only\":"
-    jq -r '(.policies // [])[] | "      \(.name): \(.decision), \(.include | length) include rule(s)"' <<<"$app" || true
-    open_url "$access_dashboard"
-    step "Open the $SITE_HOST application, then its Policies tab."
-    step "Leave exactly one policy: action Allow, one Include rule, Emails, your address."
-    todo "Access policy needs fixing by hand, then rerun to confirm"
-  fi
-  if org=$(cfq zero-trust organizations list); then
-    ACCESS_TEAM_DOMAIN=$(jq -r '(if type == "array" then .[0] else . end) | .auth_domain // empty' <<<"$org")
-  fi
-  note "Login is by one-time PIN to your email unless you have set up another"
-  note "identity provider. It gets its real test in #33, once the site answers."
 fi
 pause
 
@@ -769,10 +792,14 @@ or_not_done() { printf '%s' "${1:-NOT DONE}"; }
   printf '| D1 database, preview | `%s` | `%s` |\n' "$D1_PREVIEW_NAME" "$(or_not_done "$D1_PREVIEW_ID")"
   printf '| Zone | `%s` | `%s` (%s) |\n' "$ZONE_NAME" "$(or_not_done "$ZONE_ID")" "$(or_not_done "$ZONE_STATUS")"
   printf '| Hostname | `%s` | existing DNS records: %s. Attached as a Worker custom domain by the first deploy (#33) |\n' "$SITE_HOST" "$(or_not_done "$DNS_RECORDS")"
-  printf '| Access application | %s | `%s` |\n' "$ACCESS_APP_NAME" "$(or_not_done "$ACCESS_APP_ID")"
-  printf '| Access audience (AUD) | | `%s` |\n' "$(or_not_done "$ACCESS_AUD")"
-  printf '| Access team domain | | `%s` |\n' "$(or_not_done "$ACCESS_TEAM_DOMAIN")"
-  printf '| Access policy | %s | %s |\n' "$ACCESS_POLICY_NAME" "$(or_not_done "$ACCESS_POLICY")"
+  if [[ "$WITH_ACCESS" == "1" ]]; then
+    printf '| Access application | %s | `%s` |\n' "$ACCESS_APP_NAME" "$(or_not_done "$ACCESS_APP_ID")"
+    printf '| Access audience (AUD) | | `%s` |\n' "$(or_not_done "$ACCESS_AUD")"
+    printf '| Access team domain | | `%s` |\n' "$(or_not_done "$ACCESS_TEAM_DOMAIN")"
+    printf '| Access policy | %s | %s |\n' "$ACCESS_POLICY_NAME" "$(or_not_done "$ACCESS_POLICY")"
+  else
+    printf '| Access application | | none: removed on %s at Ryan'"'"'s request, the site is public. This run skipped the Access stage |\n' "$ACCESS_REMOVED_ON"
+  fi
   printf '| AI Gateway | `%s` | `%s` |\n' "$AI_GATEWAY_NAME" "$(or_not_done "$AI_GATEWAY_ID")"
   printf '| Worker | `%s` | created by the first deploy (#33) |\n' "$(or_not_done "$WORKER_NAME")"
   printf '| GitHub Actions secret | `CLOUDFLARE_API_TOKEN` | %s (token named "%s") |\n' "$(or_not_done "$TOKEN_SECRET")" "$API_TOKEN_NAME"

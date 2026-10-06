@@ -102,9 +102,14 @@ export class GameAgent extends ViewerPolledAgent<GameStreamState> {
    * First paint, called by a server component over Durable Object RPC: the header and every play
    * so far. With nobody watching what is stored is old, so ESPN is asked first when the last poll
    * is older than one polling interval. A finished game is answered from what is kept.
+   *
+   * An Agent with nothing to show (no header, and ESPN has not said the game is unknown) asks
+   * ESPN however lately it last did: a first read that failed is not remembered, and the next
+   * visit tries again.
    */
   async getGame(): Promise<GameSnapshot> {
-    await this.pollIfStale();
+    const nothingToShow = this.state.header === null && !this.#notFound();
+    await (nothingToShow ? this.pollNow() : this.pollIfStale());
     return { ...this.state, plays: await this.#playsSoFar(), notFound: this.#notFound() };
   }
 

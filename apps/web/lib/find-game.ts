@@ -19,10 +19,10 @@ export type GameLookup =
  * The game behind `/nhl/games/:id` for first paint. An id that cannot be ESPN's is answered
  * without waking an Agent, so a mistyped address never makes one.
  *
- * A read can come back with no header and no "not found": ESPN failed on a game the Agent has
- * never seen, or (seen once, on a finished game's first request after a cold start) the Agent
- * answered before it had anything. Either way the read is made once more, at once, and a second
- * empty answer is `unreadable`. A read that throws is treated the same.
+ * The Game Agent answers only once it has asked ESPN, so a snapshot with no header and no "not
+ * found" means ESPN did not answer for a game the Agent has never seen: `unreadable`, and the
+ * Agent asks again on the next visit. A read that throws (the Agent itself could not be reached)
+ * is made once more; a second throw is `unreadable` too.
  */
 export async function findGame(
   id: string,
@@ -36,7 +36,8 @@ export async function findGame(
       if (snapshot.header != null) {
         return { state: "found", game: { ...snapshot, header: snapshot.header } };
       }
-      console.error(`Game ${id}: read ${attempt} came back with no header`);
+      console.error(`Game ${id}: ESPN did not answer, so there is no header to draw`);
+      return { state: "unreadable" };
     } catch (error) {
       console.error(`Game ${id}: read ${attempt} failed`, error);
     }

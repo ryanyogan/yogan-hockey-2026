@@ -5,6 +5,7 @@ import {
   LedgerBody,
   LedgerCell,
   LedgerColumn,
+  LedgerDetail,
   LedgerHead,
   LedgerRow,
   ledgerRowLink,
@@ -12,6 +13,7 @@ import {
 import { LiveMarker } from "@yogan-hockey/ui/components/marker";
 import Link from "next/link";
 import { gameHref, gameStatusLine, hasScore } from "../../lib/scoreboard-view";
+import { GameStatus } from "./game-status";
 
 function Team({ side }: { side: ScoreboardSide }) {
   return (
@@ -25,12 +27,6 @@ function Team({ side }: { side: ScoreboardSide }) {
 
 /** A cell of text: on a phone its first line stays level with its neighbours' first lines. */
 const TEXT_CELL = "whitespace-nowrap max-sm:align-top";
-/**
- * The venue as a phone shows it: small, under the status, on two lines where one is too short for
- * it. It keeps the room of two lines either way, so every row is the same height.
- */
-const PHONE_VENUE =
-  "line-clamp-2 h-6 whitespace-normal text-[10px] text-foreground/50 leading-3 sm:hidden";
 
 /**
  * Games as ledger rows, the Reference UI's "tonight" table: status, away, home, each team with its
@@ -39,7 +35,7 @@ const PHONE_VENUE =
  * lines up.
  *
  * A phone has no room for the last column or for a record beside its team, so there a row has a
- * second line: the venue under the status, each record under its team.
+ * second line: the venue in small print under the status, each record under its team.
  */
 export function GameLedger({ games }: { games: ScoreboardGame[] }) {
   return (
@@ -69,10 +65,12 @@ export function GameLedger({ games }: { games: ScoreboardGame[] }) {
                       {status === "live" ? null : status}
                     </LiveMarker>
                   ) : (
-                    status
+                    <GameStatus game={game} />
                   )}
                 </Link>
-                {game.venue && <div className={PHONE_VENUE}>{game.venue}</div>}
+                <LedgerDetail fine className="sm:hidden">
+                  {game.venue}
+                </LedgerDetail>
               </LedgerCell>
               <LedgerCell className={TEXT_CELL}>
                 <Team side={game.away} />

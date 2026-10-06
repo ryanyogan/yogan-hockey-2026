@@ -35,7 +35,7 @@ function GameCells({ row }: { row: ScheduleRow }) {
     <>
       <LedgerCell className="whitespace-nowrap">
         <Link href={gameHref(row.game)} className={ledgerRowLink}>
-          <LocalTime startTime={row.game.startTime} show="day" />
+          <LocalTime at={row.game.startTime} show="day" />
         </Link>
       </LedgerCell>
       <LedgerCell className="whitespace-nowrap">
@@ -78,7 +78,7 @@ export function UpcomingLedger({
                   {row.game.status === "live" ? (
                     <LiveMarker />
                   ) : (
-                    <LocalTime startTime={row.game.startTime} show="time" />
+                    <LocalTime at={row.game.startTime} show="time" />
                   )}
                 </LedgerCell>
               </LedgerRow>

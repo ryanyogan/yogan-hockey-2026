@@ -2,7 +2,9 @@
 
 import type { ScoreboardGame } from "@yogan-hockey/schemas";
 import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
-import { slateDateLabel, slateSections, updatedLabel } from "../../lib/scoreboard-view";
+import { slateDay } from "../../lib/game-time";
+import { slateSections } from "../../lib/scoreboard-view";
+import { LocalTime } from "../local-time";
 import { GameLedger } from "./game-ledger";
 import { useScoreboard } from "./scoreboard-provider";
 
@@ -23,9 +25,8 @@ function Games({ title, games }: { title: string; games: ScoreboardGame[] }) {
 export function LiveScores() {
   const { date, games, heardAt } = useScoreboard();
   const sections = slateSections(games);
-  const updated = updatedLabel(heardAt);
   const summary = [
-    date && slateDateLabel(date),
+    date && slateDay(date),
     games.length > 0 && plural(games.length, "game"),
     sections.live.length > 0 && `${sections.live.length} live`,
   ].filter(Boolean);
@@ -37,9 +38,9 @@ export function LiveScores() {
           Live scores
           <span className="font-normal text-foreground/50 normal-case"> {summary.join(", ")}</span>
         </h1>
-        {updated && (
+        {heardAt && (
           <p className="text-foreground/50">
-            updated <time dateTime={heardAt ?? undefined}>{updated}</time>
+            updated <LocalTime at={heardAt} show="clock" />
           </p>
         )}
       </header>

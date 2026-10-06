@@ -74,6 +74,7 @@ Site-wide:
 - An unknown path, team or player gets a not-found page inside the normal layout.
 - The footer credits ESPN as the data source.
 - A score ticker on every page.
+- Times are shown in the visitor's own time zone. The server writes Eastern time marked "ET", and the browser replaces it as the page loads.
 - Scores update on every page without a refresh, through the Scoreboard socket.
 - Every game card or game row, wherever it appears, links to that game's page.
 - Tabs and standings views are held in the URL, so they survive a reload and can be linked.

@@ -5,7 +5,6 @@ import { GameSchema, GameSideSchema } from "./game.ts";
 export const ScoreboardSideSchema = GameSideSchema.pick({
   id: true,
   abbreviation: true,
-  shortName: true,
   logo: true,
   logoDark: true,
   score: true,
@@ -16,8 +15,9 @@ export type ScoreboardSide = z.infer<typeof ScoreboardSideSchema>;
 
 /**
  * One game as the Scoreboard Agent pushes it to every open page. It is a `Game` with what the
- * ticker and `/nhl/live` do not draw left out (broadcasts, the season, and of each team its full
- * name, location and colours), because the whole state is sent again on every change.
+ * ticker and `/nhl/live` do not draw left out (broadcasts, the season, and of each team its
+ * names, location and colours), because the whole state is sent again on every change. The logos
+ * are carried for the pages that will draw them, though the ledger and the ticker do not.
  */
 export const ScoreboardGameSchema = GameSchema.pick({
   id: true,

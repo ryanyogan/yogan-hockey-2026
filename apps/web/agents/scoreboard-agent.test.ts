@@ -323,7 +323,6 @@ describe("first paint", () => {
       home: {
         id: "10",
         abbreviation: "MTL",
-        shortName: "Canadiens",
         logo: "https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/mtl.png",
         logoDark: null,
         score: 2,
@@ -333,7 +332,6 @@ describe("first paint", () => {
       away: {
         id: "7",
         abbreviation: "CAR",
-        shortName: "Hurricanes",
         logo: "https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/car.png",
         logoDark: null,
         score: 0,

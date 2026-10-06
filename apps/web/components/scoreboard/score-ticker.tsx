@@ -9,6 +9,7 @@ import {
   tickerGames,
   wheelScrollLeft,
 } from "../../lib/scoreboard-view";
+import { GameStatus } from "./game-status";
 import { useScoreboard } from "./scoreboard-provider";
 
 function Side({ side, scored }: { side: ScoreboardSide; scored: boolean }) {
@@ -40,7 +41,7 @@ function Entry({ game }: { game: ScoreboardGame }) {
         <span className={live ? "font-bold text-live" : "text-foreground/50"}>
           {/* The tint says "live" to the eye only. */}
           {live && status !== "live" && <span className="sr-only">live, </span>}
-          {status}
+          <GameStatus game={game} />
         </span>
       </Link>
     </li>

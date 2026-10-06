@@ -30,22 +30,22 @@ export function ScoreboardProvider({
   children: ReactNode;
 }) {
   const [state, setState] = useState<ScoreboardState>(initial);
-  const [quietPollAt, setQuietPollAt] = useState(initial.heardAt);
+  const [lastHeardAt, setLastHeardAt] = useState(initial.heardAt);
 
   useAgent<ScoreboardState>({
     ...SCOREBOARD_CONNECTION,
     onStateUpdate: (next) => setState(next),
     onMessage: (message) => {
       const at = heardAtFrom(message.data);
-      if (at != null) setQuietPollAt(at);
+      if (at != null) setLastHeardAt(at);
     },
   });
   useRefreshOnInvalidation(state.invalidatedAt);
 
   const scoreboard = useMemo(
     // A state that arrives is itself news from ESPN, so the later of the two is the answer.
-    () => ({ ...state, heardAt: laterOf(state.updatedAt, quietPollAt) }),
-    [state, quietPollAt],
+    () => ({ ...state, heardAt: laterOf(state.updatedAt, lastHeardAt) }),
+    [state, lastHeardAt],
   );
   return <ScoreboardContext value={scoreboard}>{children}</ScoreboardContext>;
 }

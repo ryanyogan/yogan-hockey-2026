@@ -6,10 +6,8 @@ import {
   hasScore,
   heardAtFrom,
   laterOf,
-  slateDateLabel,
   slateSections,
   tickerGames,
-  updatedLabel,
   wheelScrollLeft,
 } from "./scoreboard-view";
 
@@ -17,7 +15,6 @@ function side(abbreviation: string, score = 0, winner = false): ScoreboardGame["
   return {
     id: abbreviation,
     abbreviation,
-    shortName: abbreviation,
     logo: null,
     logoDark: null,
     score,
@@ -46,11 +43,8 @@ function game(id: string, over: Partial<ScoreboardGame> = {}): ScoreboardGame {
 const live = (id: string, period: number, clock: string, over: Partial<ScoreboardGame> = {}) =>
   game(id, { status: "live", period, clock, ...over });
 
-test("a game still to be played reads as its start time in Eastern time", () => {
-  expect(gameStatusLine(game("1"))).toBe("7:00 PM ET");
-  expect(gameStatusLine(game("2", { startTime: "2026-10-07T02:30:00Z" }))).toBe("10:30 PM ET");
-  // After the clocks go back: 7:00 PM Eastern is midnight UTC.
-  expect(gameStatusLine(game("3", { startTime: "2026-11-11T00:00:00Z" }))).toBe("7:00 PM ET");
+test("a game still to be played has no status line: its start time stands in for one", () => {
+  expect(gameStatusLine(game("1"))).toBeNull();
 });
 
 test("a game in progress reads as its period and the time left in it", () => {
@@ -151,6 +145,7 @@ test("only the Scoreboard's own word that it heard from ESPN carries a time", ()
   expect(heardAtFrom(JSON.stringify({ type: "scoreboard_heard", at }))).toBe(at);
   expect(heardAtFrom(JSON.stringify({ type: "cf_agent_mcp_servers", at }))).toBeNull();
   expect(heardAtFrom(JSON.stringify({ type: "scoreboard_heard" }))).toBeNull();
+  expect(heardAtFrom(JSON.stringify({ type: "scoreboard_heard", at: "lately" }))).toBeNull();
   expect(heardAtFrom("not json")).toBeNull();
   expect(heardAtFrom(new ArrayBuffer(4))).toBeNull();
 });
@@ -173,6 +168,8 @@ test("the wheel stops at the ticker's ends, and from there it scrolls the page a
   expect(wheelScrollLeft(strip, { ...wheel, deltaY: -5000 })).toBe(0);
   expect(wheelScrollLeft({ ...strip, scrollLeft: 700 }, { ...wheel, deltaY: 120 })).toBeNull();
   expect(wheelScrollLeft({ ...strip, scrollLeft: 0 }, { ...wheel, deltaY: -120 })).toBeNull();
+  // The slow tail of a trackpad's glide still belongs to the strip while it has room to move.
+  expect(wheelScrollLeft(strip, { ...wheel, deltaY: 0.4 })).toBe(200.4);
   // A browser zoomed in reports a fraction short of the end.
   expect(wheelScrollLeft({ ...strip, scrollLeft: 699.5 }, { ...wheel, deltaY: 120 })).toBeNull();
 });
@@ -194,15 +191,4 @@ test("every game links to its own page, and shows a score only once it has start
   expect(hasScore(live("2", 1, "20:00"))).toBe(true);
   expect(hasScore(game("3", { status: "final", period: 3 }))).toBe(true);
   expect(hasScore(game("4", { status: "postponed" }))).toBe(false);
-});
-
-test("a slate's date reads as a day of the week and a date", () => {
-  expect(slateDateLabel("2026-10-06")).toBe("Tue, Oct 6");
-  expect(slateDateLabel("2027-01-01")).toBe("Fri, Jan 1");
-});
-
-test("the updated time is Eastern, to the second, and absent before the first poll", () => {
-  expect(updatedLabel("2026-10-07T00:14:07.000Z")).toBe("20:14:07 ET");
-  expect(updatedLabel("2026-11-11T05:03:09.000Z")).toBe("00:03:09 ET");
-  expect(updatedLabel(null)).toBeNull();
 });

@@ -25,8 +25,8 @@ export function scoreboardPollSeconds(games: ScoreboardGame[], now: number): num
 }
 
 function scoreboardSide(side: Game["home"]): ScoreboardSide {
-  const { id, abbreviation, shortName, logo, logoDark, score, winner, record } = side;
-  return { id, abbreviation, shortName, logo, logoDark, score, winner, record };
+  const { id, abbreviation, logo, logoDark, score, winner, record } = side;
+  return { id, abbreviation, logo, logoDark, score, winner, record };
 }
 
 /** A game cut down to what the Scoreboard pushes to every open page. */

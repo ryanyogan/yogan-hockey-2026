@@ -3,53 +3,12 @@ import type { ScoreboardGame, ScoreboardHeard } from "@yogan-hockey/schemas";
 /*
  * How the Scoreboard's games read on a page: the status line of a game, the sections of
  * `/nhl/live`, the ticker's order. Nothing here touches the server, so client components use it.
+ * Times are not written here: `lib/game-time.ts` formats them and `LocalTime` shows them.
  */
-
-/**
- * Times are shown in Eastern time and say so. The NHL counts a slate's date in Eastern time, and
- * the server, which draws the first paint, cannot know the visitor's own zone.
- */
-const TIME_ZONE = "America/New_York";
-const ZONE_LABEL = "ET";
 
 const PLAYOFFS = 3;
 const REGULATION_PERIODS = 3;
 const SHOOTOUT_PERIOD = 5;
-
-function timeParts(iso: string, options: Intl.DateTimeFormatOptions): Record<string, string> {
-  const parts = new Intl.DateTimeFormat("en-US", { timeZone: TIME_ZONE, ...options }).formatToParts(
-    new Date(iso),
-  );
-  // Put together from parts, because the space before "PM" differs between runtimes.
-  return Object.fromEntries(parts.map((part) => [part.type, part.value]));
-}
-
-function startTimeLabel(startTime: string): string {
-  const { hour, minute, dayPeriod } = timeParts(startTime, { hour: "numeric", minute: "2-digit" });
-  return `${hour}:${minute} ${dayPeriod} ${ZONE_LABEL}`;
-}
-
-/** "20:14:07 ET": a moment as the "updated" stamp shows it. Null when there is none yet. */
-export function updatedLabel(updatedAt: string | null): string | null {
-  if (updatedAt == null) return null;
-  const { hour, minute, second } = timeParts(updatedAt, {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hourCycle: "h23",
-  });
-  return `${hour}:${minute}:${second} ${ZONE_LABEL}`;
-}
-
-/** "Tue, Oct 6": a slate's date, which is a calendar day and has no time zone of its own. */
-export function slateDateLabel(date: string): string {
-  return new Intl.DateTimeFormat("en-US", {
-    timeZone: "UTC",
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-  }).format(new Date(`${date}T00:00:00Z`));
-}
 
 /** Where a game's page is, whatever state the game is in. */
 export const gameHref = (game: ScoreboardGame) => `/nhl/games/${game.id}`;
@@ -88,13 +47,14 @@ function finalLine(game: ScoreboardGame): string {
 }
 
 /**
- * A game's status in a few characters, as a game row and a ticker entry show it: "7:00 PM ET",
- * "2nd 12:34", "end 2nd", "SO", "final/OT", "postponed".
+ * A game's status in a few characters, as a game row and a ticker entry show it: "2nd 12:34",
+ * "end 2nd", "SO", "final/OT", "postponed". Null for a game still to be played: its status is its
+ * start time, which is the visitor's own and so is drawn by `GameStatus`, not written here.
  */
-export function gameStatusLine(game: ScoreboardGame): string {
+export function gameStatusLine(game: ScoreboardGame): string | null {
   switch (game.status) {
     case "scheduled":
-      return startTimeLabel(game.startTime);
+      return null;
     case "live":
       return liveLine(game);
     case "final":
@@ -149,19 +109,17 @@ export function heardAtFrom(data: unknown): string | null {
     const message: unknown = JSON.parse(data);
     if (typeof message !== "object" || message === null) return null;
     const { type, at } = message as Partial<ScoreboardHeard>;
-    return type === "scoreboard_heard" && typeof at === "string" ? at : null;
+    if (type !== "scoreboard_heard" || typeof at !== "string") return null;
+    return Number.isNaN(Date.parse(at)) ? null : at;
   } catch {
     return null;
   }
 }
 
 /** A box that scrolls sideways, as the DOM measures it. */
-export type ScrollStrip = Pick<Element, "scrollLeft" | "scrollWidth" | "clientWidth">;
+type ScrollStrip = Pick<Element, "scrollLeft" | "scrollWidth" | "clientWidth">;
 /** What a wheel event says, as the DOM reports it. */
-export type WheelTurn = Pick<
-  WheelEvent,
-  "deltaX" | "deltaY" | "deltaMode" | "shiftKey" | "ctrlKey"
->;
+type WheelTurn = Pick<WheelEvent, "deltaX" | "deltaY" | "deltaMode" | "shiftKey" | "ctrlKey">;
 
 /** `WheelEvent.deltaMode`: the wheel reports lines, or pages, where most report pixels. */
 const WHEEL_LINES = 1;
@@ -186,7 +144,7 @@ export function wheelScrollLeft(strip: ScrollStrip, wheel: WheelTurn): number | 
   if (wheel.deltaY === 0 || Math.abs(wheel.deltaX) >= Math.abs(wheel.deltaY)) return null;
   const end = strip.scrollWidth - strip.clientWidth;
   const distance = wheel.deltaY * wheelUnitPx(wheel.deltaMode, strip.clientWidth);
-  const to = Math.min(end, Math.max(0, strip.scrollLeft + distance));
-  // Less than a pixel is no move: a zoomed browser stops a fraction short of the end.
-  return Math.abs(to - strip.scrollLeft) < 1 ? null : to;
+  // Within a pixel of an end is at it: a zoomed browser stops a fraction short.
+  const atEnd = distance > 0 ? strip.scrollLeft >= end - 1 : strip.scrollLeft <= 1;
+  return atEnd ? null : Math.min(end, Math.max(0, strip.scrollLeft + distance));
 }

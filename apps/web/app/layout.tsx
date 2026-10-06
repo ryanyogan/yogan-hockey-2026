@@ -23,7 +23,7 @@ async function scoreboardForFirstPaint(): Promise<ScoreboardReading> {
     return await readScoreboard();
   } catch (error) {
     console.error("Layout: could not read the Scoreboard", error);
-    return { date: null, games: [], updatedAt: null, heardAt: null };
+    return { date: null, games: [], updatedAt: null, invalidatedAt: null, heardAt: null };
   }
 }
 

@@ -3,6 +3,9 @@ import { expect, test } from "@playwright/test";
 // Nashville at Toronto, on the recorded slate of nine games still to be played.
 const GAME_ID = "401892449";
 
+// A visitor in Chicago, an hour behind the NHL's Eastern time: every time is shown in his own.
+test.use({ timezoneId: "America/Chicago" });
+
 type Side = Record<string, unknown>;
 type Slate = {
   games: { id: string; away: Side; home: Side; [field: string]: unknown }[];
@@ -37,7 +40,7 @@ test("/nhl/live lists the slate in sections, links each game, and follows the so
   await page.goto("/nhl/live");
   await expect(page).toHaveTitle(/Live Scores/);
   await expect(page.getByRole("heading", { name: /Live scores/ })).toContainText("9 games");
-  await expect(page.getByText(/updated \d\d:\d\d:\d\d ET/)).toBeVisible();
+  await expect(page.getByText(/updated \d\d:\d\d:\d\d$/)).toBeVisible();
 
   // First paint, from the server: every game is still to come, so the other sections are absent.
   const upcoming = page.getByRole("region", { name: "Upcoming" });
@@ -45,7 +48,7 @@ test("/nhl/live lists the slate in sections, links each game, and follows the so
   await expect(upcoming.getByRole("row")).toHaveCount(10);
   await expect(inProgress).toHaveCount(0);
   await expect(page.getByRole("region", { name: "Final" })).toHaveCount(0);
-  await expect(upcoming.getByRole("link", { name: /NSH at TOR, 7:00 PM ET/ })).toHaveAttribute(
+  await expect(upcoming.getByRole("link", { name: /NSH at TOR, 6:00 PM$/ })).toHaveAttribute(
     "href",
     `/nhl/games/${GAME_ID}`,
   );
@@ -59,7 +62,7 @@ test("/nhl/live lists the slate in sections, links each game, and follows the so
   const ticker = page.getByRole("navigation", { name: "Scores" });
   await expect(ticker.getByRole("link")).toHaveCount(10);
   const entry = ticker.locator(`a[href="/nhl/games/${GAME_ID}"]`);
-  await expect(entry).toHaveText(/NSH.*TOR.*7:00 PM ET/);
+  await expect(entry).toHaveText(/NSH.*TOR.*6:00 PM$/);
   // Nine games are wider than the strip, and a plain vertical wheel reaches the rest.
   const strip = ticker.getByRole("list");
   await expect(async () => {
@@ -93,7 +96,7 @@ test("/nhl/live lists the slate in sections, links each game, and follows the so
 
   // A poll that finds nothing new sends only its time, and "updated" follows it.
   sayHeardAt("2031-01-16T01:02:03.000Z");
-  await expect(page.getByText("updated 20:02:03 ET")).toBeVisible();
+  await expect(page.getByText("updated 19:02:03")).toBeVisible();
 
   // The game ends: it moves to Final.
   const over = {

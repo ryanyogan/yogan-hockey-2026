@@ -22,6 +22,7 @@
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "react-server-dom-webpack": "19.3.0",
+    "use-debounce": "10.1.1",
     "vinext": "1.0.1"
   },
   "devDependencies": {

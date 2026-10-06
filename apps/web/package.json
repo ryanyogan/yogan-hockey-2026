@@ -1,0 +1,41 @@
+{
+  "name": "@yogan-hockey/web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "pnpm db:migrate:local && vite dev",
+    "build": "vite build",
+    "start": "vite preview",
+    "db:migrate:local": "cf d1 migrations apply 00000000-0000-4000-8000-000000000031 --local --persist-to .cloudflare/state --dir ../../packages/db/migrations",
+    "types": "cf workers types",
+    "typecheck": "cf workers types --quiet && tsc --noEmit"
+  },
+  "dependencies": {
+    "@vinext/cloudflare": "1.0.1",
+    "@yogan-hockey/db": "workspace:*",
+    "@yogan-hockey/espn": "workspace:*",
+    "@yogan-hockey/schemas": "workspace:*",
+    "@yogan-hockey/ui": "workspace:*",
+    "agents": "0.26.0",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "react-server-dom-webpack": "19.3.0",
+    "vinext": "1.0.1"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "2.0.0-beta.sha-52b0dc0e9",
+    "@cloudflare/vitest-pool-workers": "0.22.0",
+    "@tailwindcss/postcss": "4.3.3",
+    "@types/node": "26.6.4",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.1.2",
+    "@vitejs/plugin-rsc": "0.5.35",
+    "cf": "1.0.0-beta.12",
+    "tailwindcss": "4.3.3",
+    "typescript": "7.0.2",
+    "vite": "8.3.0",
+    "vitest": "4.1.11"
+  }
+}

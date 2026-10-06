@@ -56,7 +56,9 @@ test("/nhl/live lists the slate in sections, links each game, and follows the so
   const row = upcoming.getByRole("row").filter({ hasText: "NSH" });
   await expect(row.getByRole("cell").nth(1)).toHaveText("NSH 1-1-0");
   await expect(row.getByRole("cell").nth(3)).toHaveText("TOR 1-2-0");
-  await expect(row.getByRole("cell").nth(5)).toHaveText("Scotiabank Arena · ESPN+, Scripps Sports");
+  await expect(row.getByRole("cell").nth(5)).toHaveText(
+    "TOR 58%Scotiabank Arena · ESPN+, Scripps Sports",
+  );
 
   // The ticker, on this page as on every other: a way to the scores, then one entry per game.
   const ticker = page.getByRole("navigation", { name: "Scores" });

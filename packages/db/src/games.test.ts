@@ -1,7 +1,13 @@
 import { env } from "cloudflare:workers";
 import { expect, test } from "vitest";
 import { createDb } from "./client.ts";
-import { gameHasPlays, getGameWithPlays, replaceGamePlays, saveFinalGame } from "./games.ts";
+import {
+  gameHasPlays,
+  getFinalGame,
+  getGameWithPlays,
+  replaceGamePlays,
+  saveFinalGame,
+} from "./games.ts";
 import { finalGame, goal, periodStart } from "./test-fixtures.ts";
 
 const db = createDb(env.DB);
@@ -100,4 +106,13 @@ test("a game has plays only once they are archived, and an unknown game has none
   expect(await gameHasPlays(db, "game-archived")).toBe(true);
   expect(await gameHasPlays(db, "game-row-only")).toBe(false);
   expect(await gameHasPlays(db, "game-never-written")).toBe(false);
+});
+
+test("a final game is read back by itself, and a game never written is null", async () => {
+  const game = finalGame({ id: "game-score-only" });
+
+  await saveFinalGame(db, game);
+
+  expect(await getFinalGame(db, "game-score-only")).toEqual(game);
+  expect(await getFinalGame(db, "game-score-unknown")).toBeNull();
 });

@@ -4,6 +4,7 @@ import type { ScoreboardGame } from "@yogan-hockey/schemas";
 import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
 import { favoritesFirst } from "../../lib/favorites";
 import { slateDay } from "../../lib/game-time";
+import { pickNote } from "../../lib/picks";
 import { slateSections } from "../../lib/scoreboard-view";
 import { useFavorites } from "../../lib/use-favorites";
 import { LocalTime } from "../local-time";
@@ -12,7 +13,10 @@ import { useScoreboard } from "./scoreboard-provider";
 
 const plural = (count: number, noun: string) => `${count} ${noun}${count === 1 ? "" : "s"}`;
 
-function Games({ title, games }: { title: string; games: ScoreboardGame[] }) {
+/** Each game's pick in one line, by game id, as the page's server component read them. */
+type Picks = Readonly<Record<string, string>>;
+
+function Games({ title, games, picks }: { title: string; games: ScoreboardGame[]; picks: Picks }) {
   const favoriteTeamIds = useFavorites("team").ids;
   // A section with nothing in it is left out.
   if (games.length === 0) return null;
@@ -23,13 +27,17 @@ function Games({ title, games }: { title: string; games: ScoreboardGame[] }) {
       <GameLedger
         games={favoritesFirst(games, favoriteTeamIds)}
         favoriteTeamIds={favoriteTeamIds}
+        pick={(game) => pickNote(picks[game.id], game.status)}
       />
     </Section>
   );
 }
 
-/** `/nhl/live`: today's games by where each stands, kept current by the Scoreboard socket. */
-export function LiveScores() {
+/**
+ * `/nhl/live`: today's games by where each stands, kept current by the Scoreboard socket. `picks`
+ * is as old as the page's last render, so a "pick pending" is checked against the game's status.
+ */
+export function LiveScores({ picks = {} }: { picks?: Picks }) {
   const { date, games, heardAt } = useScoreboard();
   const sections = slateSections(games);
   const summary = [
@@ -51,10 +59,10 @@ export function LiveScores() {
           </p>
         )}
       </header>
-      <Games title="In progress" games={sections.live} />
-      <Games title="Upcoming" games={sections.upcoming} />
-      <Games title="Final" games={sections.final} />
-      <Games title="Postponed" games={sections.postponed} />
+      <Games title="In progress" games={sections.live} picks={picks} />
+      <Games title="Upcoming" games={sections.upcoming} picks={picks} />
+      <Games title="Final" games={sections.final} picks={picks} />
+      <Games title="Postponed" games={sections.postponed} picks={picks} />
       {games.length === 0 && (
         <Section>
           {/* Without a date the Scoreboard has not answered yet, which is not a day off. */}

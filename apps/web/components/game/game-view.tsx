@@ -6,7 +6,7 @@ import { UrlTabs } from "@yogan-hockey/ui/components/url-tabs";
 import Link from "next/link";
 import { type ReactNode, useState } from "react";
 import { focusedPlay, toggleSelection, visiblePlays } from "../../lib/game/plays";
-import { type GameTab, gameTabLinks } from "../../lib/game/tabs";
+import { type GameTab, gameTabLinks, shownGameTab } from "../../lib/game/tabs";
 import { GameRink } from "./game-rink";
 import { PeriodTimeline } from "./period-timeline";
 import { KeyPlaysToggle, PlaysList, ScoringSummary } from "./plays-list";
@@ -28,7 +28,7 @@ const NONE: readonly Play[] = [];
 export function GameView({
   header,
   plays,
-  tab,
+  tab: askedTab,
   pathname,
   pick,
   status,
@@ -47,7 +47,7 @@ export function GameView({
   tab: GameTab;
   /** The page's own path, which the tabs link back to. */
   pathname: string;
-  /** What "the pick" tab shows. */
+  /** What "the pick" tab shows. Null for a game with no pick, which has no such tab. */
   pick: ReactNode;
   /** Words for centre ice in place of the period and clock: "End of 2nd". */
   status?: string;
@@ -68,6 +68,8 @@ export function GameView({
   /** What sits under the timeline in place of its hint: the Replay's controls. */
   transport?: ReactNode;
 }) {
+  const hasPick = pick != null;
+  const tab = shownGameTab(askedTab, hasPick);
   const [ownId, setOwnId] = useState<string | null>(null);
   const [ownEveryPlay, setOwnEveryPlay] = useState(false);
   const everyPlay = controlledEveryPlay ?? ownEveryPlay;
@@ -138,7 +140,7 @@ export function GameView({
         )}
       </div>
       <div className="mt-6 flex flex-wrap items-center justify-between gap-2">
-        <UrlTabs label="Game" link={Link} current={tab} tabs={gameTabLinks(pathname)} />
+        <UrlTabs label="Game" link={Link} current={tab} tabs={gameTabLinks(pathname, hasPick)} />
         {/* On every tab: it decides the dots and the ticks as well as the list. */}
         <KeyPlaysToggle
           everyPlay={everyPlay}

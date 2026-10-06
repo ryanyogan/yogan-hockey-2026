@@ -29,7 +29,7 @@ test("a game page goes from scheduled to live, an intermission and the final wit
   const status = page.locator('[data-slot="rink-status"]');
   await expect(page.locator('[data-slot="rink-team"]')).toHaveText([/away.*NSH/, /home.*TOR/]);
   await expect(status).toHaveText(/Tue Oct 6.*6:00 PM$/);
-  await expect(page.locator('[data-slot="game-pick"]')).toContainText("pick pending");
+  await expect(page.locator('[data-slot="game-pick"]')).toContainText("Toronto Maple Leafs 58%.");
   await expect(page.getByRole("heading", { name: /Matchup/ })).toBeVisible();
   await expect(page.getByRole("heading", { name: /Goalies/ })).toBeVisible();
   expect(driver.agentSockets()).toBe(0);

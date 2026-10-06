@@ -64,7 +64,9 @@ export default async function SkeletonPage() {
       <Card data-testid="join-db">
         <CardHeader>
           <CardTitle>3. Drizzle on D1</CardTitle>
-          <CardDescription>The latest rows the Agent wrote, read by this server component.</CardDescription>
+          <CardDescription>
+            The latest rows the Agent wrote, read by this server component.
+          </CardDescription>
         </CardHeader>
         <CardContent className="text-sm">
           {bumps.length === 0 ? (

@@ -1,7 +1,7 @@
 import { routeAgentRequest } from "agents";
 import site from "vinext/server/fetch-handler";
 
-export { SkeletonAgent } from "./agents/skeleton-agent";
+export * from "./agents";
 
 export default {
   async fetch(request, env, ctx) {

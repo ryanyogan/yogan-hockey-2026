@@ -10,3 +10,18 @@ account-setup-comment.md
 
 # The cf CLI caches the account it resolved here.
 .cloudflare/
+
+# Dependencies and build output.
+node_modules
+dist/
+.vinext/
+.next
+next-env.d.ts
+*.tsbuildinfo
+
+# Playwright.
+test-results/
+playwright-report/
+
+# Other sessions' worktrees.
+.claude/worktrees/

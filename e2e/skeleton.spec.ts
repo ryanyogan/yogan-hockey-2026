@@ -4,7 +4,7 @@ import { expect, test } from "@playwright/test";
 const LOCAL_KV = "/cdn-cgi/local/explorer/api/storage/kv/namespaces";
 
 test("the walking skeleton page exercises all four joins", async ({ page, request }) => {
-  await page.goto("/");
+  await page.goto("/skeleton");
   const bump = page.getByRole("button", { name: "Bump the Agent" });
   const serial = page.getByTestId("reading-serial");
   const count = page.getByTestId("pulse-count");

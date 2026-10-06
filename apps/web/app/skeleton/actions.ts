@@ -3,7 +3,7 @@
 import { exports } from "cloudflare:workers";
 import { getAgentByName } from "agents";
 import { refresh } from "next/cache";
-import { SKELETON_AGENT_NAME } from "../lib/skeleton";
+import { SKELETON_AGENT_NAME } from "../../lib/skeleton";
 
 export async function bumpSkeleton(): Promise<void> {
   const agent = await getAgentByName(exports.SkeletonAgent, SKELETON_AGENT_NAME);

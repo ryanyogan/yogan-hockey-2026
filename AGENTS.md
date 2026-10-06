@@ -2,12 +2,14 @@ The 2026 rebuild of Yogan Hockey: TypeScript on Cloudflare (a backend on the Age
 
 ## How work is done
 
-The session Ryan talks to is the **orchestrator**: it picks the frontier issue, briefs a subagent, verifies what comes back, and merges. All building happens in subagents, one issue per subagent, on a branch named `issue-<n>-<slug>` with a pull request.
+One ticket at a time, each by the `implement` skill (`~/.claude/skills/implement/SKILL.md`): TDD at the agreed seams, typecheck and single test files as you go, the full suite once at the end, then `/code-review`, then commit.
 
-- **Context budget**: a subagent stays under 200k tokens of context. Approaching it, the subagent commits and pushes its work, posts a **handoff** comment on the issue, and ends its turn; the orchestrator spawns a fresh subagent from that handoff.
+- **One ticket per session.** The session Ryan talks to picks the frontier ticket, sees it through to a merged pull request on a branch named `issue-<n>-<slug>`, reports, and stops. Ryan clears the context before the next ticket, so everything the next session needs is on the issue, in the pull request or in the repo.
+- **Main or subagents.** A simple ticket is done in the main session. A ticket with independent parts is split across parallel subagents, because parallel work finishes sooner; each subagent follows `implement` for its part and the main session verifies and integrates.
+- **Context budget**: a subagent stays under 200k tokens of context. Approaching it, the subagent commits and pushes its work, posts a **handoff** comment on the issue, and ends its turn; the main session spawns a fresh subagent from that handoff.
 - **Handoff comment**: what is done, what is left against the issue's "Done when", the branch, how to run and verify, and anything learned that the code does not show.
-- **Done** for an issue is every "Done when" line met, with the checks run and their output reported. Done for the project is every line of the parity checklist (#55) met or exceeded.
-- **Pixel perfect**: any UI issue is finished by comparing screenshots, in light and dark and at phone and desktop widths, against the Parity Reference (run from `../yogan_hockey` or at `yogan-hockey.fly.dev`) or against the variant the spec names where the design changed.
+- **Done** for a ticket is every "Done when" line met, with the checks run and their output reported. Done for the project is every line of the parity checklist (#55) met or exceeded.
+- **Pixel perfect**: any UI ticket is finished by comparing screenshots, in light and dark and at phone and desktop widths, against the Parity Reference (run from `../yogan_hockey` or at `yogan-hockey.fly.dev`) or against the variant the spec names where the design changed.
 
 ## Preferences
 

@@ -10,16 +10,20 @@ import { gameConnection } from "./game-connection";
  * that then keeps it current with `useGameStream`.
  */
 export async function readGame(gameId: string): Promise<GameSnapshot> {
-  const game = await getAgentByName(exports.GameAgent, gameConnection(gameId).name);
+  const game = await gameAgent(gameId);
   return structuredClone(await game.getGame());
 }
 
 /**
  * For the Replay's first open of a finished game whose plays are not in D1: has the game's Agent
  * read it from ESPN once, write it to D1 and set the 24-hour re-read. True when the game is in D1
- * as this returns.
+ * as this returns; false when it is not finished, has no plays, or the write failed.
  */
 export async function archiveGame(gameId: string): Promise<boolean> {
-  const game = await getAgentByName(exports.GameAgent, gameConnection(gameId).name);
+  const game = await gameAgent(gameId);
   return game.ensureArchived();
+}
+
+function gameAgent(gameId: string) {
+  return getAgentByName(exports.GameAgent, gameConnection(gameId).name);
 }

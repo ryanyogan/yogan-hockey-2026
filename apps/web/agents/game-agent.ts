@@ -15,11 +15,11 @@ import { rereadArchivedPlays, saveFinal } from "./final-game";
 import { ViewerPolledAgent } from "./viewer-polled-agent";
 
 /** While play is in progress, and until the first poll says where the game stands. */
-export const PLAY_POLL_SECONDS = 10;
+const PLAY_POLL_SECONDS = 10;
 /** In an intermission, and in the 15 minutes before a scheduled start. */
-export const INTERMISSION_POLL_SECONDS = 30;
-/** A game still to start, or postponed: someone has its Agent open, and little can change. */
-export const IDLE_POLL_SECONDS = 5 * 60;
+const INTERMISSION_POLL_SECONDS = 30;
+/** A game still to start, postponed or unknown to ESPN: its Agent is open and little can change. */
+const IDLE_POLL_SECONDS = 5 * 60;
 /** How long before a scheduled start the 30-second cadence begins. */
 const PREGAME_MS = 15 * 60 * 1000;
 
@@ -27,19 +27,27 @@ const PREGAME_MS = 15 * 60 * 1000;
 const MOST_MESSAGES_PER_POLL = 25;
 /** How long after the archive the game's plays are read from ESPN again. */
 const PLAYS_REREAD_SECONDS = 24 * 60 * 60;
+/**
+ * How long after a game is seen to go final its last poll is made and it is written to D1. ESPN
+ * may call a game final a moment before its closing plays are in.
+ */
+const LAST_POLL_SECONDS = 30;
 /** How many times the write to D1 is tried before the Replay's first open is left to do it. */
 const ARCHIVE_ATTEMPTS = 5;
 /** How long a failed write to D1 waits before the next try. */
 const ARCHIVE_RETRY_SECONDS = 30;
-/** How long ESPN's "no such game" is believed before it is asked again. */
-const NOT_FOUND_MS = 10 * 60 * 1000;
 
 /** Storage key of how many times the write to D1 has failed. */
 const ARCHIVE_FAILURES_KEY = "archive-failures";
-/** Storage key of when ESPN last said it has no such game, in milliseconds. */
-const NOT_FOUND_AT_KEY = "not-found-at";
+/** Storage key that is set while ESPN's last answer was that it has no such game. */
+const NOT_FOUND_KEY = "not-found";
 
 type StoredPlay = { body: string };
+/** What the timer that writes a finished game to D1 is handed. */
+type Archive = {
+  /** Whether to read the game from ESPN once more first: the last poll of a game seen live. */
+  lastPoll: boolean;
+};
 
 /**
  * Seconds from one poll of a game to the next (spec section 4): 10 while play is in progress, 30
@@ -79,15 +87,16 @@ export function gamePollSeconds(
  * with what is stored, so a poll after any gap (a deploy, an evening with nobody watching)
  * catches up on everything at once.
  *
- * At the final the game's row and plays go to D1, which is the permanent record: the plays leave
- * this Agent's storage, `archived` turns true, and nothing polls again.
+ * At the final there is one last poll, half a minute after the game is seen to end, and then the
+ * game's row and plays go to D1, which is the permanent record: the plays leave this Agent's
+ * storage, `archived` turns true, and nothing polls again.
  */
 export class GameAgent extends ViewerPolledAgent<GameStreamState> {
   initialState: GameStreamState = { header: null, delayed: false, archived: false };
 
   /** The stored plays, read once: storage is written first and this follows it. */
   #plays: Play[] | null = null;
-  #archiving: Promise<void> | null = null;
+  #writingToD1: Promise<void> | null = null;
 
   /**
    * First paint, called by a server component over Durable Object RPC: the header and every play
@@ -102,13 +111,17 @@ export class GameAgent extends ViewerPolledAgent<GameStreamState> {
   /**
    * For the Replay's first open of a game nobody watched: reads the finished game from ESPN once,
    * writes its row and plays to D1 and sets the 24-hour re-read. True when the game is in D1 as
-   * this returns; false when it is not finished or the write failed, and a later call tries again.
+   * this returns; false when it is not finished, has no plays or the write failed, and a later
+   * call tries again. A game not known to be final is asked about no more often than it is polled.
    */
   async ensureArchived(): Promise<boolean> {
     if (this.state.archived) return true;
-    if (this.state.header?.status !== "final") await this.pollNow();
+    // A final is never stale, but one ESPN sent without plays is worth asking about again.
+    const finalWithoutPlays =
+      this.state.header?.status === "final" && this.#livePlays().length === 0;
+    await (finalWithoutPlays ? this.pollNow() : this.pollIfStale());
     try {
-      await this.#archive();
+      await this.#archiveOnce();
     } catch (error) {
       console.error(`${this.alertSource}: the game was not written to D1`, error);
     }
@@ -122,20 +135,24 @@ export class GameAgent extends ViewerPolledAgent<GameStreamState> {
   }
 
   /**
-   * A timer's callback, not for calling. Writes the finished game to D1. A write that fails is
-   * tried again every 30 seconds, `ARCHIVE_ATTEMPTS` times in all; after that the plays stay in
-   * this Agent's storage until the Replay's first open calls `ensureArchived`.
+   * A timer's callback, not for calling. Makes the last poll, if one is due, and writes the
+   * finished game to D1. A write that fails is tried again every 30 seconds, `ARCHIVE_ATTEMPTS`
+   * times in all, each with a poll before it; after that the plays stay in this Agent's storage
+   * until the Replay's first open calls `ensureArchived`.
    */
-  async archive(): Promise<void> {
+  async archive({ lastPoll }: Archive): Promise<void> {
+    // A last poll that fails changes nothing: what was seen when the game ended is written.
+    if (lastPoll) await this.pollNow();
     try {
-      await this.#archive();
+      await this.#archiveOnce();
       this.ctx.storage.kv.delete(ARCHIVE_FAILURES_KEY);
     } catch (error) {
       const failures = (this.ctx.storage.kv.get<number>(ARCHIVE_FAILURES_KEY) ?? 0) + 1;
       if (failures < ARCHIVE_ATTEMPTS) {
         this.ctx.storage.kv.put(ARCHIVE_FAILURES_KEY, failures);
         // Not idempotent: that would find the timer running now, which is deleted when it ends.
-        await this.schedule(ARCHIVE_RETRY_SECONDS, "archive");
+        const again: Archive = { lastPoll: true };
+        await this.schedule(ARCHIVE_RETRY_SECONDS, "archive", again);
         console.error(`${this.alertSource}: the game is not yet written to D1`, error);
       } else {
         this.ctx.storage.kv.delete(ARCHIVE_FAILURES_KEY);
@@ -157,7 +174,8 @@ export class GameAgent extends ViewerPolledAgent<GameStreamState> {
   }
 
   protected override pollIntervalSeconds(): number | null {
-    if (this.#notFound()) return null;
+    // ESPN may yet hear of the game, and a viewer who is still here should then see it.
+    if (this.#notFound()) return IDLE_POLL_SECONDS;
     // An archived game's plays are in D1; it is final, which is all that is asked here.
     const lastPlay = this.state.archived ? undefined : this.#livePlays().at(-1);
     return gamePollSeconds(this.state.header, lastPlay, Date.now());
@@ -173,7 +191,9 @@ export class GameAgent extends ViewerPolledAgent<GameStreamState> {
   }
 
   protected override async poll(): Promise<void> {
-    if (this.state.archived) return;
+    // Once the write to D1 has begun the plays are settled: the 24-hour re-read takes what follows.
+    if (this.state.archived || this.#writingToD1) return;
+    const before = this.state.header?.status;
     let summary: GameSummary;
     try {
       summary = await this.readSummary();
@@ -182,19 +202,23 @@ export class GameAgent extends ViewerPolledAgent<GameStreamState> {
       // every 10 seconds. A game already seen that goes missing is a failed poll like any other.
       const unknownGame = error instanceof EspnFetchError && error.notFound;
       if (!unknownGame || this.state.header !== null) throw error;
-      this.ctx.storage.kv.put(NOT_FOUND_AT_KEY, Date.now());
+      this.ctx.storage.kv.put(NOT_FOUND_KEY, true);
       return;
     }
-    this.ctx.storage.kv.delete(NOT_FOUND_AT_KEY);
+    this.ctx.storage.kv.delete(NOT_FOUND_KEY);
     this.#takePlays(summary.plays);
     // State is sent whole to every viewer, so it is set only when a poll finds a difference.
     if (JSON.stringify(summary.header) !== JSON.stringify(this.state.header)) {
       this.setState({ ...this.state, header: summary.header });
     }
-    // The poll that finds the game final is the last: the interval is null from here on. The
-    // write to D1 is a timer's work, so neither first paint nor the viewers wait on it.
-    if (summary.header.status === "final") {
-      await this.schedule(0, "archive", undefined, { idempotent: true });
+    // The interval is null from here on, so the loop ends. The write to D1 is a timer's work, so
+    // neither first paint nor the viewers wait on it. A game seen to end gets its one last poll
+    // first; one that was over when it was first read has nothing more coming.
+    if (summary.header.status === "final" && before !== "final") {
+      const seenLive = before === "live";
+      const archive: Archive = { lastPoll: seenLive };
+      const delay = seenLive ? LAST_POLL_SECONDS : 0;
+      await this.schedule(delay, "archive", archive, { idempotent: true });
     }
   }
 
@@ -204,10 +228,9 @@ export class GameAgent extends ViewerPolledAgent<GameStreamState> {
     if (delayed !== this.state.delayed) this.setState({ ...this.state, delayed });
   }
 
-  /** Whether ESPN said, a short while ago, that it has no game of this id. */
+  /** Whether ESPN's last answer was that it has no game of this id. */
   #notFound(): boolean {
-    const at = this.ctx.storage.kv.get<number>(NOT_FOUND_AT_KEY);
-    return at !== undefined && Date.now() - at < NOT_FOUND_MS;
+    return this.ctx.storage.kv.get<boolean>(NOT_FOUND_KEY) === true;
   }
 
   /** Every play so far, in order: from this Agent's storage, or from D1 once archived. */
@@ -235,7 +258,10 @@ export class GameAgent extends ViewerPolledAgent<GameStreamState> {
    * tells the viewers. Nothing is awaited between the writes, so storage holds one poll's plays
    * or the next's and never a mixture.
    */
-  #takePlays(plays: Play[]): void {
+  #takePlays(espnPlays: Play[]): void {
+    // An id is a play's identity here and in D1, so a second play of the same id is not kept.
+    const ids = new Set<string>();
+    const plays = espnPlays.filter((play) => !ids.has(play.id) && ids.add(play.id));
     const before = this.#livePlays();
     const messages = diffPlays(before, plays);
     if (messages.length === 0) return;
@@ -269,24 +295,27 @@ export class GameAgent extends ViewerPolledAgent<GameStreamState> {
   }
 
   /** Writes the finished game to D1 once, however many callers ask at the same moment. */
-  #archive(): Promise<void> {
-    this.#archiving ??= this.#writeToD1().finally(() => {
-      this.#archiving = null;
+  #archiveOnce(): Promise<void> {
+    this.#writingToD1 ??= this.#writeToD1().finally(() => {
+      this.#writingToD1 = null;
     });
-    return this.#archiving;
+    return this.#writingToD1;
   }
 
   /**
    * The final (spec section 4): the game's row, then every play, then the 24-hour re-read. Each
    * step is safe to repeat. Only when all of it is done do the plays leave this Agent's storage
-   * and the viewers hear that the game is archived.
+   * and the viewers hear that the game is archived. A final with no plays is not archived: the
+   * re-read passes over a game without plays, so it would stay empty for good.
    */
   async #writeToD1(): Promise<void> {
     const { header, archived } = this.state;
     if (archived || header?.status !== "final") return;
+    const plays = this.#livePlays();
+    if (plays.length === 0) throw new Error("ESPN has the game final and sent no plays");
     const db = createDb(this.env.DB);
     await saveFinal(db, header);
-    await replaceGamePlays(db, header.id, this.#livePlays());
+    await replaceGamePlays(db, header.id, plays);
     await this.schedule(PLAYS_REREAD_SECONDS, "rereadPlays", undefined, { idempotent: true });
     this.ctx.storage.sql.exec("DELETE FROM game_plays");
     this.#plays = [];

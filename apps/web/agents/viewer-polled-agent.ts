@@ -8,8 +8,9 @@ const POLLED_AT_KEY = "polled-at";
  * socket: polling starts on the first connection and stops when the last one leaves.
  *
  * A subclass says how to poll once (`poll`) and how long to wait before the next one
- * (`pollIntervalSeconds`), and may act on each poll's outcome (`afterPoll`); this class owns the timer, the staleness check for first paint, the
- * alert, and the rule that a browser never writes state.
+ * (`pollIntervalSeconds`), and may act on each poll's outcome (`afterPoll`); this class owns the
+ * timer, the staleness check for first paint, the alert, and the rule that a browser never writes
+ * state.
  *
  * The timer is a one-off schedule that each poll sets again while a viewer is connected. It is
  * never an interval, so the cadence can change from one poll to the next, and a poll that finds

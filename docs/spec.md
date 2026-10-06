@@ -156,8 +156,9 @@ One per NHL game. Only a game page connects to it.
 - **Revisions** update silently. The score always follows ESPN, so an overturned goal lowers it. There is no "goal overturned" marker.
 - **Stall**: after three failed polls in a row, `delayed` is set and the page shows "updates delayed" over the last state. It clears on the next good poll. A quiet stretch of successful polls is not a stall.
 - **At the final**: one last poll, the game row and every play are written to D1, viewers are told the game is over, and the schedule is cancelled.
-- **Told the game is over** means two changes of synced state: the header's status turns `final` at the last poll, and an `archived` flag turns true once the D1 write is done, which is when the page can become the Replay. The plays then leave the Agent's storage. The Game Agent sets its own 24-hour re-read when it archives.
-- **A game that is not in progress**: a final game is never polled; a game still to start is polled as the Scoreboard polls (every 5 minutes, every 30 seconds from 15 minutes before its start) while its Agent has a viewer. An id ESPN does not know is reported to first paint as not found and is not polled.
+- **The last poll** comes 30 seconds after the poll that first finds the game final, since ESPN may call a game final before its closing plays are in; the D1 write follows it. A game already final when it is first read is written at once, with no second poll. A final that ESPN sends with no plays is not written until it has some.
+- **Told the game is over** means two changes of synced state: the header's status turns `final` when ESPN says so, and an `archived` flag turns true once the D1 write is done, which is when the page can become the Replay. The plays then leave the Agent's storage. The Game Agent sets its own 24-hour re-read when it archives.
+- **A game that is not in progress**: a final game is never polled; a game still to start is polled as the Scoreboard polls (every 5 minutes, every 30 seconds from 15 minutes before its start) while its Agent has a viewer. An id ESPN does not know is reported to first paint as not found, raises no alert, and is asked about again every 5 minutes while a viewer stays.
 - **A poll that finds more than 25 differences** sends every play once, as it does on connect, instead of a message for each.
 
 ### Alerts

@@ -21,7 +21,8 @@ export type GameStream = GameStreamState & { plays: Play[] };
  * sends every play so far, so nothing that happened between first paint and the socket is missed.
  *
  * Render the component that calls this only while the game is worth a socket: the Agent polls
- * ESPN for as long as one is open.
+ * ESPN for as long as one is open. Give that component `key={gameId}`: the state here starts from
+ * `initial` once and does not start again for another game.
  */
 export function useGameStream(gameId: string, initial: GameSnapshot): GameStream {
   const [state, setState] = useState<GameStreamState>({

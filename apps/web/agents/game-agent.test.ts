@@ -38,6 +38,8 @@ const HOUR = 60 * 60;
 const IN_PLAY = 10;
 const INTERMISSION = 30;
 const IDLE = 5 * 60;
+/** How long after a game is seen to end its last poll and the write to D1 come. */
+const LAST_POLL = 30;
 
 const EVERY_PLAY = recordedGame.plays.length;
 const END_OF_FIRST = 98;
@@ -388,6 +390,25 @@ describe("what a viewer is sent about plays", () => {
     expect(ids((await agent.getGame()).plays)).toEqual(expected);
   });
 
+  test("a play ESPN lists twice is kept once", async () => {
+    const { id, agent, connect, later } = await game();
+    espn.set(id, live(id, 50));
+    await agent.getGame();
+    const viewer = await connect();
+
+    espn.set(
+      id,
+      live(id, 51, (body) => {
+        const repeated = body.plays[50];
+        if (repeated) body.plays.push(structuredClone(repeated));
+      }),
+    );
+    await later(IN_PLAY);
+
+    await vi.waitFor(() => expect(ids(viewer.plays())).toEqual(recordedIds(51)));
+    expect(ids((await agent.getGame()).plays)).toEqual(recordedIds(51));
+  });
+
   test("a poll that finds a great many differences sends every play once instead", async () => {
     const { id, agent, connect, later } = await game();
     espn.set(id, live(id, 50));
@@ -526,11 +547,22 @@ describe("the final", () => {
     const viewer = await connect();
     await later(0);
 
-    espn.set(id, final(id));
+    // ESPN calls it final before the last two plays are in.
+    const early = recorded(id, EVERY_PLAY - 2);
+    espn.set(id, () => Response.json(early));
     await later(IN_PLAY);
-    // The write to D1 is a timer set for at once.
-    await later(0);
+    await vi.waitFor(() => expect(viewer.states().at(-1)?.header?.status).toBe("final"));
+    expect(viewer.states().at(-1)?.archived).toBe(false);
+    expect(await gameHasPlays(db, id)).toBe(false);
+    expect(await timers()).toEqual(["archive"]);
 
+    // Half a minute on: the last poll, then the write to D1.
+    espn.set(id, final(id));
+    await later(LAST_POLL - 1);
+    expect(espnRequests).toBe(2);
+    await later(1);
+
+    expect(espnRequests).toBe(3);
     await vi.waitFor(() => expect(viewer.states().at(-1)?.archived).toBe(true));
     expect(viewer.states().at(-1)?.header).toMatchObject({
       status: "final",
@@ -552,9 +584,9 @@ describe("the final", () => {
     expect(await timers()).toEqual(["rereadPlays"]);
     await later(INTERMISSION);
     await later(IDLE);
-    expect(espnRequests).toBe(2);
+    expect(espnRequests).toBe(3);
     expect((await agent.getGame()).plays).toEqual(archived?.plays);
-    expect(espnRequests).toBe(2);
+    expect(espnRequests).toBe(3);
   });
 
   test("a day later the archived plays are read from ESPN again", async () => {
@@ -593,10 +625,30 @@ describe("the final", () => {
     // Until it is written, the plays are still the Agent's to give.
     expect((await agent.getGame()).plays).toHaveLength(EVERY_PLAY);
 
+    // The next try reads the game again first.
     await later(30);
     expect(await gameHasPlays(db, id)).toBe(true);
     expect((await agent.getGame()).archived).toBe(true);
-    expect(espnRequests).toBe(1);
+    expect(espnRequests).toBe(2);
+    expect(await timers()).toEqual(["rereadPlays"]);
+  });
+
+  test("a final ESPN sends without plays is not archived until it has them", async () => {
+    const { id, agent, later } = await game();
+    const empty = recorded(id, 0);
+    espn.set(id, () => Response.json(empty));
+
+    expect(await agent.ensureArchived()).toBe(false);
+    expect((await agent.getGame()).archived).toBe(false);
+    expect(await getGameWithPlays(db, id)).toBeNull();
+
+    // The timer set at the first read tries too, and is the one that finds the plays.
+    espn.set(id, final(id));
+    await later(0);
+    await later(30);
+
+    expect((await agent.getGame()).archived).toBe(true);
+    expect((await getGameWithPlays(db, id))?.plays).toHaveLength(EVERY_PLAY);
   });
 });
 
@@ -658,18 +710,27 @@ describe("a game that is not in progress when someone arrives", () => {
     expect(espnRequests).toBe(3);
   });
 
-  test("an id ESPN does not know: said so, with no polling and no alert", async () => {
-    const { agent, connect, later, timers } = await game();
+  test("an id ESPN does not know: said so, with no alert and a poll only every 5 minutes", async () => {
+    const { id, agent, connect, later } = await game();
 
     const snapshot = await agent.getGame();
     expect(snapshot).toMatchObject({ header: null, plays: [], notFound: true });
 
-    await connect();
-    expect(await timers()).toEqual([]);
-    expect(await later(IN_PLAY)).toBe(false);
+    const viewer = await connect();
+    await later(IN_PLAY);
+    await later(INTERMISSION);
     await agent.getGame();
     expect(espnRequests).toBe(1);
+
+    await later(IDLE);
+    expect(espnRequests).toBe(2);
     expect(pushes).toEqual([]);
+
+    // If ESPN was only late with it, a viewer who stayed sees the game.
+    espn.set(id, live(id, 5));
+    await later(IDLE);
+    await vi.waitFor(() => expect(viewer.states().at(-1)?.header?.status).toBe("live"));
+    expect((await agent.getGame()).notFound).toBe(false);
   });
 });
 

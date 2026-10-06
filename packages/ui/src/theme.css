@@ -42,6 +42,9 @@
   --live-tint: #fef2f2;
   /* The row under the pointer. */
   --highlight: #fef9c2;
+  /* A figure above or below zero, such as a goal difference. */
+  --positive: #15803d;
+  --negative: #dc2626;
 }
 
 .dark {
@@ -66,6 +69,8 @@
   --live: #f87171;
   --live-tint: #2a1a2a;
   --highlight: #1e293b;
+  --positive: #4ade80;
+  --negative: #f87171;
 }
 
 @theme inline {
@@ -90,6 +95,8 @@
   --color-live: var(--live);
   --color-live-tint: var(--live-tint);
   --color-highlight: var(--highlight);
+  --color-positive: var(--positive);
+  --color-negative: var(--negative);
   --radius-sm: var(--radius);
   --radius-md: var(--radius);
   --radius-lg: var(--radius);

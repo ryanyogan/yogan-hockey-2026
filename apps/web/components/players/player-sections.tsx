@@ -43,18 +43,16 @@ function StatColumn({ column }: { column: ShownColumn }) {
   );
 }
 
-/** The cells of one row of stats. `strong` names the column that is the row's key figure. */
+/** The cells of one row of stats. Points are the key figure of a row that has them. */
 function StatCells({
   columns,
   values,
-  strong = "points",
 }: {
   columns: readonly ShownColumn[];
   values: readonly string[];
-  strong?: string;
 }) {
   return columns.map((column, index) => (
-    <LedgerCell key={column.name} numeric tone={column.name === strong ? "strong" : "default"}>
+    <LedgerCell key={column.name} numeric tone={column.name === "points" ? "strong" : "default"}>
       {values[index]}
     </LedgerCell>
   ));
@@ -218,7 +216,7 @@ export function GameLogSection({
 }: {
   log: GameLogView;
   allHref: string;
-  latestHref: string;
+  latestHref?: string;
 }) {
   const shown = log.rows.length;
   return (
@@ -234,7 +232,7 @@ export function GameLogSection({
         ) : (
           <>
             {log.gameCount} {log.gameCount === 1 ? "game" : "games"}
-            {latestHref !== "" && (
+            {latestHref && (
               <>
                 {" · "}
                 <Link href={latestHref} className="underline">

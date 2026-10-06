@@ -382,3 +382,27 @@ test("the bio lists what ESPN has, and a goalie catches where a skater shoots", 
     { label: "catches", value: "Left" },
   ]);
 });
+
+test("shots are not counted from a log that holds more than the season's games", () => {
+  // Three games in the log against a career row of two: ESPN lists playoff games beside them.
+  const twoGames: PlayerCareer = {
+    ...skaterCareer,
+    seasons: skaterCareer.seasons.map((row) =>
+      row.year === 2027 ? { ...row, values: ["2", ...row.values.slice(1)] } : row,
+    ),
+  };
+
+  const view = seasonView(profile({}), twoGames, skaterLog);
+
+  expect(view?.stats.map((stat) => stat.label)).not.toContain("SOG");
+});
+
+test("points per game reads totals written with a thousands separator", () => {
+  const long: PlayerCareer = {
+    ...skaterCareer,
+    totals: ["1,487", "894", "1,963", "2,857", ...skaterCareer.totals.slice(4)],
+  };
+
+  // 2857 points in 1487 games.
+  expect(careerView(long)?.headline.at(-1)).toEqual({ label: "P/GP", value: "1.92" });
+});

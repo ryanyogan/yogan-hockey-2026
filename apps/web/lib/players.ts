@@ -1,4 +1,4 @@
-import { EspnFetchError } from "@yogan-hockey/espn";
+import { EspnFetchError, EspnParseError } from "@yogan-hockey/espn";
 import type {
   PlayerCareer,
   PlayerGameLog,
@@ -31,7 +31,8 @@ export async function findPlayers(rawQuery: string): Promise<PlayerSearch> {
   try {
     return { status: "found", query, players: await cachedPlayerSearch(query) };
   } catch (error) {
-    if (!(error instanceof EspnFetchError)) throw error;
+    // Down, or answering in a shape this site no longer reads: either way there is no search.
+    if (!(error instanceof EspnFetchError || error instanceof EspnParseError)) throw error;
     console.error(error);
     return { status: "unavailable", query, players: [] };
   }

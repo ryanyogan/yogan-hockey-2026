@@ -23,15 +23,16 @@ export function PlayerSearch({ initial }: { initial: Search }) {
   const [searching, startSearch] = useTransition();
   // Answers can arrive out of order; only the answer to the latest question is shown.
   const asked = useRef(0);
+  // What is in the box now, which may be more than was last asked.
+  const typed = useRef(initial.query);
   const inputId = useId();
 
-  const ask = useDebouncedCallback((typed: string) => {
+  const ask = useDebouncedCallback(() => {
     const ticket = ++asked.current;
-    const query = typed.trim();
-    const href = searchHref(query);
+    const query = typed.current.trim();
     // Before the call, not after: when the site has been deployed under an open tab, vinext
     // drops the action's answer and reloads the URL the action was called from.
-    window.history.replaceState(null, "", href);
+    window.history.replaceState(null, "", searchHref(query));
     if (query.length < MIN_SEARCH_LENGTH) {
       setSearch({ status: "idle", query, players: [] });
       return;
@@ -40,19 +41,23 @@ export function PlayerSearch({ initial }: { initial: Search }) {
       // No answer is a failed call: `undefined` from a tab older than the deploy (see above), or
       // a throw when the request never arrived.
       const answer = await searchPlayers(query).catch(() => undefined);
-      if (ticket !== asked.current) return;
-      if (answer) setSearch(answer);
-      // The same search by URL needs no action, so a stale tab recovers by loading it.
-      else if (navigator.onLine) window.location.assign(href);
-      else setSearch({ status: "unavailable", query, players: [] });
+      if (answer) {
+        if (ticket === asked.current) setSearch(answer);
+        return;
+      }
+      // The same search by URL needs no action, so a stale tab recovers by loading it: whatever
+      // is in the box by now, not what this call asked.
+      if (navigator.onLine) window.location.assign(searchHref(typed.current));
+      else if (ticket === asked.current) setSearch({ status: "unavailable", query, players: [] });
     });
   }, TYPING_PAUSE_MS);
 
-  const type = (typed: string) => {
-    setText(typed);
-    ask(typed);
+  const onType = (value: string) => {
+    typed.current = value;
+    setText(value);
+    ask();
     // Clearing the box clears the results at once; only a search waits for a pause.
-    if (typed.trim().length < MIN_SEARCH_LENGTH) ask.flush();
+    if (value.trim().length < MIN_SEARCH_LENGTH) ask.flush();
   };
 
   const submit = (event: FormEvent) => {
@@ -68,14 +73,14 @@ export function PlayerSearch({ initial }: { initial: Search }) {
             htmlFor={inputId}
             className="block py-1 text-[10px] text-foreground/50 uppercase tracking-wider"
           >
-            name
+            player name
           </label>
           <input
             id={inputId}
             name="q"
             type="search"
             value={text}
-            onChange={(event) => type(event.target.value)}
+            onChange={(event) => onType(event.target.value)}
             maxLength={MAX_SEARCH_LENGTH}
             autoComplete="off"
             autoCorrect="off"
@@ -86,20 +91,28 @@ export function PlayerSearch({ initial }: { initial: Search }) {
           />
         </form>
       </search>
-      <div aria-live="polite" aria-busy={searching} className="mt-3">
-        <SearchAnswer search={search} />
+      <div aria-busy={searching} className="mt-3">
+        {/* Read out as the results change: the count or the message, never the whole table. */}
+        <p
+          role="status"
+          className={
+            search.status === "found" && search.players.length > 0
+              ? "sr-only"
+              : "px-2 text-foreground/70"
+          }
+        >
+          {searchSummary(search)}
+        </p>
+        {search.players.length > 0 && <PlayerLedger players={search.players} />}
       </div>
     </>
   );
 }
 
-function SearchAnswer({ search }: { search: Search }) {
-  if (search.status === "idle") return null;
-  if (search.status === "unavailable") {
-    return <p className="px-2 text-foreground/70">Search is not answering. Try again shortly.</p>;
-  }
-  if (search.players.length === 0) {
-    return <p className="px-2 text-foreground/70">No player matches "{search.query}".</p>;
-  }
-  return <PlayerLedger players={search.players} />;
+function searchSummary(search: Search): string {
+  if (search.status === "idle") return "";
+  if (search.status === "unavailable") return "Search is not answering. Try again shortly.";
+  const found = search.players.length;
+  if (found === 0) return `No player matches "${search.query}".`;
+  return `${found} ${found === 1 ? "player" : "players"} found.`;
 }

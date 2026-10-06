@@ -97,3 +97,10 @@ test("ESPN being down is an error, not a missing player", async () => {
 
   await expect(loadPlayer("888888888")).rejects.toMatchObject({ status: 503 });
 });
+
+test("a search ESPN answers in a shape the site cannot read is unavailable too", async () => {
+  vi.stubEnv("ESPN_FIXTURES", "");
+  fetchMock.mockImplementation(async () => new Response("not json", { status: 200 }));
+
+  expect((await findPlayers("zzz-garbled")).status).toBe("unavailable");
+});

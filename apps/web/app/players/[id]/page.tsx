@@ -52,7 +52,7 @@ export default async function PlayerPage({ params, searchParams }: Props) {
         <GameLogSection
           log={log}
           allHref={`${path}?games=all#games`}
-          latestHref={everyGame && log.gameCount > LATEST_GAMES ? `${path}#games` : ""}
+          latestHref={everyGame && log.gameCount > LATEST_GAMES ? `${path}#games` : undefined}
         />
       )}
       {career ? (

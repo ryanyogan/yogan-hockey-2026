@@ -95,6 +95,11 @@ function statValue(
   return index < 0 ? undefined : values[index];
 }
 
+/** A display string as a number: "1,234" is 1234. NaN when it is not a number. */
+function asNumber(shown: string | undefined): number {
+  return shown === undefined || shown === "" ? Number.NaN : Number(shown.replace(/,/g, ""));
+}
+
 export type CareerRow = {
   key: string;
   /** "26-27" */
@@ -126,8 +131,8 @@ function careerHeadline(career: PlayerCareer): HeadlineStat[] {
     return column && value !== undefined ? [{ label: shownLabel(column, false).label, value }] : [];
   });
 
-  const games = Number(statValue(career.columns, career.totals, "games"));
-  const points = Number(statValue(career.columns, career.totals, "points"));
+  const games = asNumber(statValue(career.columns, career.totals, "games"));
+  const points = asNumber(statValue(career.columns, career.totals, "points"));
   if (!isGoalie && games > 0 && Number.isFinite(points)) {
     // The Parity Reference heads this "PPG", which the table beside it uses for power-play goals.
     headline.push({ label: "P/GP", value: (points / games).toFixed(2) });
@@ -227,11 +232,17 @@ export function seasonView(
     };
   }
 
-  const shots = season !== null && log.season?.startsWith(season) ? shotsIn(log) : undefined;
+  // The log's shots are the season's only when the log is that season and nothing else: ESPN's
+  // log can hold playoff games beside the regular season's, so its games must number his GP.
+  const sameSeason = season !== null && log.season?.startsWith(season);
+  const sameGames = log.games.length === asNumber(statValue(career.columns, row.values, "games"));
+  const shots = sameSeason && sameGames ? shotsIn(log) : undefined;
   const wanted = profile.position === "G" ? GOALIE_SEASON : SKATER_SEASON;
   const stats = wanted.flatMap((name): SeasonStat[] => {
     if (name === "shotsTotal") {
-      return shots === undefined ? [] : [{ label: "SOG", value: shots, rank: rankOf(name) }];
+      return shots === undefined
+        ? []
+        : [{ label: LABELS.shotsTotal ?? "SOG", value: shots, rank: rankOf(name) }];
     }
     const column = career.columns.find((candidate) => candidate.name === name);
     const value = statValue(career.columns, row.values, name);

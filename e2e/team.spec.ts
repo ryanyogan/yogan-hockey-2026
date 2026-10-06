@@ -6,6 +6,12 @@ const tabs = (page: Page) => page.getByRole("navigation", { name: "Team" });
 const section = (page: Page, title: RegExp) =>
   page.locator("main section").filter({ has: page.getByRole("heading", { name: title }) });
 const rows = (page: Page, title: RegExp) => section(page, title).locator("tbody tr");
+// The foot of the page, on every tab: the way back to the league.
+const back = (page: Page) => page.getByRole("main").getByRole("link", { name: "back to NHL" });
+
+// Nashville at Toronto, Toronto's next game and on the recorded slate.
+const GAME_ID = "401892449";
+type Slate = { games: { id: string; [field: string]: unknown }[]; [field: string]: unknown };
 
 test("a team's page shows each tab from a pasted URL, titled with the team's name", async ({
   browser,
@@ -16,13 +22,30 @@ test("a team's page shows each tab from a pasted URL, titled with the team's nam
     url: string,
     check: (page: Page) => Promise<void>,
     options: BrowserContextOptions = {},
+    before: (page: Page) => Promise<void> = async () => {},
   ) => {
     const context = await browser.newContext(options);
     const page = await context.newPage();
+    await before(page);
     await page.goto(url);
     await check(page);
     await context.close();
   };
+
+  // The recorded slate never changes, so the test stands between the first page and the
+  // Scoreboard, as `live.spec.ts` does, and later sends a slate of its own.
+  let slate: Slate | undefined;
+  let pushState: (state: Slate) => void = () => {};
+  const standBetween = (page: Page) =>
+    page.routeWebSocket(/\/agents\/scoreboard-agent\/main/, (socket) => {
+      const agent = socket.connectToServer();
+      agent.onMessage((message) => {
+        const parsed = JSON.parse(String(message));
+        if (parsed.type === "cf_agent_state") slate = parsed.state;
+        socket.send(message);
+      });
+      pushState = (state) => socket.send(JSON.stringify({ type: "cf_agent_state", state }));
+    });
 
   // Toronto as recorded (fixture mode): three games played, 81 to play, Nashville next.
   await paste(
@@ -45,10 +68,13 @@ test("a team's page shows each tab from a pasted URL, titled with the team's nam
 
       // The Next Game card links to the scheduled game's page, at the visitor's own time.
       const next = rows(page, /^Next game/);
-      await expect(next.getByRole("link")).toHaveAttribute("href", "/nhl/games/401892449");
+      await expect(next.getByRole("link")).toHaveAttribute("href", `/nhl/games/${GAME_ID}`);
       await expect(next).toContainText("4:00 PM");
+      // The game is on today's slate: its pick as the dashboard's row has it, then where.
+      await expect(next.getByRole("cell").last()).toHaveText("TOR 58%Scotiabank Arena");
       // Nobody is playing in the recorded slate, so there is no banner.
       await expect(section(page, /^Playing now/)).toHaveCount(0);
+      await expect(back(page)).toHaveAttribute("href", "/nhl");
 
       await expect(rows(page, /^Upcoming/)).toHaveCount(81);
       await expect(rows(page, /^Upcoming/).first()).toHaveText(/Tue Oct 6.*Nashville.*4:00 PM/);
@@ -57,8 +83,29 @@ test("a team's page shows each tab from a pasted URL, titled with the team's nam
       const latest = rows(page, /^Results/).first();
       await expect(latest).toHaveText(/Sat Oct 3.*Ottawa Senators.*L.*2-3/);
       await expect(latest.getByRole("link")).toHaveAttribute("href", "/nhl/games/401892434");
+
+      // The Scoreboard's slate without the game: the card stays as it was, without a pick.
+      await expect.poll(() => slate, { message: "the socket delivered the slate" }).toBeDefined();
+      const recorded = slate as Slate;
+      pushState({ ...recorded, games: recorded.games.filter((game) => game.id !== GAME_ID) });
+      await expect(next.getByRole("cell").last()).toHaveText("Scotiabank Arena");
+
+      // The game starts: the banner takes the card's place, its row with the pick like any other.
+      pushState({
+        ...recorded,
+        games: recorded.games.map((game) =>
+          game.id === GAME_ID ? { ...game, status: "live", period: 1, clock: "20:00" } : game,
+        ),
+      });
+      const playing = rows(page, /^Playing now/);
+      await expect(playing.getByRole("link")).toHaveAttribute("href", `/nhl/games/${GAME_ID}`);
+      await expect(playing.getByRole("cell").last()).toHaveText(
+        "TOR 58%Scotiabank Arena · ESPN+, Scripps Sports",
+      );
+      await expect(section(page, /^Next game/)).toHaveCount(0);
     },
     { timezoneId: "America/Los_Angeles" },
+    standBetween,
   );
 
   await paste("/nhl/teams/21?tab=roster", async (page) => {
@@ -78,6 +125,7 @@ test("a team's page shows each tab from a pasted URL, titled with the team's nam
       "href",
       "/players/4024123",
     );
+    await expect(back(page)).toHaveAttribute("href", "/nhl");
   });
 
   await paste("/nhl/teams/21?tab=stats", async (page) => {
@@ -95,6 +143,7 @@ test("a team's page shows each tab from a pasted URL, titled with the team's nam
       "0-0-0",
       "",
     ]);
+    await expect(back(page)).toHaveAttribute("href", "/nhl");
   });
 
   // An id that is no team's: "team not found", with the way back to the teams.

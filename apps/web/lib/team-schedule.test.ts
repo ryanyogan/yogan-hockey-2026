@@ -1,6 +1,6 @@
 import type { Game, GameSide, GameStatus } from "@yogan-hockey/schemas";
 import { describe, expect, it } from "vitest";
-import { liveGame, nextGame, scheduleView } from "./team-schedule";
+import { liveGame, nextGame, nextGamePick, scheduleView } from "./team-schedule";
 
 const side = (id: string, abbreviation: string, score = 0, winner = false): GameSide => ({
   id,
@@ -182,5 +182,25 @@ describe("the team's next game", () => {
     const late = game("9", "2026-10-09T02:00:00Z", "scheduled", "away");
     expect(nextGame(late, slate("2026-10-08"))?.id).toBe("9");
     expect(nextGame(late, slate("2026-10-09"))).toBeNull();
+  });
+});
+
+describe("the pick on the team's next game", () => {
+  const next = game("8", "2026-10-06T23:00:00Z", "scheduled", "home");
+  const other = game("7", "2026-10-06T23:00:00Z", "scheduled", "away");
+
+  it("is the slate's line for that game, a made pick or a pending one", () => {
+    expect(nextGamePick(next, { "8": "TOR 58%" }, [other, next])).toBe("TOR 58%");
+    expect(nextGamePick(next, { "8": "pick pending" }, [next])).toBe("pick pending");
+  });
+
+  it("is nothing for a game with no line: a failed Prediction, or picks that were not read", () => {
+    expect(nextGamePick(next, { "7": "NSH 55%" }, [other, next])).toBeUndefined();
+    expect(nextGamePick(next, {}, [next])).toBeUndefined();
+  });
+
+  it("is nothing for a game that is not on today's slate, whatever the picks say", () => {
+    expect(nextGamePick(next, { "8": "TOR 58%" }, [other])).toBeUndefined();
+    expect(nextGamePick(next, { "8": "TOR 58%" }, [])).toBeUndefined();
   });
 });

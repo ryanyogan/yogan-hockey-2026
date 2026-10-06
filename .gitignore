@@ -7,3 +7,6 @@
 
 # Written by scripts/account-setup.sh only if it cannot post to the issue.
 account-setup-comment.md
+
+# The cf CLI caches the account it resolved here.
+.cloudflare/

@@ -8,7 +8,7 @@ import type { ComponentProps } from "react";
 function LiveMarker({
   className,
   strong = false,
-  children = "live",
+  children,
   ...props
 }: ComponentProps<"span"> & { strong?: boolean }) {
   return (
@@ -22,6 +22,8 @@ function LiveMarker({
         aria-hidden="true"
         className="mr-[0.8em] inline-block size-[0.4em] rounded-full bg-current align-[0.2em]"
       />
+      {/* The dot says "live" to the eye only, so the word is always there to be read out. */}
+      {children == null ? "live" : <span className="sr-only">live, </span>}
       {children}
     </span>
   );

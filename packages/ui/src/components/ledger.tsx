@@ -28,7 +28,8 @@ function Ledger({
 }) {
   return (
     // A table wider than a phone scrolls sideways inside its own box; the page never does.
-    <div data-slot="ledger" className="w-full overflow-x-auto">
+    // Positioned, so a `ledgerRowLink` can never stretch past its own table.
+    <div data-slot="ledger" className="relative w-full overflow-x-auto">
       <table
         data-density={density}
         className={cn("group/ledger w-full border-collapse", className)}
@@ -47,16 +48,20 @@ function LedgerHead({ children, ...props }: ComponentProps<"thead">) {
   );
 }
 
-/** A column header. Leave it empty over a column that needs no label, such as a score. */
+/**
+ * A column header. Leave it empty over a column that needs no label, such as a score: it is then
+ * a plain cell, since a header with no text names nothing.
+ */
 function LedgerColumn({
   className,
   numeric = false,
   ...props
 }: ComponentProps<"th"> & { numeric?: boolean }) {
+  const Cell = props.children == null ? "td" : "th";
   return (
-    <th
+    <Cell
       data-slot="ledger-column"
-      scope="col"
+      scope={Cell === "th" ? "col" : undefined}
       className={cn(
         "border-foreground/20 border-b px-2 py-1 font-normal text-[10px] text-foreground/50 uppercase tracking-wider",
         numeric ? "text-right" : "text-left",

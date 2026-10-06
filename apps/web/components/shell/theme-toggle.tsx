@@ -17,7 +17,6 @@ export function ThemeToggle({ className }: { className?: string }) {
       variant="ghost"
       size="inline"
       className={className}
-      aria-label="Toggle theme"
       onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
     >
       <span className="dark:hidden">dark mode</span>

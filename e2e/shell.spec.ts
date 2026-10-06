@@ -29,7 +29,7 @@ test("the shell renders, switches theme, and its phone menu closes on navigation
   await expect(body).toHaveCSS("background-color", DARK_BACKGROUND);
   // A press before the page has hydrated does nothing, so press until one lands.
   await expect(async () => {
-    await sidebar.getByRole("button", { name: "Toggle theme" }).click();
+    await sidebar.getByRole("button", { name: /^(dark|light) mode$/ }).click();
     await expect(body).toHaveCSS("background-color", LIGHT_BACKGROUND, { timeout: 1000 });
   }).toPass();
   await page.reload();
@@ -44,7 +44,13 @@ test("the shell renders, switches theme, and its phone menu closes on navigation
   await expect(page).toHaveURL(/\/players$/);
   await expect(menu).toBeHidden();
 
-  // A route that has not shipped lands on the not-found page, inside the shell.
+  // The top bar carries the toggle on a phone, so both themes are reachable there too.
+  const topBar = page.getByRole("banner");
+  await topBar.getByRole("button", { name: /^(dark|light) mode$/ }).click();
+  await expect(body).toHaveCSS("background-color", DARK_BACKGROUND);
+
+  // An unknown path gets the not-found page, inside the shell.
+  await page.goto("/no-such-page");
   await expect(page.getByRole("heading", { name: "Not found" })).toBeVisible();
-  await expect(page.getByRole("banner").getByRole("link", { name: "YOGAN/HOCKEY" })).toBeVisible();
+  await expect(topBar.getByRole("link", { name: "YOGAN/HOCKEY" })).toBeVisible();
 });

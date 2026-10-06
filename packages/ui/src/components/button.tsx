@@ -18,7 +18,7 @@ const buttonVariants = cva(
         default: "h-7 px-2.5",
         sm: "h-6 px-2",
         /** No box of its own: sits on a line of text. */
-        inline: "px-0",
+        inline: "min-h-6 px-0",
       },
     },
     defaultVariants: {

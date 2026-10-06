@@ -175,6 +175,9 @@ importers:
       '@types/node':
         specifier: 26.6.4
         version: 26.6.4
+      sharp:
+        specifier: 0.35.5
+        version: 0.35.5(@types/node@26.6.4)
       typescript:
         specifier: 7.0.2
         version: 7.0.2
@@ -7849,7 +7852,6 @@ snapshots:
       '@img/sharp-win32-ia32': 0.35.5
       '@img/sharp-win32-x64': 0.35.5
       '@types/node': 26.6.4
-    optional: true
 
   shebang-command@2.0.0:
     dependencies:

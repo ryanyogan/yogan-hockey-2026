@@ -15,11 +15,13 @@ import type { ReactNode } from "react";
 import { isFavoriteGame } from "../../lib/favorites";
 import { gameHref, gameStatusLine, gameWhere, hasScore } from "../../lib/scoreboard-view";
 import { Link } from "../link";
+import { TeamMark } from "../team-mark";
 import { GameStatus } from "./game-status";
 
 function Team({ side, favorite }: { side: ScoreboardSide; favorite: boolean }) {
   return (
     <>
+      <TeamMark teamId={side.id} />
       <span className={side.winner ? "font-bold" : undefined}>{side.abbreviation}</span>{" "}
       {/* A phone has no last column to say "favorite team" in: the star goes by the team. */}
       {favorite && (

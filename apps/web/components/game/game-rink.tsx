@@ -5,6 +5,7 @@ import { gameStatus, markKind, playTime } from "../../lib/game/plays";
 import { attackedEnd, type RinkEnd } from "../../lib/game/rink";
 import { periodLabel } from "../../lib/game/timeline";
 import { LocalTime } from "../local-time";
+import { TeamMark } from "../team-mark";
 import { Rink } from "./rink";
 
 /*
@@ -68,7 +69,12 @@ function Score({ side, place }: { side: GameHeaderSide; place: Place }) {
     <OverIce
       slot="rink-score"
       place={place}
-      line={side.abbreviation}
+      line={
+        <>
+          <TeamMark teamId={side.id} size="line" eager className="mr-[0.4em]" />
+          {side.abbreviation}
+        </>
+      }
       wide={`${side.shots} shots`}
       figure={side.score}
       narrow={`${side.shots} sog`}
@@ -97,7 +103,12 @@ export function MatchupRink({ header, status }: { header: GameHeader; status?: s
     <OverIce
       slot="rink-team"
       place={place}
-      line={place}
+      line={
+        <>
+          <TeamMark teamId={header[place].id} size="line" eager className="mr-[0.4em]" />
+          {place}
+        </>
+      }
       wide={header[place].record ?? "no record"}
       figure={header[place].abbreviation}
       narrow={header[place].record ?? "no record"}

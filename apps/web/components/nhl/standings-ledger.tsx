@@ -17,6 +17,7 @@ import {
   playoffLine,
 } from "../../lib/standings-table";
 import { Link } from "../link";
+import { TeamMark } from "../team-mark";
 import { TeamName, teamHref } from "./team-name";
 
 /**
@@ -67,6 +68,11 @@ export function StandingsLedger({
                   className={ledgerRowLink}
                   aria-label={compact ? row.team.name : undefined}
                 >
+                  {/*
+                    The dashboard's table spreads its columns by what is in them, so a mark that
+                    took room would move every figure: there it hangs in the rank's column.
+                  */}
+                  <TeamMark teamId={row.team.id} hang={compact} />
                   {compact ? row.team.abbreviation : <TeamName team={row.team} />}
                 </Link>
               </LedgerCell>

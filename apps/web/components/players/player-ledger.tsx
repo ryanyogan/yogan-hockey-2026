@@ -12,6 +12,7 @@ import {
 } from "@yogan-hockey/ui/components/ledger";
 import type { ReactNode } from "react";
 import { Link } from "../link";
+import { TeamMark } from "../team-mark";
 
 /**
  * A list of players, each row leading to his page: search results and favorite players. It has
@@ -66,6 +67,7 @@ export function PlayerLedger<P extends PlayerSearchResult>({
             </LedgerCell>
             {compact ? null : <LedgerCell className={narrow}>{player.position}</LedgerCell>}
             <LedgerCell className={compact ? "whitespace-nowrap" : undefined}>
+              <TeamMark teamId={player.team?.id} />
               {compact && player.team ? (
                 // The abbreviation is what is drawn; the team's name is what it says.
                 <abbr title={player.team.name} className="no-underline">

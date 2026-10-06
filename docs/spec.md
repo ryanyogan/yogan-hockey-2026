@@ -100,11 +100,16 @@ Site-wide:
 - Times are shown in the visitor's own time zone. The server writes Eastern time marked "ET", and the browser replaces it as the page loads.
 - Scores update on every page without a refresh, through the Scoreboard socket.
 - Every game card or game row, wherever it appears, links to that game's page.
+<<<<<<< HEAD
 - Tabs and standings views are held in the URL, so they survive a reload and can be linked: a query parameter, or a path segment where each tab is a page under a shared layout (the team page).
+=======
+- Tabs and standings views are held in the URL, so they survive a reload and can be linked.
+- A team's mark, its logo at 14px, stands before its abbreviation or name where it helps a reader find a team: standings rows, the teams list, game rows (tonight's games, `/nhl/live`, a team's schedule and Next Game card), the score ticker, the two sides over the ice on a game page, a player's team and player search rows; a team page has its own at the end of its record. A mark never changes a row's height or a column's width where the column is a fixed one (the text after it starts 20px later, the same in every row), has the dark logo on the dark theme, and is a file the site serves itself, so no page waits on ESPN for an image. Marks are left out where they would repeat one team down a table (a roster, a career table, a game's own ledgers) or sit inside a sentence (a play, a season series line).
+>>>>>>> 506c215 (Team marks: a small logo before a team's abbreviation, served by the site (#97))
 
 ### `/` Dashboard
 
-Variant C, the "Tonight ledger": monospace type, one dense table per subject, no cards, no team logos.
+Variant C, the "Tonight ledger": monospace type, one dense table per subject, no cards. The Reference UI draws no team logos; the site adds a small team mark before a team's abbreviation (see the site-wide rules), which leaves the ledger's rows at the Reference UI's heights and its columns at their places.
 
 - **Tonight's games**, with the live count in its header. Live rows are tinted. A note column carries the pick ("TOR 58%", or "pick pending") and a marker for a favorite team. Favorite teams' games sort first.
 - **Family**: one row block for Rylan with his season totals, linking to `/family/rylan`.

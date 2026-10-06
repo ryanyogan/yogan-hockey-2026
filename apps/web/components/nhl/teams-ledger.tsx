@@ -10,6 +10,7 @@ import {
 } from "@yogan-hockey/ui/components/ledger";
 import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
 import { Link } from "../link";
+import { TeamMark } from "../team-mark";
 import { teamHref } from "./team-name";
 
 /** Every team in the league, by name, each row linking to the team's page. */
@@ -26,7 +27,10 @@ export function TeamsLedger({ teams }: { teams: Team[] }) {
         <LedgerBody>
           {byName.map((team) => (
             <LedgerRow key={team.id} interactive>
-              <LedgerCell tone="aside">{team.abbreviation}</LedgerCell>
+              <LedgerCell tone="aside" className="whitespace-nowrap">
+                <TeamMark teamId={team.id} />
+                {team.abbreviation}
+              </LedgerCell>
               <LedgerCell className="whitespace-nowrap">
                 <Link href={teamHref(team)} className={ledgerRowLink}>
                   {team.name}

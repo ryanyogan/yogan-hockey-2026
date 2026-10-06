@@ -9,6 +9,7 @@ import {
 } from "@yogan-hockey/ui/components/ledger";
 import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
 import type { ReactNode } from "react";
+import { TeamMark } from "../team-mark";
 import { EmptyLedger } from "./empty-ledger";
 
 /**
@@ -68,7 +69,15 @@ export function TeamHeader({
                 {stats.points}
               </LedgerCell>
               <LedgerCell tone="note" className="pl-6">
-                {standingSummary ?? "-"}
+                {/*
+                  The team's mark stands at the end of its record, under the heart. The line above
+                  has no room for it: with a mark before the name, "Toronto Maple Leafs" and its
+                  conference and division no longer fit half a wide page. A phone has room in neither.
+                */}
+                <span className="flex items-center justify-between gap-2">
+                  {standingSummary ?? "-"}
+                  <TeamMark teamId={team.id} size="header" eager className="max-sm:hidden" />
+                </span>
               </LedgerCell>
             </LedgerRow>
           </LedgerBody>

@@ -13,7 +13,7 @@ export type NhlPage = { tab: NhlTab; view: StandingsView };
 const DEFAULT_PAGE: NhlPage = { tab: "standings", view: "division" };
 
 /** A page's `searchParams`: a parameter given twice arrives as a list. */
-type Query = Record<string, string | string[] | undefined>;
+export type Query = Record<string, string | string[] | undefined>;
 
 const first = (value: string | string[] | undefined) => (Array.isArray(value) ? value[0] : value);
 

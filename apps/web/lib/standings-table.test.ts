@@ -6,6 +6,7 @@ import {
   formatGoalDifference,
   goalDifferenceTone,
   playoffLine,
+  tablesByConference,
 } from "./standings-table";
 
 beforeEach(() => {
@@ -71,5 +72,26 @@ describe("the conference named beside a table's title", () => {
   it("is left out where the title is the conference, or the league", async () => {
     expect((await tables("conference")).map(conferenceLabel)).toEqual([undefined, undefined]);
     expect((await tables("league")).map(conferenceLabel)).toEqual([undefined]);
+  });
+});
+
+describe("the columns of a view", () => {
+  const titles = async (view: StandingsView) =>
+    tablesByConference(await tables(view)).map((column) => column.map((table) => table.title));
+
+  it("puts each conference's tables in a column of their own, in order", async () => {
+    expect(await titles("wildcard")).toEqual([
+      ["Atlantic Division", "Metropolitan Division", "Wild Card"],
+      ["Central Division", "Pacific Division", "Wild Card"],
+    ]);
+    expect(await titles("division")).toEqual([
+      ["Atlantic Division", "Metropolitan Division"],
+      ["Central Division", "Pacific Division"],
+    ]);
+    expect(await titles("conference")).toEqual([["Eastern Conference"], ["Western Conference"]]);
+  });
+
+  it("is one column for the league", async () => {
+    expect(await titles("league")).toEqual([["National Hockey League"]]);
   });
 });

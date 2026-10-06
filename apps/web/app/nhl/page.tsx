@@ -1,4 +1,4 @@
-import { type StandingsTable, type StandingsView, standingsView } from "@yogan-hockey/schemas";
+import { type StandingsView, standingsView } from "@yogan-hockey/schemas";
 import { SectionHeader } from "@yogan-hockey/ui/components/section";
 import { UrlTabs } from "@yogan-hockey/ui/components/url-tabs";
 import type { Metadata } from "next";
@@ -6,12 +6,13 @@ import Link from "next/link";
 import { StandingsLedger } from "../../components/nhl/standings-ledger";
 import { TeamsLedger } from "../../components/nhl/teams-ledger";
 import { cachedStandings, cachedTeams } from "../../lib/espn";
-import { NHL_TABS, nhlHref, readNhlPage, STANDINGS_VIEWS } from "../../lib/nhl-page";
+import { NHL_TABS, nhlHref, type Query, readNhlPage, STANDINGS_VIEWS } from "../../lib/nhl-page";
+import { tablesByConference } from "../../lib/standings-table";
 
 // Rendered per request; the ESPN reads behind it are cached and tagged (spec §2).
 export const dynamic = "force-dynamic";
 
-type Props = { searchParams: Promise<Record<string, string | string[] | undefined>> };
+type Props = { searchParams: Promise<Query> };
 
 const VIEW_LABELS: Record<StandingsView, string> = {
   division: "division",
@@ -65,17 +66,8 @@ async function Teams() {
   return <TeamsLedger teams={await cachedTeams()} />;
 }
 
-/** The tables of each conference together, in the order `standingsView` gives them. */
-function byConference(tables: StandingsTable[]): StandingsTable[][] {
-  const columns = new Map<string | null, StandingsTable[]>();
-  for (const table of tables) {
-    columns.set(table.conference, [...(columns.get(table.conference) ?? []), table]);
-  }
-  return [...columns.values()];
-}
-
 async function Standings({ view }: { view: StandingsView }) {
-  const columns = byConference(standingsView(await cachedStandings(), view));
+  const columns = tablesByConference(standingsView(await cachedStandings(), view));
   return (
     // One column per conference from `xl` up. The league table, alone, keeps to the first column:
     // a row twice as wide puts a team too far from its figures to read across.

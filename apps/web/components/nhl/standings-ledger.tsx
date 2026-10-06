@@ -27,7 +27,7 @@ export function StandingsLedger({ table }: { table: StandingsTable }) {
   return (
     <Section>
       <SectionHeader title={table.title} count={conferenceLabel(table)}>
-        {line != null && `playoffs: top ${line}`}
+        {line == null ? undefined : `playoff line: top ${line}`}
       </SectionHeader>
       <Ledger density="compact">
         <LedgerHead>

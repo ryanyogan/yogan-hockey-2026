@@ -29,3 +29,17 @@ export function conferenceLabel(table: StandingsTable): string | undefined {
   if (table.conference == null || table.conference === table.title) return undefined;
   return table.rows[0]?.conference.abbreviation;
 }
+
+/**
+ * The tables of a view as the columns a wide page draws them in: one per conference, each
+ * holding that conference's tables in order. The league table is a column of its own.
+ */
+export function tablesByConference(tables: StandingsTable[]): StandingsTable[][] {
+  const columns = new Map<string | null, StandingsTable[]>();
+  for (const table of tables) {
+    const column = columns.get(table.conference);
+    if (column) column.push(table);
+    else columns.set(table.conference, [table]);
+  }
+  return [...columns.values()];
+}

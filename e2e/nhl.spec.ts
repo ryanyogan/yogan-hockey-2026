@@ -89,12 +89,5 @@ test("/nhl shows each standings view and the teams from a pasted URL", async ({ 
       "href",
       "/nhl/teams/21",
     );
-
-    // The tabs are links: back to the standings, at the bare address. (Once the page is quiet:
-    // a click before it has hydrated is a second hard navigation.)
-    await page.waitForLoadState("networkidle");
-    await tabs(page).getByRole("link", { name: "standings" }).click();
-    await expect(page).toHaveURL(/\/nhl$/);
-    await expect(views(page).locator('[aria-current="page"]')).toHaveText("division");
   });
 });

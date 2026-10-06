@@ -11,7 +11,7 @@ const REGULATION_PERIODS = 3;
 const SHOOTOUT_PERIOD = 5;
 
 /** Where a game's page is, whatever state the game is in. */
-export const gameHref = (game: ScoreboardGame) => `/nhl/games/${game.id}`;
+export const gameHref = (game: Pick<ScoreboardGame, "id">) => `/nhl/games/${game.id}`;
 
 /** A game has a score to show once it has started; a postponed game never did. */
 export const hasScore = (game: ScoreboardGame) => game.status === "live" || game.status === "final";

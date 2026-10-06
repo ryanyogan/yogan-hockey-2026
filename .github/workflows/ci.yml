@@ -20,7 +20,7 @@ jobs:
   # put together, so they share one, and only Playwright (the slow one) runs beside them.
   checks:
     name: Biome, typecheck, Vitest, build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
@@ -38,7 +38,7 @@ jobs:
 
   e2e:
     name: Playwright smoke tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7

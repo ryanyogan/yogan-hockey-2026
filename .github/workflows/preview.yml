@@ -11,7 +11,7 @@ permissions:
 jobs:
   gate:
     name: Can a preview deploy?
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 2
     outputs:
       enabled: ${{ steps.gate.outputs.enabled }}
@@ -33,7 +33,7 @@ jobs:
     name: Deploy the preview
     needs: gate
     if: needs.gate.outputs.enabled == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     # One at a time for a pull request, and never cancelled halfway through the migrations. Two
     # pull requests can still migrate the shared preview D1 at once; applying is idempotent, so

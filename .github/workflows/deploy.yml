@@ -15,7 +15,7 @@ jobs:
 
   gate:
     name: Can production deploy?
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 2
     outputs:
       enabled: ${{ steps.gate.outputs.enabled }}
@@ -37,7 +37,7 @@ jobs:
     name: Migrate D1 and deploy the Worker
     needs: [ci, gate]
     if: needs.gate.outputs.enabled == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     # One deploy at a time, and never one cancelled between its migrations and its upload.
     concurrency:

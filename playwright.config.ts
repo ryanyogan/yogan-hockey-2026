@@ -5,6 +5,9 @@ const PORT = Number(process.env.PORT ?? 5173);
 
 export default defineConfig({
   testDir: "./e2e",
+  // One at a time: the tests share one dev server, and Vite reloads every open page when a route
+  // first compiles, which loses clicks and state in a test running beside it.
+  workers: 1,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? "github" : "list",

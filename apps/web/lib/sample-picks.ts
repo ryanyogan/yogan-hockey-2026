@@ -13,12 +13,11 @@ import { readScoreboard } from "./scoreboard";
 /** Nashville at Toronto, the recorded scheduled game: the pick every test and shot reads. */
 const NSH_AT_TOR = { gameId: "401892449", pickTeamId: "21", winProbability: 58 };
 /** The game of the recorded slate whose Prediction is seeded as failed. */
-export const SAMPLE_FAILED_GAME = "401892450";
+const SAMPLE_FAILED_GAME = "401892450";
 /** Dallas 4 at Buffalo 3 in a shootout, the recorded final (season 2026). */
 const FINAL_GAME = { gameId: "401803652", winnerId: "9", loserId: "2" };
 /** Finished games that exist only here, in the slate's season: they make the season record. */
 const DECIDED = ["right", "right", "right", "wrong", "wrong"] as const;
-export const SAMPLE_RECORD = "picks: 3 right, 2 wrong";
 
 const MODEL = "@cf/openai/gpt-oss-120b";
 

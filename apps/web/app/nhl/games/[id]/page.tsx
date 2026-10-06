@@ -80,7 +80,7 @@ export default async function GameRoute({ params, searchParams }: Props) {
   // here, on its first open, and every later open is one read of D1.
   const game = await replayGame(found.game);
   const scheduled = gamePhase(game.header.status) === "scheduled";
-  // After `replayGame`: a finished game's row is in D1 by now, which is what marks its pick.
+  // After `replayGame`, which writes a finished game nobody watched: its D1 row marks the pick.
   const pick = await readGamePick(game.header);
 
   return (

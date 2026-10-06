@@ -28,7 +28,7 @@ export async function readSlatePicks(): Promise<SlatePicks> {
       getPredictions(db, gameIds),
       getSeasonRecord(db, seasonOfSlate(date)),
     ]);
-    return { picks: slatePicks(games, predictions), record: recordLine(record) };
+    return { picks: slatePicks(games, predictions, new Date()), record: recordLine(record) };
   } catch (error) {
     console.error("The picks could not be read", error);
     return { picks: {}, record: null };

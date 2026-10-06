@@ -10,9 +10,13 @@ import {
   slatePicks,
 } from "./picks";
 
+/** Seven hours before the puck drops. */
+const NOON = new Date("2026-10-06T16:00:00Z");
+
 const NSH_AT_TOR = {
   id: "401892449",
   status: "scheduled",
+  startTime: "2026-10-06T23:00:00Z",
   home: { id: "21", abbreviation: "TOR" },
   away: { id: "27", abbreviation: "NSH" },
 } as const;
@@ -42,39 +46,40 @@ function failed(gameId = "401892449"): StoredPrediction {
 }
 
 test("the one-line pick is the picked team's abbreviation and its win probability", () => {
-  expect(pickLine(made("21", 58), NSH_AT_TOR)).toBe("TOR 58%");
-  expect(pickLine(made("27", 61.4), NSH_AT_TOR)).toBe("NSH 61%");
+  expect(pickLine(made("21", 58), NSH_AT_TOR, NOON)).toBe("TOR 58%");
+  expect(pickLine(made("27", 61.4), NSH_AT_TOR, NOON)).toBe("NSH 61%");
 });
 
 test("a game still to come with no row says pick pending", () => {
-  expect(pickLine(null, NSH_AT_TOR)).toBe("pick pending");
-  expect(pickLine(undefined, NSH_AT_TOR)).toBe(PICK_PENDING);
+  expect(pickLine(null, NSH_AT_TOR, NOON)).toBe("pick pending");
+  expect(pickLine(undefined, NSH_AT_TOR, NOON)).toBe(PICK_PENDING);
 });
 
 test("a failed Prediction shows nothing, whatever the game's state", () => {
-  expect(pickLine(failed(), NSH_AT_TOR)).toBeNull();
-  expect(pickLine(failed(), { ...NSH_AT_TOR, status: "final" })).toBeNull();
+  expect(pickLine(failed(), NSH_AT_TOR, NOON)).toBeNull();
+  expect(pickLine(failed(), { ...NSH_AT_TOR, status: "final" }, NOON)).toBeNull();
 });
 
 test("a game that started without a pick is no longer pending", () => {
-  expect(pickLine(null, { ...NSH_AT_TOR, status: "live" })).toBeNull();
-  expect(pickLine(null, { ...NSH_AT_TOR, status: "final" })).toBeNull();
-  expect(pickLine(null, { ...NSH_AT_TOR, status: "postponed" })).toBeNull();
+  expect(pickLine(null, { ...NSH_AT_TOR, status: "live" }, NOON)).toBeNull();
+  expect(pickLine(null, { ...NSH_AT_TOR, status: "final" }, NOON)).toBeNull();
+  expect(pickLine(null, { ...NSH_AT_TOR, status: "postponed" }, NOON)).toBeNull();
 });
 
 test("a live or finished game keeps its pick as it was made", () => {
-  expect(pickLine(made("21", 58), { ...NSH_AT_TOR, status: "live" })).toBe("TOR 58%");
-  expect(pickLine(made("21", 58), { ...NSH_AT_TOR, status: "final" })).toBe("TOR 58%");
+  expect(pickLine(made("21", 58), { ...NSH_AT_TOR, status: "live" }, NOON)).toBe("TOR 58%");
+  expect(pickLine(made("21", 58), { ...NSH_AT_TOR, status: "final" }, NOON)).toBe("TOR 58%");
 });
 
 test("a pick for a team that is not in the game shows nothing", () => {
-  expect(pickLine(made("99", 58), NSH_AT_TOR)).toBeNull();
+  expect(pickLine(made("99", 58), NSH_AT_TOR, NOON)).toBeNull();
 });
 
 test("a slate's picks are keyed by game, and a game with nothing to say has no entry", () => {
   const dalAtBuf = {
     id: "2",
     status: "scheduled",
+    startTime: "2026-10-06T23:00:00Z",
     home: { id: "7", abbreviation: "BUF" },
     away: { id: "9", abbreviation: "DAL" },
   } as const;
@@ -83,7 +88,7 @@ test("a slate's picks are keyed by game, and a game with nothing to say has no e
     ["401892449", made("21", 58)],
     ["3", failed("3")],
   ]);
-  expect(slatePicks([NSH_AT_TOR, dalAtBuf, failedGame], predictions)).toEqual({
+  expect(slatePicks([NSH_AT_TOR, dalAtBuf, failedGame], predictions, NOON)).toEqual({
     "401892449": "TOR 58%",
     "2": "pick pending",
   });
@@ -128,4 +133,10 @@ test("a finished game's result names the winner, home or away, with the final sc
   expect(finalResult({ ...final, home: { ...final.home, score: 5 } })).toBe(
     "Buffalo Sabres won 5-4",
   );
+});
+
+test("a game whose start has passed without a row is not pending, whatever its status says", () => {
+  const late = new Date("2026-10-06T23:05:00Z");
+  expect(pickLine(null, NSH_AT_TOR, late)).toBeNull();
+  expect(pickLine(made("21", 58), NSH_AT_TOR, late)).toBe("TOR 58%");
 });

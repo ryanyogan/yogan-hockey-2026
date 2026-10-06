@@ -26,6 +26,19 @@ function made(gameId: string, pickTeamId: string): StoredPrediction {
   };
 }
 
+const NOON = new Date("2026-10-06T16:00:00Z");
+
+/** Nashville at Toronto, starting seven hours after `NOON`. */
+function game(id: string, status: "scheduled" | "live" | "final" | "postponed") {
+  return {
+    id,
+    status,
+    startTime: "2026-10-06T23:00:00Z",
+    home: { id: "21", abbreviation: "TOR" },
+    away: { id: "27", abbreviation: "NSH" },
+  };
+}
+
 function final(id: string): FinalGame {
   return {
     id,
@@ -38,14 +51,14 @@ function final(id: string): FinalGame {
 }
 
 test("a game still to come with no row is pending", async () => {
-  expect(await readGamePick({ id: "pick-none-yet", status: "scheduled" })).toEqual({
+  expect(await readGamePick(game("pick-none-yet", "scheduled"), NOON)).toEqual({
     state: "pending",
   });
 });
 
 test("a game that started, ended or was called off without a row has no pick", async () => {
   for (const status of ["live", "final", "postponed"] as const) {
-    expect(await readGamePick({ id: "pick-never-made", status })).toEqual({ state: "none" });
+    expect(await readGamePick(game("pick-never-made", status), NOON)).toEqual({ state: "none" });
   }
 });
 
@@ -58,8 +71,8 @@ test("a failed Prediction is no pick, before the game and after", async () => {
     inputs: {},
   });
 
-  expect(await readGamePick({ id: "pick-failed", status: "scheduled" })).toEqual({ state: "none" });
-  expect(await readGamePick({ id: "pick-failed", status: "final" })).toEqual({ state: "none" });
+  expect(await readGamePick(game("pick-failed", "scheduled"), NOON)).toEqual({ state: "none" });
+  expect(await readGamePick(game("pick-failed", "final"), NOON)).toEqual({ state: "none" });
 });
 
 test("a pick comes with no final score until the game is over and written", async () => {
@@ -68,23 +81,23 @@ test("a pick comes with no final score until the game is over and written", asyn
   // A row for the game, as if it were written early: a live game still reads no final score.
   await saveFinalGame(db, final("pick-live"));
 
-  expect(await readGamePick({ id: "pick-live", status: "scheduled" })).toEqual({
+  expect(await readGamePick(game("pick-live", "scheduled"), NOON)).toEqual({
     state: "made",
     prediction,
     final: null,
   });
-  expect(await readGamePick({ id: "pick-live", status: "live" })).toEqual({
+  expect(await readGamePick(game("pick-live", "live"), NOON)).toEqual({
     state: "made",
     prediction,
     final: null,
   });
-  expect(await readGamePick({ id: "pick-unwritten", status: "final" })).toEqual({ state: "none" });
+  expect(await readGamePick(game("pick-unwritten", "final"), NOON)).toEqual({ state: "none" });
 });
 
 test("a finished game's pick comes with the final score D1 holds", async () => {
   const prediction = made("pick-final", "21");
   await insertPredictionIfAbsent(db, prediction);
-  expect(await readGamePick({ id: "pick-final", status: "final" })).toEqual({
+  expect(await readGamePick(game("pick-final", "final"), NOON)).toEqual({
     state: "made",
     prediction,
     final: null,
@@ -92,9 +105,19 @@ test("a finished game's pick comes with the final score D1 holds", async () => {
 
   await saveFinalGame(db, final("pick-final"));
 
-  expect(await readGamePick({ id: "pick-final", status: "final" })).toEqual({
+  expect(await readGamePick(game("pick-final", "final"), NOON)).toEqual({
     state: "made",
     prediction,
     final: final("pick-final"),
   });
+});
+
+test("a game whose start has passed with no row is not pending", async () => {
+  const late = new Date("2026-10-06T23:05:00Z");
+  expect(await readGamePick(game("pick-too-late", "scheduled"), late)).toEqual({ state: "none" });
+});
+
+test("a pick for a team that is not in the game is no pick", async () => {
+  await insertPredictionIfAbsent(db, made("pick-stranger", "99"));
+  expect(await readGamePick(game("pick-stranger", "scheduled"), NOON)).toEqual({ state: "none" });
 });

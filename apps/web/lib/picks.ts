@@ -4,7 +4,16 @@ import type { FinalGame, GameStatus, SeasonRecord, StoredPrediction } from "@yog
 export const PICK_PENDING = "pick pending";
 
 type Side = { id: string; abbreviation: string };
-type PickedGame = { status: GameStatus; home: Side; away: Side };
+type PickedGame = { status: GameStatus; startTime: string; home: Side; away: Side };
+
+/**
+ * Whether a game with no row can still get a Prediction: it has not started, by its status or by
+ * the clock. The Scoreboard makes no pick for a game whose start has passed, so one that is late
+ * to drop the puck is not waiting for anything.
+ */
+export function awaitsPick(game: Pick<PickedGame, "status" | "startTime">, now: Date): boolean {
+  return game.status === "scheduled" && new Date(game.startTime) > now;
+}
 
 /** The side a Prediction picked, or null: a failed or missing one, or a team not in the game. */
 export function pickedSide<Game extends { home: Side; away: Side }>(
@@ -17,15 +26,16 @@ export function pickedSide<Game extends { home: Side; away: Side }>(
 
 /**
  * The pick in one line, as a game row or card says it: "TOR 58%", the picked team and its win
- * probability. "pick pending" for a game still to come that has no row yet. Null, which is
+ * probability. "pick pending" for a game still to start that has no row yet. Null, which is
  * nothing shown, for a failed Prediction and for a game that started without one. A live or
  * finished game keeps the line as it was made: right or wrong is the game page's to say.
  */
 export function pickLine(
   prediction: StoredPrediction | null | undefined,
   game: PickedGame,
+  now: Date,
 ): string | null {
-  if (prediction == null) return game.status === "scheduled" ? PICK_PENDING : null;
+  if (prediction == null) return awaitsPick(game, now) ? PICK_PENDING : null;
   const side = pickedSide(prediction, game);
   if (prediction.status !== "made" || side == null) return null;
   return `${side.abbreviation} ${Math.round(prediction.winProbability)}%`;
@@ -38,10 +48,11 @@ export function pickLine(
 export function slatePicks(
   games: readonly (PickedGame & { id: string })[],
   predictions: ReadonlyMap<string, StoredPrediction>,
+  now: Date,
 ): Record<string, string> {
   const picks: Record<string, string> = {};
   for (const game of games) {
-    const line = pickLine(predictions.get(game.id), game);
+    const line = pickLine(predictions.get(game.id), game, now);
     if (line != null) picks[game.id] = line;
   }
   return picks;

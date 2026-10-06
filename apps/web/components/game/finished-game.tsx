@@ -25,7 +25,7 @@ export type FinishedGameProps = {
   notice?: string;
   tab: GameTab;
   pathname: string;
-  /** What "the pick" tab shows: #53 marks it right or wrong here. */
+  /** What "the pick" tab shows, marked right or wrong by the server. Null when there is none. */
   pick: ReactNode;
 };
 

@@ -105,7 +105,7 @@ function GameInPhase({
         <ScheduledGame
           header={header}
           matchup={matchup}
-          // Only a game still to be played waits for a pick: one called off gets none.
+          // The server's answer, from before any socket: a game called off since waits for none.
           pick={pick ?? (pickPending && header.status === "scheduled" ? <GamePickPending /> : null)}
         />
       );

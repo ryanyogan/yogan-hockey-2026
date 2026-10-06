@@ -45,6 +45,15 @@ export function playerTag(playerId: string): string {
   return `player:${playerId}`;
 }
 
+/**
+ * The tag for one game. Nothing is cached under it yet: the game summary is read as it is now.
+ * The Scoreboard invalidates it at the final all the same, so whatever is later cached about a
+ * game is invalidated at the horn without the Scoreboard changing.
+ */
+export function gameTag(gameId: string): string {
+  return `game:${gameId}`;
+}
+
 /** The league standings. Five minutes. */
 export const cachedStandings: () => Promise<Standings> = unstable_cache(
   getStandings,

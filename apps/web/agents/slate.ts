@@ -68,3 +68,22 @@ export function slateTransitions(previous: ScoreboardGame[], slate: Scoreboard):
     return transitions;
   });
 }
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+/** The `YYYY-MM-DD` date after one. */
+export function dayAfter(date: string): string {
+  return new Date(Date.parse(`${date}T00:00:00Z`) + DAY_MS).toISOString().slice(0, 10);
+}
+
+/**
+ * The dates a catch-up fetches in one go: from `from` up to the day before `today`, oldest first,
+ * and no more than `limit` of them. All dates are `YYYY-MM-DD`.
+ */
+export function missedDates(from: string, today: string, limit: number): string[] {
+  const dates: string[] = [];
+  for (let date = from; date < today && dates.length < limit; date = dayAfter(date)) {
+    dates.push(date);
+  }
+  return dates;
+}

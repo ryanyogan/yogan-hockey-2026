@@ -61,6 +61,19 @@ export async function getGameWithPlays(
   return { game: toFinalGame(gameRow), plays: playRows.map(toPlay) };
 }
 
+/**
+ * Whether a game's plays were ever archived. It reads one column of one row, where
+ * `getGameWithPlays` loads every play. False for a game with no row.
+ */
+export async function gameHasPlays(db: Db, gameId: string): Promise<boolean> {
+  const found = await db
+    .select({ id: plays.id })
+    .from(plays)
+    .where(eq(plays.gameId, gameId))
+    .limit(1);
+  return found.length > 0;
+}
+
 function toGameRow(game: FinalGame): GameRow {
   return {
     id: game.id,

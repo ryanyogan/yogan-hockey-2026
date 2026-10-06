@@ -52,6 +52,16 @@ What earlier tickets learned that the code does not show. Read before building; 
 - **A mixed slate without ESPN**: `/skeleton/live` draws the ticker and the `/nhl/live` sections from `apps/web/app/skeleton/live/sample-slate.ts` (play, an intermission, overtime, a shootout, three kinds of final, a postponement) through `StaticScoreboard`, a provider with no socket; `?slate=empty` is a day with no games. The shell's own ticker above it still shows the real slate.
 - **A Playwright test can play the Scoreboard**: `page.routeWebSocket(/\/agents\/scoreboard-agent\/main/, ...)` with `connectToServer()`, forwarding the Agent's messages and sending `{ type: "cf_agent_state", state }` of its own. `e2e/live.spec.ts` uses it to make a recorded game go live and then final, which no fixture does.
 - **The layout reads the Scoreboard, so no page is static.** If `/family/rylan` must be (spec section 2), the provider has to start from the socket alone on that route.
+## Finished games (#40)
+
+- **A poll only notes work; a timer set for at once does it.** `ScoreboardAgent.onSlateTransitions` puts each final in the Agent's storage (`pending-final:<id>`) and `onSlateDateChange` notes where catch-up starts (`catch-up-from`); `recordFinals` and `catchUp` are the callbacks of one-off schedules set with a delay of 0. First paint therefore never waits on rosters or thirty scoreboards, and every good poll sets the timers again while anything is left, which is the retry.
+- **Pages are told through `invalidatedAt` in `ScoreboardState`**, moved after the tags are written: at a final, at the 5-minute second invalidation and after a catch-up that recorded a game. The client component holding the Scoreboard socket calls `useRefreshOnInvalidation(state.invalidatedAt)` (`apps/web/lib/use-refresh-on-invalidation.ts`), which calls `router.refresh()` on each change. The field is optional in the schema because state stored before it existed lacks it.
+- **`schedule(when, callback, payload, { idempotent: true })`** makes a one-off schedule that a second call with the same callback and payload finds instead of duplicating. It is what lets a final's work be repeated without a second pair of timers.
+- **What a finished game needs done is in `apps/web/agents/final-game.ts`**: `saveFinal`, `invalidateForFinal`, `invalidateStandingsAndTeams`, `rereadArchivedPlays`. The Game Agent (#48) calls the same functions; `rereadArchivedPlays(db, gameId)` is the 24-hour re-read and what a Replay's first open wants after it has archived.
+- **`startPrediction(game)` on `ScoreboardAgent` is where #52 starts a Prediction.** It is awaited inside the poll, and so inside first paint: start the model call from a schedule, as the finals are.
+- **vinext's KV cache stores a tag with a colon in it under a hash** (`__tag:__hash:...`); only `standings` and `teams` are readable in a key listing. A test names the tags it expects and compares `createKvKeySpace(undefined).tagKey(tag)` from `@vinext/cloudflare/cache/kv-key`.
+- **A final invalidates about 50 player tags, one KV write each**, plus two ESPN requests for the rosters. A first visit after a full night of games does that for every game in one alarm. Not yet measured against the account's subrequest limit on Cloudflare.
+- **Catch-up records only games ESPN calls final on the missed date.** It writes rows and invalidates standings and teams; it sets no timers and invalidates no players, as the spec has it.
 
 ## Testing an Agent in the Workers pool
 
@@ -66,6 +76,9 @@ What earlier tickets learned that the code does not show. Read before building; 
 - **`console.log` in a test does not reach the terminal.** `console.error` from the Agent does, so the failing-poll tests are noisy by design.
 - **Biome reads a helper named `after` as a test hook** (`noDuplicateTestHooks`). Call it something else.
 - **The tests of one file share Durable Object storage.** Give each test its own instance name.
+- **`runDurableObjectAlarm` runs what is due and no more.** A schedule a callback sets for "now" waits for the next call, so after a poll that leaves work a test calls it once more (`visit()` in `scoreboard-finals.test.ts`). It returns true whenever any alarm was set, due or not.
+- **A test's first call to an Agent starts it cold**, 2 to 5 seconds when other worktrees are running their suites, against Vitest's 5-second default. `lib/scoreboard.test.ts` timed out in the full suite for that reason and has a longer timeout; a test that fails only in the full run is likely this.
+- **A hook on the Agent can be spied on**: `runInDurableObject(stub, (instance) => vi.spyOn(instance, "method"))` reaches the live instance, since it is in the test's isolate.
 
 ## D1
 

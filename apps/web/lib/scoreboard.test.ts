@@ -10,4 +10,5 @@ test("first paint is today's games as a plain object a client component can be g
   expect(state.date).toBe("2026-10-06");
   expect(state.games).toHaveLength(9);
   expect(structuredClone(state)).toEqual(state);
-});
+  // The first call starts the Agent cold, which takes seconds on a machine busy with other suites.
+}, 30_000);

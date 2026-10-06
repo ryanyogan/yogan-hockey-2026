@@ -8,12 +8,14 @@ function PlayRow({
   header,
   play,
   focused,
+  picked,
   onSelect,
   note,
 }: {
   header: GameHeader;
   play: Play;
   focused: boolean;
+  picked: boolean;
   onSelect: (playId: string) => void;
   /** Quiet text after the play: the score a goal made. */
   note?: ReactNode;
@@ -23,7 +25,7 @@ function PlayRow({
       type="button"
       data-slot="play-row"
       data-play={play.id}
-      aria-pressed={focused}
+      aria-pressed={picked}
       onClick={() => onSelect(play.id)}
       className={`flex w-full cursor-pointer gap-3 border-border border-b py-1.5 text-left outline-none hover:bg-highlight focus-visible:ring-2 focus-visible:ring-ring ${
         focused ? "bg-highlight" : ""
@@ -41,8 +43,10 @@ function PlayRow({
 
 type ListProps = {
   header: GameHeader;
-  /** The play in focus, whose row is tinted. */
+  /** The play in focus, whose row is tinted: the picked play, or the latest. */
   focusId: string | null;
+  /** The play the visitor picked, if any. */
+  selectedId: string | null;
   onSelect: (playId: string) => void;
 };
 
@@ -51,6 +55,7 @@ export function PlaysList({
   header,
   plays,
   focusId,
+  selectedId,
   onSelect,
 }: ListProps & {
   /** The plays to list, in the game's order: the Key plays, or every play. */
@@ -66,6 +71,7 @@ export function PlaysList({
             header={header}
             play={play}
             focused={play.id === focusId}
+            picked={play.id === selectedId}
             onSelect={onSelect}
           />
         ))}
@@ -74,7 +80,7 @@ export function PlaysList({
   );
 }
 
-/** The switch between the Key plays and every play, with how many each is. */
+/** The choice between the Key plays and every play, with how many each is. */
 export function KeyPlaysToggle({
   everyPlay,
   onChange,
@@ -94,15 +100,24 @@ export function KeyPlaysToggle({
     <fieldset data-slot="key-plays-toggle" className="flex flex-wrap gap-1">
       <legend className="sr-only">Which plays to show</legend>
       {choices.map((choice) => (
-        <button
+        <label
           key={choice.label}
-          type="button"
-          aria-pressed={choice.value === everyPlay}
-          onClick={() => onChange(choice.value)}
-          className={`cursor-pointer ${navItemVariants({ current: choice.value === everyPlay })}`}
+          className={`cursor-pointer has-focus-visible:ring-2 has-focus-visible:ring-ring ${navItemVariants(
+            { current: choice.value === everyPlay },
+          )}`}
         >
+          <input
+            type="radio"
+            name="plays-shown"
+            className="sr-only"
+            checked={choice.value === everyPlay}
+            onChange={() => onChange(choice.value)}
+            // A click as well: one made before the page hydrates checks the radio without telling
+            // React, and the next click on it then changes nothing for `onChange` to hear.
+            onClick={() => onChange(choice.value)}
+          />
           {choice.label} <span className="opacity-60">{choice.count}</span>
-        </button>
+        </label>
       ))}
     </fieldset>
   );
@@ -116,6 +131,7 @@ export function ScoringSummary({
   header,
   plays,
   focusId,
+  selectedId,
   onSelect,
 }: ListProps & { plays: readonly Play[] }) {
   const { goals, shootout } = scoringPlays(plays);
@@ -131,6 +147,7 @@ export function ScoringSummary({
           header={header}
           play={play}
           focused={play.id === focusId}
+          picked={play.id === selectedId}
           onSelect={onSelect}
           note={`${away.abbreviation} ${play.awayScore}, ${home.abbreviation} ${play.homeScore}`}
         />
@@ -144,6 +161,7 @@ export function ScoringSummary({
               header={header}
               play={play}
               focused={play.id === focusId}
+              picked={play.id === selectedId}
               onSelect={onSelect}
             />
           ))}

@@ -65,13 +65,11 @@ function Mark({ play, focused }: { play: Play; focused: boolean }) {
 export function Rink({
   plays,
   focus = null,
-  className = "",
 }: {
   /** The plays to draw, in the game's order. Those without a coordinate are skipped. */
   plays: readonly Play[];
   /** The play to highlight. */
   focus?: Play | null;
-  className?: string;
 }) {
   // Goals over the rest, so a goal is never hidden under the shot before it.
   const others = plays.filter((play) => play.id !== focus?.id);
@@ -82,7 +80,7 @@ export function Rink({
       viewBox={VIEW_BOX}
       role="img"
       aria-label="The rink, with a dot where each play happened"
-      className={`block w-full ${className}`}
+      className="block w-full"
     >
       <rect
         x={-halfLength}

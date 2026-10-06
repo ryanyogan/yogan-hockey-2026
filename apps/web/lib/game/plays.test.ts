@@ -1,10 +1,10 @@
 import { describe, expect, test } from "vitest";
 import {
   focusedPlay,
+  gameStatus,
   markKind,
   playTime,
   scoringPlays,
-  statusLines,
   teamAbbreviation,
   toggleSelection,
   visiblePlays,
@@ -103,17 +103,17 @@ describe("wording", () => {
 
   test("a finished game's status is ESPN's wording", async () => {
     const { header } = await recordedShootout();
-    expect(statusLines(header)).toEqual({ live: false, text: "Final/SO" });
+    expect(gameStatus(header)).toEqual({ live: false, text: "Final/SO" });
   });
 
   test("a live game's status is its period and the time left in it", async () => {
     const { header } = await recordedShootout();
     const live = { ...header, status: "live" as const, period: 2, clock: "12:34" };
-    expect(statusLines(live)).toEqual({ live: true, text: "2nd 12:34" });
-    expect(statusLines({ ...live, period: 4, clock: "3:10" })).toEqual({
+    expect(gameStatus(live)).toEqual({ live: true, text: "2nd 12:34" });
+    expect(gameStatus({ ...live, period: 4, clock: "3:10" })).toEqual({
       live: true,
       text: "OT 3:10",
     });
-    expect(statusLines({ ...live, period: 5, clock: "0:00" })).toEqual({ live: true, text: "SO" });
+    expect(gameStatus({ ...live, period: 5, clock: "0:00" })).toEqual({ live: true, text: "SO" });
   });
 });

@@ -19,11 +19,11 @@ test("the sample game draws the rink, switches to every play, and a tick picks a
   await expect(rows).toHaveCount(74);
   // A press before the page has hydrated does nothing, so press until one lands.
   await expect(async () => {
-    await page.getByRole("button", { name: /^every play/ }).click();
+    await page.locator("label", { hasText: /^every play/ }).click();
     await expect(rows).toHaveCount(307, { timeout: 1000 });
   }).toPass();
   await expect(ticks).toHaveCount(307);
-  await page.getByRole("button", { name: /^key plays/ }).click();
+  await page.locator("label", { hasText: /^key plays/ }).click();
   await expect(rows).toHaveCount(74);
 
   // Goals stand taller on the timeline, and a penalty has its own mark.

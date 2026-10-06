@@ -64,7 +64,8 @@ export function layoutTimeline(
     return { ...part, start, width: part.room / total };
   });
 
-  const shootoutPlays = plays.filter((play) => play.periodText === SHOOTOUT);
+  // By period, not by each play's own wording, so every play of the period has a slot.
+  const shootoutPlays = plays.filter((play) => periods[play.period - 1]?.label === SHOOTOUT);
   const slots = Math.max(SHOOTOUT_SLOTS, shootoutPlays.length);
   const positions = new Map<string, number>();
   for (const play of plays) {

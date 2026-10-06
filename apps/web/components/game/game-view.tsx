@@ -27,6 +27,7 @@ export function GameView({
   pathname,
   pick,
   status,
+  notice,
   selectedId: controlledId,
   onSelect,
 }: {
@@ -39,8 +40,10 @@ export function GameView({
   pathname: string;
   /** What "the pick" tab shows. */
   pick: ReactNode;
-  /** Words for centre ice in place of the period and clock: "End of 2nd", "Updates delayed". */
+  /** Words for centre ice in place of the period and clock: "End of 2nd". */
   status?: string;
+  /** A warning under them: "Updates delayed". */
+  notice?: string;
   /** The picked play, for a page that holds the selection itself; null follows the game. */
   selectedId?: string | null;
   onSelect?: (playId: string | null) => void;
@@ -52,24 +55,35 @@ export function GameView({
   const focus = focusedPlay(plays, selectedId);
   const picked = focus != null && focus.id === selectedId;
   const select = (playId: string | null) => {
-    setOwnId(playId);
+    if (controlledId === undefined) setOwnId(playId);
     onSelect?.(playId);
   };
   const toggle = (playId: string) => select(toggleSelection(selectedId, playId));
 
   const keyPlays = visiblePlays(plays, false);
-  const shown = everyPlay ? plays : keyPlays;
+  const listed = everyPlay ? plays : keyPlays;
+  // The play in focus is always drawn, so a Replay stepping onto a play that is not a Key play
+  // still has its dot and its tick.
+  const shown = focus == null || listed.includes(focus) ? listed : [...listed, focus];
   const focusId = focus?.id ?? null;
 
   return (
     <div data-slot="game-view">
-      <GameRink header={header} plays={plays} drawn={shown} focus={focus} status={status} />
+      <GameRink
+        header={header}
+        plays={plays}
+        drawn={shown}
+        focus={focus}
+        status={status}
+        notice={notice}
+      />
       <div className="mt-6">
         <PeriodTimeline
           game={header}
           plays={plays}
           ticks={shown}
           focusId={focusId}
+          selectedId={selectedId}
           onSelect={toggle}
         />
         <p data-slot="timeline-hint" className="mt-1 text-foreground/50">
@@ -95,21 +109,32 @@ export function GameView({
       </div>
       <div className="mt-6 flex flex-wrap items-center justify-between gap-2">
         <UrlTabs label="Game" link={Link} current={tab} tabs={gameTabLinks(pathname)} />
-        {tab === "plays" && (
-          <KeyPlaysToggle
-            everyPlay={everyPlay}
-            onChange={setEveryPlay}
-            keyCount={keyPlays.length}
-            totalCount={plays.length}
-          />
-        )}
+        {/* On every tab: it decides the dots and the ticks as well as the list. */}
+        <KeyPlaysToggle
+          everyPlay={everyPlay}
+          onChange={setEveryPlay}
+          keyCount={keyPlays.length}
+          totalCount={plays.length}
+        />
       </div>
       <div data-slot="game-tab" className="mt-2">
         {tab === "plays" && (
-          <PlaysList header={header} plays={shown} focusId={focusId} onSelect={toggle} />
+          <PlaysList
+            header={header}
+            plays={listed}
+            focusId={focusId}
+            selectedId={selectedId}
+            onSelect={toggle}
+          />
         )}
         {tab === "scoring" && (
-          <ScoringSummary header={header} plays={plays} focusId={focusId} onSelect={toggle} />
+          <ScoringSummary
+            header={header}
+            plays={plays}
+            focusId={focusId}
+            selectedId={selectedId}
+            onSelect={toggle}
+          />
         )}
         {tab === "pick" && pick}
       </div>

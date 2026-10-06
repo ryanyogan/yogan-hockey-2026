@@ -45,6 +45,26 @@ describe("layoutTimeline", () => {
     expect(positions.get(late.id)).toBeCloseTo(0.9);
   });
 
+  test("a shootout about to start, with no play of its own yet, has its part", () => {
+    const { periods } = layoutTimeline([play({ period: 3, periodText: "3rd", clock: "20:00" })], {
+      period: 5,
+      seasonType: REGULAR_SEASON,
+    });
+    expect(periods.map((p) => p.label)).toEqual(["1st", "2nd", "3rd", "OT", "SO"]);
+  });
+
+  test("a play of the shootout that ESPN words otherwise still gets a slot in it", () => {
+    const attempt = play({ period: 5, periodText: "SO" });
+    const stray = play({ period: 5, periodText: "", type: "period-end" });
+    const { periods, positions } = layoutTimeline([attempt, stray], {
+      period: 5,
+      seasonType: REGULAR_SEASON,
+    });
+    const shootout = periods[4];
+    expect(positions.get(stray.id)).toBeGreaterThan(positions.get(attempt.id) ?? 1);
+    expect(positions.get(attempt.id)).toBeGreaterThan(shootout?.start ?? 1);
+  });
+
   test("an overtime with no play yet is named from the game's period", () => {
     const { periods } = layoutTimeline([], { period: 4, seasonType: REGULAR_SEASON });
     expect(periods.map((p) => p.label)).toEqual(["1st", "2nd", "3rd", "OT"]);

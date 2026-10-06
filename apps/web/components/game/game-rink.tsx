@@ -1,6 +1,6 @@
 import type { GameHeader, GameHeaderSide, Play } from "@yogan-hockey/schemas";
 import { LiveMarker } from "@yogan-hockey/ui/components/marker";
-import { markKind, playTime, statusLines } from "../../lib/game/plays";
+import { gameStatus, markKind, playTime } from "../../lib/game/plays";
 import { attackedEnd, type RinkEnd } from "../../lib/game/rink";
 import { periodLabel } from "../../lib/game/timeline";
 import { Rink } from "./rink";
@@ -28,14 +28,14 @@ function Score({ side, place }: { side: GameHeaderSide; place: keyof typeof SCOR
       data-side={place}
       className={`absolute top-1 @2xl:top-[1.43cqw] ${SCORE_SIDE[place]}`}
     >
-      <div className="whitespace-nowrap text-[10px] text-muted-foreground leading-[15px] @2xl:text-[clamp(10px,1.25cqw,14px)] @2xl:leading-[1.43]">
+      <div className="whitespace-nowrap text-[10px] text-foreground/60 leading-[15px] @2xl:text-[clamp(10px,1.25cqw,14px)] @2xl:leading-[1.43]">
         {side.abbreviation}
         <span className="hidden @2xl:inline"> · {side.shots} shots</span>
       </div>
       <div className="font-bold text-2xl leading-none @2xl:text-[clamp(24px,5.36cqw,60px)]">
         {side.score}
       </div>
-      <div className="whitespace-nowrap text-[10px] text-muted-foreground leading-[15px] @2xl:hidden">
+      <div className="whitespace-nowrap text-[10px] text-foreground/60 leading-[15px] @2xl:hidden">
         {side.shots} sog
       </div>
     </div>
@@ -52,7 +52,7 @@ function EndLabel({ end, header, plays, period, periodText }: EndProps & { end: 
     <div
       data-slot="rink-end"
       data-end={end}
-      className={`absolute top-1/2 hidden -translate-y-1/2 whitespace-nowrap text-[10px] text-muted-foreground [writing-mode:vertical-rl] @2xl:block ${
+      className={`absolute top-1/2 hidden -translate-y-1/2 whitespace-nowrap text-[10px] text-foreground/60 [writing-mode:vertical-rl] @2xl:block ${
         end === "left"
           ? "left-[3.7cqw] -translate-x-1/2 rotate-180"
           : "right-[3.7cqw] translate-x-1/2"
@@ -83,6 +83,7 @@ export function GameRink({
   drawn = plays,
   focus,
   status,
+  notice,
 }: {
   /** Its score, shots, period and clock are what is laid over the ice. */
   header: GameHeader;
@@ -94,8 +95,10 @@ export function GameRink({
   focus: Play | null;
   /** Words to put over centre ice in place of the period and clock ("End of 2nd"). */
   status?: string;
+  /** A warning under the clock: "Updates delayed". */
+  notice?: string;
 }) {
-  const { live, text } = statusLines(header);
+  const { live, text } = gameStatus(header);
   // The ends are those of the period in focus, since the teams change ends each period.
   const period = focus?.period ?? Math.max(header.period, 1);
   const periodText = focus?.periodText || periodLabel(period, header.seasonType);
@@ -114,6 +117,11 @@ export function GameRink({
               <LiveMarker className="block uppercase @2xl:text-[clamp(10px,1.07cqw,12px)] @2xl:leading-[1.33]" />
             )}
             {status ?? text}
+            {notice != null && (
+              <span data-slot="rink-notice" className="block text-[10px] text-live leading-[15px]">
+                {notice}
+              </span>
+            )}
           </div>
           <Score side={header.home} place="home" />
           <EndLabel end="left" {...ends} />
@@ -122,7 +130,7 @@ export function GameRink({
             <div className="absolute inset-x-0 bottom-[1.96cqw] hidden justify-center @2xl:flex">
               <p
                 data-slot="rink-caption"
-                className="max-w-[50cqw] truncate rounded-full bg-black/70 px-4 py-1 text-slate-100 leading-5"
+                className="max-w-[50cqw] truncate bg-black/70 px-4 py-1 text-slate-100 leading-5"
                 title={focus.text}
               >
                 <Caption play={focus} />

@@ -25,6 +25,7 @@ export function PeriodTimeline({
   plays,
   ticks = plays,
   focusId,
+  selectedId,
   onSelect,
 }: {
   /** The game's period and season type decide which periods there are and how long overtime is. */
@@ -33,8 +34,10 @@ export function PeriodTimeline({
   plays: readonly Play[];
   /** The plays to draw a tick for: the Key plays, or every play. All of `plays` if left out. */
   ticks?: readonly Play[];
-  /** The play in focus, whose tick is ringed. */
+  /** The play in focus, whose tick is ringed: the picked play, or the latest. */
   focusId: string | null;
+  /** The play the visitor picked, if any. */
+  selectedId: string | null;
   onSelect: (playId: string) => void;
 }) {
   const { periods, positions } = layoutTimeline(plays, game);
@@ -62,7 +65,7 @@ export function PeriodTimeline({
             data-slot="timeline-tick"
             data-kind={kind}
             aria-label={`${playTime(play)} ${play.text}`}
-            aria-pressed={focused}
+            aria-pressed={play.id === selectedId}
             title={play.text}
             onClick={() => onSelect(play.id)}
             className={`absolute bottom-1 -translate-x-1/2 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring ${tickClass(

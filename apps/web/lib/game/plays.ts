@@ -63,7 +63,7 @@ export function teamAbbreviation(header: GameHeader, teamId: string | null): str
  * The words over centre ice. A live game says its period and the time left in it; any other says
  * what ESPN says ("Final/SO", "10/6 - 7:00 PM EDT").
  */
-export function statusLines(header: GameHeader): { live: boolean; text: string } {
+export function gameStatus(header: GameHeader): { live: boolean; text: string } {
   if (header.status !== "live") return { live: false, text: header.detail };
   const period = periodLabel(header.period, header.seasonType);
   return { live: true, text: period === SHOOTOUT ? period : `${period} ${header.clock}` };

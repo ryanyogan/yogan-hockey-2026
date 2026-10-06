@@ -12,12 +12,14 @@ describe("rinkPoint", () => {
     expect(rinkPoint({ x: -87, y: 7 })).toEqual({ x: -87, y: -7 });
   });
 
-  test("a play is not mirrored by period: the same spot is the same spot all game", async () => {
+  test("every faceoff ESPN locates in the recorded game lands on a faceoff dot of the drawing", async () => {
     const { plays } = await recordedShootout();
-    const dots = plays.filter((p) => p.type === "faceoff" && p.coordinate);
-    // Every faceoff ESPN locates is on one of the drawing's eight dots, whatever the period.
-    const spots = new Set(dots.map((p) => `${rinkPoint(p.coordinate ?? { x: 0, y: 0 }).x}`));
-    expect([...spots].sort()).toEqual(["-20", "-69", "20", "69"]);
+    const faceoffs = plays.filter((p) => p.type === "faceoff" && p.coordinate);
+    const spots = faceoffs.map((p) => rinkPoint(p.coordinate ?? { x: 0, y: 0 }));
+    expect(spots.length).toBeGreaterThan(40);
+    expect(spots.every((at) => [20, 69].includes(Math.abs(at.x)) && Math.abs(at.y) === 22)).toBe(
+      true,
+    );
   });
 
   test("a coordinate past the boards is pulled back onto the ice", () => {

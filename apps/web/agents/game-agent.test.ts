@@ -113,12 +113,15 @@ beforeEach(() => {
   espnRequests = 0;
   alerts = [];
   // The alert shows in the Worker's logs and nowhere else, so its two lines are what is tested.
-  const note = (...args: unknown[]) => {
-    const line = String(args[0]);
-    if (/ESPN problem (started|cleared)/.test(line)) alerts.push(line);
-  };
-  vi.spyOn(console, "error").mockImplementation(note);
-  vi.spyOn(console, "log").mockImplementation(note);
+  // Everything else logged still reaches the console.
+  for (const level of ["error", "log"] as const) {
+    const print = console[level];
+    vi.spyOn(console, level).mockImplementation((...args: unknown[]) => {
+      const line = String(args[0]);
+      if (/ESPN problem (started|cleared)/.test(line)) alerts.push(line);
+      else print(...args);
+    });
+  }
   vi.stubGlobal("fetch", async (input: RequestInfo | URL, init?: RequestInit) => {
     const request = new Request(input, init);
     const url = new URL(request.url);

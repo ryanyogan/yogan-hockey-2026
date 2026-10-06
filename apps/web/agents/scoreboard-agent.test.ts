@@ -64,12 +64,15 @@ beforeEach(() => {
   espnRequests = 0;
   alerts = [];
   // The alert shows in the Worker's logs and nowhere else, so its two lines are what is tested.
-  const note = (...args: unknown[]) => {
-    const line = String(args[0]);
-    if (/ESPN problem (started|cleared)/.test(line)) alerts.push(line);
-  };
-  vi.spyOn(console, "error").mockImplementation(note);
-  vi.spyOn(console, "log").mockImplementation(note);
+  // Everything else logged still reaches the console.
+  for (const level of ["error", "log"] as const) {
+    const print = console[level];
+    vi.spyOn(console, level).mockImplementation((...args: unknown[]) => {
+      const line = String(args[0]);
+      if (/ESPN problem (started|cleared)/.test(line)) alerts.push(line);
+      else print(...args);
+    });
+  }
   vi.stubGlobal("fetch", async (input: RequestInfo | URL, init?: RequestInit) => {
     const request = new Request(input, init);
     const url = new URL(request.url);
@@ -521,5 +524,29 @@ describe("alerts", () => {
     });
 
     expect(alerts).toEqual(["Test: ESPN problem started: third", "Test: ESPN problem cleared"]);
+  });
+
+  test("an announcement that throws does not fail the poll, and is not made twice", async () => {
+    const { agent } = await scoreboard();
+    const logged: string[] = [];
+    vi.spyOn(console, "error").mockImplementation((...args: unknown[]) => {
+      const line = String(args[0]);
+      logged.push(line);
+      if (line.includes("ESPN problem started")) throw new Error("the channel is down");
+    });
+
+    await runInDurableObject(agent, async (_instance, { storage }) => {
+      const alert = new EspnAlert(storage, "Test");
+      await alert.failed(new Error("first"));
+      await alert.failed(new Error("second"));
+      await expect(alert.failed(new Error("third"))).resolves.toBeUndefined();
+      await alert.failed(new Error("fourth"));
+      expect(alert.failures).toBe(4);
+    });
+
+    expect(logged).toEqual([
+      "Test: ESPN problem started: third",
+      "Test: an alert could not be announced",
+    ]);
   });
 });

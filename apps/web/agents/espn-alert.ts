@@ -25,8 +25,8 @@ export type EspnAlertEvent =
  * that is a line in the Worker's logs: an error for the start, which Workers observability also
  * groups into an Issue, and a plain line for the all-clear. Nothing is pushed anywhere.
  *
- * A push channel, when the site has one, is sent from here and nowhere else. It must catch its
- * own errors: an alert that cannot be delivered must never fail a poll.
+ * A push channel, when the site has one, is sent from here and nowhere else. It may throw:
+ * `EspnAlert` logs an announcement that fails and carries on, so it never fails a poll.
  */
 export async function announce(event: EspnAlertEvent): Promise<void> {
   if (event.kind === "started") {
@@ -73,7 +73,7 @@ export class EspnAlert {
     this.#storage.kv.put(STORAGE_KEY, { failures, alerting: before.alerting || starts });
     if (!starts) return;
     const reason = error instanceof Error ? error.message : String(error);
-    await announce({ kind: "started", source: this.#source, reason });
+    await this.#announce({ kind: "started", source: this.#source, reason });
   }
 
   /** A poll worked. Announces the all-clear if a problem was open. */
@@ -82,7 +82,16 @@ export class EspnAlert {
     if (before.failures === 0 && !before.alerting) return;
     this.#storage.kv.put(STORAGE_KEY, QUIET);
     if (!before.alerting) return;
-    await announce({ kind: "cleared", source: this.#source });
+    await this.#announce({ kind: "cleared", source: this.#source });
+  }
+
+  /** An alert that cannot be announced is logged and dropped: it must never fail a poll. */
+  async #announce(event: EspnAlertEvent): Promise<void> {
+    try {
+      await announce(event);
+    } catch (error) {
+      console.error(`${this.#source}: an alert could not be announced`, error);
+    }
   }
 
   #read(): StoredAlert {

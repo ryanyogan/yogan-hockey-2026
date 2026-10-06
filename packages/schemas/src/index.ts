@@ -1,5 +1,9 @@
 import { z } from "zod";
 
+export * from "./final-game.ts";
+export * from "./play.ts";
+export * from "./stored-prediction.ts";
+
 /**
  * Walking-skeleton shapes (#31). They stand in for the site's real shapes and
  * are replaced as the issues that own those shapes land.

@@ -7,7 +7,7 @@
     "dev": "pnpm db:migrate:local && vite dev",
     "build": "vite build",
     "start": "vite preview",
-    "db:migrate:local": "cf d1 migrations apply 00000000-0000-4000-8000-000000000031 --local --persist-to .cloudflare/state --dir ../../packages/db/migrations",
+    "db:migrate:local": "cf d1 migrations apply 00000000-0000-4000-8000-000000000031 --local --persist-to .cloudflare/state --dir ../../packages/db/migrations < /dev/null",
     "typecheck": "cf workers types --quiet && tsc --noEmit"
   },
   "dependencies": {

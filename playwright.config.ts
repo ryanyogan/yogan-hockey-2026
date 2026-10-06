@@ -1,7 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
-// The port the dev server is pinned to in apps/web/vite.config.ts.
-const PORT = 5173;
+// The port the dev server is pinned to in apps/web/vite.config.ts, which reads the same variable.
+const PORT = Number(process.env.PORT ?? 5173);
 
 export default defineConfig({
   testDir: "./e2e",

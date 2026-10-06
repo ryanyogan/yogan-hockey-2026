@@ -5,7 +5,7 @@ What earlier tickets learned that the code does not show. Read before building; 
 ## Running things
 
 - **Ports.** The dev server is pinned to `PORT` (default 5173) with `strictPort`. Parallel worktrees each use their own `PORT`; the orchestrator assigns it. vinext refuses a second dev server in the same directory, so stop strays before Playwright.
-- **Killing strays.** `pkill -f` with a pattern that appears in your own command line kills your shell. Bracket one letter: `pkill -f "[v]ite dev"`.
+- **Killing strays.** Stop your own dev server by its port (see the Playwright notes below). `pkill -f` is not scoped to your worktree, so it can kill another subagent's server, and a pattern that appears in your own command line kills your shell.
 - **`cf d1 migrations apply --local` fails to exit about half the time** (cf 1.0.0-beta.12). `apps/web/scripts/migrate-local.sh` retries it; call that, never the bare command, in anything Playwright or CI waits on.
 - **`cf d1 migrations apply` accepts only a database id**, and `bindings.kv()` only an id. The D1 id in `cloudflare.config.ts` is a placeholder until #32 is done.
 - **pnpm 12 fails install on unapproved build scripts.** Add new ones to `allowBuilds` in `pnpm-workspace.yaml`.

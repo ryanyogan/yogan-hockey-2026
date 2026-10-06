@@ -8,7 +8,7 @@ When a game goes final, the Scoreboard Agent invalidates the cached standings, b
 
 ## Considered Options
 
-- **A separate API Worker** (ADR 0002): kept the backend out of vinext's pre-release build tooling, at the price of a second hostname, CORS, a second Access gate and a contract to version. With one language and one deploy there was nothing left for it to protect.
+- **A separate API Worker**: would keep the backend out of vinext's pre-release build tooling, at the price of a second hostname, CORS, a second Access gate and a contract to version. With one language and one deploy there is nothing for it to protect.
 - **An Agent for everything**, including standings and players: nobody needs those pushed, and ordinary cached fetching already covers them.
 - **Finished games in each Game Agent's storage**: nothing outside an Agent can query it, so listing or searching games across dates and teams would be impossible.
 - **Polling around the clock**, as the Parity Reference does: rejected by Ryan; the first visitor after a quiet spell triggers a catch-up instead.

@@ -50,6 +50,9 @@ test("the shell renders, switches theme, and its phone menu closes on navigation
 
   // The top bar carries the toggle on a phone, so both themes are reachable there too.
   const topBar = page.getByRole("banner");
-  await topBar.getByRole("button", { name: /^(dark|light) mode$/ }).click();
-  await expect(body).toHaveCSS("background-color", DARK_BACKGROUND);
+  // The dev server may have reloaded the page for the new route, so again press until one lands.
+  await expect(async () => {
+    await topBar.getByRole("button", { name: /^(dark|light) mode$/ }).click();
+    await expect(body).toHaveCSS("background-color", DARK_BACKGROUND, { timeout: 1000 });
+  }).toPass();
 });

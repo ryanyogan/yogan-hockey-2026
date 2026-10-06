@@ -80,21 +80,26 @@ function LedgerRow({
   className,
   live = false,
   interactive = false,
+  cutoff = false,
   ...props
 }: ComponentProps<"tr"> & {
   /** Tints the row: a game in progress. */
   live?: boolean;
   /** Highlights the row under the pointer: set it when the row holds a `ledgerRowLink`. */
   interactive?: boolean;
+  /** Draws a heavier rule under the row: the last playoff place in the standings. */
+  cutoff?: boolean;
 }) {
   return (
     <tr
       data-slot="ledger-row"
       data-live={live ? "" : undefined}
+      data-cutoff={cutoff ? "" : undefined}
       className={cn(
         "relative border-b",
         live && "bg-live-tint",
         interactive && "hover:bg-highlight",
+        cutoff && "border-b-foreground/50",
         className,
       )}
       {...props}
@@ -112,6 +117,9 @@ const cellTone = {
   note: "text-foreground/70",
   /** An aside, such as a rank. */
   aside: "text-foreground/40",
+  /** A figure above zero, and one below it: a goal difference. */
+  positive: "text-positive",
+  negative: "text-negative",
 } as const;
 
 function LedgerCell({

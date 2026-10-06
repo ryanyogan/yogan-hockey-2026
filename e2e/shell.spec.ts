@@ -8,7 +8,11 @@ test("the shell renders, switches theme, and its phone menu closes on navigation
 }) => {
   // The operating system asks for dark, and the visitor has not chosen yet.
   await page.emulateMedia({ colorScheme: "dark" });
-  await page.goto("/");
+  // An unknown path gets the not-found page inside the shell, so the shell is checked there.
+  // (One hard navigation only: on a cold dev server a second one, made while the first page's
+  // modules are still loading, crashes the page.)
+  await page.goto("/no-such-page");
+  await expect(page.getByRole("heading", { name: "Not found" })).toBeVisible();
 
   // Desktop: the sidebar, with the wordmark leading home and the places in order.
   const sidebar = page.getByRole("complementary");
@@ -48,9 +52,4 @@ test("the shell renders, switches theme, and its phone menu closes on navigation
   const topBar = page.getByRole("banner");
   await topBar.getByRole("button", { name: /^(dark|light) mode$/ }).click();
   await expect(body).toHaveCSS("background-color", DARK_BACKGROUND);
-
-  // An unknown path gets the not-found page, inside the shell.
-  await page.goto("/no-such-page");
-  await expect(page.getByRole("heading", { name: "Not found" })).toBeVisible();
-  await expect(topBar.getByRole("link", { name: "YOGAN/HOCKEY" })).toBeVisible();
 });

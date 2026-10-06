@@ -23,6 +23,7 @@
     "react-dom": "19.3.0",
     "react-server-dom-webpack": "19.3.0",
     "use-debounce": "10.1.1",
+    "use-local-storage-state": "20.0.0",
     "vinext": "1.0.1"
   },
   "devDependencies": {

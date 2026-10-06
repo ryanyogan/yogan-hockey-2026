@@ -60,8 +60,8 @@ export function StatCells({
 
 /**
  * The header line: his name, then position, number and team in quiet text, then the facts ESPN
- * has about him. `action` sits at the right end of the line, which is where #45's heart goes.
- * There is no photo: the page is drawn to read without one.
+ * has about him. `action` sits at the right end of the first line: the heart that makes him a
+ * favorite. There is no photo: the page is drawn to read without one.
  */
 export function PlayerHeader({ profile, action }: { profile: PlayerProfile; action?: ReactNode }) {
   return (
@@ -104,7 +104,7 @@ export function HeaderLine({
 }) {
   return (
     <header data-slot="player-header">
-      <div className="mb-1 flex flex-wrap items-baseline justify-between gap-x-4">
+      <div className="mb-1 flex items-baseline justify-between gap-x-4">
         <h1 className="font-bold text-base uppercase">
           {name}
           {detail ? (

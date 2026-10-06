@@ -2,8 +2,10 @@
 
 import type { ScoreboardGame } from "@yogan-hockey/schemas";
 import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
+import { favoritesFirst } from "../../lib/favorites";
 import { slateDay } from "../../lib/game-time";
 import { slateSections } from "../../lib/scoreboard-view";
+import { useFavorites } from "../../lib/use-favorites";
 import { LocalTime } from "../local-time";
 import { GameLedger } from "./game-ledger";
 import { useScoreboard } from "./scoreboard-provider";
@@ -11,12 +13,17 @@ import { useScoreboard } from "./scoreboard-provider";
 const plural = (count: number, noun: string) => `${count} ${noun}${count === 1 ? "" : "s"}`;
 
 function Games({ title, games }: { title: string; games: ScoreboardGame[] }) {
+  const favoriteTeamIds = useFavorites("team").ids;
   // A section with nothing in it is left out.
   if (games.length === 0) return null;
   return (
     <Section aria-label={title}>
       <SectionHeader title={title} count={games.length} />
-      <GameLedger games={games} />
+      {/* Favorite teams' games lead each section, still in order of start among themselves. */}
+      <GameLedger
+        games={favoritesFirst(games, favoriteTeamIds)}
+        favoriteTeamIds={favoriteTeamIds}
+      />
     </Section>
   );
 }

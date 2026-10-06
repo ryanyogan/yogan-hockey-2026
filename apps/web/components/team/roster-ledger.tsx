@@ -61,7 +61,7 @@ export function RosterLedger({
                   </Link>
                 </LedgerCell>
                 <LedgerCell>{player.position}</LedgerCell>
-                {action && <LedgerCell>{action(player)}</LedgerCell>}
+                {action && <LedgerCell numeric>{action(player)}</LedgerCell>}
               </LedgerRow>
             ))}
           </LedgerBody>

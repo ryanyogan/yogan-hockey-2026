@@ -16,10 +16,16 @@ import { isFavoriteGame } from "../../lib/favorites";
 import { gameHref, gameStatusLine, hasScore } from "../../lib/scoreboard-view";
 import { GameStatus } from "./game-status";
 
-function Team({ side }: { side: ScoreboardSide }) {
+function Team({ side, favorite }: { side: ScoreboardSide; favorite: boolean }) {
   return (
     <>
       <span className={side.winner ? "font-bold" : undefined}>{side.abbreviation}</span>{" "}
+      {/* A phone has no last column to say "favorite team" in: the star goes by the team. */}
+      {favorite && (
+        <FavoriteMarker className="text-foreground/70 sm:hidden">
+          <span className="sr-only">favorite team</span>
+        </FavoriteMarker>
+      )}
       {/* Beside the team on a wide page; on a phone, where the two do not fit, under it. */}
       {side.record && <LedgerAside className="max-sm:block">{side.record}</LedgerAside>}
     </>
@@ -46,7 +52,7 @@ export function GameLedger({
   /**
    * The visitor's favorite teams: a game of theirs says "★ favorite team" in the last column,
    * ahead of the venue, as the Reference UI's note column does. A phone has no room for the
-   * words and puts the star before the venue under the status.
+   * words and puts the star beside the favorite team.
    */
   favoriteTeamIds?: readonly string[];
 }) {
@@ -82,20 +88,15 @@ export function GameLedger({
                   )}
                 </Link>
                 <LedgerDetail fine className="sm:hidden">
-                  {favorite && (
-                    <FavoriteMarker>
-                      <span className="sr-only">favorite team, </span>
-                    </FavoriteMarker>
-                  )}
                   {game.venue}
                 </LedgerDetail>
               </LedgerCell>
               <LedgerCell className={TEXT_CELL}>
-                <Team side={game.away} />
+                <Team side={game.away} favorite={favoriteTeamIds.includes(game.away.id)} />
               </LedgerCell>
               <LedgerCell tone="score">{hasScore(game) ? game.away.score : null}</LedgerCell>
               <LedgerCell className={TEXT_CELL}>
-                <Team side={game.home} />
+                <Team side={game.home} favorite={favoriteTeamIds.includes(game.home.id)} />
               </LedgerCell>
               <LedgerCell tone="score">{hasScore(game) ? game.home.score : null}</LedgerCell>
               <LedgerCell tone="note" className="truncate max-sm:hidden">

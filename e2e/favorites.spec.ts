@@ -32,7 +32,7 @@ test("a player and a team are made favorites, kept over a reload, and let go", a
   const upcoming = page.getByRole("region", { name: "Upcoming" });
   await expect(upcoming.getByRole("row").nth(1)).toContainText("NSH at TOR");
   await expect(upcoming.getByRole("row").nth(1)).toContainText("favorite team");
-  await expect(upcoming.getByText("favorite team")).toHaveCount(1);
+  await expect(upcoming.getByRole("row").nth(2)).not.toContainText("favorite team");
 
   // /players lists him with his team and his season, and still does after a reload.
   await site.getByRole("link", { name: "players" }).click();

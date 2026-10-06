@@ -15,7 +15,9 @@ const DEFAULT_PAGE: NhlPage = { tab: "standings", view: "division" };
 /** A page's `searchParams`: a parameter given twice arrives as a list. */
 export type Query = Record<string, string | string[] | undefined>;
 
-const first = (value: string | string[] | undefined) => (Array.isArray(value) ? value[0] : value);
+/** The first value of a parameter, which arrives as a list when the URL gives it twice. */
+export const first = (value: string | string[] | undefined) =>
+  Array.isArray(value) ? value[0] : value;
 
 /** Reads `/nhl`'s tab and view from its query string. Anything unknown falls back to the default. */
 export function readNhlPage(query: Query): NhlPage {

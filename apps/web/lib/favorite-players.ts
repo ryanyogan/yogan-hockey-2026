@@ -21,8 +21,8 @@ export type FavoritePlayer = PlayerSearchResult & {
 export type FavoritePlayers = {
   /** In the order the ids were given, without the ones that are nobody's. */
   players: FavoritePlayer[];
-  /** Some player could not be read just now (ESPN is down), so the list may be short. */
-  unavailable: boolean;
+  /** The ids that could not be read just now (ESPN is down): not nobody's, and worth asking again. */
+  unread: string[];
 };
 
 const SKATER_LINE = ["GP", "G", "A", "PTS"];
@@ -49,23 +49,23 @@ function favoritePlayer({ profile, career, gameLog }: Player): FavoritePlayer {
 /**
  * The players behind a visitor's favorite ids. `ids` is whatever the browser sent, read as a
  * stored list is. An id that is nobody's is skipped silently, and so is one whose read fails,
- * which `unavailable` reports: the visitor's list must never end in an error page.
+ * which `unread` reports: the visitor's list must never end in an error page.
  */
 export async function loadFavoritePlayers(ids: unknown): Promise<FavoritePlayers> {
-  let unavailable = false;
+  const unread: string[] = [];
   const loaded = await Promise.all(
     readFavoriteIds(ids).map(async (id) => {
       try {
         return await loadPlayer(id);
       } catch (error) {
         console.error(error);
-        unavailable = true;
+        unread.push(id);
         return null;
       }
     }),
   );
   return {
     players: loaded.flatMap((player) => (player ? [favoritePlayer(player)] : [])),
-    unavailable,
+    unread,
   };
 }

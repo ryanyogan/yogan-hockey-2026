@@ -48,7 +48,14 @@ export default async function TeamPage({ params, searchParams }: Props) {
           detail={detail}
           standing={standing}
           // In line with the hearts of the roster's rows, which sit inside a cell's padding.
-          action={<FavoriteHeart kind="team" id={id} name={detail.team.name} className="mr-2" />}
+          action={
+            <FavoriteHeart
+              kind="team"
+              id={detail.team.id}
+              name={detail.team.name}
+              className="mr-2"
+            />
+          }
         />
         <TeamNow teamId={id} listed={detail.nextGame} />
       </div>

@@ -32,9 +32,9 @@ const SLOW = 20_000;
 test(
   "favorite ids become players with a team and a season line, in the order stored",
   async () => {
-    const { players, unavailable } = await loadFavoritePlayers([STOLARZ, MATTHEWS]);
+    const { players, unread } = await loadFavoritePlayers([STOLARZ, MATTHEWS]);
 
-    expect(unavailable).toBe(false);
+    expect(unread).toEqual([]);
     expect(players.map((player) => player.name)).toEqual(["Anthony Stolarz", "Auston Matthews"]);
     expect(players[1]).toMatchObject({
       id: MATTHEWS,
@@ -53,10 +53,10 @@ test(
 test(
   "an id that is nobody's is skipped without a word",
   async () => {
-    const { players, unavailable } = await loadFavoritePlayers(["not-espn", MATTHEWS, "also-not"]);
+    const { players, unread } = await loadFavoritePlayers(["not-espn", MATTHEWS, "also-not"]);
 
     expect(players.map((player) => player.id)).toEqual([MATTHEWS]);
-    expect(unavailable).toBe(false);
+    expect(unread).toEqual([]);
   },
   SLOW,
 );
@@ -67,7 +67,7 @@ test(
     vi.stubEnv("ESPN_FIXTURES", "");
     fetchMock.mockImplementation(async () => new Response("{}", { status: 404 }));
 
-    expect(await loadFavoritePlayers(["900000001"])).toEqual({ players: [], unavailable: false });
+    expect(await loadFavoritePlayers(["900000001"])).toEqual({ players: [], unread: [] });
   },
   SLOW,
 );
@@ -78,13 +78,16 @@ test(
     vi.stubEnv("ESPN_FIXTURES", "");
     fetchMock.mockImplementation(async () => new Response("{}", { status: 503 }));
 
-    expect(await loadFavoritePlayers(["900000002"])).toEqual({ players: [], unavailable: true });
+    expect(await loadFavoritePlayers(["900000002"])).toEqual({
+      players: [],
+      unread: ["900000002"],
+    });
   },
   SLOW,
 );
 
 test("what arrives is read as stored favorites are: not a list is nobody", async () => {
-  expect(await loadFavoritePlayers("4024123")).toEqual({ players: [], unavailable: false });
-  expect(await loadFavoritePlayers(undefined)).toEqual({ players: [], unavailable: false });
+  expect(await loadFavoritePlayers("4024123")).toEqual({ players: [], unread: [] });
+  expect(await loadFavoritePlayers(undefined)).toEqual({ players: [], unread: [] });
   expect(fetchMock).not.toHaveBeenCalled();
 });

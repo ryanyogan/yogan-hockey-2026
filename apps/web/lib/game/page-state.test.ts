@@ -102,6 +102,24 @@ describe("streamReading", () => {
     });
   });
 
+  it("says so while the socket to the Game Agent is down, over a stall", () => {
+    const end = play({ type: "period-end", period: 1 });
+    const header = live({ period: 1 });
+    expect(streamReading({ header, plays: [end], delayed: false, reconnecting: true })).toEqual({
+      status: "End of 1st",
+      notice: "Reconnecting",
+    });
+    expect(streamReading({ header, plays: [end], delayed: true, reconnecting: true }).notice).toBe(
+      "Reconnecting",
+    );
+  });
+
+  it("says nothing of a dropped socket once the game is over", () => {
+    expect(streamReading({ header: final, plays: [], delayed: false, reconnecting: true })).toEqual(
+      {},
+    );
+  });
+
   it("keeps the header's own clock when it has one", () => {
     const header = live({ clock: "6:51" });
     expect(

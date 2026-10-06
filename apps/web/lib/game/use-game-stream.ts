@@ -10,9 +10,14 @@ import {
 import { useAgent } from "agents/react";
 import { useReducer, useState } from "react";
 import { gameConnection } from "../game-connection";
+import { useDropWatch } from "../use-drop-watch";
 
 /** A game as its page holds it: the Game Agent's state, and every play so far in order. */
-export type GameStream = GameStreamState & { plays: Play[] };
+export type GameStream = GameStreamState & {
+  plays: Play[];
+  /** The socket has been down for longer than a blip: what is shown may be behind the game. */
+  reconnecting: boolean;
+};
 
 /**
  * A game page's socket to its Game Agent. It starts from the snapshot the server component read
@@ -31,9 +36,12 @@ export function useGameStream(gameId: string, initial: GameSnapshot): GameStream
     archived: initial.archived,
   });
   const [plays, apply] = useReducer(applyGameStreamMessage, initial.plays);
+  const drop = useDropWatch();
 
   useAgent<GameStreamState>({
     ...gameConnection(gameId),
+    onOpen: drop.opened,
+    onClose: drop.closed,
     onStateUpdate: setState,
     onMessage: (event) => {
       const message = parseGameStreamMessage(event.data);
@@ -41,5 +49,5 @@ export function useGameStream(gameId: string, initial: GameSnapshot): GameStream
     },
   });
 
-  return { ...state, plays };
+  return { ...state, plays, reconnecting: drop.dropped };
 }

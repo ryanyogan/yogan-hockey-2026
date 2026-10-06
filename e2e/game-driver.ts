@@ -140,6 +140,8 @@ export type GameDriver = {
   agent(state: AgentState, plays: RecordedPlay[]): void;
   /** One message as the Game Agent, such as a `play-added`. */
   message(message: Json): void;
+  /** Closes the page's sockets to the Game Agent and refuses new ones, or lets them in again. */
+  agentDown(down: boolean): void;
 };
 
 export async function driveGame(page: Page, gameId: string): Promise<GameDriver> {
@@ -157,7 +159,9 @@ export async function driveGame(page: Page, gameId: string): Promise<GameDriver>
 
   const sockets: WebSocketRoute[] = [];
   let said: string[] = [];
+  let down = false;
   await page.routeWebSocket(new RegExp(`/agents/game-agent/${gameId}`), (socket) => {
+    if (down) return void socket.close();
     sockets.push(socket);
     for (const message of said) socket.send(message);
   });
@@ -196,6 +200,10 @@ export async function driveGame(page: Page, gameId: string): Promise<GameDriver>
     },
     message(message) {
       say([message]);
+    },
+    agentDown(isDown) {
+      down = isDown;
+      if (down) for (const socket of sockets.splice(0)) void socket.close();
     },
   };
 }

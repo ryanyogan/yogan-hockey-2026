@@ -200,8 +200,11 @@ describe("polling follows the viewers", () => {
     const before = await agent.getScoreboard();
     expect(before.games).toHaveLength(9);
 
+    // Something only the Agent's memory holds, to see that the restart took it.
+    await runInDurableObject(agent, (instance) => Object.assign(instance, { beforeRestart: true }));
     await restart();
     vi.unstubAllEnvs();
+    expect(await runInDurableObject(agent, (instance) => "beforeRestart" in instance)).toBe(false);
 
     expect(await agent.getScoreboard()).toEqual(before);
     expect(espnRequests).toBe(0);
@@ -251,13 +254,13 @@ describe("cadence", () => {
     espn = slate(21);
     await later(0);
 
-    // 21 minutes out: slow. The next poll, 5 minutes on, is 16 minutes out: still slow.
+    // 21 minutes out: the next poll waits for the 15-minute mark, 6 minutes on, not for 5.
     await later(SLOW);
     expect(espnRequests).toBe(2);
-    await later(FAST);
+    await later(59);
     expect(espnRequests).toBe(2);
-    // The poll after that is 11 minutes out, and from there it is every 30 seconds.
-    await later(SLOW - FAST);
+    // At 15 minutes out, and from there every 30 seconds.
+    await later(1);
     expect(espnRequests).toBe(3);
     await later(FAST);
     expect(espnRequests).toBe(4);

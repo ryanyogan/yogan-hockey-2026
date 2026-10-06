@@ -54,11 +54,6 @@ export abstract class ViewerPolledAgent<State> extends Agent<Env, State> {
     if ([...this.getConnections()].length > 0) await this.#scheduleTick(this.pollIntervalSeconds());
   }
 
-  /** Failed polls in a row so far. */
-  protected get failedPolls(): number {
-    return this.#espnAlert.failures;
-  }
-
   /**
    * Polls once and reports the outcome to the alert. It never throws: after a failed poll the
    * stored state is simply what it was. Calls that overlap share one poll.
@@ -80,15 +75,20 @@ export abstract class ViewerPolledAgent<State> extends Agent<Env, State> {
   }
 
   async #pollOnce(): Promise<void> {
-    this.ctx.storage.kv.put(POLLED_AT_KEY, Date.now());
     try {
-      await this.poll();
+      this.ctx.storage.kv.put(POLLED_AT_KEY, Date.now());
+      try {
+        await this.poll();
+      } catch (error) {
+        console.error(`${this.alertSource}: poll failed`, error);
+        await this.#espnAlert.failed(error);
+        return;
+      }
+      await this.#espnAlert.succeeded();
     } catch (error) {
-      console.error(`${this.alertSource}: poll failed`, error);
-      await this.#espnAlert.failed(error);
-      return;
+      // Nothing here may reach the timer: a tick that throws is retried and then dropped.
+      console.error(`${this.alertSource}: could not record a poll`, error);
     }
-    await this.#espnAlert.succeeded();
   }
 
   /** Seconds since the last poll, good or bad. Infinity when there has been none. */

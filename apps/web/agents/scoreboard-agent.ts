@@ -41,17 +41,27 @@ export class ScoreboardAgent extends ViewerPolledAgent<ScoreboardState> {
     if (slate.date !== previous.date || JSON.stringify(games) !== JSON.stringify(previous.games)) {
       this.setState({ date: slate.date, games, updatedAt: new Date().toISOString() });
     }
-    if (previous.date !== null && previous.date !== slate.date) {
-      await this.onSlateDateChange(previous.date, slate.date);
+    // What follows is the site's own work, not ESPN's: a failure in it is not a failed poll.
+    try {
+      if (previous.date !== null && previous.date !== slate.date) {
+        await this.onSlateDateChange(previous.date, slate.date);
+      }
+    } catch (error) {
+      console.error("Scoreboard: the slate's date change was not handled", error);
     }
-    await this.onSlateTransitions(slateTransitions(previous.games, slate));
+    try {
+      await this.onSlateTransitions(slateTransitions(previous.games, slate));
+    } catch (error) {
+      console.error("Scoreboard: the slate's transitions were not handled", error);
+    }
   }
 
   /**
    * Seam for #40 and the Predictions. Called after every good poll, with the games that went
    * final or were seen for the first time (empty on most polls). State has already moved on when
    * this runs, so a transition is handed over once: work that must not be lost to a failure here
-   * has to be made safe to repeat and retried by whoever takes it on.
+   * has to be made safe to repeat and retried by whoever takes it on. A throw
+   * from here is logged and goes no further.
    */
   protected async onSlateTransitions(_transitions: SlateTransition[]): Promise<void> {}
 

@@ -8,17 +8,20 @@ export const SLOW_POLL_SECONDS = 5 * 60;
 const PREGAME_MS = 15 * 60 * 1000;
 
 /**
- * The Scoreboard's cadence: every 30 seconds while a game is live or within 15 minutes of its
- * scheduled start, every 5 minutes otherwise. A game still `scheduled` after its start time is
- * about to start, so it counts.
+ * Seconds until the Scoreboard's next poll: 30 while a game is live or within 15 minutes of its
+ * scheduled start, 5 minutes otherwise, and sooner than 5 minutes when a game comes within 15
+ * minutes of its start before then, so the fast cadence begins on time. A game still `scheduled`
+ * after its start time is about to start, so it counts as within 15 minutes.
  */
 export function scoreboardPollSeconds(games: ScoreboardGame[], now: number): number {
-  const fast = games.some(
-    (game) =>
-      game.status === "live" ||
-      (game.status === "scheduled" && Date.parse(game.startTime) - now <= PREGAME_MS),
-  );
-  return fast ? FAST_POLL_SECONDS : SLOW_POLL_SECONDS;
+  let seconds = SLOW_POLL_SECONDS;
+  for (const game of games) {
+    if (game.status === "live") return FAST_POLL_SECONDS;
+    if (game.status !== "scheduled") continue;
+    const untilPregame = Math.ceil((Date.parse(game.startTime) - PREGAME_MS - now) / 1000);
+    seconds = Math.min(seconds, Math.max(FAST_POLL_SECONDS, untilPregame));
+  }
+  return seconds;
 }
 
 function scoreboardSide(side: Game["home"]): ScoreboardSide {

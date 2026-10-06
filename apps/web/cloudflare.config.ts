@@ -18,6 +18,9 @@ export default defineConfig({
       assets: { notFoundHandling: "none" },
       domains: target.domains,
       workersDev: false,
+      // Said outright: left unset, the account's default decides whether each version also gets a
+      // public `<version>-yogan-hockey.<subdomain>.workers.dev` address, which Access does not cover.
+      previewUrls: false,
       observability: {
         enabled: true,
         logs: { enabled: true, invocationLogs: true },

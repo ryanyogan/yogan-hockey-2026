@@ -1,3 +1,5 @@
+import { PLAYER_SEARCH_LIMIT } from "@yogan-hockey/schemas";
+
 /** One ESPN request: where it goes, what errors call it, and which recorded response stands in for it. */
 export type Endpoint = {
   /** Names the endpoint in errors and alerts, e.g. `teams/21/schedule`. */
@@ -12,12 +14,31 @@ const SITE = "https://site.api.espn.com/apis/site/v2/sports/hockey/nhl";
 // division, which is enough to build all four standings views from one response.
 const STANDINGS = "https://site.api.espn.com/apis/v2/sports/hockey/nhl/standings?level=3";
 
+// Athletes and search are on ESPN's "common" API. The athlete's stats and game log answer only
+// on the `site.web` host.
+const ATHLETES = "https://site.api.espn.com/apis/common/v3/sports/hockey/nhl/athletes";
+const ATHLETES_WEB = "https://site.web.api.espn.com/apis/common/v3/sports/hockey/nhl/athletes";
+const SEARCH = "https://site.api.espn.com/apis/common/v3/search";
+
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
-const TEAM_ID = /^\d+$/;
+const ESPN_ID = /^\d+$/;
+
+/** "End of Game" to "end-of-game". */
+export function slug(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
 
 function teamPath(teamId: string): string {
-  if (!TEAM_ID.test(teamId)) throw new RangeError(`Not an ESPN team id: ${teamId}`);
+  if (!ESPN_ID.test(teamId)) throw new RangeError(`Not an ESPN team id: ${teamId}`);
   return `teams/${teamId}`;
+}
+
+function athletePath(athleteId: string): string {
+  if (!ESPN_ID.test(athleteId)) throw new RangeError(`Not an ESPN athlete id: ${athleteId}`);
+  return `athletes/${athleteId}`;
 }
 
 export const endpoints = {
@@ -49,5 +70,48 @@ export const endpoints = {
   teamSchedule(teamId: string): Endpoint {
     const path = `${teamPath(teamId)}/schedule`;
     return { name: path, url: `${SITE}/${path}?seasontype=2`, fixture: `team-${teamId}-schedule` };
+  },
+  /** The whole-game snapshot: header, every play so far, and what a Prediction is made from. */
+  summary(gameId: string): Endpoint {
+    if (!ESPN_ID.test(gameId)) throw new RangeError(`Not an ESPN event id: ${gameId}`);
+    return {
+      name: `summary?event=${gameId}`,
+      url: `${SITE}/summary?event=${gameId}`,
+      fixture: `summary-${gameId}`,
+    };
+  },
+  /** An athlete's profile and the headline stats of his season. */
+  player(athleteId: string): Endpoint {
+    const path = athletePath(athleteId);
+    return { name: path, url: `${ATHLETES}/${athleteId}`, fixture: `athlete-${athleteId}` };
+  },
+  /** An athlete's regular seasons, one row each, with career totals. */
+  playerCareer(athleteId: string): Endpoint {
+    const path = `${athletePath(athleteId)}/stats`;
+    return {
+      name: path,
+      url: `${ATHLETES_WEB}/${athleteId}/stats`,
+      fixture: `athlete-${athleteId}-stats`,
+    };
+  },
+  /** An athlete's games this season. */
+  playerGameLog(athleteId: string): Endpoint {
+    const path = `${athletePath(athleteId)}/gamelog`;
+    return {
+      name: path,
+      url: `${ATHLETES_WEB}/${athleteId}/gamelog`,
+      fixture: `athlete-${athleteId}-gamelog`,
+    };
+  },
+  /** NHL players whose names match. The recorded response is named for the query: `search-mar`. */
+  playerSearch(query: string): Endpoint {
+    const params = new URLSearchParams({
+      query,
+      type: "player",
+      sport: "hockey",
+      league: "nhl",
+      limit: String(PLAYER_SEARCH_LIMIT),
+    });
+    return { name: "search", url: `${SEARCH}?${params}`, fixture: `search-${slug(query)}` };
   },
 };

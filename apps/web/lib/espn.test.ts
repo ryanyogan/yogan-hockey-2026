@@ -3,10 +3,15 @@ import createKvDataCache from "@vinext/cloudflare/cache/kv-data-adapter.runtime"
 import { setDataCacheHandler } from "vinext/shims/cache-handler";
 import { afterEach, beforeAll, beforeEach, expect, test, vi } from "vitest";
 import {
+  cachedPlayer,
+  cachedPlayerCareer,
+  cachedPlayerGameLog,
+  cachedPlayerSearch,
   cachedStandings,
   cachedTeam,
   cachedTeamSchedule,
   cachedTeams,
+  playerTag,
   STANDINGS_TAG,
   TEAMS_TAG,
   teamTag,
@@ -14,6 +19,8 @@ import {
 import { invalidateTag } from "./invalidate-tag";
 
 const TORONTO = "21";
+const MATTHEWS = "4024123";
+const STOLARZ = "3067313";
 const fetchMock = vi.fn<typeof fetch>();
 
 beforeAll(() => {
@@ -43,6 +50,7 @@ test("the tags are the ones the spec's table names", () => {
   expect(STANDINGS_TAG).toBe("standings");
   expect(TEAMS_TAG).toBe("teams");
   expect(teamTag(TORONTO)).toBe("team:21");
+  expect(playerTag(MATTHEWS)).toBe("player:4024123");
 });
 
 test("standings are served from the cache until their tag is invalidated", async () => {
@@ -92,4 +100,48 @@ test("one team's cache is not another's", async () => {
 
   leaveFixtureMode();
   await expect(cachedTeam("10")).rejects.toMatchObject({ endpoint: "teams/10" });
+});
+
+test("a player's page, career and game log share the player's tag", async () => {
+  const player = await cachedPlayer(MATTHEWS);
+  const career = await cachedPlayerCareer(MATTHEWS);
+  const gameLog = await cachedPlayerGameLog(MATTHEWS);
+  expect(player.name).toBe("Auston Matthews");
+  expect(career.seasons).toHaveLength(11);
+  expect(gameLog.games).toHaveLength(3);
+
+  leaveFixtureMode();
+  expect(await cachedPlayer(MATTHEWS)).toEqual(player);
+  expect(await cachedPlayerCareer(MATTHEWS)).toEqual(career);
+  expect(await cachedPlayerGameLog(MATTHEWS)).toEqual(gameLog);
+  expect(fetchMock).not.toHaveBeenCalled();
+
+  await invalidateTag(playerTag(MATTHEWS));
+  await expect(cachedPlayer(MATTHEWS)).rejects.toMatchObject({ endpoint: "athletes/4024123" });
+  await expect(cachedPlayerCareer(MATTHEWS)).rejects.toMatchObject({
+    endpoint: "athletes/4024123/stats",
+  });
+  await expect(cachedPlayerGameLog(MATTHEWS)).rejects.toMatchObject({
+    endpoint: "athletes/4024123/gamelog",
+  });
+});
+
+test("one player's cache is not another's", async () => {
+  await cachedPlayer(STOLARZ);
+  await invalidateTag(playerTag(MATTHEWS));
+
+  leaveFixtureMode();
+  expect((await cachedPlayer(STOLARZ)).name).toBe("Anthony Stolarz");
+  expect(fetchMock).not.toHaveBeenCalled();
+});
+
+test("a player search is cached by what was searched for, whatever its case or spacing", async () => {
+  const first = await cachedPlayerSearch("mar");
+  expect(first).toHaveLength(10);
+
+  leaveFixtureMode();
+  expect(await cachedPlayerSearch(" Mar ")).toEqual(first);
+  expect(fetchMock).not.toHaveBeenCalled();
+
+  await expect(cachedPlayerSearch("marn")).rejects.toMatchObject({ endpoint: "search" });
 });

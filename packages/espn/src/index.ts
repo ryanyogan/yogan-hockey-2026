@@ -6,16 +6,28 @@
 import { type Reading, ReadingSchema } from "@yogan-hockey/schemas";
 
 export {
+  getGameSummary,
+  getPlayer,
+  getPlayerCareer,
+  getPlayerGameLog,
   getScoreboard,
   getStandings,
   getTeam,
   getTeamSchedule,
   getTeams,
+  searchPlayers,
 } from "./client.ts";
 export { EspnFetchError, EspnParseError } from "./errors.ts";
 // The translations on their own, for checking a response fetched some other way.
+export {
+  translatePlayer,
+  translatePlayerCareer,
+  translatePlayerGameLog,
+  translatePlayerSearch,
+} from "./player.ts";
 export { translateScoreboard } from "./scoreboard.ts";
 export { translateStandings } from "./standings.ts";
+export { translateGameSummary } from "./summary.ts";
 export { translateTeam, translateTeamSchedule, translateTeams } from "./team.ts";
 
 /**

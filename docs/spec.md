@@ -48,7 +48,7 @@ Data comes from ESPN's unauthenticated site API and nowhere else (ADR 0003). One
 | Standings | 5 minutes | `standings` |
 | Team page (record, roster, team stats) | 1 hour | `team:{id}` |
 | Team schedule | 1 hour | `team:{id}` |
-| Player page and career stats | 6 hours | `player:{id}` |
+| Player page, career stats and game log | 6 hours | `player:{id}` |
 | Team list | 24 hours | `teams` |
 | Player search results | 10 minutes | none |
 
@@ -112,7 +112,7 @@ In Progress, Upcoming and Final sections, with an "updated" timestamp. Final gam
 - Search starts at two characters and runs through a Server Action. The page reads `searchParams` in a server component.
 - The visitor's favorite players are listed.
 - A player page shows season stats and the career table.
-- A recent-games log is added only if ESPN's athlete game log parses cleanly from one extra request **(unverified)**; otherwise it is left out.
+- A recent-games log: his games this season, newest first, each with the result and his line. It is one extra ESPN request, cached with the rest of the page (proved in #35).
 
 ### `/nhl/games/:id`
 
@@ -299,7 +299,7 @@ Each line is something the design assumes and nobody has run. The build issue na
 | 10 | Async `generateMetadata` lands in `<head>` (vinext #1492, #2007) | Static `metadata` with generic titles | Team page |
 | 11 | A page reading `searchParams` in a server component is not cached | `dynamic = "force-dynamic"` in the layout | Players |
 | 12 | Server Actions survive a deploy in an open tab (vinext #3604) | Reload the tab on a failed action | Players |
-| 13 | ESPN's athlete game log is cheap and parses cleanly | No recent-games log | Players |
+| 13 | **Proved (#35).** ESPN's athlete game log is one request (`athletes/{id}/gamelog`, 10 to 30 KB) and parses cleanly for a skater and a goalie: `getPlayerGameLog` in `packages/espn` | Not needed | ESPN: players, search and the game summary |
 | 14 | The Scoreboard starts and stops polling with viewers, as the Game Agent did in the prototype | None; it is the same mechanism | Scoreboard Agent: live scores |
 | 15 | The short gap in polls seen around a deploy does not lose plays | The first poll after resume diffs the whole game, so nothing is lost; confirm | Game Agent |
 | 16 | How ESPN's rink coordinates map onto the drawing, and which end each team attacks each period | Mirror by period using the home team's first-period end | Rink and timeline |

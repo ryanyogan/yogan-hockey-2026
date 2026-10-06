@@ -37,7 +37,10 @@ export const PlaySchema = z.object({
   teamId: z.string().min(1).nullable(),
   /** ESPN gives one on about 93% of plays. */
   coordinate: PlayCoordinateSchema.nullable(),
-  /** The play put a goal on the board. */
+  /**
+   * The play is a goal. A shootout goal is one too, though it leaves the running score where it
+   * was: the shootout's plays have `periodText` "SO".
+   */
   scoring: z.boolean(),
   /** The play is a penalty. ESPN has one type per infraction, so the type alone does not say. */
   penalty: z.boolean(),
@@ -51,3 +54,13 @@ export const PlaySchema = z.object({
   participants: z.array(PlayParticipantSchema),
 });
 export type Play = z.infer<typeof PlaySchema>;
+
+const KEY_PLAY_TYPES = new Set(["goal", "shot-on-goal", "period-start", "period-end"]);
+
+/**
+ * Whether a play is a Key play: a goal, a penalty, a shot on goal, or the start or end of a
+ * period. A game page shows these first. It is worked out from the play, never stored.
+ */
+export function isKeyPlay(play: Play): boolean {
+  return play.scoring || play.penalty || KEY_PLAY_TYPES.has(play.type);
+}

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Dashboard } from "../components/dashboard/dashboard";
 import { readSlatePicks } from "../lib/slate-picks";
 
-export const metadata: Metadata = { title: "Tonight" };
+export const metadata: Metadata = { title: "Dashboard" };
 
 // Nothing here reads the request, and without this vinext would keep the first render for a year.
 export const dynamic = "force-dynamic";

@@ -33,7 +33,7 @@ test("the dashboard shows its four blocks, puts favorites first and follows the 
   });
 
   await page.goto("/");
-  await expect(page).toHaveTitle(/Tonight/);
+  await expect(page).toHaveTitle("Dashboard · Yogan Hockey");
 
   // Tonight: every game of the slate, the favorite team's first and marked, each a link.
   const tonight = page.getByRole("region", { name: "Tonight" });
@@ -66,6 +66,8 @@ test("the dashboard shows its four blocks, puts favorites first and follows the 
     matthews.getByRole("link", { name: "Auston Matthews", exact: true }),
   ).toHaveAttribute("href", `/players/${MATTHEWS}`);
   await expect(matthews.getByText("live")).toHaveCount(0);
+  // His team is drawn as its abbreviation and named in full.
+  await expect(matthews.getByTitle("Toronto Maple Leafs")).toHaveText("TORToronto Maple Leafs");
 
   // Standings: each conference's top eight, each team a link, and a way to the rest.
   const east = page.getByRole("region", { name: "Eastern Conference" });

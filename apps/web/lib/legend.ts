@@ -59,6 +59,17 @@ const SEASONS: readonly (readonly [number, number, number, number, number, numbe
   [45, 58, 89, 147, 67, 12],
 ];
 
+/**
+ * The rest of this season's line, which the career table has no columns for: a real skater's page
+ * has them from ESPN, and his reads the same. Labels are ESPN's own headings.
+ */
+const SEASON_EXTRAS: readonly (readonly [name: string, label: string, figure: number])[] = [
+  ["shotsTotal", "S", 312],
+  ["powerPlayGoals", "PPG", 18],
+  ["powerPlayAssists", "PPA", 32],
+  ["gameWinningGoals", "GWG", 12],
+];
+
 /** ESPN's year for the newest of them: 2027 is the 2026-27 season. */
 const CURRENT_YEAR = 2027;
 const PLUS_MINUS = COLUMNS.findIndex((column) => column.name === "plusMinus");
@@ -137,6 +148,12 @@ function profile(today: Date): PlayerProfile {
         leading("assists", "A", assists),
         leading("points", "PTS", points),
         leading("plusMinus", "+/-", plusMinus),
+        ...SEASON_EXTRAS.map(([name, label, figure]) => ({
+          name,
+          label,
+          value: String(figure),
+          rank: null,
+        })),
       ],
     },
   };

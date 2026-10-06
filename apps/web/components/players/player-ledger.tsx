@@ -29,7 +29,8 @@ export function PlayerLedger<P extends PlayerSearchResult>({
   players: readonly P[];
   /**
    * Half a page wide, as on the dashboard, in the Reference UI's four columns: no sweater number,
-   * and the team is its abbreviation with the position beside it in place of a column.
+   * and the team is its abbreviation (its name to a screen reader and on hover) with the position
+   * beside it in place of a column.
    */
   compact?: boolean;
   /** A "season" column between the team and the action: a favorite player's figures. */
@@ -65,7 +66,15 @@ export function PlayerLedger<P extends PlayerSearchResult>({
             </LedgerCell>
             {compact ? null : <LedgerCell className={narrow}>{player.position}</LedgerCell>}
             <LedgerCell className={compact ? "whitespace-nowrap" : undefined}>
-              {player.team?.abbreviation}
+              {compact && player.team ? (
+                // The abbreviation is what is drawn; the team's name is what it says.
+                <abbr title={player.team.name} className="no-underline">
+                  <span aria-hidden="true">{player.team.abbreviation}</span>
+                  <span className="sr-only">{player.team.name}</span>
+                </abbr>
+              ) : (
+                player.team?.abbreviation
+              )}
               {compact ? (
                 <LedgerAside> {player.position}</LedgerAside>
               ) : player.team ? (

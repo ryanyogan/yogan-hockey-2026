@@ -51,6 +51,10 @@ test("his season is 45 games, 58 goals, 89 assists and 147 points, first in the 
     { label: "PTS", value: "147", rank: "1st" },
     { label: "PIM", value: "12", rank: null },
     { label: "+/-", value: "+67", rank: "1st" },
+    { label: "SOG", value: "312", rank: null },
+    { label: "PPG", value: "18", rank: null },
+    { label: "PPA", value: "32", rank: null },
+    { label: "GWG", value: "12", rank: null },
   ]);
 });
 

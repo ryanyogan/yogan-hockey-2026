@@ -8,11 +8,11 @@ import {
   LedgerRow,
 } from "@yogan-hockey/ui/components/ledger";
 import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
-import Link from "next/link";
 import type { ReactNode } from "react";
 import { goalieRecord, lastFiveLine, savePct, standingLine } from "../../lib/game/matchup";
 import { playerHref } from "../../lib/roster";
 import { gameHref } from "../../lib/scoreboard-view";
+import { Link } from "../link";
 import { LocalTime } from "../local-time";
 import { teamHref } from "../nhl/team-name";
 import { EmptyLedger } from "../team/empty-ledger";
@@ -33,7 +33,7 @@ function TeamCell({ team }: { team: GameHeaderSide }) {
 
 function Player({ id, children }: { id: string; children: ReactNode }) {
   return (
-    <Link href={playerHref({ id })} prefetch={false} className="underline-offset-2 hover:underline">
+    <Link href={playerHref({ id })} className="underline-offset-2 hover:underline">
       {children}
     </Link>
   );
@@ -233,7 +233,6 @@ function SeasonSeries({ gameId, series }: { gameId: string; series: Pregame["sea
                     ) : (
                       <Link
                         href={gameHref({ id: game.gameId })}
-                        prefetch={false}
                         className="underline-offset-2 hover:underline"
                       >
                         {line}

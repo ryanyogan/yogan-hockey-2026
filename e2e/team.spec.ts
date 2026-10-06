@@ -108,7 +108,7 @@ test("a team's page shows each tab from a pasted URL, titled with the team's nam
     standBetween,
   );
 
-  await paste("/nhl/teams/21?tab=roster", async (page) => {
+  await paste("/nhl/teams/21/roster", async (page) => {
     await expect(page).toHaveTitle(TITLE);
     await expect(tabs(page).locator('[aria-current="page"]')).toHaveText("roster");
     // ESPN's 24 and, ahead of them, the fictional player of #46 (`e2e/family.spec.ts`).
@@ -128,7 +128,7 @@ test("a team's page shows each tab from a pasted URL, titled with the team's nam
     await expect(back(page)).toHaveAttribute("href", "/nhl");
   });
 
-  await paste("/nhl/teams/21?tab=stats", async (page) => {
+  await paste("/nhl/teams/21/stats", async (page) => {
     await expect(page).toHaveTitle(TITLE);
     await expect(tabs(page).locator('[aria-current="page"]')).toHaveText("stats");
     // Played, goals for, goals against, difference, power play, penalty kill, home, road.
@@ -157,7 +157,7 @@ test("a team's page shows each tab from a pasted URL, titled with the team's nam
 
     // Unverified row 10 of the spec. A browser is sent the title late, in the body, and shows
     // it; a link preview reads the HTML alone, and for those the title is in <head>.
-    const response = await page.request.get("/nhl/teams/21?tab=stats", {
+    const response = await page.request.get("/nhl/teams/21/stats", {
       headers: { "user-agent": "Twitterbot/1.0" },
     });
     const head = (await response.text()).split("</head>")[0];
@@ -186,4 +186,64 @@ test("a team that cannot be read says so inside the shell, with a retry and a wa
   );
   // What failed is not the visitor's to read.
   await expect(main).not.toContainText("fixture");
+});
+
+test("a team opens from a link the pointer rested on with no further request, and its tabs are pages", async ({
+  browser,
+}) => {
+  // The router prefetches nothing for a crawler, and headless Chromium says it is one.
+  const probe = await browser.newContext();
+  const userAgent = (await (await probe.newPage()).evaluate(() => navigator.userAgent)).replace(
+    "HeadlessChrome",
+    "Chrome",
+  );
+  await probe.close();
+  const context = await browser.newContext({ userAgent });
+  const page = await context.newPage();
+
+  // Every request for the team's page: a document, or the router asking for it (`RSC: 1`).
+  const requests: { kind: string; afterClick: boolean }[] = [];
+  let clicked = false;
+  page.on("request", (request) => {
+    if (new URL(request.url()).pathname !== "/nhl/teams/21") return;
+    const kind = request.headers().rsc === "1" ? "rsc" : request.resourceType();
+    requests.push({ kind, afterClick: clicked });
+  });
+
+  await page.goto("/nhl?tab=teams");
+  const link = page.getByRole("main").locator('a[href="/nhl/teams/21"]');
+  // Being on screen prefetches nothing: thirty-two rows are not thirty-two renders.
+  await expect(link).toBeVisible();
+  // The pointer rests on the row and the page is fetched, once. Until the page has hydrated a
+  // hover does nothing, so the pointer leaves and comes back.
+  await expect(async () => {
+    await page.mouse.move(0, 0);
+    await link.hover();
+    await expect.poll(() => requests.length, { timeout: 2000 }).toBe(1);
+  }).toPass();
+  expect(requests).toEqual([{ kind: "rsc", afterClick: false }]);
+  // Let the prefetch finish; the click then has nothing to ask the server.
+  await page.waitForLoadState("networkidle");
+
+  clicked = true;
+  await link.click();
+  await expect(page).toHaveURL(/\/nhl\/teams\/21$/);
+  await expect(page).toHaveTitle(TITLE);
+  await expect(rows(page, /^Upcoming/)).toHaveCount(81);
+  expect(requests.filter((request) => request.afterClick)).toEqual([]);
+
+  // A tab is a page under the team's layout: the header stays, the address changes.
+  await tabs(page).getByRole("link", { name: "roster" }).click();
+  await expect(page).toHaveURL(/\/nhl\/teams\/21\/roster$/);
+  await expect(tabs(page).locator('[aria-current="page"]')).toHaveText("roster");
+  await expect(section(page, /^Toronto Maple Leafs/)).toBeVisible();
+  await expect(rows(page, /^Roster/)).toHaveCount(25);
+
+  // The addresses the tabs had in the query string lead to the new ones, for good.
+  for (const tab of ["roster", "stats"]) {
+    const old = await page.request.get(`/nhl/teams/21?tab=${tab}`, { maxRedirects: 0 });
+    expect(old.status()).toBe(308);
+    expect(old.headers().location).toContain(`/nhl/teams/21/${tab}`);
+  }
+  await context.close();
 });

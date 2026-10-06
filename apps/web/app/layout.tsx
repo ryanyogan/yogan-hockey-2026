@@ -27,8 +27,10 @@ async function scoreboardForFirstPaint(): Promise<ScoreboardReading> {
   }
 }
 
-export default async function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
-  const scoreboard = await scoreboardForFirstPaint();
+export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
+  // Not awaited: the shell is sent at once and the games stream in behind it (spec section 2),
+  // so no page waits on the Scoreboard for its first byte. It never rejects (see above).
+  const scoreboard = scoreboardForFirstPaint();
   return (
     // next-themes sets the class on <html> before first paint, which React must not undo.
     <html lang="en" className={mono.variable} suppressHydrationWarning>

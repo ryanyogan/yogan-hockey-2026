@@ -111,3 +111,18 @@
     @apply bg-background font-mono text-[13px] text-foreground;
   }
 }
+
+/*
+ * A placeholder for one value (`SkeletonBar`): an inline box as tall as a line of the text it
+ * stands in for, with a quiet bar drawn across its middle. Written here once, not as utility
+ * classes, because a page of placeholder rows repeats it several hundred times.
+ */
+@layer components {
+  [data-slot="skeleton-bar"] {
+    @apply relative inline-block max-w-full select-none align-baseline;
+  }
+  [data-slot="skeleton-bar"]::after {
+    content: "";
+    @apply absolute inset-x-0 top-1/2 h-[0.6em] -translate-y-1/2 bg-foreground/10 motion-safe:animate-pulse;
+  }
+}

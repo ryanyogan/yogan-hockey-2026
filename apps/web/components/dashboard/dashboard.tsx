@@ -1,10 +1,10 @@
 import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
-import Link from "next/link";
 import type { ReactNode } from "react";
 import { topOfConferences } from "../../lib/dashboard";
 import { cachedStandings } from "../../lib/espn";
 import { nhlHref } from "../../lib/nhl-page";
 import { familyRow, trackedPlayers } from "../../lib/tracked-players";
+import { Link } from "../link";
 import { StandingsLedger } from "../nhl/standings-ledger";
 import { EmptyLedger } from "../team/empty-ledger";
 import { DashboardFavorites } from "./dashboard-favorites";

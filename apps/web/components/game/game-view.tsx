@@ -3,10 +3,10 @@
 import type { GameHeader, Play } from "@yogan-hockey/schemas";
 import { Button } from "@yogan-hockey/ui/components/button";
 import { UrlTabs } from "@yogan-hockey/ui/components/url-tabs";
-import Link from "next/link";
 import { type ReactNode, useState } from "react";
 import { focusedPlay, toggleSelection, visiblePlays } from "../../lib/game/plays";
 import { type GameTab, gameTabLinks, shownGameTab } from "../../lib/game/tabs";
+import { Link } from "../link";
 import { GameRink } from "./game-rink";
 import { PeriodTimeline } from "./period-timeline";
 import { KeyPlaysToggle, PlaysList, ScoringSummary } from "./plays-list";

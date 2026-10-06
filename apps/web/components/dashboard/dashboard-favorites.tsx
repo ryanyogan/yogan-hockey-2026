@@ -2,12 +2,12 @@
 
 import { LiveMarker } from "@yogan-hockey/ui/components/marker";
 import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
-import Link from "next/link";
 import { DASHBOARD_FAVORITES, gamePlayingNow } from "../../lib/dashboard";
 import type { FavoritePlayer } from "../../lib/favorite-players";
 import { gameHref } from "../../lib/scoreboard-view";
 import { FavoritePlayersLedger } from "../favorites/favorite-players-ledger";
 import { useFavoritePlayers } from "../favorites/use-favorite-players";
+import { Link } from "../link";
 import { useScoreboard } from "../scoreboard/scoreboard-provider";
 import { EmptyLedger } from "../team/empty-ledger";
 import { headerLink } from "./header-link";

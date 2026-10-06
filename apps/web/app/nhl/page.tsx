@@ -2,7 +2,7 @@ import { type StandingsView, standingsView } from "@yogan-hockey/schemas";
 import { SectionHeader } from "@yogan-hockey/ui/components/section";
 import { UrlTabs } from "@yogan-hockey/ui/components/url-tabs";
 import type { Metadata } from "next";
-import Link from "next/link";
+import { Link } from "../../components/link";
 import { StandingsLedger } from "../../components/nhl/standings-ledger";
 import { TeamsLedger } from "../../components/nhl/teams-ledger";
 import { cachedStandings, cachedTeams } from "../../lib/espn";

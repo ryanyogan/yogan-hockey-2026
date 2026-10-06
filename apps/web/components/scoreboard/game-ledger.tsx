@@ -11,10 +11,10 @@ import {
   ledgerRowLink,
 } from "@yogan-hockey/ui/components/ledger";
 import { FavoriteMarker, LiveMarker } from "@yogan-hockey/ui/components/marker";
-import Link from "next/link";
 import type { ReactNode } from "react";
 import { isFavoriteGame } from "../../lib/favorites";
 import { gameHref, gameStatusLine, gameWhere, hasScore } from "../../lib/scoreboard-view";
+import { Link } from "../link";
 import { GameStatus } from "./game-status";
 
 function Team({ side, favorite }: { side: ScoreboardSide; favorite: boolean }) {

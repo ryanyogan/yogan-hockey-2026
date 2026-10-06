@@ -1,9 +1,9 @@
 "use client";
 
 import { navItemVariants } from "@yogan-hockey/ui/components/nav-item";
-import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { currentNavItem, NAV_ITEMS } from "../../lib/nav";
+import { Link } from "../link";
 
 type NavLinksProps = {
   /** `touch` gives each link a row tall enough for a thumb. */

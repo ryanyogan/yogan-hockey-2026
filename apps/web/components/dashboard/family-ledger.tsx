@@ -9,9 +9,9 @@ import {
   ledgerRowLink,
 } from "@yogan-hockey/ui/components/ledger";
 import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
-import Link from "next/link";
 import { FAMILY_COLUMNS, familyTotals } from "../../lib/dashboard";
 import type { FamilyRow } from "../../lib/tracked-players";
+import { Link } from "../link";
 
 /**
  * The dashboard's Family block: a row for each Tracked Player with his club, his last game under

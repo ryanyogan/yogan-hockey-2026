@@ -10,7 +10,6 @@ import {
   ledgerRowLink,
 } from "@yogan-hockey/ui/components/ledger";
 import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
-import Link from "next/link";
 import type { ReactNode } from "react";
 import {
   type BioFact,
@@ -20,6 +19,7 @@ import {
   type SeasonView,
   type ShownColumn,
 } from "../../lib/player-view";
+import { Link } from "../link";
 import { teamHref } from "../nhl/team-name";
 
 /*
@@ -211,7 +211,7 @@ export function CareerSection({ career }: { career: CareerView }) {
               <LedgerCell className="whitespace-nowrap">{row.season}</LedgerCell>
               {row.team ? (
                 <LedgerCell>
-                  <Link href={teamHref(row.team)} prefetch={false} className="hover:underline">
+                  <Link href={teamHref(row.team)} className="hover:underline">
                     {row.team.abbreviation}
                   </Link>
                 </LedgerCell>
@@ -288,7 +288,7 @@ export function GameLogSection({
           {log.rows.map((row) => (
             <LedgerRow key={row.gameId} interactive>
               <LedgerCell className="whitespace-nowrap">
-                <Link href={`/nhl/games/${row.gameId}`} prefetch={false} className={ledgerRowLink}>
+                <Link href={`/nhl/games/${row.gameId}`} className={ledgerRowLink}>
                   {row.date}
                 </Link>
               </LedgerCell>

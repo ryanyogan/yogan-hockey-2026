@@ -1,12 +1,12 @@
 import type { GameHeader } from "@yogan-hockey/schemas";
 import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 import { GameMatchup } from "../../../../components/game/game-matchup";
 import { GamePage } from "../../../../components/game/game-page";
 import { GamePick } from "../../../../components/game/game-pick";
+import { Link } from "../../../../components/link";
 import { cachedGamePregame } from "../../../../lib/espn";
 import { findGame } from "../../../../lib/find-game";
 import { gamePhase } from "../../../../lib/game/page-state";

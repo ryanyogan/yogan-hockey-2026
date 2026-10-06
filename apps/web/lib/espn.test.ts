@@ -1,6 +1,7 @@
 import { env } from "cloudflare:workers";
 import createKvDataCache from "@vinext/cloudflare/cache/kv-data-adapter.runtime";
 import { setDataCacheHandler } from "vinext/shims/cache-handler";
+import { createRequestContext, runWithRequestContext } from "vinext/shims/unified-request-context";
 import { afterEach, beforeAll, beforeEach, expect, test, vi } from "vitest";
 import {
   cachedPlayer,
@@ -144,4 +145,43 @@ test("a player search is cached by what was searched for, whatever its case or s
   expect(fetchMock).not.toHaveBeenCalled();
 
   await expect(cachedPlayerSearch("marn")).rejects.toMatchObject({ endpoint: "search" });
+});
+
+/**
+ * Runs a read as vinext runs a page's: inside a request, where a stale entry is answered at once
+ * and refreshed in `waitUntil`. Outside one (an Agent, this test's other cases) a stale entry is
+ * refreshed before it is answered. Returns what was handed to `waitUntil`.
+ */
+async function inPageRequest<T>(read: () => Promise<T>): Promise<{ answer: T; behind: unknown[] }> {
+  const behind: unknown[] = [];
+  const context = createRequestContext({
+    executionContext: {
+      waitUntil: (work: Promise<unknown>) => void behind.push(work),
+      passThroughOnException: () => {},
+    },
+    unstableCacheRevalidation: "background",
+  });
+  return { answer: await runWithRequestContext(context, read), behind };
+}
+
+test("a page's read past its time limit is answered from the cache at once and refreshed behind", async () => {
+  vi.useFakeTimers({ toFake: ["Date"] });
+  try {
+    const first = await cachedTeams();
+    expect(first.length).toBeGreaterThan(30);
+
+    // A day and a minute on, the team list is past its time limit, and ESPN is down.
+    vi.setSystemTime(Date.now() + (24 * 60 + 1) * 60 * 1000);
+    leaveFixtureMode();
+
+    // The visitor does not wait on ESPN and is not shown its failure: the stale list answers.
+    const { answer, behind } = await inPageRequest(cachedTeams);
+    expect(answer).toEqual(first);
+    // ESPN is asked all the same, behind the answer, for whoever reads next.
+    expect(behind).toHaveLength(1);
+    await Promise.allSettled(behind);
+    expect(fetchMock).toHaveBeenCalled();
+  } finally {
+    vi.useRealTimers();
+  }
 });

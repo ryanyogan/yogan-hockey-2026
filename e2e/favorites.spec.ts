@@ -9,7 +9,7 @@ test("a player and a team are made favorites, kept over a reload, and let go", a
   const playerHeart = page.getByRole("button", { name: "Favorite Auston Matthews" });
   const teamHeart = page.getByRole("button", { name: "Favorite Toronto Maple Leafs" });
 
-  await page.goto("/nhl/teams/21?tab=roster");
+  await page.goto("/nhl/teams/21/roster");
 
   // A heart on his roster row and one on the team's header. A click before the page has
   // hydrated does nothing, so each is pressed until it takes.
@@ -21,7 +21,7 @@ test("a player and a team are made favorites, kept over a reload, and let go", a
     }).toPass();
   }
   // The heart took the click: the row's link did not open his page.
-  await expect(page).toHaveURL(/\/nhl\/teams\/21\?tab=roster$/);
+  await expect(page).toHaveURL(/\/nhl\/teams\/21\/roster$/);
 
   // The favorite team's game leads the ticker on every page...
   await expect(ticker.getByRole("listitem").first()).toContainText(/NSH.+TOR/);

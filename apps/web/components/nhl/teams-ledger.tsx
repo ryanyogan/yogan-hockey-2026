@@ -9,7 +9,7 @@ import {
   ledgerRowLink,
 } from "@yogan-hockey/ui/components/ledger";
 import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
-import Link from "next/link";
+import { Link } from "../link";
 import { teamHref } from "./team-name";
 
 /** Every team in the league, by name, each row linking to the team's page. */

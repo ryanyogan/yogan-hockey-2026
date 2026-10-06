@@ -9,7 +9,6 @@ import {
 } from "@yogan-hockey/ui/components/ledger";
 import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
 import { UrlTabs } from "@yogan-hockey/ui/components/url-tabs";
-import Link from "next/link";
 import { playerHref } from "../../lib/roster";
 import {
   careerOf,
@@ -21,6 +20,7 @@ import {
   type TrackedTab,
   trackedPlayerHref,
 } from "../../lib/tracked-players";
+import { Link } from "../link";
 import {
   CareerSection,
   HeaderLine,

@@ -7,23 +7,26 @@ const MIGRATIONS = fileURLToPath(new URL("../../packages/db/migrations", import.
 /**
  * Agent tests run inside the Workers runtime. The pool reads Wrangler config and
  * there is none, so the bindings from cloudflare.config.ts are repeated here.
- * The entry is the Agents alone: the site's entry needs vinext's build.
+ * The entry is the Agents and their routing alone: the site's entry needs vinext's build.
  */
 export default defineConfig(async () => ({
   plugins: [
     cloudflareTest({
-      main: "./agents/index.ts",
+      main: "./agents/test-worker.ts",
       miniflare: {
         // The newest date the pool's own workerd accepts; the Worker itself runs on 2026-10-06.
         compatibilityDate: "2026-08-22",
         compatibilityFlags: ["nodejs_compat"],
         durableObjects: {
+          ScoreboardAgent: { className: "ScoreboardAgent", useSQLite: true },
           SkeletonAgent: { className: "SkeletonAgent", useSQLite: true },
         },
         d1Databases: ["DB"],
         kvNamespaces: ["VINEXT_KV_CACHE"],
         bindings: {
           TEST_MIGRATIONS: await readD1Migrations(MIGRATIONS),
+          // A Worker secret in production. Tests replace `fetch`, so nothing reaches ntfy.sh.
+          NTFY_TOPIC: "test-topic",
         },
       },
     }),

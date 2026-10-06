@@ -112,7 +112,8 @@ export class GameAgent extends ViewerPolledAgent<GameStreamState> {
    * For the Replay's first open of a game nobody watched: reads the finished game from ESPN once,
    * writes its row and plays to D1 and sets the 24-hour re-read. True when the game is in D1 as
    * this returns; false when it is not finished, has no plays, is waiting on its last poll or the
-   * write failed, and a later call tries again. A game not known to be final is asked about no more often than it is polled.
+   * write failed, and a later call tries again. A game not known to be final is asked about no more
+   * often than it is polled.
    */
   async ensureArchived(): Promise<boolean> {
     if (this.state.archived) return true;

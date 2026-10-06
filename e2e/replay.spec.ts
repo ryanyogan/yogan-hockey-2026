@@ -35,8 +35,8 @@ test("the Replay opens laid out, plays, pauses, jumps to a tick, and follows the
 
   // Play starts again from the first play: no score, and the rest of the game still to come.
   // A press before the page has hydrated does nothing, so press until one lands.
-  await page.locator('[data-slot="replay-speed"] label', { hasText: "4x" }).click();
   await expect(async () => {
+    await page.locator('[data-slot="replay-speed"] label', { hasText: "4x" }).click();
     await page.getByRole("button", { name: "Play the replay" }).click({ timeout: 1000 });
     await expect(transport).toHaveAttribute("data-playing", "true", { timeout: 1000 });
   }).toPass();

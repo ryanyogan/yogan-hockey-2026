@@ -39,9 +39,15 @@ export function Replay({
   tab,
   pathname,
   pick,
+  pending,
 }: {
   header: GameHeader;
   plays: readonly Play[];
+  /**
+   * Shown in place of the controls while `plays` are not yet D1's: the game is laid out and can
+   * be browsed, and what the visitor picked is kept when the controls arrive.
+   */
+  pending?: ReactNode;
   notice?: string;
   tab: GameTab;
   pathname: string;
@@ -52,15 +58,17 @@ export function Replay({
   const dispatch = (action: ReplayAction) =>
     setReplay((state) => replayReducer(state, action, plays, everyPlay));
 
-  // The fixed pace: a step every so often while playing, whatever the game's real gaps were.
+  // The fixed pace: one step a while after the playhead last moved, whatever the game's real gaps
+  // were. Timed from each move, so a play clicked while playing is shown for a whole step.
+  const { playing, speed, playhead } = replay;
   useEffect(() => {
-    if (!replay.playing) return;
-    const pace = setInterval(
+    if (!playing || playhead == null) return;
+    const pace = setTimeout(
       () => setReplay((state) => replayReducer(state, { type: "step" }, plays, everyPlay)),
-      stepMilliseconds(replay.speed),
+      stepMilliseconds(speed),
     );
-    return () => clearInterval(pace);
-  }, [replay.playing, replay.speed, plays, everyPlay]);
+    return () => clearTimeout(pace);
+  }, [playing, speed, playhead, plays, everyPlay]);
 
   const { played, upcoming } = splitAtPlayhead(plays, replay.playhead);
   const wholeGame = upcoming.length === 0;
@@ -81,13 +89,15 @@ export function Replay({
       everyPlay={everyPlay}
       onEveryPlayChange={setEveryPlay}
       transport={
-        <ReplayTransport
-          replay={replay}
-          wholeGame={wholeGame}
-          position={replayPosition(plays, replay.playhead, everyPlay)}
-          everyPlay={everyPlay}
-          dispatch={dispatch}
-        />
+        pending ?? (
+          <ReplayTransport
+            replay={replay}
+            wholeGame={wholeGame}
+            position={replayPosition(plays, replay.playhead, everyPlay)}
+            everyPlay={everyPlay}
+            dispatch={dispatch}
+          />
+        )
       }
     />
   );
@@ -128,8 +138,10 @@ function ReplayTransport({
       <Button
         data-slot="replay-end"
         variant="outline"
-        className="max-sm:h-11 max-sm:px-3"
-        disabled={wholeGame && !replay.playing}
+        className="aria-disabled:cursor-default aria-disabled:opacity-50 aria-disabled:hover:bg-transparent max-sm:h-11 max-sm:px-3"
+        // Not `disabled`: the button turns idle under the finger that pressed it, and a disabled
+        // button drops the keyboard's focus.
+        aria-disabled={wholeGame && !replay.playing}
         onClick={() => dispatch({ type: "end" })}
       >
         whole game
@@ -197,12 +209,12 @@ function ReplaySpeedChoice({
 /** Where the transport will be, for a finished game whose plays are not in D1 yet. */
 export function ReplayPending({ gaveUp }: { gaveUp: boolean }) {
   return (
-    <div data-slot="replay-transport" className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-2">
+    <div data-slot="replay-pending" className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-2">
       <Button className="w-16 max-sm:h-11 max-sm:w-20" disabled>
         play
       </Button>
       <p
-        data-slot="replay-position"
+        data-slot="replay-pending-note"
         className="min-w-0 flex-1 truncate text-foreground/50 max-sm:basis-full"
       >
         {gaveUp

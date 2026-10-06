@@ -30,13 +30,20 @@ export async function replayPlays(
  * The game a page draws, made ready for the Replay when it is over. A snapshot the Game Agent
  * calls archived already carries D1's plays (the Agent keeps none of its own once they are
  * written), so it is left alone. One that is final and not archived gets `replayPlays`. When
- * that has nothing yet the game comes back as it was read, not archived, and the page asks again.
+ * that has nothing yet, or fails, the game comes back as it was read, not archived, and the page
+ * asks again.
  */
 export async function replayGame(
   game: FoundGame,
   archive?: (gameId: string) => Promise<boolean>,
 ): Promise<FoundGame> {
   if (gamePhase(game.header.status) !== "finished" || game.archived) return game;
-  const plays = await replayPlays(game.header.id, archive);
-  return plays == null ? game : { ...game, plays, archived: true };
+  try {
+    const plays = await replayPlays(game.header.id, archive);
+    return plays == null ? game : { ...game, plays, archived: true };
+  } catch (error) {
+    // D1 or the Agent failing is no reason to lose the page: it has the game, and asks again.
+    console.error(`Game ${game.header.id}: the replay could not be made ready`, error);
+    return game;
+  }
 }

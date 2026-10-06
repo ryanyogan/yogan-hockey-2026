@@ -9,6 +9,7 @@ export type ReplaySpeed = (typeof REPLAY_SPEEDS)[number];
 /** The fixed pace: one play every 1.2 seconds at 1x, whatever the game's real gaps were. */
 const STEP_MILLISECONDS = 1200;
 
+/** How long a Replay waits between steps at `speed`. */
 export function stepMilliseconds(speed: ReplaySpeed): number {
   return STEP_MILLISECONDS / speed;
 }
@@ -26,6 +27,7 @@ export type Replay = {
   speed: ReplaySpeed;
 };
 
+/** A Replay as it opens: for browsing, the whole game laid out and nothing moving. */
 export const REPLAY_OPENED: Replay = { playhead: null, playing: false, speed: 1 };
 
 export type ReplayAction =

@@ -58,6 +58,11 @@ test(
     // One that will not archive stays a finished game with the plays it came with.
     const stuck: FoundGame = { ...unarchived, header: { ...final.header, id: "9000002" } };
     expect(await replayGame(stuck, async () => false)).toBe(stuck);
+
+    // Nor does one whose archive fails take the page down.
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    const failing = async () => Promise.reject(new Error("D1 is down"));
+    expect(await replayGame(stuck, failing)).toBe(stuck);
   },
   COLD_START,
 );

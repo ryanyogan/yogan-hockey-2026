@@ -4,7 +4,6 @@ import type { GameHeader, Play } from "@yogan-hockey/schemas";
 import { type ReactNode, useEffect, useState } from "react";
 import { loadReplayPlays } from "../../app/nhl/games/[id]/actions";
 import type { GameTab } from "../../lib/game/tabs";
-import { GameView } from "./game-view";
 import { Replay, ReplayPending } from "./replay";
 
 export type FinishedGameProps = {
@@ -79,9 +78,15 @@ export function FinishedGame({
     };
   }, [gameId, archived, waiting]);
 
-  const shared = { header, notice, tab, pathname, pick };
-  if (waiting) {
-    return <GameView {...shared} plays={plays} transport={<ReplayPending gaveUp={gaveUp} />} />;
-  }
-  return <Replay {...shared} plays={loaded ?? plays} />;
+  return (
+    <Replay
+      header={header}
+      plays={loaded ?? plays}
+      pending={waiting ? <ReplayPending gaveUp={gaveUp} /> : undefined}
+      notice={notice}
+      tab={tab}
+      pathname={pathname}
+      pick={pick}
+    />
+  );
 }

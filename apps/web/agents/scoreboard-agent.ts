@@ -26,16 +26,22 @@ const PLAYS_REREAD_SECONDS = 24 * 60 * 60;
 const CATCH_UP_DATES_PER_RUN = 30;
 /** How many times a final's work is tried before it is given up on. */
 const FINAL_ATTEMPTS = 3;
+/** How many times in a row catch-up tries a date that fails before it goes on to the next. */
+const CATCH_UP_DATE_ATTEMPTS = 3;
 
 /** Storage key prefix of a final whose work is not finished, followed by the game's id. */
 const PENDING_FINAL_PREFIX = "pending-final:";
 /** Storage key of the oldest date a catch-up has still to fetch (`YYYY-MM-DD`). */
 const CATCH_UP_FROM_KEY = "catch-up-from";
+/** Storage key of how many times in a row catch-up has failed at the date it starts from. */
+const CATCH_UP_FAILURES_KEY = "catch-up-failures";
 
 /** A game that went final, kept in storage until its work is done. */
 type PendingFinal = { game: Game; attempts: number };
-/** What the two timers set at a final are handed. */
-type FinalTimer = { gameId: string; teamIds: string[] };
+/** What the second invalidation, five minutes after a final, is handed. */
+type SecondInvalidation = { gameId: string; teamIds: string[] };
+/** What the re-read of a game's plays, a day after its final, is handed. */
+type PlaysReread = { gameId: string };
 
 /**
  * The Scoreboard (spec section 4): today's games, pushed to every open page. One instance, named by
@@ -102,10 +108,6 @@ export class ScoreboardAgent extends ViewerPolledAgent<ScoreboardState> {
       const pending: PendingFinal = { game, attempts: 0 };
       this.ctx.storage.kv.put(PENDING_FINAL_PREFIX + game.id, pending);
     }
-    // Every good poll looks, not only one that found something: this is the retry.
-    if (this.#pendingFinals().length > 0) await this.#runAtOnce("recordFinals");
-    if (this.#catchUpDates().length > 0) await this.#runAtOnce("catchUp");
-
     for (const { kind, game } of transitions) {
       if (kind !== "first-seen") continue;
       try {
@@ -114,6 +116,9 @@ export class ScoreboardAgent extends ViewerPolledAgent<ScoreboardState> {
         console.error(`Scoreboard: game ${game.id}'s Prediction was not started`, error);
       }
     }
+    // Every good poll looks, not only one that found something: this is the retry.
+    if (this.#pendingFinals().length > 0) await this.#runAtOnce("recordFinals");
+    if (this.#catchUpDates().length > 0) await this.#runAtOnce("catchUp");
   }
 
   /**
@@ -141,20 +146,24 @@ export class ScoreboardAgent extends ViewerPolledAgent<ScoreboardState> {
    * A timer's callback, not for calling. Does the work of every final in storage (spec section
    * 4): the row in D1, the two timers, the invalidations, and telling open pages. Every step is
    * safe to repeat. A final whose work fails stays in storage for the next good poll, and is
-   * given up on after `FINAL_ATTEMPTS` tries.
+   * given up on after `FINAL_ATTEMPTS` tries; its row is then written by the next catch-up.
    */
   async recordFinals(): Promise<void> {
     const finals = this.#pendingFinals();
-    if (finals.length === 0) return;
     const db = createDb(this.env.DB);
+    let invalidated = false;
     for (const [key, { game, attempts }] of finals) {
       try {
         await saveFinal(db, game);
-        const timer: FinalTimer = { gameId: game.id, teamIds: teamIdsOf(game) };
-        // Idempotent: a second try finds the timers the first one set.
+        const teamIds = teamIdsOf(game);
+        // Idempotent: a second try finds the timers the first one set, while they are waiting.
         const once = { idempotent: true };
-        await this.schedule(SECOND_INVALIDATION_SECONDS, "invalidateAgain", timer, once);
-        await this.schedule(PLAYS_REREAD_SECONDS, "rereadPlays", timer, once);
+        const again: SecondInvalidation = { gameId: game.id, teamIds };
+        await this.schedule(SECOND_INVALIDATION_SECONDS, "invalidateAgain", again, once);
+        const reread: PlaysReread = { gameId: game.id };
+        await this.schedule(PLAYS_REREAD_SECONDS, "rereadPlays", reread, once);
+        // From here on some tags are invalidated even if the rest of it fails.
+        invalidated = true;
         await invalidateForFinal(game);
         this.ctx.storage.kv.delete(key);
       } catch (error) {
@@ -169,15 +178,20 @@ export class ScoreboardAgent extends ViewerPolledAgent<ScoreboardState> {
         }
       }
     }
-    // Told even after a failure: some of the tags will have been invalidated all the same.
-    this.#tellPages();
+    if (invalidated) this.#tellPages();
+    // A poll during the work above may have noted a final and found this timer still set. Such
+    // a final gets a timer of its own; one that failed here waits for the next good poll.
+    const taken = new Set(finals.map(([key]) => key));
+    if (this.#pendingFinals().some(([key]) => !taken.has(key))) {
+      await this.schedule(0, "recordFinals");
+    }
   }
 
   /**
    * A timer's callback, not for calling. Five minutes after a final ESPN's standings and records
    * have caught up with it, so the standings and both teams are invalidated a second time.
    */
-  async invalidateAgain({ teamIds }: FinalTimer): Promise<void> {
+  async invalidateAgain({ teamIds }: SecondInvalidation): Promise<void> {
     await invalidateStandingsAndTeams(teamIds);
     this.#tellPages();
   }
@@ -186,7 +200,7 @@ export class ScoreboardAgent extends ViewerPolledAgent<ScoreboardState> {
    * A timer's callback, not for calling. A day after a final, reads the game's plays from ESPN
    * into D1 again if they were archived.
    */
-  async rereadPlays({ gameId }: FinalTimer): Promise<void> {
+  async rereadPlays({ gameId }: PlaysReread): Promise<void> {
     await rereadArchivedPlays(createDb(this.env.DB), gameId);
   }
 
@@ -194,34 +208,48 @@ export class ScoreboardAgent extends ViewerPolledAgent<ScoreboardState> {
    * A timer's callback, not for calling. Catch-up (spec section 4): fetches the scoreboard of
    * each date missed while nobody was watching, oldest first and at most
    * `CATCH_UP_DATES_PER_RUN` of them, writes the finished games' rows, then invalidates the
-   * standings and the teams that played. Where it starts next moves on only once all of that is
-   * done, so a run that fails is repeated whole by the next good poll, as is the rest of a gap
-   * too long for one run.
+   * standings and the teams that played. Where it starts next moves on only after that, so the
+   * rest of a gap too long for one run, and a date that failed, are taken up by the next good
+   * poll. A date that fails `CATCH_UP_DATE_ATTEMPTS` times in a row is passed over, so one bad
+   * date cannot hold up the dates after it for good.
    */
   async catchUp(): Promise<void> {
-    const dates = this.#catchUpDates();
-    const last = dates.at(-1);
-    if (last === undefined) {
-      this.ctx.storage.kv.delete(CATCH_UP_FROM_KEY);
-      return;
+    const db = createDb(this.env.DB);
+    const teamIds = new Set<string>();
+    let next = this.ctx.storage.kv.get<string>(CATCH_UP_FROM_KEY);
+    let failures = this.ctx.storage.kv.get<number>(CATCH_UP_FAILURES_KEY) ?? 0;
+    for (const date of this.#catchUpDates()) {
+      try {
+        const slate = await fetchScoreboard(date);
+        const finals = slate.games.filter((game) => game.status === "final");
+        for (const game of finals) await saveFinal(db, game);
+        for (const game of finals) for (const teamId of teamIdsOf(game)) teamIds.add(teamId);
+        failures = 0;
+      } catch (error) {
+        failures += 1;
+        const givenUp = failures >= CATCH_UP_DATE_ATTEMPTS;
+        const outcome = givenUp ? "was given up on" : "is not finished";
+        console.error(`Scoreboard: catch-up for ${date} ${outcome}`, error);
+        if (!givenUp) break;
+        failures = 0;
+      }
+      next = dayAfter(date);
     }
     try {
-      const db = createDb(this.env.DB);
-      const teamIds = new Set<string>();
-      for (const date of dates) {
-        const slate = await fetchScoreboard(date);
-        for (const game of slate.games) {
-          if (game.status !== "final") continue;
-          await saveFinal(db, game);
-          for (const teamId of teamIdsOf(game)) teamIds.add(teamId);
-        }
-      }
       if (teamIds.size > 0) await invalidateStandingsAndTeams(teamIds);
-      this.ctx.storage.kv.put(CATCH_UP_FROM_KEY, dayAfter(last));
-      if (teamIds.size > 0) this.#tellPages();
     } catch (error) {
-      console.error(`Scoreboard: catch-up from ${dates[0]} is not finished`, error);
+      // Nothing moves on: the next run writes the rows and invalidates the tags again.
+      console.error("Scoreboard: catch-up could not invalidate what it recorded", error);
+      return;
     }
+    const today = this.state.date;
+    if (next === undefined || (today !== null && next >= today)) {
+      this.ctx.storage.kv.delete(CATCH_UP_FROM_KEY);
+    } else {
+      this.ctx.storage.kv.put(CATCH_UP_FROM_KEY, next);
+    }
+    this.ctx.storage.kv.put(CATCH_UP_FAILURES_KEY, failures);
+    if (teamIds.size > 0) this.#tellPages();
   }
 
   /** Every final in storage, with its key. */

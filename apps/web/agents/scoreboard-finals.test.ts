@@ -331,18 +331,37 @@ describe("a game goes final", () => {
 
   test("work that failed is finished on a later poll, without a second pair of timers", async () => {
     const { visit, timers } = await scoreboard();
-    espnSlate = todaysSlate(TODAY, [finalEvent("900009")]);
+    // Another game still on keeps the polls 30 seconds apart, so the retry comes while the
+    // first try's timers are both still waiting.
+    espnSlate = todaysSlate(TODAY, [finalEvent("900009"), liveEvent("900019")]);
     espnTeam = espnDown;
     await visit();
     expect(await getGameWithPlays(db, "900009")).not.toBeNull();
     expect(await invalidatedTags()).not.toContain(tagKeys(["player:2-0"])[0]);
+    expect(await timers()).toEqual(["invalidateAgain", "rereadPlays"]);
 
     espnTeam = teamDetail;
-    vi.setSystemTime(Date.now() + SLOW * 1000 + 1000);
+    vi.setSystemTime(Date.now() + FAST * 1000 + 1000);
     await visit();
 
     expect(await invalidatedTags()).toContain(tagKeys(["player:2-0"])[0]);
     expect(await timers()).toEqual(["invalidateAgain", "rereadPlays"]);
+  });
+
+  test("two games that go final in one poll each get their own row and pair of timers", async () => {
+    const { visit, timers } = await scoreboard();
+    espnSlate = todaysSlate(TODAY, [finalEvent("900020"), finalEvent("900021")]);
+
+    await visit();
+
+    expect(await getGameWithPlays(db, "900020")).not.toBeNull();
+    expect(await getGameWithPlays(db, "900021")).not.toBeNull();
+    expect(await timers()).toEqual([
+      "invalidateAgain",
+      "invalidateAgain",
+      "rereadPlays",
+      "rereadPlays",
+    ]);
   });
 
   test("a final that keeps failing is given up on after three tries", async () => {
@@ -484,22 +503,43 @@ describe("catch-up", () => {
     expect(datedRequests().at(-1)).toBe("20261004");
   });
 
-  test("a catch-up that fails is taken up again from the same date", async () => {
+  test("a date that fails is taken up again by the next poll, after the dates before it", async () => {
     const { visit } = await scoreboard();
     espnSlate = todaysSlate("2026-10-02", []);
     await visit();
 
     espnDatedSlates.set("20261002", datedSlate([finalEvent("900401")]));
     espnDatedSlates.set("20261003", espnDown);
-    espnSlate = todaysSlate("2026-10-04", []);
+    espnSlate = todaysSlate("2026-10-05", []);
     await nextVisit(visit);
-    expect(datedRequests()).toEqual(["20261002", "20261003"]);
-    expect(await invalidatedTags()).toEqual([]);
-
-    espnDatedSlates.set("20261003", datedSlate([]));
-    await nextVisit(visit);
-
     expect(datedRequests()).toEqual(["20261002", "20261003"]);
     expect(await invalidatedTags()).toEqual(tagKeys(["standings", "team:2", "team:4"]));
+
+    espnDatedSlates.set("20261003", datedSlate([finalEvent("900402")]));
+    await nextVisit(visit);
+
+    expect(datedRequests()).toEqual(["20261003", "20261004"]);
+    expect(await getGameWithPlays(db, "900402")).not.toBeNull();
+  });
+
+  test("a date that fails three times is passed over, so the dates after it are reached", async () => {
+    const { visit } = await scoreboard();
+    espnSlate = todaysSlate("2026-10-02", []);
+    await visit();
+
+    espnDatedSlates.set("20261002", espnDown);
+    espnDatedSlates.set("20261003", datedSlate([finalEvent("900501")]));
+    espnSlate = todaysSlate("2026-10-04", []);
+    await nextVisit(visit);
+    await nextVisit(visit);
+    expect(datedRequests()).toEqual(["20261002"]);
+    expect(await getGameWithPlays(db, "900501")).toBeNull();
+
+    await nextVisit(visit);
+    expect(datedRequests()).toEqual(["20261002", "20261003"]);
+    expect(await getGameWithPlays(db, "900501")).not.toBeNull();
+
+    await nextVisit(visit);
+    expect(datedRequests()).toEqual([]);
   });
 });

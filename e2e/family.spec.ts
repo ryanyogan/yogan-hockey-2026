@@ -98,7 +98,12 @@ test("the fictional Rylan Yogan leads Toronto's roster, is found by search and h
     section(page, /^Season/)
       .locator("tbody tr")
       .first(),
-  ).toContainText("147");
+  ).toHaveText("totals45588914712+67312183212");
   await expect(section(page, /^Career/).getByRole("heading")).toContainText("11 seasons");
   await expect(page.getByRole("row").filter({ hasText: "career" })).toContainText("2,299");
+
+  // His address on the Parity Reference leads here.
+  await page.goto("/players/easter-egg-rylan-yogan");
+  await expect(page).toHaveURL(/\/players\/rylan-yogan$/);
+  await expect(header.getByRole("heading", { name: /Rylan Yogan/ })).toBeVisible();
 });

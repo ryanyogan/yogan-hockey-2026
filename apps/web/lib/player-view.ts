@@ -200,6 +200,9 @@ const GOALIE_SEASON = [
   "shutouts",
 ];
 
+/** The shots column as ESPN's game log heads it, for a count that comes with no column. */
+const SHOTS: StatColumn = { name: "shotsTotal", label: "S" };
+
 /** His shots on goal over the games of a log: ESPN's career table has no shots column. */
 function shotsIn(log: PlayerGameLog): string | undefined {
   const index = log.columns.findIndex((column) => column.name === "shotsTotal");
@@ -210,7 +213,8 @@ function shotsIn(log: PlayerGameLog): string | undefined {
 /**
  * The current season's line. ESPN's own summary is four figures; the career table's row for the
  * same season has the rest, so the line is read from that row and keeps the summary's league
- * ranks. Null when ESPN has no summary for him.
+ * ranks. A figure the row has no column for is the summary's, if the summary has it. Null when
+ * ESPN has no summary for him.
  */
 export function seasonView(
   profile: PlayerProfile,
@@ -246,15 +250,15 @@ export function seasonView(
   const shots = sameSeason && sameGames ? shotsIn(log) : undefined;
   const wanted = profile.position === "G" ? GOALIE_SEASON : SKATER_SEASON;
   const stats = wanted.flatMap((name): SeasonStat[] => {
-    if (name === "shotsTotal") {
-      return shots === undefined
-        ? []
-        : [{ label: LABELS.shotsTotal ?? "SOG", value: shots, rank: rankOf(name) }];
-    }
     const column = career.columns.find((candidate) => candidate.name === name);
-    const value = statValue(career.columns, row.values, name);
-    return column && value !== undefined
-      ? [{ label: shownLabel(column, false).label, value, rank: rankOf(name) }]
+    // A figure the career row has no column for is the summary's own, when it has one.
+    const summed = summary.stats.find((stat) => stat.name === name);
+    const value =
+      (name === "shotsTotal" ? shots : statValue(career.columns, row.values, name)) ??
+      summed?.value;
+    const labelled = column ?? summed ?? (name === "shotsTotal" ? SHOTS : undefined);
+    return labelled && value !== undefined
+      ? [{ label: shownLabel(labelled, false).label, value, rank: rankOf(name) }]
       : [];
   });
   return { season, stats };

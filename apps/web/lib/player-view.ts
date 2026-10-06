@@ -85,8 +85,13 @@ function shownColumns(columns: readonly StatColumn[], perGame = false) {
   };
 }
 
+/** A table's columns as the page heads them, for a table that hides none (a Tracked Player's). */
+export function statColumns(columns: readonly StatColumn[]): ShownColumn[] {
+  return columns.map((column) => shownLabel(column, false));
+}
+
 /** One value of a row, found by ESPN's name for its column. */
-function statValue(
+export function statValue(
   columns: readonly StatColumn[],
   values: readonly string[],
   name: string,
@@ -106,6 +111,8 @@ export type CareerRow = {
   season: string;
   /** Null on the row that totals a season split between clubs. */
   team: TeamRef | null;
+  /** A club outside the NHL, named in words where `team` would be (a Tracked Player's). */
+  club?: string;
   values: string[];
 };
 

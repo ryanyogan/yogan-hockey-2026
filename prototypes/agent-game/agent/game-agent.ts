@@ -11,6 +11,14 @@ const REPLAY_STEP = 6; // plays revealed per tick when replaying a finished game
 export class GameAgent extends Agent<unknown, GameState> {
   initialState = EMPTY;
 
+  // In memory only: changes whenever the object is evicted or hibernated and woken.
+  private bootId = crypto.randomUUID().slice(0, 8);
+
+  // GET /agents/game-agent/<name>/boot: which in-memory instance is this, and who is connected?
+  async onRequest() {
+    return Response.json({ bootId: this.bootId, viewers: [...this.getConnections()].length, polls: this.state.polls, schedules: this.getSchedules().length });
+  }
+
   // Called by the page's server component over Durable Object RPC.
   async watch(eventId: string, replay: boolean): Promise<GameState> {
     const mode = replay ? "replay" : "live";

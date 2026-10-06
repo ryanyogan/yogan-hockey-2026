@@ -10,6 +10,7 @@ export default defineConfig({
     compatibilityDate: "2026-10-05",
     compatibilityFlags: ["nodejs_compat"],
     assets: { notFoundHandling: "none" },
+    observability: { enabled: true },
     exports: {
       GameAgent: exports.durableObject({ storage: "sqlite" }),
     },

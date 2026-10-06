@@ -1,10 +1,11 @@
-import { createDb } from "@yogan-hockey/db";
-import { getScoreboard as fetchScoreboard } from "@yogan-hockey/espn";
+import { createDb, type Db, getPrediction, insertPredictionIfAbsent } from "@yogan-hockey/db";
+import { getScoreboard as fetchScoreboard, getGameSummary } from "@yogan-hockey/espn";
 import type {
   Game,
   ScoreboardHeard,
   ScoreboardReading,
   ScoreboardState,
+  StoredPrediction,
 } from "@yogan-hockey/schemas";
 import {
   invalidateForFinal,
@@ -13,6 +14,17 @@ import {
   saveFinal,
   teamIdsOf,
 } from "./final-game";
+import {
+  AI_GATEWAY_ID,
+  DAILY_MODEL_CALLS,
+  MODEL_OF_EACH_CALL,
+  type PredictionInputs,
+  type PredictionRequest,
+  predictionInputs,
+  predictionRequest,
+  readModelAnswer,
+  teamsOf,
+} from "./prediction";
 import {
   dayAfter,
   missedDates,
@@ -33,6 +45,12 @@ const CATCH_UP_DATES_PER_RUN = 30;
 const FINAL_ATTEMPTS = 3;
 /** How many times in a row catch-up tries a date that fails before it goes on to the next. */
 const CATCH_UP_DATE_ATTEMPTS = 3;
+/** How many times a game's pre-game facts are asked of ESPN before its Prediction is given up on. */
+const PREGAME_ATTEMPTS = 3;
+/** How long a game waits before its pre-game facts are asked of ESPN again. */
+const PREGAME_RETRY_SECONDS = 60;
+/** How long one model call may take. A call that hangs would hold up every other timer. */
+const MODEL_CALL_TIMEOUT_MS = 90 * 1000;
 
 /** Storage key prefix of a final whose work is not finished, followed by the game's id. */
 const PENDING_FINAL_PREFIX = "pending-final:";
@@ -42,9 +60,34 @@ const CATCH_UP_FROM_KEY = "catch-up-from";
 const HEARD_AT_KEY = "heard-at";
 /** Storage key of how many times in a row catch-up has failed at the date it starts from. */
 const CATCH_UP_FAILURES_KEY = "catch-up-failures";
+/** Storage key prefix of a game whose Prediction is not settled yet, followed by the game's id. */
+const PENDING_PREDICTION_PREFIX = "pending-prediction:";
+/** Storage key of the count of model calls made on the current slate's date. */
+const MODEL_CALLS_KEY = "model-calls";
 
 /** A game that went final, kept in storage until its work is done. */
 type PendingFinal = { game: Game; attempts: number };
+/**
+ * A game whose Prediction is being made, kept in storage until its row is in D1. Everything a
+ * restart must not lose is here: how many model calls the game has had, and what the model is
+ * told, so every call for a game is given the same facts.
+ */
+type PendingPrediction = {
+  gameId: string;
+  startTime: string;
+  homeTeamId: string;
+  awayTeamId: string;
+  /** Model calls made for this game so far: the index into `MODEL_OF_EACH_CALL` of the next. */
+  calls: number;
+  /** Failed tries at reading the game's pre-game facts from ESPN. */
+  pregameFailures: number;
+  /** After such a failure, the instant before which the game is left alone. */
+  notBefore: number;
+  /** Null until ESPN's summary has been read. */
+  inputs: PredictionInputs | null;
+};
+/** How many model calls have been made on one slate's date. */
+type ModelCalls = { date: string; count: number };
 /** What the second invalidation, five minutes after a final, is handed. */
 type SecondInvalidation = { gameId: string; teamIds: string[] };
 /** What the re-read of a game's plays, a day after its final, is handed. */
@@ -131,6 +174,7 @@ export class ScoreboardAgent extends ViewerPolledAgent<ScoreboardState> {
     }
     // Every good poll looks, not only one that found something: this is the retry.
     if (this.#pendingFinals().length > 0) await this.#runAtOnce("recordFinals");
+    if (this.#readyPredictions().length > 0) await this.#runAtOnce("makePredictions");
     if (this.#catchUpDates().length > 0) await this.#runAtOnce("catchUp");
   }
 
@@ -147,13 +191,61 @@ export class ScoreboardAgent extends ViewerPolledAgent<ScoreboardState> {
   }
 
   /**
-   * Seam for the Predictions (#52): called once for each game the first time it is seen on
-   * today's slate, which is where the game's Prediction is started in the background. It is
-   * awaited, so anything slow belongs behind a timer or a queue, not in here. The game may
-   * already be live or final when it is first seen. A throw is logged and the game is not handed
-   * over again, so whatever must not be lost has to be kept by the implementation.
+   * Called once for each game the first time it is seen on today's slate: notes that the game's
+   * Prediction is to be made (spec section 6). It is awaited inside the poll, and so inside
+   * first paint, so it only writes the note; `makePredictions` does the work from a timer. A game
+   * first seen after its start gets no Prediction: a pick is made before the game or not at all.
    */
-  protected async startPrediction(_game: Game): Promise<void> {}
+  protected async startPrediction(game: Game): Promise<void> {
+    if (game.status !== "scheduled" || Date.parse(game.startTime) <= Date.now()) return;
+    const key = PENDING_PREDICTION_PREFIX + game.id;
+    // A game handed over twice keeps the calls it has already had.
+    if (this.ctx.storage.kv.get<PendingPrediction>(key) !== undefined) return;
+    const pending: PendingPrediction = {
+      gameId: game.id,
+      startTime: game.startTime,
+      homeTeamId: game.home.id,
+      awayTeamId: game.away.id,
+      calls: 0,
+      pregameFailures: 0,
+      notBefore: 0,
+      inputs: null,
+    };
+    this.ctx.storage.kv.put(key, pending);
+  }
+
+  /**
+   * The one place a model is called: Workers AI through the Worker's binding, by way of AI
+   * Gateway, which keeps the log of prompts and answers. A test replaces `env.AI`.
+   */
+  protected async runModel(model: string, request: PredictionRequest, gameId: string) {
+    const gateway = { id: AI_GATEWAY_ID, skipCache: true, metadata: { gameId } };
+    // The binding's types name each model's request apart; the prompt is one shape for both.
+    const ai = this.env.AI as unknown as {
+      run(model: string, request: PredictionRequest, options: object): Promise<unknown>;
+    };
+    return await ai.run(model, request, { gateway });
+  }
+
+  /**
+   * A timer's callback, not for calling. Makes one step towards one game's Prediction, then sets
+   * itself again while games are waiting, so the Scoreboard's own poll is never held up by more
+   * than one model call. A step is at most one call: `gpt-oss-120b`, the same again if its answer
+   * fails the schema, then the llama model once. The first answer that passes is stored as the
+   * game's Prediction; after the third that does not, a failed row is, and the game is not tried
+   * again. Nothing is computed in a Prediction's place.
+   *
+   * A game that has started is dropped with no row. With the day's model calls spent, the games
+   * still waiting stay noted and nothing is called.
+   */
+  async makePredictions(): Promise<void> {
+    const db = createDb(this.env.DB);
+    const next = await this.#nextPendingPrediction(db);
+    if (!next || this.#modelCallsToday() >= DAILY_MODEL_CALLS) return;
+    if (await this.#stepPrediction(db, ...next)) this.#tellPages();
+    // A game whose facts ESPN would not give is not among these: it waits for a later poll.
+    if (this.#readyPredictions().length > 0) await this.schedule(0, "makePredictions");
+  }
 
   /**
    * A timer's callback, not for calling. Does the work of every final in storage (spec section
@@ -270,6 +362,118 @@ export class ScoreboardAgent extends ViewerPolledAgent<ScoreboardState> {
     return [...this.ctx.storage.kv.list<PendingFinal>({ prefix: PENDING_FINAL_PREFIX })];
   }
 
+  /** Every game whose Prediction is not settled, with its key. */
+  #pendingPredictions(): [string, PendingPrediction][] {
+    return [...this.ctx.storage.kv.list<PendingPrediction>({ prefix: PENDING_PREDICTION_PREFIX })];
+  }
+
+  /** The games whose Prediction can be worked on now. */
+  #readyPredictions(): [string, PendingPrediction][] {
+    return this.#pendingPredictions().filter(([, pending]) => pending.notBefore <= Date.now());
+  }
+
+  /**
+   * The first game that needs a Prediction and can be worked on. On the way it forgets every
+   * game that no longer needs one: one that has started, and one that already has its row.
+   */
+  async #nextPendingPrediction(db: Db): Promise<[string, PendingPrediction] | null> {
+    for (const [key, pending] of this.#readyPredictions()) {
+      const started = Date.parse(pending.startTime) <= Date.now();
+      if (!started && (await getPrediction(db, pending.gameId)) === null) return [key, pending];
+      this.ctx.storage.kv.delete(key);
+    }
+    return null;
+  }
+
+  /**
+   * One step for one game: reads its pre-game facts if it has none yet, then makes its next
+   * model call. Returns whether the game's row was written, a Prediction or a failed attempt.
+   * Otherwise the game is left noted for its next step, or forgotten because it has started.
+   */
+  async #stepPrediction(db: Db, key: string, pending: PendingPrediction): Promise<boolean> {
+    const { gameId } = pending;
+    const settle = async (row: StoredPrediction) => {
+      const written = await insertPredictionIfAbsent(db, row);
+      this.ctx.storage.kv.delete(key);
+      return written;
+    };
+    const failed = (model: string, inputs: PredictionInputs | null) =>
+      settle({
+        gameId,
+        status: "failed",
+        madeAt: new Date().toISOString(),
+        model,
+        inputs: inputs ?? {},
+      });
+
+    if (pending.inputs === null) {
+      try {
+        const summary = await getGameSummary(gameId);
+        if (summary.header.status !== "scheduled") {
+          this.ctx.storage.kv.delete(key);
+          return false;
+        }
+        pending.inputs = predictionInputs(summary.header, summary.pregame);
+      } catch (error) {
+        pending.pregameFailures += 1;
+        pending.notBefore = Date.now() + PREGAME_RETRY_SECONDS * 1000;
+        console.error(`Scoreboard: game ${gameId}'s pre-game facts were not read`, error);
+        if (pending.pregameFailures >= PREGAME_ATTEMPTS) {
+          return await failed(MODEL_OF_EACH_CALL[0], null);
+        }
+      }
+      this.ctx.storage.kv.put(key, pending);
+      if (pending.inputs === null) return false;
+    }
+
+    const { inputs } = pending;
+    const model = MODEL_OF_EACH_CALL[pending.calls] ?? MODEL_OF_EACH_CALL[0];
+    // Counted before the call is made, so a call cut short by a restart is still counted.
+    pending.calls += 1;
+    this.ctx.storage.kv.put(key, pending);
+    this.#countModelCall();
+    const teams = teamsOf(inputs);
+    let answer: ReturnType<typeof readModelAnswer> = null;
+    try {
+      const raw = await withTimeout(this.runModel(model, predictionRequest(inputs), gameId));
+      answer = readModelAnswer(raw, teams);
+      if (!answer) console.error(`Scoreboard: ${model} gave game ${gameId} no valid Prediction`);
+    } catch (error) {
+      console.error(`Scoreboard: ${model} failed for game ${gameId}`, error);
+    }
+    if (answer) {
+      return await settle({
+        gameId,
+        status: "made",
+        pickTeamId: answer.pick === teams[0] ? pending.homeTeamId : pending.awayTeamId,
+        winProbability: answer.winProbability,
+        reasoning: answer.reasoning,
+        keyFactors: answer.keyFactors,
+        madeAt: new Date().toISOString(),
+        model,
+        inputs,
+      });
+    }
+    if (pending.calls < MODEL_OF_EACH_CALL.length) return false;
+    return await failed(model, inputs);
+  }
+
+  /** Model calls made so far on the current slate's date. */
+  #modelCallsToday(): number {
+    const calls = this.ctx.storage.kv.get<ModelCalls>(MODEL_CALLS_KEY);
+    return calls?.date === this.#modelCallsDate() ? calls.count : 0;
+  }
+
+  #countModelCall(): void {
+    const calls: ModelCalls = { date: this.#modelCallsDate(), count: this.#modelCallsToday() + 1 };
+    this.ctx.storage.kv.put(MODEL_CALLS_KEY, calls);
+  }
+
+  /** The day the cap counts by: the slate's, which is the NHL's day and not UTC's. */
+  #modelCallsDate(): string {
+    return this.state.date ?? new Date().toISOString().slice(0, 10);
+  }
+
   /** The dates the next catch-up fetches. None when there is nothing to catch up on. */
   #catchUpDates(): string[] {
     const from = this.ctx.storage.kv.get<string>(CATCH_UP_FROM_KEY);
@@ -279,7 +483,7 @@ export class ScoreboardAgent extends ViewerPolledAgent<ScoreboardState> {
   }
 
   /** Sets a one-off timer for now, unless one for the same callback is already waiting. */
-  async #runAtOnce(callback: "recordFinals" | "catchUp"): Promise<void> {
+  async #runAtOnce(callback: "recordFinals" | "catchUp" | "makePredictions"): Promise<void> {
     await this.schedule(0, callback, undefined, { idempotent: true });
   }
 
@@ -289,5 +493,18 @@ export class ScoreboardAgent extends ViewerPolledAgent<ScoreboardState> {
    */
   #tellPages(): void {
     this.setState({ ...this.state, invalidatedAt: new Date().toISOString() });
+  }
+}
+
+/** A model call's answer, or a rejection when it takes longer than a call may. */
+async function withTimeout<T>(call: Promise<T>): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<never>((_resolve, reject) => {
+    timer = setTimeout(() => reject(new Error("The model call timed out")), MODEL_CALL_TIMEOUT_MS);
+  });
+  try {
+    return await Promise.race([call, timeout]);
+  } finally {
+    clearTimeout(timer);
   }
 }

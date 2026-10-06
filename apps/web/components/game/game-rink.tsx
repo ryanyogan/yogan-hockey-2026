@@ -1,8 +1,10 @@
 import type { GameHeader, GameHeaderSide, Play } from "@yogan-hockey/schemas";
 import { LiveMarker } from "@yogan-hockey/ui/components/marker";
+import type { ReactNode } from "react";
 import { gameStatus, markKind, playTime } from "../../lib/game/plays";
 import { attackedEnd, type RinkEnd } from "../../lib/game/rink";
 import { periodLabel } from "../../lib/game/timeline";
+import { LocalTime } from "../local-time";
 import { Rink } from "./rink";
 
 /*
@@ -21,23 +23,111 @@ const SCORE_SIDE = {
   home: "right-[30.6cqw] translate-x-1/2 text-center @2xl:right-[24.5cqw] @2xl:translate-x-0 @2xl:text-right",
 } as const;
 
-function Score({ side, place }: { side: GameHeaderSide; place: keyof typeof SCORE_SIDE }) {
+type Place = keyof typeof SCORE_SIDE;
+
+/** One side's stack over the ice: a quiet line, a large figure, a second quiet line on a phone. */
+function OverIce({
+  slot,
+  place,
+  line,
+  wide,
+  figure,
+  narrow,
+}: {
+  slot: string;
+  place: Place;
+  line: ReactNode;
+  /** Joins `line` where the rink is wide enough to write one line. */
+  wide: ReactNode;
+  figure: ReactNode;
+  /** What `wide` says, under the figure where the rink is narrow. */
+  narrow: ReactNode;
+}) {
   return (
     <div
-      data-slot="rink-score"
+      data-slot={slot}
       data-side={place}
       className={`absolute top-1 @2xl:top-[1.43cqw] ${SCORE_SIDE[place]}`}
     >
       <div className="whitespace-nowrap text-[10px] text-foreground/60 leading-[15px] @2xl:text-[clamp(10px,1.25cqw,14px)] @2xl:leading-[1.43]">
-        {side.abbreviation}
-        <span className="hidden @2xl:inline"> · {side.shots} shots</span>
+        {line}
+        <span className="hidden @2xl:inline"> · {wide}</span>
       </div>
       <div className="font-bold text-2xl leading-none @2xl:text-[clamp(24px,5.36cqw,60px)]">
-        {side.score}
+        {figure}
       </div>
       <div className="whitespace-nowrap text-[10px] text-foreground/60 leading-[15px] @2xl:hidden">
-        {side.shots} sog
+        {narrow}
       </div>
+    </div>
+  );
+}
+
+function Score({ side, place }: { side: GameHeaderSide; place: Place }) {
+  return (
+    <OverIce
+      slot="rink-score"
+      place={place}
+      line={side.abbreviation}
+      wide={`${side.shots} shots`}
+      figure={side.score}
+      narrow={`${side.shots} sog`}
+    />
+  );
+}
+
+const STATUS_PLACE =
+  "absolute top-1 left-1/2 -translate-x-1/2 whitespace-nowrap text-center text-[10px] leading-[15px] @2xl:top-[1.43cqw] @2xl:text-[clamp(10px,1.43cqw,16px)] @2xl:leading-normal";
+const STATUS_KICKER = "block uppercase @2xl:text-[clamp(10px,1.07cqw,12px)] @2xl:leading-[1.33]";
+const CAPTION_ON_ICE = "max-w-[50cqw] truncate bg-black/70 px-4 py-1 text-slate-100 leading-5";
+/* Under the ice where the ice is too small to write on. Two lines tall, so it never jumps. */
+const CAPTION_UNDER_ICE =
+  "mt-1 line-clamp-2 min-h-10 bg-secondary px-2 py-0.5 leading-[18px] @2xl:hidden";
+
+/**
+ * The rink before the game: the same ice at the same size as `GameRink`, so the page does not
+ * move when the game starts, with the matchup where the score will be. Each team stands where
+ * its score will and its record where its shots will; the start is over centre ice in the
+ * visitor's own time, and the arena is the caption. `status` replaces the time of a game that is
+ * called off.
+ */
+export function MatchupRink({ header, status }: { header: GameHeader; status?: string }) {
+  const where = [header.venue, ...header.broadcasts].filter((part) => part != null).join(" · ");
+  const team = (place: Place) => (
+    <OverIce
+      slot="rink-team"
+      place={place}
+      line={place}
+      wide={header[place].record ?? "no record"}
+      figure={header[place].abbreviation}
+      narrow={header[place].record ?? "no record"}
+    />
+  );
+  return (
+    <div data-slot="game-rink" className="@container">
+      <div className="relative">
+        <Rink plays={[]} focus={null} />
+        <div data-slot="rink-overlay" className="pointer-events-none absolute inset-0">
+          {team("away")}
+          <div data-slot="rink-status" className={STATUS_PLACE}>
+            <span className={`${STATUS_KICKER} text-foreground/60`}>
+              <LocalTime at={header.startTime} show="day" />
+            </span>
+            {status ?? <LocalTime at={header.startTime} show="time" />}
+          </div>
+          {team("home")}
+          {where !== "" && (
+            <div className="absolute inset-x-0 bottom-[1.96cqw] hidden justify-center @2xl:flex">
+              <p data-slot="rink-caption" className={CAPTION_ON_ICE}>
+                {where}
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+      <p data-slot="rink-caption" className={CAPTION_UNDER_ICE}>
+        {where}
+      </p>
     </div>
   );
 }
@@ -109,13 +199,8 @@ export function GameRink({
         <Rink plays={drawn} focus={focus} />
         <div data-slot="rink-overlay" className="pointer-events-none absolute inset-0">
           <Score side={header.away} place="away" />
-          <div
-            data-slot="rink-status"
-            className="absolute top-1 left-1/2 -translate-x-1/2 whitespace-nowrap text-center text-[10px] leading-[15px] @2xl:top-[1.43cqw] @2xl:text-[clamp(10px,1.43cqw,16px)] @2xl:leading-normal"
-          >
-            {live && (
-              <LiveMarker className="block uppercase @2xl:text-[clamp(10px,1.07cqw,12px)] @2xl:leading-[1.33]" />
-            )}
+          <div data-slot="rink-status" className={STATUS_PLACE}>
+            {live && <LiveMarker className={STATUS_KICKER} />}
             {status ?? text}
             {notice != null && (
               <span data-slot="rink-notice" className="block text-[10px] text-live leading-[15px]">
@@ -128,22 +213,14 @@ export function GameRink({
           <EndLabel end="right" {...ends} />
           {focus != null && (
             <div className="absolute inset-x-0 bottom-[1.96cqw] hidden justify-center @2xl:flex">
-              <p
-                data-slot="rink-caption"
-                className="max-w-[50cqw] truncate bg-black/70 px-4 py-1 text-slate-100 leading-5"
-                title={focus.text}
-              >
+              <p data-slot="rink-caption" className={CAPTION_ON_ICE} title={focus.text}>
                 <Caption play={focus} />
               </p>
             </div>
           )}
         </div>
       </div>
-      {/* Under the ice where the ice is too small to write on. Two lines tall, so it never jumps. */}
-      <p
-        data-slot="rink-caption"
-        className="mt-1 line-clamp-2 min-h-10 bg-secondary px-2 py-0.5 leading-[18px] @2xl:hidden"
-      >
+      <p data-slot="rink-caption" className={CAPTION_UNDER_ICE}>
         {focus != null && <Caption play={focus} />}
       </p>
     </div>

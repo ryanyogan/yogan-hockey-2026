@@ -1,4 +1,5 @@
 import {
+  getGameSummary,
   getPlayer,
   getPlayerCareer,
   getPlayerGameLog,
@@ -13,6 +14,7 @@ import type {
   PlayerGameLog,
   PlayerProfile,
   PlayerSearchResult,
+  Pregame,
   Standings,
   Team,
   TeamDetail,
@@ -26,7 +28,8 @@ import { unstable_cache } from "next/cache";
  * want the answer as it is now, and invalidate these tags when a game goes final.
  *
  * The scoreboard is not here: live scores come from the Scoreboard Agent, never from this cache.
- * Nor is the game summary: the Game Agent and the Replay read it as it is now.
+ * Nor is the game summary: the Game Agent and the Replay read it as it is now. Only its pregame
+ * facts, for a scheduled game's page, are cached.
  */
 
 const MINUTE = 60;
@@ -46,12 +49,24 @@ export function playerTag(playerId: string): string {
 }
 
 /**
- * The tag for one game. Nothing is cached under it yet: the game summary is read as it is now.
- * The Scoreboard invalidates it at the final all the same, so whatever is later cached about a
- * game is invalidated at the horn without the Scoreboard changing.
+ * The tag for one game: on its pregame facts (`cachedGamePregame`). The game summary itself is
+ * read as it is now. The Scoreboard invalidates the tag at the final.
  */
 export function gameTag(gameId: string): string {
   return `game:${gameId}`;
+}
+
+/**
+ * What a scheduled game's page shows of the matchup: records, standings, last five, goalies,
+ * injuries, leaders and the season series. Fifteen minutes: none of it moves faster before a
+ * game, and the header and plays, which do move, come from the Game Agent instead.
+ */
+export function cachedGamePregame(gameId: string): Promise<Pregame> {
+  return unstable_cache(
+    async () => (await getGameSummary(gameId)).pregame,
+    ["espn-game-pregame", gameId],
+    { tags: [gameTag(gameId)], revalidate: 15 * MINUTE },
+  )();
 }
 
 /** The league standings. Five minutes. */

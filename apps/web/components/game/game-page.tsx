@@ -70,6 +70,7 @@ function GameStream({
       header={stream.header ?? game.header}
       plays={stream.plays}
       delayed={stream.delayed}
+      reconnecting={stream.reconnecting}
       archived={stream.archived}
       scoreboard={scoreboard}
       {...slots}
@@ -83,6 +84,7 @@ function GameInPhase({
   header,
   plays,
   delayed,
+  reconnecting,
   archived,
   scoreboard,
   tab,
@@ -95,10 +97,18 @@ function GameInPhase({
   header: GameHeader;
   plays: readonly Play[];
   delayed: boolean;
+  /** The Game Agent's socket is down. Only a page with a socket says so. */
+  reconnecting?: boolean;
   archived: boolean;
   scoreboard?: Pick<Game, "status" | "period" | "clock">;
 } & Slots) {
-  const { status, notice } = streamReading({ header, plays, delayed, scoreboard });
+  const { status, notice } = streamReading({
+    header,
+    plays,
+    delayed,
+    reconnecting,
+    scoreboard,
+  });
   switch (gamePhase(header.status)) {
     case "scheduled":
       return (

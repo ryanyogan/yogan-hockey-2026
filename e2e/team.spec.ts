@@ -164,3 +164,26 @@ test("a team's page shows each tab from a pasted URL, titled with the team's nam
     expect(head).toContain(`<title>${TITLE}</title>`);
   });
 });
+
+// Every team but Toronto has no recording, and a missing recording fails as ESPN failing does.
+test("a team that cannot be read says so inside the shell, with a retry and a way back", async ({
+  page,
+}) => {
+  const response = await page.goto("/nhl/teams/1");
+  expect(response?.status()).toBe(503);
+  await expect(page).toHaveTitle("Not answering · Yogan Hockey");
+  await expect(page.getByRole("navigation", { name: "Site" })).toBeVisible();
+  await expect(page.getByRole("contentinfo")).toBeVisible();
+
+  const main = page.getByRole("main");
+  await expect(main).toContainText(
+    "ESPN is not answering just now, so this team could not be read",
+  );
+  await expect(main.getByRole("button", { name: "Try again" })).toBeVisible();
+  await expect(main.getByRole("link", { name: "all teams" })).toHaveAttribute(
+    "href",
+    "/nhl?tab=teams",
+  );
+  // What failed is not the visitor's to read.
+  await expect(main).not.toContainText("fixture");
+});

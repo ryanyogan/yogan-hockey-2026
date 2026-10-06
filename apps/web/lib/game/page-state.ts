@@ -1,4 +1,5 @@
 import type { Game, GameHeader, GameStatus, Play } from "@yogan-hockey/schemas";
+import { RECONNECTING } from "../connection-drop";
 import { periodLabel, SHOOTOUT } from "./timeline";
 
 /**
@@ -62,21 +63,27 @@ export type StreamReading = {
  *   then it is the Scoreboard's for the same game and period (time left, as the ticker shows it),
  *   and failing that the period alone, since "2nd 0:00" would read as a period that is over.
  * - "Updates delayed" when the Agent reports a stall.
+ * - "Reconnecting" in its place while the page's socket to the Agent is down, since nothing the
+ *   Agent says arrives then. A finished game has no more to hear, so it says nothing.
  */
 export function streamReading({
   header,
   plays,
   delayed,
+  reconnecting = false,
   scoreboard,
 }: {
   header: GameHeader;
   plays: readonly Play[];
   delayed: boolean;
+  /** The socket to the Game Agent has been down for longer than a blip. */
+  reconnecting?: boolean;
   /** The same game on the Scoreboard, when today's slate has it. */
   scoreboard?: Pick<Game, "status" | "period" | "clock">;
 }): StreamReading {
   const reading: StreamReading = {};
-  if (delayed) reading.notice = UPDATES_DELAYED;
+  if (reconnecting && header.status !== "final") reading.notice = RECONNECTING;
+  else if (delayed) reading.notice = UPDATES_DELAYED;
   if (header.status !== "live") return reading;
 
   const period = periodLabel(header.period, header.seasonType);

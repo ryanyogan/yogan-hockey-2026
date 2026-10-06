@@ -5,9 +5,12 @@ import { useAgent } from "agents/react";
 import { createContext, type ReactNode, useContext, useMemo, useState } from "react";
 import { SCOREBOARD_CONNECTION } from "../../lib/scoreboard-connection";
 import { heardAtFrom, laterOf } from "../../lib/scoreboard-view";
+import { useDropWatch } from "../../lib/use-drop-watch";
 import { useRefreshOnInvalidation } from "../../lib/use-refresh-on-invalidation";
 
 const ScoreboardContext = createContext<ScoreboardReading | null>(null);
+/** Whether the Scoreboard's socket has been down for longer than a blip. */
+const ScoreboardDroppedContext = createContext(false);
 
 /**
  * The page's one socket to the Scoreboard Agent. The root layout renders it around every page with
@@ -21,6 +24,9 @@ const ScoreboardContext = createContext<ScoreboardReading | null>(null);
  * When the Scoreboard has invalidated cached data (a game went final, or a catch-up recorded
  * games), what the server rendered is out of date: `invalidatedAt` moves and the page's server
  * components are rendered again.
+ *
+ * While the socket is down the scores on the page stand still; `useScoreboardDropped()` says so
+ * once that has lasted longer than a reconnect usually takes, and the shell tells the visitor.
  */
 export function ScoreboardProvider({
   initial,
@@ -31,9 +37,12 @@ export function ScoreboardProvider({
 }) {
   const [state, setState] = useState<ScoreboardState>(initial);
   const [lastHeardAt, setLastHeardAt] = useState(initial.heardAt);
+  const drop = useDropWatch();
 
   useAgent<ScoreboardState>({
     ...SCOREBOARD_CONNECTION,
+    onOpen: drop.opened,
+    onClose: drop.closed,
     onStateUpdate: (next) => setState(next),
     onMessage: (message) => {
       const at = heardAtFrom(message.data);
@@ -47,7 +56,19 @@ export function ScoreboardProvider({
     () => ({ ...state, heardAt: laterOf(state.updatedAt, lastHeardAt) }),
     [state, lastHeardAt],
   );
-  return <ScoreboardContext value={scoreboard}>{children}</ScoreboardContext>;
+  return (
+    <ScoreboardContext value={scoreboard}>
+      <ScoreboardDroppedContext value={drop.dropped}>{children}</ScoreboardDroppedContext>
+    </ScoreboardContext>
+  );
+}
+
+/**
+ * Whether the page has lost its Scoreboard socket for more than a few seconds, so the scores it
+ * shows may be behind. False again as soon as the socket is back.
+ */
+export function useScoreboardDropped(): boolean {
+  return useContext(ScoreboardDroppedContext);
 }
 
 /**

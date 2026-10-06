@@ -1,0 +1,67 @@
+name: Preview
+
+# A preview of each pull request, on the preview KV and D1, never the production pair
+# (apps/web/lib/deploy-target.ts). It does not wait for CI and CI does not wait for it.
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  gate:
+    name: Can a preview deploy?
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    outputs:
+      enabled: ${{ steps.gate.outputs.enabled }}
+      d1: ${{ steps.gate.outputs.d1 }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          sparse-checkout: |
+            scripts/deploy-gate.sh
+            apps/web/cloudflare.resources.json
+          sparse-checkout-cone-mode: false
+      - id: gate
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: scripts/deploy-gate.sh preview
+
+  preview:
+    name: Deploy the preview
+    needs: gate
+    if: needs.gate.outputs.enabled == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    # One at a time for a pull request, and never cancelled halfway through the migrations. Two
+    # pull requests can still migrate the shared preview D1 at once; applying is idempotent, so
+    # rerun the one that lost.
+    concurrency:
+      group: preview-${{ github.event.number }}
+      cancel-in-progress: false
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    defaults:
+      run:
+        # Named so that it runs with pipefail: the deploy below is piped.
+        shell: bash
+        working-directory: apps/web
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+
+      - name: Apply the D1 migrations to the preview database
+        env:
+          D1_ID: ${{ needs.gate.outputs.d1 }}
+        run: pnpm exec cf d1 migrations apply "$D1_ID" --dir ../../packages/db/migrations </dev/null
+
+      - name: Deploy the preview
+        env:
+          PREVIEW_NAME: pr-${{ github.event.number }}
+        run: |
+          pnpm exec cf previews deploy "$PREVIEW_NAME" --quiet </dev/null | tee "$RUNNER_TEMP/preview.json"
+          urls=$(jq -r '[.preview_urls[]?, .deployment_urls[]?] | join(" ")' "$RUNNER_TEMP/preview.json" || true)
+          echo "::notice title=Preview deployed::$PREVIEW_NAME ${urls:-(cf printed no URL; see the log)}"

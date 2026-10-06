@@ -1,0 +1,10 @@
+{
+  "production": {
+    "kv": "07aa4f9113d04eec9cbbf1b6a10ee94b",
+    "d1": "a8122b7b-aee0-41ef-acbf-66fd3e0326b0"
+  },
+  "preview": {
+    "kv": "d204ecab5f10483c8dc4c128c33d3c15",
+    "d1": "15e38710-c86b-4e57-88f4-189bdae2e86a"
+  }
+}

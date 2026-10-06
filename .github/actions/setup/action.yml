@@ -1,0 +1,25 @@
+name: Set up the workspace
+description: Node and pnpm at the versions in mise.toml, then the dependencies from a cached pnpm store.
+
+runs:
+  using: composite
+  steps:
+    # mise.toml is the one place the Node and pnpm versions are written. The action caches both.
+    - uses: jdx/mise-action@v5
+
+    - id: store
+      shell: bash
+      run: |
+        path=$(pnpm store path --silent)
+        echo "path=$path" >>"$GITHUB_OUTPUT"
+
+    # A cache saved on a pull request is readable only by that pull request; one saved on main is
+    # readable by all of them. The Deploy workflow runs these jobs on main, which keeps it warm.
+    - uses: actions/cache@v6
+      with:
+        path: ${{ steps.store.outputs.path }}
+        key: pnpm-store-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+        restore-keys: pnpm-store-${{ runner.os }}-
+
+    - shell: bash
+      run: pnpm install --frozen-lockfile

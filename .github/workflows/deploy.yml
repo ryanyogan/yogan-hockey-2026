@@ -1,0 +1,78 @@
+name: Deploy
+
+# A merge to main: the checks again on the merged code, then the D1 migrations, then the Worker.
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    name: CI
+    uses: ./.github/workflows/ci.yml
+
+  gate:
+    name: Can production deploy?
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    outputs:
+      enabled: ${{ steps.gate.outputs.enabled }}
+      d1: ${{ steps.gate.outputs.d1 }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          sparse-checkout: |
+            scripts/deploy-gate.sh
+            apps/web/cloudflare.resources.json
+          sparse-checkout-cone-mode: false
+      - id: gate
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: scripts/deploy-gate.sh production
+
+  deploy:
+    name: Migrate D1 and deploy the Worker
+    needs: [ci, gate]
+    if: needs.gate.outputs.enabled == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    # One deploy at a time, and never one cancelled between its migrations and its upload. Of
+    # several waiting, GitHub keeps the newest.
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    defaults:
+      run:
+        shell: bash
+        working-directory: apps/web
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+
+      # Migrations first: they are additive only, so the Worker still running works on the new
+      # schema, and the new Worker never meets the old one.
+      - name: Apply the D1 migrations
+        env:
+          D1_ID: ${{ needs.gate.outputs.d1 }}
+        run: pnpm exec cf d1 migrations apply "$D1_ID" --dir ../../packages/db/migrations </dev/null
+
+      # The Worker's one secret travels with the deploy, so a first deploy needs no second step.
+      - name: Deploy the Worker
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+        run: |
+          subject=$(git log -1 --pretty=%s | cut -c1-100)
+          args=(--tag "${GITHUB_SHA::7}" --message "$subject")
+          if [[ -n "$NTFY_TOPIC" ]]; then
+            jq -n '{NTFY_TOPIC: env.NTFY_TOPIC}' >"$RUNNER_TEMP/worker-secrets.json"
+            args+=(--secrets-file "$RUNNER_TEMP/worker-secrets.json")
+          else
+            echo "::warning title=No ntfy topic::The NTFY_TOPIC secret is not set, so this deploy uploads no Worker secret."
+          fi
+          pnpm exec cf deploy "${args[@]}" </dev/null

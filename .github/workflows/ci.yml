@@ -1,0 +1,75 @@
+name: CI
+
+# Every pull request, and main after a merge (called by the Deploy workflow, which deploys only
+# if these pass). Nothing here needs a Cloudflare login or any secret.
+on:
+  pull_request:
+  workflow_call:
+
+# A new push to a pull request cancels the run it supersedes. A run on main is never cancelled
+# once started; GitHub keeps one waiting behind it, so of several quick merges the newest waits
+# and the ones between are dropped.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  # Two jobs, not five: setting up a runner costs more than Biome, typecheck, Vitest and the build
+  # put together, so they share one, and only Playwright (the slow one) runs beside them.
+  checks:
+    name: Biome, typecheck, Vitest, build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+      - name: Biome
+        run: pnpm lint
+      - name: Typecheck
+        run: pnpm typecheck
+      - name: Vitest
+        run: pnpm test
+      # The production build, then the checks `cf deploy` makes before it uploads. It uploads nothing.
+      - name: Production build
+        working-directory: apps/web
+        run: pnpm exec cf deploy --dry-run </dev/null
+
+  e2e:
+    name: Playwright smoke tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+
+      # Assigned before it is used, and in a named shell: a failure inside an `echo "$(...)"`, or
+      # before a pipe in the default shell, would pass and leave an empty cache key.
+      - id: playwright
+        shell: bash
+        run: |
+          version=$(pnpm exec playwright --version | cut -d' ' -f2)
+          echo "version=$version" >>"$GITHUB_OUTPUT"
+      - id: browser
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}-chromium-shell
+      - name: Install Chromium
+        if: steps.browser.outputs.cache-hit != 'true'
+        run: pnpm exec playwright install --only-shell chromium
+
+      # Against `pnpm dev`, which Playwright starts itself (playwright.config.ts).
+      - name: Playwright
+        run: pnpm test:e2e
+
+      - name: Upload the traces of the failed tests
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-traces
+          path: test-results/
+          retention-days: 7
+          if-no-files-found: ignore

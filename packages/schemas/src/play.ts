@@ -51,3 +51,13 @@ export const PlaySchema = z.object({
   participants: z.array(PlayParticipantSchema),
 });
 export type Play = z.infer<typeof PlaySchema>;
+
+const KEY_PLAY_TYPES = new Set(["goal", "shot-on-goal", "period-start", "period-end"]);
+
+/**
+ * Whether a play is a Key play: a goal, a penalty, a shot on goal, or the start or end of a
+ * period. A game page shows these first. It is worked out from the play, never stored.
+ */
+export function isKeyPlay(play: Play): boolean {
+  return play.scoring || play.penalty || KEY_PLAY_TYPES.has(play.type);
+}

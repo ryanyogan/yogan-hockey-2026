@@ -3,17 +3,29 @@ import { z } from "zod";
 import { recordOnly } from "./espn-stats.ts";
 import { EspnTeam, teamFrom } from "./espn-team.ts";
 
+/** An instant as ESPN writes it, often without the seconds ("2026-10-06T23:00Z"), read as UTC. */
+export const espnInstant = z.string().transform((date, context) => {
+  const instant = new Date(date);
+  if (Number.isNaN(instant.getTime())) {
+    context.addIssue({ code: "custom", message: `not a date: ${date}` });
+    return z.NEVER;
+  }
+  return instant.toISOString();
+});
+
+export const EspnStatusType = z.object({
+  state: z.enum(["pre", "in", "post"]),
+  completed: z.boolean(),
+  shortDetail: z.string(),
+});
+
 const EspnStatus = z.object({
   period: z.number(),
   displayClock: z.string(),
-  type: z.object({
-    state: z.enum(["pre", "in", "post"]),
-    completed: z.boolean(),
-    shortDetail: z.string(),
-  }),
+  type: EspnStatusType,
 });
 
-const EspnCompetitor = z.object({
+export const EspnCompetitor = z.object({
   homeAway: z.enum(["home", "away"]),
   team: EspnTeam,
   // The scoreboard sends "3"; a schedule sends { value: 3 }, or nothing before the game.
@@ -23,7 +35,7 @@ const EspnCompetitor = z.object({
   records: z.array(z.object({ type: z.string(), summary: z.string() })).nullish(),
   record: z.array(z.object({ type: z.string(), displayValue: z.string() })).nullish(),
 });
-type EspnCompetitor = z.infer<typeof EspnCompetitor>;
+export type EspnCompetitor = z.infer<typeof EspnCompetitor>;
 
 const EspnCompetition = z
   .object({
@@ -58,15 +70,7 @@ const EspnCompetition = z
 export const EspnEvent = z
   .object({
     id: z.string(),
-    // ESPN leaves the seconds off: "2026-10-06T23:00Z".
-    date: z.string().transform((date, context) => {
-      const start = new Date(date);
-      if (Number.isNaN(start.getTime())) {
-        context.addIssue({ code: "custom", message: `not a date: ${date}` });
-        return z.NEVER;
-      }
-      return start.toISOString();
-    }),
+    date: espnInstant,
     // The scoreboard puts the season type inside `season`; a schedule puts it beside it.
     season: z.object({ year: z.number(), type: z.number().nullish() }),
     seasonType: z.object({ type: z.number() }).nullish(),
@@ -83,7 +87,10 @@ export const EspnEvent = z
 type EspnEvent = z.infer<typeof EspnEvent>;
 
 /** Read from the state and the completed flag. ESPN's status names are not relied on. */
-function statusFrom({ state, completed }: z.infer<typeof EspnStatus>["type"]): GameStatus {
+export function statusFrom({
+  state,
+  completed,
+}: Pick<z.infer<typeof EspnStatusType>, "state" | "completed">): GameStatus {
   if (state === "pre") return "scheduled";
   if (state === "in") return "live";
   return completed ? "final" : "postponed";
@@ -109,7 +116,7 @@ function recordFrom(competitor: EspnCompetitor): string | null {
   return overall ? recordOnly(overall.text) : null;
 }
 
-function sideFrom(competitor: EspnCompetitor, status: GameStatus): GameSide {
+export function sideFrom(competitor: EspnCompetitor, status: GameStatus): GameSide {
   return {
     ...teamFrom(competitor.team),
     score: scoreFrom(competitor.score),

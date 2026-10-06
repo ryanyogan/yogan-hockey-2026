@@ -60,6 +60,15 @@ test("an intermission reads as the end of the period just played", () => {
   expect(gameStatusLine(live("1", 1, "0:00"))).toBe("end 1st");
   expect(gameStatusLine(live("2", 3, "0:00"))).toBe("end 3rd");
   expect(gameStatusLine(live("3", 4, "0:00"))).toBe("end OT");
+  expect(gameStatusLine(live("4", 2, "00:00"))).toBe("end 2nd");
+  expect(gameStatusLine(live("5", 2, "0.0"))).toBe("end 2nd");
+  // The last seconds of a period are still play.
+  expect(gameStatusLine(live("6", 2, "0:05"))).toBe("2nd 0:05");
+  expect(gameStatusLine(live("7", 2, "20:00"))).toBe("2nd 20:00");
+});
+
+test("a game ESPN calls live before it has a period reads as live", () => {
+  expect(gameStatusLine(live("1", 0, "0:00"))).toBe("live");
 });
 
 test("a shootout has no clock, and a playoff game has no shootout", () => {

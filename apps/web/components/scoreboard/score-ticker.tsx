@@ -17,6 +17,7 @@ function Side({ side, scored }: { side: ScoreboardSide; scored: boolean }) {
 function Entry({ game }: { game: ScoreboardGame }) {
   const live = game.status === "live";
   const scored = hasScore(game);
+  const status = gameStatusLine(game);
   return (
     <li className="border-border border-r">
       <Link
@@ -31,7 +32,9 @@ function Entry({ game }: { game: ScoreboardGame }) {
         </span>
         <Side side={game.home} scored={scored} />
         <span className={live ? "font-bold text-live" : "text-foreground/50"}>
-          {gameStatusLine(game)}
+          {/* The tint says "live" to the eye only. */}
+          {live && status !== "live" && <span className="sr-only">live, </span>}
+          {status}
         </span>
       </Link>
     </li>

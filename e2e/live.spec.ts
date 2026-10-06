@@ -88,8 +88,7 @@ test("/nhl/live lists the slate in sections, links each game, and follows the so
   await expect(final.getByRole("row")).toHaveCount(2);
   await expect(entry).toHaveText(/NSH 2.*TOR 1.*final/);
 
-  // A game leads to its own page, which is not built yet (#50).
+  // A game leads to its own page (#50 builds what is there).
   await entry.click();
   await expect(page).toHaveURL(new RegExp(`/nhl/games/${GAME_ID}$`));
-  await expect(page.getByRole("heading", { name: "Not found" })).toBeVisible();
 });

@@ -51,7 +51,8 @@ export function GameLedger({ games }: { games: ScoreboardGame[] }) {
                   </span>
                   {game.status === "live" ? (
                     <LiveMarker strong className="text-foreground underline">
-                      {status}
+                      {/* The marker says "live" itself: a game in its warm-up has no more to add. */}
+                      {status === "live" ? null : status}
                     </LiveMarker>
                   ) : (
                     status

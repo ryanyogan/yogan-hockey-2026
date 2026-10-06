@@ -57,6 +57,9 @@ export const gameHref = (game: ScoreboardGame) => `/nhl/games/${game.id}`;
 /** A game has a score to show once it has started; a postponed game never did. */
 export const hasScore = (game: ScoreboardGame) => game.status === "live" || game.status === "final";
 
+/** A clock with no time left on it, however it is written: "0:00", "00:00", "0.0". */
+const RUN_OUT = /^[0:.]+$/;
+
 const inShootout = (game: ScoreboardGame) =>
   game.period === SHOOTOUT_PERIOD && game.seasonType !== PLAYOFFS;
 
@@ -75,8 +78,8 @@ function liveLine(game: ScoreboardGame): string {
   if (period === "") return "live";
   // A shootout has no clock.
   if (inShootout(game)) return period;
-  // The clock counts down, so at 0:00 the period is over: an intermission.
-  if (game.clock === "0:00") return `end ${period}`;
+  // The clock counts down, so at zero the period is over: an intermission.
+  if (RUN_OUT.test(game.clock)) return `end ${period}`;
   return `${period} ${game.clock}`;
 }
 

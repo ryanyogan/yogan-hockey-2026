@@ -49,9 +49,12 @@ export function LiveScores() {
       <Games title="Postponed" games={sections.postponed} />
       {games.length === 0 && (
         <Section>
-          <SectionHeader title="No games today" />
+          {/* Without a date the Scoreboard has not answered yet, which is not a day off. */}
+          <SectionHeader title={date == null ? "Scores unavailable" : "No games today"} />
           <p className="border-foreground/20 border-t px-2 py-1.5 text-foreground/70">
-            Nothing is on the NHL's slate. Scores appear here as soon as there is a game.
+            {date == null
+              ? "Today's games could not be read. They appear here as soon as they can be."
+              : "Nothing is on the NHL's slate. Scores appear here as soon as there is a game."}
           </p>
         </Section>
       )}

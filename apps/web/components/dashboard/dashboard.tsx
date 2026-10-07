@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { topOfConferences } from "../../lib/dashboard";
 import { cachedStandings } from "../../lib/espn";
 import { nhlHref } from "../../lib/nhl-page";
+import { doNotKeepPage } from "../../lib/render-failure";
 import { familyRow, trackedPlayers } from "../../lib/tracked-players";
 import { Link } from "../link";
 import { StandingsLedger } from "../nhl/standings-ledger";
@@ -29,7 +30,11 @@ async function Standings() {
   // The standings are ESPN's: when they cannot be read the block says so and the rest is drawn.
   const tables = await cachedStandings()
     .then(topOfConferences)
-    .catch(() => null);
+    .catch(() => {
+      // Should the dashboard come to be kept in the page cache, not with this in it.
+      doNotKeepPage();
+      return null;
+    });
   if (tables == null || tables.length === 0) {
     return (
       <Section aria-label="Standings">

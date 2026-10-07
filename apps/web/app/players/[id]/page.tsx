@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 import { cache } from "react";
 import { FavoriteHeart } from "../../../components/favorites/favorite-heart";
 import { Link } from "../../../components/link";
@@ -10,6 +9,7 @@ import {
   SeasonSection,
   TeamSection,
 } from "../../../components/players/player-sections";
+import { pageNotFound } from "../../../lib/page-not-found";
 import { careerView, gameLogView, seasonView } from "../../../lib/player-view";
 import { loadPlayer } from "../../../lib/players";
 
@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function PlayerPage({ params, searchParams }: Props) {
   const [{ id }, { games }] = await Promise.all([params, searchParams]);
   const player = await playerOf(id);
-  if (!player) notFound();
+  if (!player) pageNotFound();
 
   const { profile } = player;
   const everyGame = games === "all";

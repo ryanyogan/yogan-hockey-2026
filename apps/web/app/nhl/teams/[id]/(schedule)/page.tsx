@@ -1,7 +1,7 @@
-import { notFound } from "next/navigation";
 import { ResultsLedger, UpcomingLedger } from "../../../../../components/team/schedule-ledgers";
 import { cachedTeamSchedule } from "../../../../../lib/espn";
 import { loadTeam } from "../../../../../lib/find-team";
+import { pageNotFound } from "../../../../../lib/page-not-found";
 import { scheduleView } from "../../../../../lib/team-schedule";
 
 // Rendered per request; the ESPN reads behind it are cached and tagged (spec §2).
@@ -19,7 +19,7 @@ export default async function TeamSchedulePage({ params }: Props) {
   // does not exist has no schedule either: that failure is heard here and never reported.
   const schedule = cachedTeamSchedule(id);
   schedule.catch(() => {});
-  if ((await loadTeam(id)) == null) notFound();
+  if ((await loadTeam(id)) == null) pageNotFound();
 
   const view = scheduleView(await schedule);
   return (

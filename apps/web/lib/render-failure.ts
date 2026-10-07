@@ -17,7 +17,7 @@ import { EspnFetchError, EspnParseError } from "@yogan-hockey/espn";
  * vinext's client draws the boundary from it; so does a failure that streams in after the
  * response has started, whose status has already gone.
  */
-type Render = { status: number | null };
+type Render = { status: number | null; keep: boolean };
 
 const renders = new AsyncLocalStorage<Render>();
 
@@ -30,6 +30,21 @@ export function noteRenderFailure(error: unknown): void {
   if (render == null || render.status != null) return;
   const upstream = error instanceof EspnFetchError || error instanceof EspnParseError;
   render.status = upstream ? UPSTREAM_UNAVAILABLE : OWN_FAULT;
+}
+
+/**
+ * The page being rendered must not be kept by the page cache (`lib/page-cache.ts`), though it
+ * answers 200 and nothing failed. Call it wherever a render on a cacheable page draws something
+ * in place of the page's own content:
+ *
+ * - a fallback for a read that failed and was caught (a header without its conference), which
+ *   would otherwise be every visitor's page until the entry is rendered again;
+ * - a not-found page (`pageNotFound` in `lib/page-not-found.ts`): beneath a `loading.tsx` the
+ *   shell has been sent by the time `notFound()` is thrown, so it streams inside a 200.
+ */
+export function doNotKeepPage(): void {
+  const render = renders.getStore();
+  if (render != null) render.keep = false;
 }
 
 /**
@@ -71,20 +86,37 @@ p { margin: 0; padding: 6px 8px;
  * A `handle` that throws is answered with the page of last resort, never the platform's own.
  */
 export async function answerWithRenderStatus(handle: () => Promise<Response>): Promise<Response> {
-  const render: Render = { status: null };
+  return (await watchRender(handle)).response;
+}
+
+/**
+ * `answerWithRenderStatus`, and with the answer a way to ask later whether the page cache must
+ * decline to keep it (`lib/page-cache.ts`): a render failed, or called `doNotKeepPage`. Either
+ * can come after the response has started, when its status has gone, so it is asked once the
+ * body has been read.
+ */
+export async function watchRender(
+  handle: () => Promise<Response>,
+): Promise<{ response: Response; unstorable(): boolean }> {
+  const render: Render = { status: null, keep: true };
+  const unstorable = () => render.status != null || !render.keep;
   let response: Response;
   try {
     response = await renders.run(render, handle);
   } catch (error) {
     console.error("The site could not answer a request", error);
-    return new Response(LAST_RESORT_PAGE, {
-      status: OWN_FAULT,
-      headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" },
-    });
+    render.status = OWN_FAULT;
+    return {
+      response: new Response(LAST_RESORT_PAGE, {
+        status: OWN_FAULT,
+        headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" },
+      }),
+      unstorable,
+    };
   }
   const isPage = response.headers.get("content-type")?.startsWith("text/html") ?? false;
-  if (render.status == null || response.status !== 200 || !isPage) return response;
+  if (render.status == null || response.status !== 200 || !isPage) return { response, unstorable };
   const headers = new Headers(response.headers);
   headers.set("cache-control", "no-store");
-  return new Response(response.body, { status: render.status, headers });
+  return { response: new Response(response.body, { status: render.status, headers }), unstorable };
 }

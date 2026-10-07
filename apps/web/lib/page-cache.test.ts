@@ -59,6 +59,11 @@ describe("which pages are cached", () => {
     "/nhl/teams/1/nonsense",
     "/skeleton/picks",
     "/agents/scoreboard-agent/today",
+    // Static files are the platform's to serve, with their own cache headers (`public/_headers`).
+    "/team-marks/10-28.2288c70a.webp",
+    "/team-marks/no-such-mark.webp",
+    "/assets/index-abc123.js",
+    "/favicon.ico",
   ])("%s is not", (path) => expect(pagePolicy(path)).toBeNull());
 });
 
@@ -316,6 +321,7 @@ describe("serving a page", () => {
   it("leaves every other request alone", async () => {
     const { get, state, entries } = worker();
     expect((await get("/nhl/live")).status).toBeNull();
+    expect((await get("/team-marks/no-such-mark.webp")).status).toBeNull();
     expect((await get("/nhl", { method: "POST" })).status).toBeNull();
     expect(state.seen.some((request) => request.headers.has(PAGE_CACHE_REQUEST_HEADER))).toBe(
       false,

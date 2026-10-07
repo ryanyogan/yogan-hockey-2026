@@ -28,36 +28,13 @@ import {
   StatCells,
   StatColumn,
 } from "../players/player-sections";
+import { UpcomingSection } from "./upcoming-section";
 
 /*
  * A Tracked Player's page, in the player page's language and from its parts: the same header
  * line, the same ledgers. Everything drawn comes from his static file: nothing is read from ESPN
  * or from a store.
  */
-
-/** The games to come: a day and an opponent, and nothing about where or when. */
-function UpcomingSection({ schedule }: { schedule: ScheduleView }) {
-  const count = schedule.upcoming.length;
-  return (
-    <Section>
-      <SectionHeader title="Upcoming" count={`${count} ${count === 1 ? "game" : "games"}`} />
-      <Ledger density="compact">
-        <LedgerHead>
-          <LedgerColumn>date</LedgerColumn>
-          <LedgerColumn className="w-full">opp</LedgerColumn>
-        </LedgerHead>
-        <LedgerBody>
-          {schedule.upcoming.map((row) => (
-            <LedgerRow key={row.key}>
-              <LedgerCell className="whitespace-nowrap">{row.date}</LedgerCell>
-              <LedgerCell className="whitespace-nowrap">{row.opponent}</LedgerCell>
-            </LedgerRow>
-          ))}
-        </LedgerBody>
-      </Ledger>
-    </Section>
-  );
-}
 
 /** The games played, newest first, each with his line: a player page's Games, leading nowhere. */
 function ResultsSection({ schedule }: { schedule: ScheduleView }) {
@@ -143,7 +120,7 @@ export function TrackedPlayerView({ player, tab }: { player: TrackedPlayer; tab:
             </>
           ) : schedule && schedule.upcoming.length + schedule.results.length > 0 ? (
             <>
-              {schedule.upcoming.length > 0 && <UpcomingSection schedule={schedule} />}
+              {schedule.upcoming.length > 0 && <UpcomingSection rows={schedule.upcoming} />}
               {schedule.results.length > 0 && <ResultsSection schedule={schedule} />}
             </>
           ) : (

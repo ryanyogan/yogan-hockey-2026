@@ -1,8 +1,6 @@
 import type { GameHeader } from "@yogan-hockey/schemas";
 import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { cache } from "react";
 import { GameMatchup } from "../../../../components/game/game-matchup";
 import { GamePage } from "../../../../components/game/game-page";
 import { GamePick } from "../../../../components/game/game-pick";
@@ -12,10 +10,14 @@ import { findGame } from "../../../../lib/find-game";
 import { gamePhase } from "../../../../lib/game/page-state";
 import { gameTabFrom } from "../../../../lib/game/tabs";
 import { readGamePick } from "../../../../lib/game-pick";
+import { pageNotFound } from "../../../../lib/page-not-found";
+import { perRequest } from "../../../../lib/per-request";
+import { doNotKeepPage } from "../../../../lib/render-failure";
 import { replayGame } from "../../../../lib/replay";
 import { gameHref } from "../../../../lib/scoreboard-view";
 
-// Rendered per request: first paint is the Game Agent's answer as it is now.
+// Rendered per request: first paint is the Game Agent's answer as it is now. The page cache keeps
+// the page of a game that is over and archived, and of no other (`doNotKeepPage()` below).
 export const dynamic = "force-dynamic";
 
 type Props = {
@@ -24,7 +26,7 @@ type Props = {
 };
 
 // The title and the page both want the game: one read of its Agent for the two of them.
-const loadGame = cache(findGame);
+const loadGame = (id: string) => perRequest(`game:${id}`, () => findGame(id));
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const found = await loadGame((await params).id);
@@ -73,13 +75,18 @@ function GameUnreadable({ pathname }: { pathname: string }) {
 export default async function GameRoute({ params, searchParams }: Props) {
   const [{ id }, { tab }] = await Promise.all([params, searchParams]);
   const found = await loadGame(id);
-  if (found.state === "missing") notFound();
-  if (found.state === "unreadable") return <GameUnreadable pathname={gameHref({ id })} />;
-
+  if (found.state === "missing") pageNotFound();
+  if (found.state === "unreadable") {
+    doNotKeepPage();
+    return <GameUnreadable pathname={gameHref({ id })} />;
+  }
   // A game already over is the Replay, which draws D1's plays: a game nobody watched is archived
   // here, on its first open, and every later open is one read of D1.
   const game = await replayGame(found.game);
-  const scheduled = gamePhase(game.header.status) === "scheduled";
+  const phase = gamePhase(game.header.status);
+  const scheduled = phase === "scheduled";
+  // Only a game that is over, drawn from D1's plays, is the same page for the next visitor.
+  if (phase !== "finished" || !game.archived) doNotKeepPage();
   // After `replayGame`, which writes a finished game nobody watched: its D1 row marks the pick.
   const pick = await readGamePick(game.header);
 

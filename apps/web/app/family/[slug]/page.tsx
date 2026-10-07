@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 import { TrackedPlayerView } from "../../../components/family/tracked-player-view";
+import { pageNotFound } from "../../../lib/page-not-found";
 import { trackedPlayer, trackedTabFrom } from "../../../lib/tracked-players";
 
 /*
- * A Tracked Player's page. Rendered per request like every page (spec §2), and from nothing but
- * his static file: no ESPN read, no store, no cache tag. `?tab=schedule` opens the Schedule tab.
+ * A Tracked Player's page, kept in the page cache (spec §2): drawn from nothing but his static
+ * file and its address. No ESPN read, no store, no cache tag, and no date: the browser leaves a
+ * past game out of Upcoming. `?tab=schedule` opens the Schedule tab.
  */
 export const dynamic = "force-dynamic";
 
@@ -23,6 +24,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function TrackedPlayerPage({ params, searchParams }: Props) {
   const [{ slug }, { tab }] = await Promise.all([params, searchParams]);
   const player = trackedPlayer(slug);
-  if (!player) notFound();
+  if (!player) pageNotFound();
   return <TrackedPlayerView player={player} tab={trackedTabFrom(tab)} />;
 }

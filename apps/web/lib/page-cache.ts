@@ -100,24 +100,37 @@ export type PagePolicy = {
   tags: string[];
   /** The query parameters the page reads. A request with any other is not answered from the cache. */
   query: string[];
+  /** The oldest entry a visitor is answered, when it is not `MAX_STALE_MS`. */
+  maxStaleMs?: number;
 };
 
 /**
  * Whether the page at `pathname` is cached, and on what it depends. `null` is a page rendered
- * per request: the dashboard, the live page and a game's page draw the slate itself, and the
- * player search is a search.
+ * per request: the dashboard and the live page draw the slate itself, sooner than the socket
+ * would bring it (spec section 2).
  *
- * A player's page depends on `standings`, which every final invalidates: the Worker cannot know
- * a player's team without a read, and every final is a superset of his team's. A Tracked Player's
- * page is not cached: its Schedule tab reads today's date in its render (`scheduleOf`). A team's pages depend on that team alone; the conference and division in the header
- * come from the standings and catch up within `FRESH_MS` of the next visit.
+ * - A player's page depends on `standings`, which every final invalidates: the Worker cannot
+ *   know a player's team without a read, and every final is a superset of his team's.
+ * - A team's pages depend on that team alone; the conference and division in the header come
+ *   from the standings and catch up within `FRESH_MS` of the next visit.
+ * - A Tracked Player's page and the player search with nothing searched for are drawn from the
+ *   build alone. A search (`?q=`) is a query the policy does not name, so it is rendered.
+ * - A game's page is kept only once the game is over and its plays are D1's: the page says so
+ *   itself (`doNotKeepPage()` for any other game), since the Worker cannot tell without a read.
+ *   Such a page never changes, so it is answered however old it is, and still rendered again
+ *   behind the answer when older than `FRESH_MS`.
  */
 export function pagePolicy(pathname: string): PagePolicy | null {
   const path = pathname.replace(/\.rsc$/, "");
   if (path === "/nhl") return policy([STANDINGS_TAG], ["tab", "view"]);
   const team = /^\/nhl\/teams\/(\d+)(?:\/(?:roster|stats))?$/.exec(path);
   if (team) return policy([`team:${team[1]}`], []);
+  if (/^\/nhl\/games\/\d+$/.test(path)) {
+    return { ...policy([], ["tab"]), maxStaleMs: KEEP_SECONDS * 1000 };
+  }
+  if (path === "/players") return policy([], []);
   if (/^\/players\/[^/]+$/.test(path)) return policy([STANDINGS_TAG], ["games"]);
+  if (/^\/family\/[^/]+$/.test(path)) return policy([], ["tab"]);
   return null;
 }
 
@@ -333,7 +346,9 @@ export async function servePage(incoming: Request, deps: PageCacheDeps): Promise
   const storedAt = Number(entry?.headers.get(STORED_AT_HEADER));
   const age = deps.now() - storedAt;
   const usable =
-    Number.isFinite(storedAt) && age <= MAX_STALE_MS && storedAt >= invalidation.invalidatedAt;
+    Number.isFinite(storedAt) &&
+    age <= (found.maxStaleMs ?? MAX_STALE_MS) &&
+    storedAt >= invalidation.invalidatedAt;
   if (entry != null && usable) {
     if (storedAt >= invalidatedAtOf(request)) {
       if (age > FRESH_MS) refreshOnce(cacheable, key, deps);

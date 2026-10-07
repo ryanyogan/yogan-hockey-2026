@@ -51,15 +51,21 @@ describe("which pages are cached", () => {
     "/nhl/teams/1/roster",
     "/nhl/teams/1/stats.rsc",
     "/players/4024123",
+    "/players",
+    "/players.rsc",
+    "/family/rylan",
+    // Kept only when the game is over: the page itself says so for any other.
+    "/nhl/games/401892449",
   ])("%s is", (path) => expect(pagePolicy(path)).not.toBeNull());
 
   it.each([
     "/",
     "/nhl/live",
-    "/nhl/games/401892449",
-    "/players",
-    // Its Schedule tab reads today's date in its render.
-    "/family/rylan",
+    "/nhl/games/not-a-game",
+    "/nhl/games/401892449/plays",
+    "/family",
+    "/family/rylan/schedule",
+    "/picks",
     "/nhl/teams/1/nonsense",
     "/skeleton/picks",
     "/agents/scoreboard-agent/today",
@@ -125,6 +131,9 @@ describe("the page cache's key", () => {
   it("is null with no build (development), for a page not cached, and for a POST", async () => {
     expect(await keyOf("/nhl", "")).toBeNull();
     expect(await keyOf("/nhl/live")).toBeNull();
+    // A search is the player search's own query, and is rendered.
+    expect(await keyOf("/players?q=mcdavid")).toBeNull();
+    expect(await keyOf("/family/rylan?tab=schedule")).not.toBe(await keyOf("/family/rylan"));
     expect(await keyOf("/nhl", "b1", { method: "POST" })).toBeNull();
   });
 });
@@ -417,6 +426,16 @@ describe("serving a page", () => {
     state.now += 10 * 60_000 + 1;
     expect(await get("/nhl")).toMatchObject({ status: "miss", body: "render 3" });
     expect(await get("/nhl")).toMatchObject({ status: "hit", body: "render 3" });
+  });
+
+  it("answers a finished game's page however old it is, and still renders it again behind", async () => {
+    const { get, state } = worker();
+    await get("/nhl/games/401803652");
+    state.now = 11 * 60 * 60_000;
+    expect(await get("/nhl/games/401803652")).toMatchObject({ status: "stale", body: "render 1" });
+    expect(await get("/nhl/games/401803652")).toMatchObject({ status: "hit", body: "render 2" });
+    state.now += 13 * 60 * 60_000;
+    expect((await get("/nhl/games/401803652")).status).toBe("miss");
   });
 
   it("renders an address with a query its page does not read, and neither reads nor writes the cache", async () => {

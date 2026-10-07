@@ -22,7 +22,12 @@ import { useRefreshOnInvalidation } from "../../lib/use-refresh-on-invalidation"
 /** What the provider knows: the socket's reading once it has one, first paint's until then. */
 type ScoreboardSource =
   | { reading: ScoreboardReading }
-  | { reading: null; initial: Promise<ScoreboardReading> | null };
+  | {
+      reading: null;
+      initial: Promise<ScoreboardReading> | null;
+      /** `initial` once the browser has it, for a caller that does not wait (`useScoreboardSoFar`). */
+      rendered: ScoreboardReading | null;
+    };
 
 const ScoreboardContext = createContext<ScoreboardSource | null>(null);
 /** Whether the Scoreboard's socket has been down for longer than a blip. */
@@ -118,10 +123,10 @@ export function ScoreboardProvider({
       state == null
         ? gaveUp && initial == null
           ? { reading: NO_READING }
-          : { reading: null, initial }
+          : { reading: null, initial, rendered }
         : // A state that arrives is itself news from ESPN, so the later of the two is the answer.
           { reading: { ...state, heardAt: laterOf(state.updatedAt, lastHeardAt) } },
-    [state, lastHeardAt, initial, gaveUp],
+    [state, lastHeardAt, initial, gaveUp, rendered],
   );
   return (
     <ScoreboardContext value={source}>
@@ -202,4 +207,16 @@ export function useScoreboard(): ScoreboardReading {
   if (source == null) throw new Error("useScoreboard needs the layout's ScoreboardProvider");
   if (source.reading != null) return source.reading;
   return source.initial == null ? NO_READING : use(source.initial);
+}
+
+/**
+ * Today's games as far as they are known, never waiting: none until the layout's first paint has
+ * arrived in the browser or the socket has spoken, then as `useScoreboard()`. For a page that is
+ * whole without them (a game's page, which has its own read of the game): it needs no gate and
+ * holds nothing back, and what the server draws is the page without today's slate.
+ */
+export function useScoreboardSoFar(): ScoreboardReading {
+  const source = useContext(ScoreboardContext);
+  if (source == null) throw new Error("useScoreboardSoFar needs the layout's ScoreboardProvider");
+  return source.reading ?? source.rendered ?? NO_READING;
 }

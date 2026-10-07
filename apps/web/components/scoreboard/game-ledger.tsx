@@ -39,7 +39,8 @@ function Team({ side, favorite }: { side: ScoreboardSide; favorite: boolean }) {
 const TEXT_CELL = "whitespace-nowrap max-sm:align-top";
 
 /** Column widths that are the same in every ledger, so one under another lines up. */
-const FIXED = {
+/** Exported for the ledger's placeholder (`components/route-skeletons.tsx`), which repeats them. */
+export const FIXED_GAME_COLUMNS = {
   status: "w-28 sm:w-36",
   team: "sm:w-52",
   score: "w-10 sm:w-14",
@@ -50,7 +51,7 @@ const FIXED = {
  * Column widths for a ledger on its own. From `xl` they are the shares the Reference UI's table
  * comes to at 1440 (249, 211 and 62 of 1200px, the note having the other 403).
  */
-const FITTED = {
+const FITTED_GAME_COLUMNS = {
   status: "max-sm:w-28 xl:w-[20.78%]",
   team: "xl:w-[17.61%]",
   score: "max-sm:w-10 xl:w-[5.2%]",
@@ -93,7 +94,7 @@ export function GameLedger({
    */
   favoriteTeamIds?: readonly string[];
 }) {
-  const widths = fitted ? FITTED : FIXED;
+  const widths = fitted ? FITTED_GAME_COLUMNS : FIXED_GAME_COLUMNS;
   return (
     <Ledger className={fitted ? "max-sm:table-fixed" : "table-fixed"}>
       <LedgerHead>

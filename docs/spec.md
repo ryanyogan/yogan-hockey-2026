@@ -44,8 +44,8 @@ The aim (#94): a page opens at once. A visitor almost never waits on ESPN, what 
 
 **How a page is rendered**
 
-- **A page whose HTML depends only on its address and on slow data is kept whole in Cloudflare's edge cache** (#103), in front of vinext, by the Worker's entry (`apps/web/lib/page-cache.ts`). These are `/nhl` (every view and tab), a team's three pages, `/players/:id` and `/family/:slug`. Such a page reads nothing on the server that changes by the minute: today's games reach it on the Scoreboard's socket and a pick from `GET /picks`, both after first paint, into places already held for them. The table below says how it is kept.
-- **Every other page is rendered per request** from cached data: `/`, `/nhl/live` and a game's page draw the slate itself, and `/players` is a search. #95 moves what it can of these behind first paint and adds them to `pagePolicy`.
+- **A page whose HTML depends only on its address and on slow data is kept whole in Cloudflare's edge cache** (#103), in front of vinext, by the Worker's entry (`apps/web/lib/page-cache.ts`). These are `/nhl` (every view and tab), a team's three pages and `/players/:id`. Such a page reads nothing on the server that changes by the minute: today's games reach it on the Scoreboard's socket and a pick from `GET /picks`, both after first paint, into places already held for them. The table below says how it is kept.
+- **Every other page is rendered per request** from cached data: `/`, `/nhl/live` and a game's page draw the slate itself, `/players` is a search, and `/family/:slug` reads today's date (its Schedule tab drops a game whose day has passed). #95 moves what it can of these behind first paint and adds them to `pagePolicy`.
 - Every page answers the browser `cache-control: private, no-store`, cached or not: the edge keeps the page, the browser asks each time. Nothing a visitor sees is per-visitor on the server (favorites live in the browser), and a page that sets a cookie is never stored.
 - vinext's own page cache and partial prerendering are not used: the first is keyed by path alone and stores no page that reads `searchParams`, the second is unfinished.
 - The root layout waits for nothing. It hands the Scoreboard's first paint to the page as a promise, the shell is sent at once, and the score ticker streams in behind an empty strip of its own height (`TICKER_STRIP_HEIGHT`).
@@ -57,12 +57,15 @@ The aim (#94): a page opens at once. A visitor almost never waits on ESPN, what 
 | | |
 | --- | --- |
 | Where | The Workers Cache API (`caches.open("pages")`), which is per data center: each one renders a page once |
-| Key | The build's id, document or RSC, the path, the query parameters the page reads (`view` and `tab` on `/nhl`, `games` on a player, `tab` on a Tracked Player; any other is ignored), the version of each tag the page depends on, and for an RSC answer a hash of the headers vinext varies it by |
-| Tags | `/nhl`: `standings`. A team's pages: `team:{id}`. A player's and a Tracked Player's: `standings`, which is every final. All of them: `pages`, moved only by hand |
+| Key | The build's id, document or RSC, the path, the query parameters the page reads (`view` and `tab` on `/nhl`, `games` on a player), the version of each tag the page depends on, and for an RSC answer a hash of the headers that change it |
+| No key | An address with any other query parameter (vinext's own `_rsc` aside) is rendered for that request and neither read from the cache nor stored: the render sees the whole query (a redirect may match on it, as `?tab=roster` on a team does, and vinext writes it into the document for `useSearchParams()`), so it cannot share a page with the address without it |
+| Tags | `/nhl`: `standings`. A team's pages: `team:{id}`. A player's: `standings`, which is every final. All of them: `pages`, moved only by hand |
 | Fresh for | 60 seconds. Older, it is still answered at once and rendered again behind the response (`waitUntil`) |
+| Oldest answered | 10 minutes. Past that the visitor waits for a render, as before there was a page cache: the first visitor after a quiet night is not shown last night's page. Ten minutes is twice the shortest limit of the data beneath (the standings) |
 | Kept for | 12 hours since it was last rendered |
-| Never stored | Anything but a whole 200: a 404, the error page (#84), a redirect, a page whose render failed after its first byte, a page that set a cookie |
-| Says | `x-page-cache: hit`, `stale`, `miss`, `bypass` (the browser knew of a later invalidation) or `off` (no build id: `pnpm dev`), and `x-page-cache-age` in seconds |
+| Never stored | Anything but a whole 200: a 404, the error page (#84), a redirect, a page whose render failed after its first byte, a page that set a cookie. Nor a 200 whose render said not to keep it (`doNotKeepPage`): one that drew a fallback for a read that failed (a team's header without its conference), or a not-found page streamed inside a 200 (the RSC answer for an unknown team) |
+| Says | `x-page-cache: hit`, `stale`, `miss` (rendered and stored), `bypass` (rendered for this request alone: a query that is not the page's, or the browser knew of a later invalidation) or `off` (no build id: `pnpm dev`), and `x-page-cache-age` in seconds |
+| The mark | The Worker sets `x-page-cacheable` on the request it hands vinext for a cacheable page, which is how the layout knows to leave the Scoreboard out. A visitor's own is taken off before anything reads it |
 
 - **A tag's version is a KV value** (`page-cache:version:{tag}`), moved wherever the tag is invalidated (`invalidateTag`). The edge cache cannot be purged by tag from a Worker, so nothing is purged: a final changes the key and the page before it is never asked for again. The cost is one KV read per tag on every request for a cacheable page (two or three, side by side, answered from the data center's own copy for 30 seconds), where a render cost 100 to 700 ms.
 - **A deploy starts a new cache**: the build's id is compiled in, so no page is served that names the build before's assets.

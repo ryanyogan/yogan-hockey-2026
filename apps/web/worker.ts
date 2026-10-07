@@ -1,13 +1,15 @@
 import { routeAgentRequest } from "agents";
 import site from "vinext/server/fetch-handler";
 
-import { readPageTagVersions, servePage } from "./lib/page-cache";
+import { readPageTagVersions, servePage, withoutPageCacheMark } from "./lib/page-cache";
 import { watchRender } from "./lib/render-failure";
 
 export * from "./agents";
 
 export default {
-  async fetch(request, env, ctx) {
+  async fetch(incoming, env, ctx) {
+    // The mark of a cacheable page is the cache's to set, never a visitor's.
+    const request = withoutPageCacheMark(incoming);
     if (new URL(request.url).pathname.startsWith("/agents/")) {
       const response = await routeAgentRequest(request, env);
       return response ?? new Response("No such agent", { status: 404 });

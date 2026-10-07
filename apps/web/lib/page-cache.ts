@@ -8,19 +8,27 @@
  *   root layout knows to leave the Scoreboard out of the render.
  * - **The key** (`pageCacheKey`): the build, document or RSC, the path, the query parameters the
  *   page reads, the version of each tag the page depends on, and for an RSC answer a hash of the
- *   headers vinext varies it by. A final moves a tag's version (`bumpPageTag`), so the page it
+ *   headers vinext varies it by. An address with any other query parameter has no key: it is
+ *   rendered, and neither read from the cache nor stored. A final moves a tag's version (`bumpPageTag`), so the page it
  *   made stale is never asked for again; nothing is purged.
- * - **Stale while it refreshes** (`servePage`): an entry is answered at once whatever its age,
- *   and one older than `FRESH_MS` is rendered again behind the response. The edge drops an entry
- *   after `KEEP_SECONDS`.
+ * - **Stale while it refreshes** (`servePage`): an entry older than `FRESH_MS` is answered at
+ *   once and rendered again behind the response. One older than `MAX_STALE_MS` is not answered:
+ *   the visitor waits for the render. The edge drops an entry after `KEEP_SECONDS`.
  *
- * Only a whole 200 of the kind asked for, that set no cookie and whose render did not fail, is
- * stored.
+ * Only a whole 200 of the kind asked for, that set no cookie and whose render neither failed nor
+ * asked not to be kept (`doNotKeepPage` in `lib/render-failure.ts`), is stored.
  */
 
-/** Set on the request the Worker hands to vinext for a cacheable page. */
+/**
+ * Set on the request the Worker hands to vinext for a cacheable page, and by nothing else: a
+ * visitor's own is taken off before anything reads it (`withoutPageCacheMark`).
+ */
 export const PAGE_CACHE_REQUEST_HEADER = "x-page-cacheable";
-/** On every answer for a cacheable page: `hit`, `stale`, `miss`, `bypass` or `off`. */
+/**
+ * On every answer for a cacheable page: `hit`, `stale`, `miss` (rendered and stored: nothing was
+ * kept, or it was older than `MAX_STALE_MS`), `bypass` (rendered for this request alone: its
+ * query is not the page's, or its browser knew of a later invalidation) or `off` (no build id).
+ */
 export const PAGE_CACHE_STATUS_HEADER = "x-page-cache";
 /** On a `hit` or `stale`: the entry's age in seconds. */
 export const PAGE_CACHE_AGE_HEADER = "x-page-cache-age";
@@ -36,12 +44,25 @@ export const ALL_PAGES_TAG = "pages";
 const STANDINGS_TAG = "standings";
 
 const FRESH_MS = 60_000;
+/**
+ * The oldest page a visitor is answered. Past it the first visitor waits for a render, as he did
+ * before there was a page cache, and is not shown a page as old as the gap since the last one:
+ * 12 hours after a quiet night. Ten minutes is twice the shortest time limit of the data beneath
+ * (the standings, 5 minutes), and long enough that a page somebody opens every few minutes is
+ * always answered at once.
+ */
+const MAX_STALE_MS = 10 * 60_000;
 const KEEP_SECONDS = 12 * 60 * 60;
 const STORED_AT_HEADER = "x-page-stored-at";
 /** What vinext answers a rendered page with, and so what a cached one is answered with. */
 const BROWSER_CACHE_CONTROL = "private, no-cache, no-store, max-age=0, must-revalidate";
 
-/** The request headers vinext varies an RSC answer by (`vinext/server/app-rsc-vary`). */
+/**
+ * The request headers that change an RSC answer: the nine vinext names in its `Vary`
+ * (`vinext/server/app-rsc-vary`), and the reuse manifest, which it reads without naming
+ * (`app-rsc-request-normalization`): the layouts the browser says it already holds, which the
+ * answer may then leave out.
+ */
 const RSC_VARY_HEADERS = [
   "Next-Router-State-Tree",
   "Next-Router-Prefetch",
@@ -52,12 +73,21 @@ const RSC_VARY_HEADERS = [
   "X-Vinext-Mounted-Slots",
   "X-Vinext-Rsc-Render-Mode",
   "X-Vinext-Rsc-State-Fingerprint",
+  "X-Vinext-Client-Reuse-Manifest",
 ];
+
+/**
+ * The one query parameter that is vinext's and not the page's: the cache buster its client puts
+ * on an RSC request (`vinext/server/app-rsc-cache-busting`), which no render reads. Its other
+ * parameter, `__vinext_cacheability_probe`, belongs to a deploy's own probe, which is to be
+ * rendered: it is left to fall outside every policy.
+ */
+const RSC_CACHE_BUSTER = "_rsc";
 
 export type PagePolicy = {
   /** The cache tags whose invalidation makes the page stale. */
   tags: string[];
-  /** The query parameters the page reads; any other is left out of the key. */
+  /** The query parameters the page reads. A request with any other is not answered from the cache. */
   query: string[];
 };
 
@@ -66,9 +96,9 @@ export type PagePolicy = {
  * per request: the dashboard, the live page and a game's page draw the slate itself, and the
  * player search is a search.
  *
- * A player's and a Tracked Player's pages depend on `standings`, which every final invalidates:
- * the Worker cannot know a player's team without a read, and every final is a superset of his
- * team's. A team's pages depend on that team alone; the conference and division in the header
+ * A player's page depends on `standings`, which every final invalidates: the Worker cannot know
+ * a player's team without a read, and every final is a superset of his team's. A Tracked Player's
+ * page is not cached: its Schedule tab reads today's date in its render (`scheduleOf`). A team's pages depend on that team alone; the conference and division in the header
  * come from the standings and catch up within `FRESH_MS` of the next visit.
  */
 export function pagePolicy(pathname: string): PagePolicy | null {
@@ -77,7 +107,6 @@ export function pagePolicy(pathname: string): PagePolicy | null {
   const team = /^\/nhl\/teams\/(\d+)(?:\/(?:roster|stats))?$/.exec(path);
   if (team) return policy([`team:${team[1]}`], []);
   if (/^\/players\/[^/]+$/.test(path)) return policy([STANDINGS_TAG], ["games"]);
-  if (/^\/family\/[^/]+$/.test(path)) return policy([STANDINGS_TAG], ["tab"]);
   return null;
 }
 
@@ -119,7 +148,13 @@ export async function bumpPageTag(kv: VersionStore, tag: string, now = Date.now(
 
 /**
  * The address a page's entry is kept under, or `null` for a request that is never answered from
- * the cache (not a GET, not a cacheable page, or a Worker with no build id: local development).
+ * the cache: not a GET, not a cacheable page, a Worker with no build id (local development), or
+ * an address with a query parameter the page's policy does not name.
+ *
+ * That last is because the render sees the whole query whatever the key holds. A config redirect
+ * matches on it (`/nhl/teams/1?tab=roster`, `legacyTeamTabRedirects()`), and vinext writes it
+ * into the document, where `useSearchParams()` reads it: under a shared key the old link would be
+ * answered the cached Schedule page, and one visitor's `?fbclid=` would be every visitor's.
  */
 export async function pageCacheKey(
   request: Request,
@@ -130,6 +165,10 @@ export async function pageCacheKey(
   const url = new URL(request.url);
   const found = pagePolicy(url.pathname);
   if (found == null) return null;
+
+  for (const name of url.searchParams.keys()) {
+    if (name !== RSC_CACHE_BUSTER && !found.query.includes(name)) return null;
+  }
 
   const isRsc = request.headers.has("RSC") || url.pathname.endsWith(".rsc");
   const kind = isRsc ? "rsc" : "html";
@@ -158,14 +197,18 @@ export type PageCacheDeps = {
     put(key: string, response: Response): Promise<void>;
   };
   versions(tags: string[]): Promise<string[]>;
-  /** Renders the page. `failed()` says, once the body has been read, whether a render failed. */
-  render(request: Request): Promise<{ response: Response; failed(): boolean }>;
+  /**
+   * Renders the page. `unstorable()` says, once the body has been read, whether the answer must
+   * not be kept: a render failed, or drew a fallback or a not-found page inside a 200.
+   */
+  render(request: Request): Promise<{ response: Response; unstorable(): boolean }>;
   waitUntil(work: Promise<unknown>): void;
   now(): number;
 };
 
 /** Answers a request for a page: from the cache when it may, rendering and storing otherwise. */
-export async function servePage(request: Request, deps: PageCacheDeps): Promise<Response> {
+export async function servePage(incoming: Request, deps: PageCacheDeps): Promise<Response> {
+  const request = withoutPageCacheMark(incoming);
   if (pagePolicy(new URL(request.url).pathname) == null || request.method !== "GET") {
     return (await deps.render(request)).response;
   }
@@ -173,14 +216,15 @@ export async function servePage(request: Request, deps: PageCacheDeps): Promise<
   const cacheable = new Request(request);
   cacheable.headers.set(PAGE_CACHE_REQUEST_HEADER, "1");
 
+  if (deps.build === "") return withStatus((await deps.render(cacheable)).response, "off");
   const key = await pageCacheKey(request, deps.build, deps.versions).catch(() => null);
-  if (key == null) return withStatus((await deps.render(cacheable)).response, "off");
+  if (key == null) return withStatus((await deps.render(cacheable)).response, "bypass");
 
   const entry = await deps.cache.match(key).catch(() => undefined);
   const storedAt = Number(entry?.headers.get(STORED_AT_HEADER));
-  if (entry != null && Number.isFinite(storedAt)) {
+  const age = deps.now() - storedAt;
+  if (entry != null && Number.isFinite(storedAt) && age <= MAX_STALE_MS) {
     if (storedAt >= invalidatedAtOf(request)) {
-      const age = deps.now() - storedAt;
       if (age > FRESH_MS) {
         // Nobody reads this render's answer; its copy is what is stored.
         deps.waitUntil(
@@ -204,7 +248,7 @@ async function renderAndStore(
   key: string,
   deps: PageCacheDeps,
 ): Promise<Response> {
-  const { response, failed } = await deps.render(request);
+  const { response, unstorable } = await deps.render(request);
   // The key says document or RSC from the request; an answer of the other kind, whatever header
   // brought it about, is not kept under it.
   const wanted = key.includes("/rsc/") ? "text/x-component" : "text/html";
@@ -223,7 +267,7 @@ async function renderAndStore(
     (async () => {
       // Read to the end before deciding: a render can fail after the response has started.
       const body = await new Response(copy).arrayBuffer();
-      if (failed()) return;
+      if (unstorable()) return;
       const headers = new Headers(response.headers);
       headers.set("cache-control", `public, s-maxage=${KEEP_SECONDS}`);
       headers.set(STORED_AT_HEADER, String(storedAt));
@@ -231,6 +275,18 @@ async function renderAndStore(
     })().catch((error) => console.error("Page cache: could not store", key, error)),
   );
   return new Response(answer, response);
+}
+
+/**
+ * The request without a page-cache mark of the sender's own. The Worker's entry passes every
+ * request through this before anything else: with the mark, a page that is not cached would be
+ * rendered without its server-drawn slate for whoever sent it.
+ */
+export function withoutPageCacheMark(request: Request): Request {
+  if (!request.headers.has(PAGE_CACHE_REQUEST_HEADER)) return request;
+  const unmarked = new Request(request);
+  unmarked.headers.delete(PAGE_CACHE_REQUEST_HEADER);
+  return unmarked;
 }
 
 function withStatus(response: Response, status: string): Response {

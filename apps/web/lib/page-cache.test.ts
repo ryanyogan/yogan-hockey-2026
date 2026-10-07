@@ -47,7 +47,6 @@ describe("which pages are cached", () => {
     "/nhl/teams/1/roster",
     "/nhl/teams/1/stats.rsc",
     "/players/4024123",
-    "/family/rylan",
   ])("%s is", (path) => expect(pagePolicy(path)).not.toBeNull());
 
   it.each([
@@ -55,6 +54,8 @@ describe("which pages are cached", () => {
     "/nhl/live",
     "/nhl/games/401892449",
     "/players",
+    // Its Schedule tab reads today's date in its render.
+    "/family/rylan",
     "/nhl/teams/1/nonsense",
     "/skeleton/picks",
     "/agents/scoreboard-agent/today",
@@ -108,15 +109,42 @@ describe("the page cache's key", () => {
     expect(await keyOf(kv, "/nhl", "b2")).not.toBe(await keyOf(kv, "/nhl", "b1"));
   });
 
-  it("holds the query a page reads, in one order, and nothing else of it", async () => {
+  it("holds the query a page reads, in one order", async () => {
     const kv = versionStore();
     const plain = await keyOf(kv, "/nhl");
     expect(await keyOf(kv, "/nhl?view=league")).not.toBe(plain);
-    expect(await keyOf(kv, "/nhl?utm_source=x&_rsc=abc")).toBe(plain);
     expect(await keyOf(kv, "/nhl?view=league&tab=teams")).toBe(
       await keyOf(kv, "/nhl?tab=teams&view=league"),
     );
-    expect(await keyOf(kv, "/nhl/teams/1?tab=roster")).toBe(await keyOf(kv, "/nhl/teams/1"));
+    // vinext's own cache buster on an RSC request is not the page's to read.
+    expect(await keyOf(kv, "/nhl?_rsc=abc")).toBe(plain);
+    expect(await keyOf(kv, "/nhl?view=league&_rsc=abc")).toBe(await keyOf(kv, "/nhl?view=league"));
+  });
+
+  // The render sees the whole query whatever the key holds: a config redirect matches on it
+  // (`?tab=roster` on a team) and vinext writes it into the document for `useSearchParams()`.
+  it.each([
+    "/nhl/teams/1?tab=roster",
+    "/nhl/teams/1?fbclid=x",
+    "/nhl?utm_source=x",
+    "/nhl?view=league&utm_source=x",
+    "/players/9?games=all&ref=y",
+    "/nhl/teams/1.rsc?fbclid=x&_rsc=abc",
+    "/nhl?__vinext_cacheability_probe=1",
+  ])(
+    "is null for %s: a query the page's policy does not name is rendered, never keyed",
+    async (path) => {
+      expect(await keyOf(versionStore(), path)).toBeNull();
+    },
+  );
+
+  it("keeps apart two RSC answers that differ in what the browser says it already holds", async () => {
+    const kv = versionStore();
+    const rsc = (manifest: string) =>
+      keyOf(kv, "/nhl/teams/1.rsc", "b1", {
+        headers: { RSC: "1", "X-Vinext-Client-Reuse-Manifest": manifest },
+      });
+    expect(await rsc("a")).not.toBe(await rsc("b"));
   });
 
   it("is null with no build (development), for a page not cached, and for a POST", async () => {
@@ -138,7 +166,7 @@ function worker({ build = "b1" } = {}) {
     seen: [] as Request[],
     page: () =>
       new Response(`render ${state.renders}`, { headers: { "content-type": "text/html" } }),
-    failed: false,
+    unstorable: false,
   };
   const deps: PageCacheDeps = {
     build,
@@ -150,7 +178,7 @@ function worker({ build = "b1" } = {}) {
     render: async (request) => {
       state.renders += 1;
       state.seen.push(request);
-      return { response: state.page(), failed: () => state.failed };
+      return { response: state.page(), unstorable: () => state.unstorable };
     },
     waitUntil: (work) => void pending.push(work),
     now: () => state.now,
@@ -199,29 +227,70 @@ describe("serving a page", () => {
     expect((await get("/nhl/teams/3")).status).toBe("hit");
   });
 
-  it("does not store an error page, a 404, a redirect, a page that sets a cookie or the wrong kind", async () => {
-    const { get, state, entries } = worker();
-    for (const page of [
-      () => new Response("unavailable", { status: 503 }),
-      () => new Response("no such team", { status: 404 }),
-      () => new Response(null, { status: 308, headers: { location: "/nhl" } }),
-      () =>
-        new Response("hello", { headers: { "set-cookie": "a=b", "content-type": "text/html" } }),
-      // Not the kind the key names: a document was asked for.
+  const html = { "content-type": "text/html; charset=utf-8" };
+  it.each<[string, () => Response]>([
+    // Each is a document with a body, as vinext answers it: only what the name says is wrong.
+    ["an error page", () => new Response("unavailable", { status: 503, headers: html })],
+    ["a 404", () => new Response("no such team", { status: 404, headers: html })],
+    [
+      "a redirect",
+      () => new Response("/nhl", { status: 308, headers: { ...html, location: "/nhl" } }),
+    ],
+    [
+      "a page that sets a cookie",
+      () => new Response("hello", { headers: { ...html, "set-cookie": "a=b" } }),
+    ],
+    [
+      "an RSC answer to a request for a document",
       () => new Response("0:{}", { headers: { "content-type": "text/x-component" } }),
-    ]) {
-      state.page = page;
-      await get("/nhl/teams/1");
-    }
+    ],
+    ["an answer with no body", () => new Response(null, { headers: html })],
+  ])("does not store %s", async (_, page) => {
+    const { get, state, entries } = worker();
+    state.page = page;
+    expect((await get("/nhl/teams/1")).status).toBe("miss");
+    expect((await get("/nhl/teams/1")).status).toBe("miss");
     expect(entries.size).toBe(0);
-    expect(state.renders).toBe(5);
+    expect(state.renders).toBe(2);
   });
 
-  it("does not store a page whose render failed after the response had started", async () => {
+  it("does not store a page whose render said not to keep it: it failed after the response had started, or drew a fallback or a not-found page inside a 200", async () => {
     const { get, state, entries } = worker();
-    state.failed = true;
+    state.unstorable = true;
     expect((await get("/nhl")).body).toBe("render 1");
     expect(entries.size).toBe(0);
+  });
+
+  it("renders in the foreground once an entry is ten minutes old: no visitor is answered an older page", async () => {
+    const { get, state } = worker();
+    await get("/nhl");
+    state.now = 10 * 60_000;
+    expect(await get("/nhl")).toMatchObject({ status: "stale", body: "render 1" });
+    state.now += 10 * 60_000 + 1;
+    expect(await get("/nhl")).toMatchObject({ status: "miss", body: "render 3" });
+    expect(await get("/nhl")).toMatchObject({ status: "hit", body: "render 3" });
+  });
+
+  it("renders an address with a query its page does not read, and neither reads nor writes the cache", async () => {
+    const { get, state, entries } = worker();
+    await get("/nhl/teams/1");
+    // The old address of the Roster tab: vinext answers its redirect, cached page or no.
+    state.page = () =>
+      new Response(null, { status: 308, headers: { location: "/nhl/teams/1/roster" } });
+    const moved = await get("/nhl/teams/1?tab=roster");
+    expect(moved.response.status).toBe(308);
+    expect(moved.status).toBe("bypass");
+
+    state.page = () => new Response("with fbclid", { headers: html });
+    expect(await get("/nhl/teams/1?fbclid=x")).toMatchObject({
+      status: "bypass",
+      body: "with fbclid",
+    });
+    expect(new URL(state.seen.at(-1)?.url ?? "").search).toBe("?fbclid=x");
+    expect(await get("/nhl/teams/1?fbclid=x")).toMatchObject({ status: "bypass" });
+
+    expect(entries.size).toBe(1);
+    expect(await get("/nhl/teams/1")).toMatchObject({ status: "hit", body: "render 1" });
   });
 
   it("serves no entry older than the invalidation the browser has heard of", async () => {
@@ -252,5 +321,19 @@ describe("serving a page", () => {
       false,
     );
     expect(entries.size).toBe(0);
+  });
+
+  it("takes the mark from the cache alone, never from the visitor", async () => {
+    const { get, state } = worker();
+    const marked = { headers: { [PAGE_CACHE_REQUEST_HEADER]: "1" } };
+    // A page that is not cacheable draws the slate on the server: the mark would take it away.
+    await get("/", marked);
+    await get("/nhl/live", marked);
+    await get("/nhl", { method: "POST", ...marked });
+    expect(state.seen.map((request) => request.headers.has(PAGE_CACHE_REQUEST_HEADER))).toEqual([
+      false,
+      false,
+      false,
+    ]);
   });
 });

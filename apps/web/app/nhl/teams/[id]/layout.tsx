@@ -9,6 +9,7 @@ import { NextGameSkeleton } from "../../../../components/team/team-skeletons";
 import { TeamTabs } from "../../../../components/team/team-tabs";
 import { cachedStandings } from "../../../../lib/espn";
 import { loadTeam } from "../../../../lib/find-team";
+import { doNotKeepPage } from "../../../../lib/render-failure";
 
 type Props = { params: Promise<{ id: string }>; children: ReactNode };
 
@@ -31,15 +32,21 @@ export async function generateMetadata({ params }: Pick<Props, "params">): Promi
  * changes by the minute: what the team is doing now comes from the Scoreboard's socket and its
  * pick from `GET /picks`, both after first paint, behind a placeholder of the card's size.
  */
+/** A read that failed is drawn around, in a page the page cache must then not keep. */
+function fallback(): null {
+  doNotKeepPage();
+  return null;
+}
+
 export default async function TeamLayout({ params, children }: Props) {
   const { id } = await params;
   const [detail, standings] = await Promise.all([
     // A layout that throws takes the whole shell with it (build notes, #84). The tab's page
     // makes the same read and reports its failure inside the shell, so here it only means
     // "no header".
-    loadTeam(id).catch(() => null),
+    loadTeam(id).catch(fallback),
     // The header can do without its conference and division.
-    cachedStandings().catch(() => null),
+    cachedStandings().catch(fallback),
   ]);
   // No such team: the tab's page says so (`notFound()`), under no header.
   if (detail == null) return children;

@@ -10,10 +10,12 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { SCOREBOARD_CONNECTION } from "../../lib/scoreboard-connection";
 import { heardAtFrom, laterOf } from "../../lib/scoreboard-view";
+import { waitForScoreboard } from "../../lib/scoreboard-wait";
 import { useDropWatch } from "../../lib/use-drop-watch";
 import { useRefreshOnInvalidation } from "../../lib/use-refresh-on-invalidation";
 
@@ -39,7 +41,9 @@ const ScoreboardDroppedContext = createContext(false);
  * `initial` is null on a page served from the page cache (`lib/page-cache.ts`), whose HTML holds
  * nothing that changes by the minute: the games are the socket's alone, a `ScoreboardGate` holds
  * the place of whatever shows them until it has spoken, and the page counts as rendered with the
- * first `invalidatedAt` the socket reports (the cache's key answers for anything earlier).
+ * first `invalidatedAt` the socket reports (the cache's key answers for anything earlier). A
+ * socket that stays silent is waited on for `SCOREBOARD_WAIT_MS` and no longer: the gates then
+ * draw what the page knows without today's games, and the games arrive when the socket does.
  *
  * Two things arrive on the socket. The state, whenever a poll finds something different; and,
  * after a poll that finds nothing new, only the time ESPN was heard from, which is what keeps
@@ -67,6 +71,15 @@ export function ScoreboardProvider({
   const [rendered, setRendered] = useState<ScoreboardReading | null>(null);
   const [lastHeardAt, setLastHeardAt] = useState<string | null>(null);
   const drop = useDropWatch();
+  // On a cached page: whether the socket has kept the page waiting too long for its first word.
+  const [gaveUp, setGaveUp] = useState(false);
+  const wait = useRef<ReturnType<typeof waitForScoreboard> | null>(null);
+
+  useEffect(() => {
+    if (initial != null) return;
+    wait.current = waitForScoreboard(() => setGaveUp(true));
+    return wait.current.stop;
+  }, [initial]);
 
   useEffect(() => {
     if (initial == null) return;
@@ -86,6 +99,7 @@ export function ScoreboardProvider({
     onOpen: drop.opened,
     onClose: drop.closed,
     onStateUpdate: (next) => {
+      wait.current?.heard();
       setState(next);
       setFirstHeard((first) => (first === undefined ? (next.invalidatedAt ?? null) : first));
     },
@@ -102,10 +116,12 @@ export function ScoreboardProvider({
   const source = useMemo<ScoreboardSource>(
     () =>
       state == null
-        ? { reading: null, initial }
+        ? gaveUp && initial == null
+          ? { reading: NO_READING }
+          : { reading: null, initial }
         : // A state that arrives is itself news from ESPN, so the later of the two is the answer.
           { reading: { ...state, heardAt: laterOf(state.updatedAt, lastHeardAt) } },
-    [state, lastHeardAt, initial],
+    [state, lastHeardAt, initial, gaveUp],
   );
   return (
     <ScoreboardContext value={source}>
@@ -126,7 +142,9 @@ const NO_READING: ScoreboardReading = {
 /**
  * Holds the place of whatever calls `useScoreboard()` until there are games to give it:
  * `fallback`, which is the size of what replaces it, stands while the layout's first paint is
- * still streaming in and, on a page served from the page cache, until the socket has spoken.
+ * still streaming in and, on a page served from the page cache, until the socket has spoken or
+ * has been waited on long enough (`lib/scoreboard-wait.ts`): the children are then drawn with no
+ * games, which is what they know.
  * The server and the browser's first render agree (both draw `fallback` on a cached page), so
  * nothing is thrown away at hydration.
  */

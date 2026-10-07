@@ -221,7 +221,13 @@ export async function bumpPageTags(
   written.set(kv, next);
   for (let attempt = 1; ; attempt += 1) {
     try {
-      const stored = await kv.get(PAGE_VERSIONS_KEY).then(parseVersions, () => ({}) as Versions);
+      // A read that fails is tried again: writing without it would drop every other tag's time.
+      // A document that cannot be parsed is replaced.
+      const text = await kv.get(PAGE_VERSIONS_KEY);
+      let stored: Versions = {};
+      try {
+        stored = parseVersions(text);
+      } catch {}
       // Whatever was written while that read was away is in `written` by now.
       const joined: Versions = { ...stored };
       for (const [tag, at] of Object.entries(written.get(kv) ?? {})) {

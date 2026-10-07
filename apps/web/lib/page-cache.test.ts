@@ -206,6 +206,24 @@ describe("the tags' invalidation times", () => {
     await expect(bumpPageTags(kv, ["standings"], 8_000, 0)).rejects.toThrow("429");
   });
 
+  it("are not written over when the document cannot be read: the read is tried again", async () => {
+    const kv = versionStore();
+    await kv.put(PAGE_VERSIONS_KEY, '{"team:5":900}');
+    const get = kv.get;
+    let failures = 1;
+    kv.get = async (key) => {
+      if (failures-- > 0) throw new Error("KV is away");
+      return get(key);
+    };
+    // Another isolate's store, as far as `written` knows: the same document, a new object.
+    const other = { ...kv, get: kv.get, put: kv.put };
+    await bumpPageTags(other, ["team:6"], 1_000, 0);
+    expect(JSON.parse((await get(PAGE_VERSIONS_KEY)) ?? "")).toEqual({
+      "team:5": 900,
+      "team:6": 1_000,
+    });
+  });
+
   it("are read from KV once in ten seconds an isolate, whatever the tags", async () => {
     const kv = versionStore();
     const reader = pageVersionReader();

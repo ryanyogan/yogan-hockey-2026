@@ -383,9 +383,10 @@ function refreshOnce(request: Request, key: string, deps: PageCacheDeps): void {
   }
   deps.waitUntil(
     // Nobody reads this render's answer; its copy is what is stored.
-    renderAndStore(request, key, deps, () => deps.refreshing?.delete(key)).then((unread) =>
-      unread.body?.cancel(),
-    ),
+    renderAndStore(request, key, deps, () => {
+      // A render that outlived its guard must not clear the guard of the one that replaced it.
+      if (deps.refreshing?.get(key) === now) deps.refreshing.delete(key);
+    }).then((unread) => unread.body?.cancel()),
   );
 }
 

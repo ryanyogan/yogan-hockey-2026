@@ -1,43 +1,47 @@
 import { describe, expect, it } from "vitest";
 import {
-  bumpPageTag,
+  bumpPageTags,
   INVALIDATED_COOKIE,
   PAGE_CACHE_REQUEST_HEADER,
   PAGE_CACHE_STATUS_HEADER,
+  PAGE_VERSIONS_KEY,
   type PageCacheDeps,
   pageCacheKey,
   pagePolicy,
-  readPageTagVersions,
+  pageVersionReader,
   servePage,
+  VERSIONS_MEMO_MS,
 } from "./page-cache";
 
 const SITE = "https://hockey.test";
 
-/** KV as the page cache uses it. */
+/** KV as the page cache uses it, counting its reads. */
 function versionStore() {
   const values = new Map<string, string>();
-  return {
-    get: async (key: string) => values.get(key) ?? null,
-    put: async (key: string, value: string) => void values.set(key, value),
+  const store = {
+    reads: 0,
+    puts: 0,
+    get: async (key: string) => {
+      store.reads += 1;
+      return values.get(key) ?? null;
+    },
+    put: async (key: string, value: string) => {
+      store.puts += 1;
+      values.set(key, value);
+    },
   };
+  return store;
 }
 
 /** What the Scoreboard does to the tags at a final of teams 1 and 2 (`agents/final-game.ts`). */
 async function final(kv: ReturnType<typeof versionStore>, now: number) {
-  for (const tag of ["standings", "team:1", "team:2", "game:401", "player:77"]) {
-    await bumpPageTag(kv, tag, now);
-  }
+  await bumpPageTags(kv, ["standings", "team:1", "team:2"], now);
+  await bumpPageTags(kv, ["game:401"], now);
+  await bumpPageTags(kv, ["player:77"], now);
 }
 
-function keyOf(
-  kv: ReturnType<typeof versionStore>,
-  path: string,
-  build = "b1",
-  init?: RequestInit,
-) {
-  return pageCacheKey(new Request(SITE + path, init), build, (tags) =>
-    readPageTagVersions(kv, tags),
-  );
+function keyOf(path: string, build = "b1", init?: RequestInit) {
+  return pageCacheKey(new Request(SITE + path, init), build);
 }
 
 describe("which pages are cached", () => {
@@ -47,15 +51,21 @@ describe("which pages are cached", () => {
     "/nhl/teams/1/roster",
     "/nhl/teams/1/stats.rsc",
     "/players/4024123",
+    "/players",
+    "/players.rsc",
+    "/family/rylan",
+    // Kept only when the game is over: the page itself says so for any other.
+    "/nhl/games/401892449",
   ])("%s is", (path) => expect(pagePolicy(path)).not.toBeNull());
 
   it.each([
     "/",
     "/nhl/live",
-    "/nhl/games/401892449",
-    "/players",
-    // Its Schedule tab reads today's date in its render.
-    "/family/rylan",
+    "/nhl/games/not-a-game",
+    "/nhl/games/401892449/plays",
+    "/family",
+    "/family/rylan/schedule",
+    "/picks",
     "/nhl/teams/1/nonsense",
     "/skeleton/picks",
     "/agents/scoreboard-agent/today",
@@ -68,62 +78,29 @@ describe("which pages are cached", () => {
 });
 
 describe("the page cache's key", () => {
-  it("changes at a final for the standings and the two teams' pages, and for no other team's", async () => {
-    const kv = versionStore();
-    const paths = ["/nhl", "/nhl/teams/1", "/nhl/teams/2/roster", "/nhl/teams/3", "/players/9"];
-    const before = await Promise.all(paths.map((path) => keyOf(kv, path)));
-    await final(kv, 1_000);
-    const after = await Promise.all(paths.map((path) => keyOf(kv, path)));
-
-    expect(after[0]).not.toBe(before[0]);
-    expect(after[1]).not.toBe(before[1]);
-    expect(after[2]).not.toBe(before[2]);
-    expect(after[3]).toBe(before[3]);
-    // A player's page is keyed on every final: the Worker does not know his team.
-    expect(after[4]).not.toBe(before[4]);
-  });
-
-  it("writes a version only for a tag a page is keyed on", async () => {
-    const kv = versionStore();
-    await final(kv, 1_000);
-    expect(await kv.get("page-cache:version:team:1")).toBe("1000");
-    expect(await kv.get("page-cache:version:player:77")).toBeNull();
-    expect(await kv.get("page-cache:version:game:401")).toBeNull();
-  });
-
-  it("changes for every page when the `pages` tag is moved by hand", async () => {
-    const kv = versionStore();
-    const before = await keyOf(kv, "/nhl/teams/3");
-    await bumpPageTag(kv, "pages", 5);
-    expect(await keyOf(kv, "/nhl/teams/3")).not.toBe(before);
-  });
-
   it("keeps an RSC answer apart from the document, and one RSC variant from another", async () => {
-    const kv = versionStore();
-    const html = await keyOf(kv, "/nhl/teams/1");
-    const byHeader = await keyOf(kv, "/nhl/teams/1", "b1", { headers: { RSC: "1" } });
-    const bySuffix = await keyOf(kv, "/nhl/teams/1.rsc");
-    const prefetch = await keyOf(kv, "/nhl/teams/1.rsc", "b1", {
+    const html = await keyOf("/nhl/teams/1");
+    const byHeader = await keyOf("/nhl/teams/1", "b1", { headers: { RSC: "1" } });
+    const bySuffix = await keyOf("/nhl/teams/1.rsc");
+    const prefetch = await keyOf("/nhl/teams/1.rsc", "b1", {
       headers: { RSC: "1", "Next-Router-Prefetch": "1" },
     });
     expect(new Set([html, byHeader, bySuffix, prefetch]).size).toBe(4);
   });
 
   it("does not read another build's entries", async () => {
-    const kv = versionStore();
-    expect(await keyOf(kv, "/nhl", "b2")).not.toBe(await keyOf(kv, "/nhl", "b1"));
+    expect(await keyOf("/nhl", "b2")).not.toBe(await keyOf("/nhl", "b1"));
   });
 
   it("holds the query a page reads, in one order", async () => {
-    const kv = versionStore();
-    const plain = await keyOf(kv, "/nhl");
-    expect(await keyOf(kv, "/nhl?view=league")).not.toBe(plain);
-    expect(await keyOf(kv, "/nhl?view=league&tab=teams")).toBe(
-      await keyOf(kv, "/nhl?tab=teams&view=league"),
+    const plain = await keyOf("/nhl");
+    expect(await keyOf("/nhl?view=league")).not.toBe(plain);
+    expect(await keyOf("/nhl?view=league&tab=teams")).toBe(
+      await keyOf("/nhl?tab=teams&view=league"),
     );
     // vinext's own cache buster on an RSC request is not the page's to read.
-    expect(await keyOf(kv, "/nhl?_rsc=abc")).toBe(plain);
-    expect(await keyOf(kv, "/nhl?view=league&_rsc=abc")).toBe(await keyOf(kv, "/nhl?view=league"));
+    expect(await keyOf("/nhl?_rsc=abc")).toBe(plain);
+    expect(await keyOf("/nhl?view=league&_rsc=abc")).toBe(await keyOf("/nhl?view=league"));
   });
 
   // The render sees the whole query whatever the key holds: a config redirect matches on it
@@ -139,24 +116,139 @@ describe("the page cache's key", () => {
   ])(
     "is null for %s: a query the page's policy does not name is rendered, never keyed",
     async (path) => {
-      expect(await keyOf(versionStore(), path)).toBeNull();
+      expect(await keyOf(path)).toBeNull();
     },
   );
 
   it("keeps apart two RSC answers that differ in what the browser says it already holds", async () => {
-    const kv = versionStore();
     const rsc = (manifest: string) =>
-      keyOf(kv, "/nhl/teams/1.rsc", "b1", {
+      keyOf("/nhl/teams/1.rsc", "b1", {
         headers: { RSC: "1", "X-Vinext-Client-Reuse-Manifest": manifest },
       });
     expect(await rsc("a")).not.toBe(await rsc("b"));
   });
 
   it("is null with no build (development), for a page not cached, and for a POST", async () => {
+    expect(await keyOf("/nhl", "")).toBeNull();
+    expect(await keyOf("/nhl/live")).toBeNull();
+    // A search is the player search's own query, and is rendered.
+    expect(await keyOf("/players?q=mcdavid")).toBeNull();
+    expect(await keyOf("/family/rylan?tab=schedule")).not.toBe(await keyOf("/family/rylan"));
+    expect(await keyOf("/nhl", "b1", { method: "POST" })).toBeNull();
+  });
+});
+
+describe("the tags' invalidation times", () => {
+  const read = (kv: ReturnType<typeof versionStore>, tags: string[]) =>
+    pageVersionReader()(kv, tags, 0);
+
+  it("move at a final for the standings and the two teams, and for no other team", async () => {
     const kv = versionStore();
-    expect(await keyOf(kv, "/nhl", "")).toBeNull();
-    expect(await keyOf(kv, "/nhl/live")).toBeNull();
-    expect(await keyOf(kv, "/nhl", "b1", { method: "POST" })).toBeNull();
+    await final(kv, 1_000);
+    expect((await read(kv, ["pages", "standings"])).invalidatedAt).toBe(1_000);
+    expect((await read(kv, ["pages", "team:1"])).invalidatedAt).toBe(1_000);
+    expect((await read(kv, ["pages", "team:2"])).invalidatedAt).toBe(1_000);
+    expect((await read(kv, ["pages", "team:3"])).invalidatedAt).toBe(0);
+  });
+
+  it("are one document, written once for a final, holding only tags a page depends on", async () => {
+    const kv = versionStore();
+    await final(kv, 1_000);
+    expect(kv.puts).toBe(1);
+    expect(JSON.parse((await kv.get(PAGE_VERSIONS_KEY)) ?? "")).toEqual({
+      standings: 1_000,
+      "team:1": 1_000,
+      "team:2": 1_000,
+    });
+  });
+
+  it("keep an earlier final's when KV answers a write's read with an old copy", async () => {
+    const kv = versionStore();
+    await bumpPageTags(kv, ["team:1"], 1_000);
+    // The same store (one isolate), whose read has not caught up with its own write.
+    const get = kv.get;
+    kv.get = async () => null;
+    await bumpPageTags(kv, ["team:2"], 2_000);
+    kv.get = get;
+    expect(JSON.parse((await kv.get(PAGE_VERSIONS_KEY)) ?? "")).toEqual({
+      "team:1": 1_000,
+      "team:2": 2_000,
+    });
+  });
+
+  it("never move a tag backwards, and lose neither of two writes at once", async () => {
+    const kv = versionStore();
+    await bumpPageTags(kv, ["standings"], 5_000);
+    await Promise.all([
+      bumpPageTags(kv, ["standings"], 4_000),
+      bumpPageTags(kv, ["team:9"], 6_000),
+    ]);
+    expect(JSON.parse((await kv.get(PAGE_VERSIONS_KEY)) ?? "")).toEqual({
+      standings: 5_000,
+      "team:9": 6_000,
+    });
+  });
+
+  it("are written again when KV refuses a write (one a second to a key)", async () => {
+    const kv = versionStore();
+    const put = kv.put;
+    let refusals = 2;
+    kv.put = async (key, value) => {
+      if (refusals-- > 0) throw new Error("429");
+      await put(key, value);
+    };
+    await bumpPageTags(kv, ["standings"], 7_000, 0);
+    expect((await read(kv, ["standings"])).invalidatedAt).toBe(7_000);
+
+    kv.put = async () => {
+      throw new Error("429");
+    };
+    await expect(bumpPageTags(kv, ["standings"], 8_000, 0)).rejects.toThrow("429");
+  });
+
+  it("are not written over when the document cannot be read: the read is tried again", async () => {
+    const kv = versionStore();
+    await kv.put(PAGE_VERSIONS_KEY, '{"team:5":900}');
+    const get = kv.get;
+    let failures = 1;
+    kv.get = async (key) => {
+      if (failures-- > 0) throw new Error("KV is away");
+      return get(key);
+    };
+    // Another isolate's store, as far as `written` knows: the same document, a new object.
+    const other = { ...kv, get: kv.get, put: kv.put };
+    await bumpPageTags(other, ["team:6"], 1_000, 0);
+    expect(JSON.parse((await get(PAGE_VERSIONS_KEY)) ?? "")).toEqual({
+      "team:5": 900,
+      "team:6": 1_000,
+    });
+  });
+
+  it("are read from KV once in ten seconds an isolate, whatever the tags", async () => {
+    const kv = versionStore();
+    const reader = pageVersionReader();
+    expect((await reader(kv, ["standings"], 0)).from).toBe("kv");
+    await final(kv, 1_000);
+    kv.reads = 0;
+    expect(await reader(kv, ["team:1"], VERSIONS_MEMO_MS - 1)).toEqual({
+      invalidatedAt: 0,
+      from: "memo",
+    });
+    expect(kv.reads).toBe(0);
+    expect(await reader(kv, ["team:1"], VERSIONS_MEMO_MS)).toEqual({
+      invalidatedAt: 1_000,
+      from: "kv",
+    });
+    expect(kv.reads).toBe(1);
+  });
+
+  it("fail on a document that is not one, and are read again the next time", async () => {
+    const kv = versionStore();
+    const reader = pageVersionReader();
+    await kv.put(PAGE_VERSIONS_KEY, "[1]");
+    await expect(reader(kv, ["standings"], 0)).rejects.toThrow();
+    await kv.put(PAGE_VERSIONS_KEY, '{"standings":3,"junk":"x"}');
+    expect((await reader(kv, ["standings", "junk"], 0)).invalidatedAt).toBe(3);
   });
 });
 
@@ -172,19 +264,30 @@ function worker({ build = "b1" } = {}) {
     page: () =>
       new Response(`render ${state.renders}`, { headers: { "content-type": "text/html" } }),
     unstorable: false,
+    versionsFail: false,
+    renderMs: 0,
   };
+  // No memo: each test's requests are years apart or a millisecond, as it needs.
+  const readVersions = pageVersionReader(0);
   const deps: PageCacheDeps = {
     build,
     cache: {
       match: async (key) => entries.get(key)?.clone(),
       put: async (key, response) => void entries.set(key, response),
     },
-    versions: (tags) => readPageTagVersions(kv, tags),
+    versions: (tags) => {
+      if (state.versionsFail) return Promise.reject(new Error("KV is away"));
+      return readVersions(kv, tags, state.now);
+    },
     render: async (request) => {
       state.renders += 1;
       state.seen.push(request);
-      return { response: state.page(), unstorable: () => state.unstorable };
+      const response = state.page();
+      // A render takes time, and reads its data after it has begun.
+      state.now += state.renderMs;
+      return { response, unstorable: () => state.unstorable };
     },
+    refreshing: new Map(),
     waitUntil: (work) => void pending.push(work),
     now: () => state.now,
   };
@@ -195,7 +298,7 @@ function worker({ build = "b1" } = {}) {
     await Promise.all(pending.splice(0));
     return { status: response.headers.get(PAGE_CACHE_STATUS_HEADER), body, response };
   };
-  return { kv, entries, state, get };
+  return { kv, entries, state, get, deps, pending };
 }
 
 describe("serving a page", () => {
@@ -224,12 +327,79 @@ describe("serving a page", () => {
   });
 
   it("renders again after a final, and not for a team that did not play", async () => {
-    const { get, kv } = worker();
+    const { get, kv, state, entries } = worker();
     await get("/nhl/teams/1");
     await get("/nhl/teams/3");
     await final(kv, 10);
+    state.now = 20;
     expect((await get("/nhl/teams/1")).status).toBe("miss");
     expect((await get("/nhl/teams/3")).status).toBe("hit");
+    // What that render stored is under the same key, and newer than the final.
+    expect((await get("/nhl/teams/1")).status).toBe("hit");
+    expect(entries.size).toBe(2);
+  });
+
+  it("does not answer a page whose render began before a final that ended during it", async () => {
+    const { get, kv, state } = worker();
+    state.now = 1_000;
+    state.renderMs = 500;
+    // The render began at 1000, the final was at 1200: what it read may be from before.
+    const first = get("/nhl");
+    await final(kv, 1_200);
+    await first;
+    expect((await get("/nhl")).status).toBe("miss");
+    expect((await get("/nhl")).status).toBe("hit");
+  });
+
+  it("renders every page again when the `pages` tag is moved by hand", async () => {
+    const { get, kv, state } = worker();
+    await get("/nhl/teams/3");
+    await get("/players/9");
+    await bumpPageTags(kv, ["pages"], 5);
+    state.now = 6;
+    expect((await get("/nhl/teams/3")).status).toBe("miss");
+    expect((await get("/players/9")).status).toBe("miss");
+  });
+
+  it("renders for the one request, and keeps nothing, when the tags' times cannot be read", async () => {
+    const { get, state, entries } = worker();
+    await get("/nhl");
+    state.versionsFail = true;
+    expect(await get("/nhl")).toMatchObject({ status: "bypass", body: "render 2" });
+    expect(entries.size).toBe(1);
+    state.versionsFail = false;
+    expect(await get("/nhl")).toMatchObject({ status: "hit", body: "render 1" });
+  });
+
+  it("says where a hit's time went", async () => {
+    const { get } = worker();
+    await get("/nhl");
+    const timing = (await get("/nhl")).response.headers.get("server-timing");
+    expect(timing).toMatch(/versions;dur=\d+;desc=kv/);
+    expect(timing).toMatch(/match;dur=\d+/);
+    expect(timing).toMatch(/total;dur=\d+/);
+  });
+
+  it("renders a stale page again once, however many ask for it meanwhile", async () => {
+    const { deps, state, pending } = worker();
+    const ask = async () =>
+      (await servePage(new Request(`${SITE}/nhl`), deps)).headers.get(PAGE_CACHE_STATUS_HEADER);
+    await ask();
+    await Promise.all(pending.splice(0));
+    state.now = 61_000;
+    // Three visitors before the first one's render is stored.
+    expect([await ask(), await ask(), await ask()]).toEqual(["stale", "stale", "stale"]);
+    expect(state.renders).toBe(2);
+    await Promise.all(pending.splice(0));
+    expect(await ask()).toBe("hit");
+
+    // A render that was never stored does not stop the next one for ever.
+    state.now += 61_000;
+    state.unstorable = true;
+    expect(await ask()).toBe("stale");
+    await Promise.all(pending.splice(0));
+    expect(await ask()).toBe("stale");
+    expect(state.renders).toBe(4);
   });
 
   const html = { "content-type": "text/html; charset=utf-8" };
@@ -274,6 +444,16 @@ describe("serving a page", () => {
     state.now += 10 * 60_000 + 1;
     expect(await get("/nhl")).toMatchObject({ status: "miss", body: "render 3" });
     expect(await get("/nhl")).toMatchObject({ status: "hit", body: "render 3" });
+  });
+
+  it("answers a finished game's page however old it is, and still renders it again behind", async () => {
+    const { get, state } = worker();
+    await get("/nhl/games/401803652");
+    state.now = 11 * 60 * 60_000;
+    expect(await get("/nhl/games/401803652")).toMatchObject({ status: "stale", body: "render 1" });
+    expect(await get("/nhl/games/401803652")).toMatchObject({ status: "hit", body: "render 2" });
+    state.now += 13 * 60 * 60_000;
+    expect((await get("/nhl/games/401803652")).status).toBe("miss");
   });
 
   it("renders an address with a query its page does not read, and neither reads nor writes the cache", async () => {

@@ -1,10 +1,15 @@
 import { routeAgentRequest } from "agents";
 import site from "vinext/server/fetch-handler";
 
-import { readPageTagVersions, servePage, withoutPageCacheMark } from "./lib/page-cache";
+import { pageVersionReader, servePage, withoutPageCacheMark } from "./lib/page-cache";
 import { watchRender } from "./lib/render-failure";
 
 export * from "./agents";
+
+// The isolate's own: the tags' invalidation times it last read, and the stale pages it is
+// rendering again.
+const readVersions = pageVersionReader();
+const refreshing = new Map<string, number>();
 
 export default {
   async fetch(incoming, env, ctx) {
@@ -22,7 +27,8 @@ export default {
       // A cache of the site's own at the edge. `caches.default` is the same store under another
       // name, and is not in the types the site is checked against.
       cache: await caches.open("pages"),
-      versions: (tags) => readPageTagVersions(env.VINEXT_KV_CACHE, tags),
+      versions: (tags) => readVersions(env.VINEXT_KV_CACHE, tags, Date.now()),
+      refreshing,
       render: (page) => watchRender(() => site.fetch(page, env, ctx)),
       waitUntil: (work) => ctx.waitUntil(work),
       now: Date.now,

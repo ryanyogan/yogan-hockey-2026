@@ -10,6 +10,7 @@ import {
   trackedPlayers,
   trackedTabFrom,
 } from "./tracked-players";
+import { stillToCome } from "./tracked-schedule";
 
 const rylan = () => {
   const player = trackedPlayer("rylan");
@@ -114,6 +115,12 @@ test("his schedule is the games to come, soonest first, and the games played, ne
     "Oct 18",
   ]);
   expect(scheduleOf(rylan(), "2027-01-01")?.upcoming).toEqual([]);
+  // A render gives no day (the page is cached): every game without a result is listed, keyed by
+  // its ISO date, and the browser leaves out the ones that have passed.
+  const all = scheduleOf(rylan())?.upcoming ?? [];
+  expect(all.length).toBeGreaterThan(2);
+  expect(stillToCome(all, "2026-10-17").map((row) => row.date)).toEqual(["Oct 17", "Oct 18"]);
+  expect(stillToCome(all, "2027-01-01")).toEqual([]);
   expect(scheduleOf(rylan(), "2027-01-01")?.results).toHaveLength(6);
 
   expect(schedule?.season).toBe("2026-27");

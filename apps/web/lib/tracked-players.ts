@@ -11,6 +11,7 @@ import {
   statColumns,
   statValue,
 } from "./player-view";
+import { stillToCome } from "./tracked-schedule";
 
 /*
  * The Tracked Players: family members whose seasons the site follows outside the NHL. Each is one
@@ -129,14 +130,14 @@ export type ScheduleView = {
 };
 
 /** Today as a file writes a date: `YYYY-MM-DD`, in UTC. */
-const todayUtc = () => new Date().toISOString().slice(0, 10);
 
 /**
- * The Schedule tab: the games to come and the games played, each with his line. A game with no
- * result whose day has passed is left out: the file is edited by hand, and an old date must not
- * stay listed as upcoming.
+ * The Schedule tab: the games to come and the games played, each with his line. `upcoming` is
+ * every game without a result, whatever its day: a render must not read today's date (the page
+ * is kept in the page cache), so the browser leaves out the ones whose day has passed
+ * (`stillToCome` in `lib/tracked-schedule.ts`). Give `today` to have them left out here.
  */
-export function scheduleOf(player: TrackedPlayer, today: string = todayUtc()): ScheduleView | null {
+export function scheduleOf(player: TrackedPlayer, today?: string): ScheduleView | null {
   const log = player.gameLog;
   if (!log) return null;
   // ISO dates sort, and compare, as text.
@@ -149,7 +150,7 @@ export function scheduleOf(player: TrackedPlayer, today: string = todayUtc()): S
   return {
     season: log.season,
     columns: statColumns(log.columns),
-    upcoming: games.filter((game) => game.played === null && game.date >= today).map(row),
+    upcoming: stillToCome(games.filter((game) => game.played === null).map(row), today),
     results: games
       .flatMap((game) =>
         game.played

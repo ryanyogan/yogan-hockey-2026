@@ -7,10 +7,14 @@
  *   paint. The Worker marks each such request with `PAGE_CACHE_REQUEST_HEADER`, which is how the
  *   root layout knows to leave the Scoreboard out of the render.
  * - **The key** (`pageCacheKey`): the build, document or RSC, the path, the query parameters the
- *   page reads, the version of each tag the page depends on, and for an RSC answer a hash of the
- *   headers vinext varies it by. An address with any other query parameter has no key: it is
- *   rendered, and neither read from the cache nor stored. A final moves a tag's version (`bumpPageTag`), so the page it
- *   made stale is never asked for again; nothing is purged.
+ *   page reads, and for an RSC answer a hash of the headers vinext varies it by. An address with
+ *   any other query parameter has no key: it is rendered, and neither read from the cache nor
+ *   stored.
+ * - **A final** moves the time its tags were last invalidated (`bumpPageTags`), kept for every tag
+ *   in one KV document. An entry stored before the latest of its page's tags is not answered: it
+ *   is rendered again and replaced. Nothing is purged. The document is read beside the cache, not
+ *   before it, and kept in the isolate's memory for `VERSIONS_MEMO_MS` (`pageVersionReader`), so
+ *   most hits read no KV at all.
  * - **Stale while it refreshes** (`servePage`): an entry older than `FRESH_MS` is answered at
  *   once and rendered again behind the response. One older than `MAX_STALE_MS` is not answered:
  *   the visitor waits for the render. The edge drops an entry after `KEEP_SECONDS`.
@@ -54,6 +58,13 @@ const FRESH_MS = 60_000;
 const MAX_STALE_MS = 10 * 60_000;
 const KEEP_SECONDS = 12 * 60 * 60;
 const STORED_AT_HEADER = "x-page-stored-at";
+/**
+ * How long an isolate trusts the invalidation times it last read. A hit inside it reads no KV;
+ * a final reaches this isolate's visitors that much later, on top of what KV itself takes.
+ */
+export const VERSIONS_MEMO_MS = 10_000;
+/** A stale entry is rendered again once in this long per isolate, however many ask for it. */
+const REFRESH_GUARD_MS = 30_000;
 /** What vinext answers a rendered page with, and so what a cached one is answered with. */
 const BROWSER_CACHE_CONTROL = "private, no-cache, no-store, max-age=0, must-revalidate";
 
@@ -89,24 +100,37 @@ export type PagePolicy = {
   tags: string[];
   /** The query parameters the page reads. A request with any other is not answered from the cache. */
   query: string[];
+  /** The oldest entry a visitor is answered, when it is not `MAX_STALE_MS`. */
+  maxStaleMs?: number;
 };
 
 /**
  * Whether the page at `pathname` is cached, and on what it depends. `null` is a page rendered
- * per request: the dashboard, the live page and a game's page draw the slate itself, and the
- * player search is a search.
+ * per request: the dashboard and the live page draw the slate itself, sooner than the socket
+ * would bring it (spec section 2).
  *
- * A player's page depends on `standings`, which every final invalidates: the Worker cannot know
- * a player's team without a read, and every final is a superset of his team's. A Tracked Player's
- * page is not cached: its Schedule tab reads today's date in its render (`scheduleOf`). A team's pages depend on that team alone; the conference and division in the header
- * come from the standings and catch up within `FRESH_MS` of the next visit.
+ * - A player's page depends on `standings`, which every final invalidates: the Worker cannot
+ *   know a player's team without a read, and every final is a superset of his team's.
+ * - A team's pages depend on that team alone; the conference and division in the header come
+ *   from the standings and catch up within `FRESH_MS` of the next visit.
+ * - A Tracked Player's page and the player search with nothing searched for are drawn from the
+ *   build alone. A search (`?q=`) is a query the policy does not name, so it is rendered.
+ * - A game's page is kept only once the game is over and its plays are D1's: the page says so
+ *   itself (`doNotKeepPage()` for any other game), since the Worker cannot tell without a read.
+ *   Such a page never changes, so it is answered however old it is, and still rendered again
+ *   behind the answer when older than `FRESH_MS`.
  */
 export function pagePolicy(pathname: string): PagePolicy | null {
   const path = pathname.replace(/\.rsc$/, "");
   if (path === "/nhl") return policy([STANDINGS_TAG], ["tab", "view"]);
   const team = /^\/nhl\/teams\/(\d+)(?:\/(?:roster|stats))?$/.exec(path);
   if (team) return policy([`team:${team[1]}`], []);
+  if (/^\/nhl\/games\/\d+$/.test(path)) {
+    return { ...policy([], ["tab"]), maxStaleMs: KEEP_SECONDS * 1000 };
+  }
+  if (path === "/players") return policy([], []);
   if (/^\/players\/[^/]+$/.test(path)) return policy([STANDINGS_TAG], ["games"]);
+  if (/^\/family\/[^/]+$/.test(path)) return policy([], ["tab"]);
   return null;
 }
 
@@ -123,27 +147,100 @@ export function isPageTag(tag: string): boolean {
   return tag === STANDINGS_TAG || tag === ALL_PAGES_TAG || /^team:\d+$/.test(tag);
 }
 
-/** The KV key holding a tag's page-cache version. */
-export function pageTagVersionKey(tag: string): string {
-  return `page-cache:version:${tag}`;
-}
+/** The KV key of the one document holding every tag's last invalidation, in epoch milliseconds. */
+export const PAGE_VERSIONS_KEY = "page-cache:versions";
+
+/** When each tag was last invalidated. A tag never invalidated is absent. */
+type Versions = Record<string, number>;
 
 type VersionStore = {
   get(key: string, options?: { cacheTtl?: number }): Promise<string | null>;
   put(key: string, value: string): Promise<void>;
 };
 
-/** The current version of each tag, "0" for one never invalidated. One KV read a tag. */
-export function readPageTagVersions(kv: VersionStore, tags: string[]): Promise<string[]> {
-  return Promise.all(
-    // 30 seconds is the shortest a data center may keep its own copy of a KV value.
-    tags.map(async (tag) => (await kv.get(pageTagVersionKey(tag), { cacheTtl: 30 })) ?? "0"),
-  );
+function parseVersions(text: string | null): Versions {
+  if (text == null) return {};
+  const parsed: unknown = JSON.parse(text);
+  if (typeof parsed !== "object" || parsed == null || Array.isArray(parsed)) {
+    throw new Error("Page cache: the versions document is not an object");
+  }
+  const versions: Versions = {};
+  for (const [tag, at] of Object.entries(parsed)) {
+    if (typeof at === "number" && Number.isFinite(at)) versions[tag] = at;
+  }
+  return versions;
 }
 
-/** Moves a tag's version, so every page keyed on it is rendered again. */
-export async function bumpPageTag(kv: VersionStore, tag: string, now = Date.now()): Promise<void> {
-  if (isPageTag(tag)) await kv.put(pageTagVersionKey(tag), String(now));
+/** What a page's tags say: when the latest of them was invalidated, and where that was read. */
+export type PageInvalidation = { invalidatedAt: number; from: "memo" | "kv" };
+
+/**
+ * A reader of the tags' invalidation times that remembers the document for `memoMs`: one KV read
+ * serves every cacheable page an isolate answers in that time. Make one per isolate (the Worker's
+ * module scope). Only the value read is kept, never a promise: one request must not wait on
+ * another's I/O.
+ */
+export function pageVersionReader(memoMs = VERSIONS_MEMO_MS) {
+  let memo: { versions: Versions; readAt: number } | null = null;
+  return async (kv: VersionStore, tags: string[], now: number): Promise<PageInvalidation> => {
+    let from: PageInvalidation["from"] = "memo";
+    let known = memo;
+    if (known == null || now - known.readAt >= memoMs || now < known.readAt) {
+      // 30 seconds is the shortest a data center may keep its own copy of a KV value.
+      const text = await kv.get(PAGE_VERSIONS_KEY, { cacheTtl: 30 });
+      known = { versions: parseVersions(text), readAt: now };
+      memo = known;
+      from = "kv";
+    }
+    const versions = known.versions;
+    return { invalidatedAt: Math.max(0, ...tags.map((tag) => versions[tag] ?? 0)), from };
+  };
+}
+
+/** What each isolate has written, so a write never loses one it made a moment before. */
+const written = new WeakMap<VersionStore, Versions>();
+/** KV refuses a second write to one key within a second. */
+const WRITE_RETRY_MS = 1_100;
+
+/**
+ * Marks tags as invalidated at `now`, so every page depending on one is rendered again. One write
+ * for all of them: the document is read, joined with what this isolate has written (KV may answer
+ * a read with a copy from before its own last write) and put back. Tags no page depends on are
+ * left out.
+ */
+export async function bumpPageTags(
+  kv: VersionStore,
+  tags: string[],
+  now = Date.now(),
+  retryMs = WRITE_RETRY_MS,
+): Promise<void> {
+  const mine = tags.filter(isPageTag);
+  if (mine.length === 0) return;
+  const next = { ...written.get(kv) };
+  for (const tag of mine) next[tag] = Math.max(next[tag] ?? 0, now);
+  written.set(kv, next);
+  for (let attempt = 1; ; attempt += 1) {
+    try {
+      // A read that fails is tried again: writing without it would drop every other tag's time.
+      // A document that cannot be parsed is replaced.
+      const text = await kv.get(PAGE_VERSIONS_KEY);
+      let stored: Versions = {};
+      try {
+        stored = parseVersions(text);
+      } catch {}
+      // Whatever was written while that read was away is in `written` by now.
+      const joined: Versions = { ...stored };
+      for (const [tag, at] of Object.entries(written.get(kv) ?? {})) {
+        joined[tag] = Math.max(joined[tag] ?? 0, at);
+      }
+      written.set(kv, joined);
+      await kv.put(PAGE_VERSIONS_KEY, JSON.stringify(joined));
+      return;
+    } catch (error) {
+      if (attempt >= 3) throw error;
+      await new Promise((resolve) => setTimeout(resolve, retryMs));
+    }
+  }
 }
 
 /**
@@ -156,11 +253,7 @@ export async function bumpPageTag(kv: VersionStore, tag: string, now = Date.now(
  * into the document, where `useSearchParams()` reads it: under a shared key the old link would be
  * answered the cached Schedule page, and one visitor's `?fbclid=` would be every visitor's.
  */
-export async function pageCacheKey(
-  request: Request,
-  build: string,
-  versions: (tags: string[]) => Promise<string[]>,
-): Promise<string | null> {
+export async function pageCacheKey(request: Request, build: string): Promise<string | null> {
   if (request.method !== "GET" || build === "") return null;
   const url = new URL(request.url);
   const found = pagePolicy(url.pathname);
@@ -176,7 +269,6 @@ export async function pageCacheKey(
   for (const name of [...found.query].sort()) {
     for (const value of url.searchParams.getAll(name)) key.searchParams.append(name, value);
   }
-  key.searchParams.set("__v", (await versions(found.tags)).join("."));
   if (isRsc) key.searchParams.set("__h", await rscVariant(request.headers));
   return key.href;
 }
@@ -196,7 +288,8 @@ export type PageCacheDeps = {
     match(key: string): Promise<Response | undefined>;
     put(key: string, response: Response): Promise<void>;
   };
-  versions(tags: string[]): Promise<string[]>;
+  /** When the latest of `tags` was invalidated (`pageVersionReader`). */
+  versions(tags: string[]): Promise<PageInvalidation>;
   /**
    * Renders the page. `unstorable()` says, once the body has been read, whether the answer must
    * not be kept: a render failed, or drew a fallback or a not-found page inside a 200.
@@ -204,12 +297,18 @@ export type PageCacheDeps = {
   render(request: Request): Promise<{ response: Response; unstorable(): boolean }>;
   waitUntil(work: Promise<unknown>): void;
   now(): number;
+  /**
+   * The keys this isolate is rendering again behind a stale answer, and since when: several
+   * visitors asking for one stale page start one render. Per isolate, as the versions' memo is.
+   */
+  refreshing?: Map<string, number>;
 };
 
 /** Answers a request for a page: from the cache when it may, rendering and storing otherwise. */
 export async function servePage(incoming: Request, deps: PageCacheDeps): Promise<Response> {
   const request = withoutPageCacheMark(incoming);
-  if (pagePolicy(new URL(request.url).pathname) == null || request.method !== "GET") {
+  const found = pagePolicy(new URL(request.url).pathname);
+  if (found == null || request.method !== "GET") {
     return (await deps.render(request)).response;
   }
   // The same render with the cache off, so development draws what production does.
@@ -217,29 +316,78 @@ export async function servePage(incoming: Request, deps: PageCacheDeps): Promise
   cacheable.headers.set(PAGE_CACHE_REQUEST_HEADER, "1");
 
   if (deps.build === "") return withStatus((await deps.render(cacheable)).response, "off");
-  const key = await pageCacheKey(request, deps.build, deps.versions).catch(() => null);
+  const key = await pageCacheKey(request, deps.build);
   if (key == null) return withStatus((await deps.render(cacheable)).response, "bypass");
 
-  const entry = await deps.cache.match(key).catch(() => undefined);
+  // Side by side: a hit costs the slower of the two, and with the memo warm the cache alone.
+  const started = deps.now();
+  const timing: string[] = [];
+  const [invalidation, entry] = await Promise.all([
+    deps.versions(found.tags).then(
+      (read) => {
+        timing.push(`versions;dur=${deps.now() - started};desc=${read.from}`);
+        return read;
+      },
+      () => null,
+    ),
+    deps.cache.match(key).then(
+      (read) => {
+        timing.push(`match;dur=${deps.now() - started}`);
+        return read;
+      },
+      () => undefined,
+    ),
+  ]);
+  const timed = (response: Response, status: string) => {
+    const answer = withStatus(response, status);
+    answer.headers.append(
+      "server-timing",
+      [...timing, `total;dur=${deps.now() - started}`].join(", "),
+    );
+    return answer;
+  };
+  // Without the tags' times nothing kept can be trusted, and nothing rendered is worth keeping.
+  if (invalidation == null) return timed((await deps.render(cacheable)).response, "bypass");
+
   const storedAt = Number(entry?.headers.get(STORED_AT_HEADER));
   const age = deps.now() - storedAt;
-  if (entry != null && Number.isFinite(storedAt) && age <= MAX_STALE_MS) {
+  const usable =
+    Number.isFinite(storedAt) &&
+    age <= (found.maxStaleMs ?? MAX_STALE_MS) &&
+    storedAt >= invalidation.invalidatedAt;
+  if (entry != null && usable) {
     if (storedAt >= invalidatedAtOf(request)) {
-      if (age > FRESH_MS) {
-        // Nobody reads this render's answer; its copy is what is stored.
-        deps.waitUntil(
-          renderAndStore(cacheable, key, deps).then((unread) => unread.body?.cancel()),
-        );
-      }
-      const response = withStatus(entry, age > FRESH_MS ? "stale" : "hit");
+      if (age > FRESH_MS) refreshOnce(cacheable, key, deps);
+      const response = timed(entry, age > FRESH_MS ? "stale" : "hit");
       response.headers.set(PAGE_CACHE_AGE_HEADER, String(Math.max(0, Math.round(age / 1000))));
       response.headers.set("cache-control", BROWSER_CACHE_CONTROL);
       response.headers.delete(STORED_AT_HEADER);
       return response;
     }
-    return withStatus(await renderAndStore(cacheable, key, deps), "bypass");
+    return timed(await renderAndStore(cacheable, key, deps), "bypass");
   }
-  return withStatus(await renderAndStore(cacheable, key, deps), "miss");
+  return timed(await renderAndStore(cacheable, key, deps), "miss");
+}
+
+/** Renders a stale page again behind its answer, unless this isolate already is. */
+function refreshOnce(request: Request, key: string, deps: PageCacheDeps): void {
+  const now = deps.now();
+  const since = deps.refreshing?.get(key);
+  if (since != null && now >= since && now - since < REFRESH_GUARD_MS) return;
+  if (deps.refreshing != null) {
+    // Keys of builds and pages nobody asks for any more are not kept for the isolate's life.
+    for (const [other, at] of deps.refreshing) {
+      if (now - at >= REFRESH_GUARD_MS) deps.refreshing.delete(other);
+    }
+    deps.refreshing.set(key, now);
+  }
+  deps.waitUntil(
+    // Nobody reads this render's answer; its copy is what is stored.
+    renderAndStore(request, key, deps, () => {
+      // A render that outlived its guard must not clear the guard of the one that replaced it.
+      if (deps.refreshing?.get(key) === now) deps.refreshing.delete(key);
+    }).then((unread) => unread.body?.cancel()),
+  );
 }
 
 /** Renders the page, answers with it as it streams, and stores a copy once it is whole. */
@@ -247,8 +395,19 @@ async function renderAndStore(
   request: Request,
   key: string,
   deps: PageCacheDeps,
+  settled: () => void = () => {},
 ): Promise<Response> {
-  const { response, unstorable } = await deps.render(request);
+  // Before the render reads anything: an entry is as old as the oldest thing in it, and one
+  // begun before a final must not pass for one begun after.
+  const storedAt = deps.now();
+  let rendered: Awaited<ReturnType<PageCacheDeps["render"]>>;
+  try {
+    rendered = await deps.render(request);
+  } catch (error) {
+    settled();
+    throw error;
+  }
+  const { response, unstorable } = rendered;
   // The key says document or RSC from the request; an answer of the other kind, whatever header
   // brought it about, is not kept under it.
   const wanted = key.includes("/rsc/") ? "text/x-component" : "text/html";
@@ -259,10 +418,10 @@ async function renderAndStore(
     !isWanted ||
     response.headers.has("set-cookie")
   ) {
+    settled();
     return response;
   }
   const [answer, copy] = response.body.tee();
-  const storedAt = deps.now();
   deps.waitUntil(
     (async () => {
       // Read to the end before deciding: a render can fail after the response has started.
@@ -272,7 +431,9 @@ async function renderAndStore(
       headers.set("cache-control", `public, s-maxage=${KEEP_SECONDS}`);
       headers.set(STORED_AT_HEADER, String(storedAt));
       await deps.cache.put(key, new Response(body, { status: 200, headers }));
-    })().catch((error) => console.error("Page cache: could not store", key, error)),
+    })()
+      .catch((error) => console.error("Page cache: could not store", key, error))
+      .finally(settled),
   );
   return new Response(answer, response);
 }

@@ -1,5 +1,8 @@
 # Yogan Hockey 2026: build spec
 
+Current direction: [the approved October 10 UI](design/navigation-direction.md) supersedes earlier visual requirements below. Family and fictional Rylan features are retired; their older descriptions are historical. The server/cache performance rules below remain current.
+
+
 The whole design, as decided on the [map](https://github.com/ryanyogan/yogan-hockey-2026/issues/1). It is written in the present tense: it describes the site as it will be when built. Vocabulary is from `GLOSSARY.md`; the reasons behind the larger choices are in `docs/adr/`. Where a detail here and a closed ticket disagree, this document wins, because it leaves out what was later superseded.
 
 Things nobody has run yet are marked **(unverified)** and collected in [Unverified](#unverified), each with the build issue that proves it.
@@ -44,14 +47,13 @@ The aim (#94): a page opens at once. A visitor almost never waits on ESPN, what 
 
 **How a page is rendered**
 
-- **A page whose HTML depends only on its address and on slow data is kept whole in Cloudflare's edge cache** (#103), in front of vinext, by the Worker's entry (`apps/web/lib/page-cache.ts`). These are `/nhl` (every view and tab), a team's three pages, `/players/:id`, `/players` with nothing searched for, `/family/:slug`, and the page of a game that is over (#95). Such a page reads nothing on the server that changes by the minute: today's games reach it on the Scoreboard's socket and a pick from `GET /picks`, both after first paint, into places already held for them. The table below says how it is kept.
+- **A page whose HTML depends only on its address and on slow data is kept whole in Cloudflare's edge cache** (#103), in front of vinext, by the Worker's entry (`apps/web/lib/page-cache.ts`). These are `/nhl` (every view and tab), a team's three pages, `/players/:id`, `/players` with nothing searched for, and the page of a game that is over (#95). Such a page reads nothing on the server that changes by the minute: today's games reach it on the Scoreboard's socket and a pick from `GET /picks`, both after first paint, into places already held for them. The table below says how it is kept.
 - **Every other page is rendered per request** from cached data: `/` and `/nhl/live` draw the slate itself, a search on `/players` is a search, and the page of a game still to come or in progress reads its Game Agent. The slate stays server-drawn on purpose (#95, measured on the deployed site): the Scoreboard socket's first message arrived 490 to 550 ms after the connection was begun, itself after hydration, where the whole rendered page arrived 240 to 370 ms after the handshake.
 - **A game's page is kept only once the game is over and its plays are D1's.** The Worker cannot tell a game's state without a read, so every game's page is asked of the cache and the page itself declines to be kept for any other game (`doNotKeepPage()`). A kept one never changes, so it is answered however old it is (up to the 12 hours the edge keeps it) and still rendered again behind the answer past 60 seconds, which is what picks up the 24-hour re-read. Because the request is marked cacheable, no game's page is rendered with the layout's Scoreboard: its ticker fills from the socket, and the page reads today's slate without waiting for it (`useScoreboardSoFar()`).
-- **`/family/:slug` reads no clock on the server.** Every game without a result is listed, and the browser leaves out one whose day has passed.
 - **One read a request**: the layout, the page and `generateMetadata` share the Scoreboard, the team, the player and the game (`lib/per-request.ts`).
 - Every page answers the browser `cache-control: private, no-store`, cached or not: the edge keeps the page, the browser asks each time. Nothing a visitor sees is per-visitor on the server (favorites live in the browser), and a page that sets a cookie is never stored.
 - vinext's own page cache and partial prerendering are not used: the first is keyed by path alone and stores no page that reads `searchParams`, the second is unfinished.
-- The root layout waits for nothing. It hands the Scoreboard's first paint to the page as a promise, the shell is sent at once, and the score ticker streams in behind an empty strip of its own height (`TICKER_STRIP_HEIGHT`).
+- The root layout waits for nothing. It hands the Scoreboard's first paint to the page as a promise, the shell is sent at once, and the score grid streams in behind a nine-cell placeholder with the same responsive wrapping. An unusually large or small slate can change its initial height; all games remain visible.
 - A page waits only for what decides its outline (the team behind a team page: its header's height, and whether there is such a team, which sets the status code). Everything else streams in under a `loading.tsx` or a `<Suspense>` whose placeholder is the size of what replaces it.
 - A page with a header and tabs is a nested layout: the header and the tab bar are the layout's, each tab is a page beneath it at its own path, and changing tab leaves the header where it is. The team page is built this way. Tabs and views are still held in the URL: as a path segment where the tab is a page, as a query parameter elsewhere.
 
@@ -60,9 +62,9 @@ The aim (#94): a page opens at once. A visitor almost never waits on ESPN, what 
 | | |
 | --- | --- |
 | Where | The Workers Cache API (`caches.open("pages")`), which is per data center: each one renders a page once |
-| Key | The build's id, document or RSC, the path, the query parameters the page reads (`view` and `tab` on `/nhl`, `games` on a player, `tab` on a game and on a Tracked Player; `q` on `/players` is not one, so a search is rendered), and for an RSC answer a hash of the headers that change it. A final does not change the key: the entry stored before it is not answered, and the render that replaces it is stored in its place |
+| Key | The build's id, document or RSC, the path, the query parameters the page reads (`view` and `tab` on `/nhl`, `games` on a player, `tab` on a game; `q` on `/players` is not one, so a search is rendered), and for an RSC answer a hash of the headers that change it. A final does not change the key: the entry stored before it is not answered, and the render that replaces it is stored in its place |
 | No key | An address with any other query parameter (vinext's own `_rsc` aside) is rendered for that request and neither read from the cache nor stored: the render sees the whole query (a redirect may match on it, as `?tab=roster` on a team does, and vinext writes it into the document for `useSearchParams()`), so it cannot share a page with the address without it |
-| Tags | `/nhl`: `standings`. A team's pages: `team:{id}`. A player's: `standings`, which is every final. `/players`, `/family/:slug` and a finished game: none of their own. All of them: `pages`, moved only by hand |
+| Tags | `/nhl`: `standings`. A team's pages: `team:{id}`. A player's: `standings`, which is every final. `/players` and a finished game: none of their own. All of them: `pages`, moved only by hand |
 | Fresh for | 60 seconds. Older, it is still answered at once and rendered again behind the response (`waitUntil`) |
 | Oldest answered | 10 minutes. Past that the visitor waits for a render, as before there was a page cache: the first visitor after a quiet night is not shown last night's page. Ten minutes is twice the shortest limit of the data beneath (the standings) |
 | Kept for | 12 hours since it was last rendered |
@@ -128,12 +130,8 @@ Site-wide:
 - Times are shown in the visitor's own time zone. The server writes Eastern time marked "ET", and the browser replaces it as the page loads.
 - Scores update on every page without a refresh, through the Scoreboard socket.
 - Every game card or game row, wherever it appears, links to that game's page.
-<<<<<<< HEAD
 - Tabs and standings views are held in the URL, so they survive a reload and can be linked: a query parameter, or a path segment where each tab is a page under a shared layout (the team page).
-=======
-- Tabs and standings views are held in the URL, so they survive a reload and can be linked.
 - A team's mark, its logo at 14px, stands before its abbreviation or name where it helps a reader find a team: standings rows, the teams list, game rows (tonight's games, `/nhl/live`, a team's schedule and Next Game card), the score ticker, the two sides over the ice on a game page, a player's team and player search rows; a team page has its own at the end of its record. A mark never changes a row's height or a column's width where the column is a fixed one (the text after it starts 20px later, the same in every row), has the dark logo on the dark theme, and is a file the site serves itself, so no page waits on ESPN for an image. Marks are left out where they would repeat one team down a table (a roster, a career table, a game's own ledgers) or sit inside a sentence (a play, a season series line).
->>>>>>> 506c215 (Team marks: a small logo before a team's abbreviation, served by the site (#97))
 
 ### `/` Dashboard
 

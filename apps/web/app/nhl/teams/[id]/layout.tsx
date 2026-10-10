@@ -54,7 +54,7 @@ export default async function TeamLayout({ params, children }: Props) {
 
   return (
     <>
-      <div className="grid gap-8 xl:grid-cols-2">
+      <div className="grid gap-4 xl:grid-cols-2">
         <TeamHeader
           detail={detail}
           standing={standing}

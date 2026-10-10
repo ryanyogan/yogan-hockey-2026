@@ -1,0 +1,3135 @@
+{
+  "base": "bba6ce3",
+  "implementation": "issue-99-aligned-ui working tree",
+  "timezone": "America/Chicago",
+  "results": [
+    {
+      "name": "dashboard",
+      "path": "/",
+      "width": 390,
+      "theme": "light",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 89
+      },
+      "headerContent": {
+        "x": 12,
+        "y": 0,
+        "width": 366,
+        "height": 88
+      },
+      "ticker": {
+        "x": 12,
+        "y": 89,
+        "width": 366,
+        "height": 132
+      },
+      "main": {
+        "x": 12,
+        "y": 221,
+        "width": 366,
+        "height": 1646.203125
+      },
+      "row": {
+        "x": 13,
+        "y": 359.703125,
+        "width": 364,
+        "height": 56
+      },
+      "teamFont": "14px",
+      "recordFont": "12px",
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "dashboard",
+      "path": "/",
+      "width": 390,
+      "theme": "dark",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 89
+      },
+      "headerContent": {
+        "x": 12,
+        "y": 0,
+        "width": 366,
+        "height": 88
+      },
+      "ticker": {
+        "x": 12,
+        "y": 89,
+        "width": 366,
+        "height": 132
+      },
+      "main": {
+        "x": 12,
+        "y": 221,
+        "width": 366,
+        "height": 1646.203125
+      },
+      "row": {
+        "x": 13,
+        "y": 359.703125,
+        "width": 364,
+        "height": 56
+      },
+      "teamFont": "14px",
+      "recordFont": "12px",
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "dashboard",
+      "path": "/",
+      "width": 1440,
+      "theme": "light",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 57
+      },
+      "headerContent": {
+        "x": 24,
+        "y": 0,
+        "width": 1392,
+        "height": 56
+      },
+      "ticker": {
+        "x": 24,
+        "y": 57,
+        "width": 1392,
+        "height": 49
+      },
+      "main": {
+        "x": 24,
+        "y": 106,
+        "width": 1392,
+        "height": 871.5625
+      },
+      "row": {
+        "x": 25,
+        "y": 255.5625,
+        "width": 844.765625,
+        "height": 48
+      },
+      "teamFont": "14px",
+      "recordFont": "12px",
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "dashboard",
+      "path": "/",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 57
+      },
+      "headerContent": {
+        "x": 24,
+        "y": 0,
+        "width": 1392,
+        "height": 56
+      },
+      "ticker": {
+        "x": 24,
+        "y": 57,
+        "width": 1392,
+        "height": 49
+      },
+      "main": {
+        "x": 24,
+        "y": 106,
+        "width": 1392,
+        "height": 871.5625
+      },
+      "row": {
+        "x": 25,
+        "y": 255.5625,
+        "width": 844.765625,
+        "height": 48
+      },
+      "teamFont": "14px",
+      "recordFont": "12px",
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "standings",
+      "path": "/nhl",
+      "width": 390,
+      "theme": "light",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 89
+      },
+      "headerContent": {
+        "x": 12,
+        "y": 0,
+        "width": 366,
+        "height": 88
+      },
+      "ticker": {
+        "x": 12,
+        "y": 89,
+        "width": 366,
+        "height": 132
+      },
+      "main": {
+        "x": 12,
+        "y": 221,
+        "width": 366,
+        "height": 1809
+      },
+      "row": null,
+      "teamFont": null,
+      "recordFont": null,
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "standings",
+      "path": "/nhl",
+      "width": 390,
+      "theme": "dark",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 89
+      },
+      "headerContent": {
+        "x": 12,
+        "y": 0,
+        "width": 366,
+        "height": 88
+      },
+      "ticker": {
+        "x": 12,
+        "y": 89,
+        "width": 366,
+        "height": 132
+      },
+      "main": {
+        "x": 12,
+        "y": 221,
+        "width": 366,
+        "height": 1809
+      },
+      "row": null,
+      "teamFont": null,
+      "recordFont": null,
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "standings",
+      "path": "/nhl",
+      "width": 1440,
+      "theme": "light",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 57
+      },
+      "headerContent": {
+        "x": 24,
+        "y": 0,
+        "width": 1392,
+        "height": 56
+      },
+      "ticker": {
+        "x": 24,
+        "y": 57,
+        "width": 1392,
+        "height": 49
+      },
+      "main": {
+        "x": 24,
+        "y": 106,
+        "width": 1392,
+        "height": 952
+      },
+      "row": null,
+      "teamFont": null,
+      "recordFont": null,
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "standings",
+      "path": "/nhl",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 57
+      },
+      "headerContent": {
+        "x": 24,
+        "y": 0,
+        "width": 1392,
+        "height": 56
+      },
+      "ticker": {
+        "x": 24,
+        "y": 57,
+        "width": 1392,
+        "height": 49
+      },
+      "main": {
+        "x": 24,
+        "y": 106,
+        "width": 1392,
+        "height": 952
+      },
+      "row": null,
+      "teamFont": null,
+      "recordFont": null,
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "teams",
+      "path": "/nhl?tab=teams",
+      "width": 390,
+      "theme": "light",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 89
+      },
+      "headerContent": {
+        "x": 12,
+        "y": 0,
+        "width": 366,
+        "height": 88
+      },
+      "ticker": {
+        "x": 12,
+        "y": 89,
+        "width": 366,
+        "height": 132
+      },
+      "main": {
+        "x": 12,
+        "y": 221,
+        "width": 366,
+        "height": 1483
+      },
+      "row": null,
+      "teamFont": null,
+      "recordFont": null,
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "teams",
+      "path": "/nhl?tab=teams",
+      "width": 390,
+      "theme": "dark",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 89
+      },
+      "headerContent": {
+        "x": 12,
+        "y": 0,
+        "width": 366,
+        "height": 88
+      },
+      "ticker": {
+        "x": 12,
+        "y": 89,
+        "width": 366,
+        "height": 132
+      },
+      "main": {
+        "x": 12,
+        "y": 221,
+        "width": 366,
+        "height": 1483
+      },
+      "row": null,
+      "teamFont": null,
+      "recordFont": null,
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "teams",
+      "path": "/nhl?tab=teams",
+      "width": 1440,
+      "theme": "light",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 57
+      },
+      "headerContent": {
+        "x": 24,
+        "y": 0,
+        "width": 1392,
+        "height": 56
+      },
+      "ticker": {
+        "x": 24,
+        "y": 57,
+        "width": 1392,
+        "height": 49
+      },
+      "main": {
+        "x": 24,
+        "y": 106,
+        "width": 1392,
+        "height": 1402.5
+      },
+      "row": null,
+      "teamFont": null,
+      "recordFont": null,
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "teams",
+      "path": "/nhl?tab=teams",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 57
+      },
+      "headerContent": {
+        "x": 24,
+        "y": 0,
+        "width": 1392,
+        "height": 56
+      },
+      "ticker": {
+        "x": 24,
+        "y": 57,
+        "width": 1392,
+        "height": 49
+      },
+      "main": {
+        "x": 24,
+        "y": 106,
+        "width": 1392,
+        "height": 1402.5
+      },
+      "row": null,
+      "teamFont": null,
+      "recordFont": null,
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "players",
+      "path": "/players",
+      "width": 390,
+      "theme": "light",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 89
+      },
+      "headerContent": {
+        "x": 12,
+        "y": 0,
+        "width": 366,
+        "height": 88
+      },
+      "ticker": {
+        "x": 12,
+        "y": 89,
+        "width": 366,
+        "height": 132
+      },
+      "main": {
+        "x": 12,
+        "y": 221,
+        "width": 366,
+        "height": 719.71875
+      },
+      "row": null,
+      "teamFont": null,
+      "recordFont": null,
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "players",
+      "path": "/players",
+      "width": 390,
+      "theme": "dark",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 89
+      },
+      "headerContent": {
+        "x": 12,
+        "y": 0,
+        "width": 366,
+        "height": 88
+      },
+      "ticker": {
+        "x": 12,
+        "y": 89,
+        "width": 366,
+        "height": 132
+      },
+      "main": {
+        "x": 12,
+        "y": 221,
+        "width": 366,
+        "height": 719.71875
+      },
+      "row": null,
+      "teamFont": null,
+      "recordFont": null,
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "players",
+      "path": "/players",
+      "width": 1440,
+      "theme": "light",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 57
+      },
+      "headerContent": {
+        "x": 24,
+        "y": 0,
+        "width": 1392,
+        "height": 56
+      },
+      "ticker": {
+        "x": 24,
+        "y": 57,
+        "width": 1392,
+        "height": 49
+      },
+      "main": {
+        "x": 24,
+        "y": 106,
+        "width": 1392,
+        "height": 843.859375
+      },
+      "row": null,
+      "teamFont": null,
+      "recordFont": null,
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "players",
+      "path": "/players",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 57
+      },
+      "headerContent": {
+        "x": 24,
+        "y": 0,
+        "width": 1392,
+        "height": 56
+      },
+      "ticker": {
+        "x": 24,
+        "y": 57,
+        "width": 1392,
+        "height": 49
+      },
+      "main": {
+        "x": 24,
+        "y": 106,
+        "width": 1392,
+        "height": 843.859375
+      },
+      "row": null,
+      "teamFont": null,
+      "recordFont": null,
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "player",
+      "path": "/players/4024123",
+      "width": 390,
+      "theme": "light",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 89
+      },
+      "headerContent": {
+        "x": 12,
+        "y": 0,
+        "width": 366,
+        "height": 88
+      },
+      "ticker": {
+        "x": 12,
+        "y": 89,
+        "width": 366,
+        "height": 132
+      },
+      "main": {
+        "x": 12,
+        "y": 221,
+        "width": 366,
+        "height": 1346
+      },
+      "row": null,
+      "teamFont": null,
+      "recordFont": null,
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "player",
+      "path": "/players/4024123",
+      "width": 390,
+      "theme": "dark",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 89
+      },
+      "headerContent": {
+        "x": 12,
+        "y": 0,
+        "width": 366,
+        "height": 88
+      },
+      "ticker": {
+        "x": 12,
+        "y": 89,
+        "width": 366,
+        "height": 132
+      },
+      "main": {
+        "x": 12,
+        "y": 221,
+        "width": 366,
+        "height": 1346
+      },
+      "row": null,
+      "teamFont": null,
+      "recordFont": null,
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "player",
+      "path": "/players/4024123",
+      "width": 1440,
+      "theme": "light",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 57
+      },
+      "headerContent": {
+        "x": 24,
+        "y": 0,
+        "width": 1392,
+        "height": 56
+      },
+      "ticker": {
+        "x": 24,
+        "y": 57,
+        "width": 1392,
+        "height": 49
+      },
+      "main": {
+        "x": 24,
+        "y": 106,
+        "width": 1392,
+        "height": 1211.5
+      },
+      "row": null,
+      "teamFont": null,
+      "recordFont": null,
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "player",
+      "path": "/players/4024123",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 57
+      },
+      "headerContent": {
+        "x": 24,
+        "y": 0,
+        "width": 1392,
+        "height": 56
+      },
+      "ticker": {
+        "x": 24,
+        "y": 57,
+        "width": 1392,
+        "height": 49
+      },
+      "main": {
+        "x": 24,
+        "y": 106,
+        "width": 1392,
+        "height": 1211.5
+      },
+      "row": null,
+      "teamFont": null,
+      "recordFont": null,
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "team",
+      "path": "/nhl/teams/21",
+      "width": 390,
+      "theme": "light",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 89
+      },
+      "headerContent": {
+        "x": 12,
+        "y": 0,
+        "width": 366,
+        "height": 88
+      },
+      "ticker": {
+        "x": 12,
+        "y": 89,
+        "width": 366,
+        "height": 132
+      },
+      "main": {
+        "x": 12,
+        "y": 221,
+        "width": 366,
+        "height": 3957
+      },
+      "row": null,
+      "teamFont": null,
+      "recordFont": null,
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "team",
+      "path": "/nhl/teams/21",
+      "width": 390,
+      "theme": "dark",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 89
+      },
+      "headerContent": {
+        "x": 12,
+        "y": 0,
+        "width": 366,
+        "height": 88
+      },
+      "ticker": {
+        "x": 12,
+        "y": 89,
+        "width": 366,
+        "height": 132
+      },
+      "main": {
+        "x": 12,
+        "y": 221,
+        "width": 366,
+        "height": 3957
+      },
+      "row": null,
+      "teamFont": null,
+      "recordFont": null,
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "team",
+      "path": "/nhl/teams/21",
+      "width": 1440,
+      "theme": "light",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 57
+      },
+      "headerContent": {
+        "x": 24,
+        "y": 0,
+        "width": 1392,
+        "height": 56
+      },
+      "ticker": {
+        "x": 24,
+        "y": 57,
+        "width": 1392,
+        "height": 49
+      },
+      "main": {
+        "x": 24,
+        "y": 106,
+        "width": 1392,
+        "height": 3364.5
+      },
+      "row": null,
+      "teamFont": null,
+      "recordFont": null,
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "team",
+      "path": "/nhl/teams/21",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 57
+      },
+      "headerContent": {
+        "x": 24,
+        "y": 0,
+        "width": 1392,
+        "height": 56
+      },
+      "ticker": {
+        "x": 24,
+        "y": 57,
+        "width": 1392,
+        "height": 49
+      },
+      "main": {
+        "x": 24,
+        "y": 106,
+        "width": 1392,
+        "height": 3364.5
+      },
+      "row": null,
+      "teamFont": null,
+      "recordFont": null,
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "roster",
+      "path": "/nhl/teams/21/roster",
+      "width": 390,
+      "theme": "light",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 89
+      },
+      "headerContent": {
+        "x": 12,
+        "y": 0,
+        "width": 366,
+        "height": 88
+      },
+      "ticker": {
+        "x": 12,
+        "y": 89,
+        "width": 366,
+        "height": 132
+      },
+      "main": {
+        "x": 12,
+        "y": 221,
+        "width": 366,
+        "height": 1463
+      },
+      "row": null,
+      "teamFont": null,
+      "recordFont": null,
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "roster",
+      "path": "/nhl/teams/21/roster",
+      "width": 390,
+      "theme": "dark",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 89
+      },
+      "headerContent": {
+        "x": 12,
+        "y": 0,
+        "width": 366,
+        "height": 88
+      },
+      "ticker": {
+        "x": 12,
+        "y": 89,
+        "width": 366,
+        "height": 132
+      },
+      "main": {
+        "x": 12,
+        "y": 221,
+        "width": 366,
+        "height": 1463
+      },
+      "row": null,
+      "teamFont": null,
+      "recordFont": null,
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "roster",
+      "path": "/nhl/teams/21/roster",
+      "width": 1440,
+      "theme": "light",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 57
+      },
+      "headerContent": {
+        "x": 24,
+        "y": 0,
+        "width": 1392,
+        "height": 56
+      },
+      "ticker": {
+        "x": 24,
+        "y": 57,
+        "width": 1392,
+        "height": 49
+      },
+      "main": {
+        "x": 24,
+        "y": 106,
+        "width": 1392,
+        "height": 1255.5
+      },
+      "row": null,
+      "teamFont": null,
+      "recordFont": null,
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "roster",
+      "path": "/nhl/teams/21/roster",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 57
+      },
+      "headerContent": {
+        "x": 24,
+        "y": 0,
+        "width": 1392,
+        "height": 56
+      },
+      "ticker": {
+        "x": 24,
+        "y": 57,
+        "width": 1392,
+        "height": 49
+      },
+      "main": {
+        "x": 24,
+        "y": 106,
+        "width": 1392,
+        "height": 1255.5
+      },
+      "row": null,
+      "teamFont": null,
+      "recordFont": null,
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "stats",
+      "path": "/nhl/teams/21/stats",
+      "width": 390,
+      "theme": "light",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 89
+      },
+      "headerContent": {
+        "x": 12,
+        "y": 0,
+        "width": 366,
+        "height": 88
+      },
+      "ticker": {
+        "x": 12,
+        "y": 89,
+        "width": 366,
+        "height": 132
+      },
+      "main": {
+        "x": 12,
+        "y": 221,
+        "width": 366,
+        "height": 719.71875
+      },
+      "row": null,
+      "teamFont": null,
+      "recordFont": null,
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "stats",
+      "path": "/nhl/teams/21/stats",
+      "width": 390,
+      "theme": "dark",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 89
+      },
+      "headerContent": {
+        "x": 12,
+        "y": 0,
+        "width": 366,
+        "height": 88
+      },
+      "ticker": {
+        "x": 12,
+        "y": 89,
+        "width": 366,
+        "height": 132
+      },
+      "main": {
+        "x": 12,
+        "y": 221,
+        "width": 366,
+        "height": 719.71875
+      },
+      "row": null,
+      "teamFont": null,
+      "recordFont": null,
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "stats",
+      "path": "/nhl/teams/21/stats",
+      "width": 1440,
+      "theme": "light",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 57
+      },
+      "headerContent": {
+        "x": 24,
+        "y": 0,
+        "width": 1392,
+        "height": 56
+      },
+      "ticker": {
+        "x": 24,
+        "y": 57,
+        "width": 1392,
+        "height": 49
+      },
+      "main": {
+        "x": 24,
+        "y": 106,
+        "width": 1392,
+        "height": 843.859375
+      },
+      "row": null,
+      "teamFont": null,
+      "recordFont": null,
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "stats",
+      "path": "/nhl/teams/21/stats",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 57
+      },
+      "headerContent": {
+        "x": 24,
+        "y": 0,
+        "width": 1392,
+        "height": 56
+      },
+      "ticker": {
+        "x": 24,
+        "y": 57,
+        "width": 1392,
+        "height": 49
+      },
+      "main": {
+        "x": 24,
+        "y": 106,
+        "width": 1392,
+        "height": 843.859375
+      },
+      "row": null,
+      "teamFont": null,
+      "recordFont": null,
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "scores",
+      "path": "/nhl/live",
+      "width": 390,
+      "theme": "light",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 89
+      },
+      "headerContent": {
+        "x": 12,
+        "y": 0,
+        "width": 366,
+        "height": 88
+      },
+      "ticker": {
+        "x": 12,
+        "y": 89,
+        "width": 366,
+        "height": 132
+      },
+      "main": {
+        "x": 12,
+        "y": 221,
+        "width": 366,
+        "height": 719.71875
+      },
+      "row": {
+        "x": 13,
+        "y": 354,
+        "width": 364,
+        "height": 56
+      },
+      "teamFont": "14px",
+      "recordFont": "12px",
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "scores",
+      "path": "/nhl/live",
+      "width": 390,
+      "theme": "dark",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 89
+      },
+      "headerContent": {
+        "x": 12,
+        "y": 0,
+        "width": 366,
+        "height": 88
+      },
+      "ticker": {
+        "x": 12,
+        "y": 89,
+        "width": 366,
+        "height": 132
+      },
+      "main": {
+        "x": 12,
+        "y": 221,
+        "width": 366,
+        "height": 719.71875
+      },
+      "row": {
+        "x": 13,
+        "y": 354,
+        "width": 364,
+        "height": 56
+      },
+      "teamFont": "14px",
+      "recordFont": "12px",
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "scores",
+      "path": "/nhl/live",
+      "width": 1440,
+      "theme": "light",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 57
+      },
+      "headerContent": {
+        "x": 24,
+        "y": 0,
+        "width": 1392,
+        "height": 56
+      },
+      "ticker": {
+        "x": 24,
+        "y": 57,
+        "width": 1392,
+        "height": 49
+      },
+      "main": {
+        "x": 24,
+        "y": 106,
+        "width": 1392,
+        "height": 843.859375
+      },
+      "row": {
+        "x": 25,
+        "y": 247,
+        "width": 1390,
+        "height": 48
+      },
+      "teamFont": "14px",
+      "recordFont": "12px",
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "scores",
+      "path": "/nhl/live",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 57
+      },
+      "headerContent": {
+        "x": 24,
+        "y": 0,
+        "width": 1392,
+        "height": 56
+      },
+      "ticker": {
+        "x": 24,
+        "y": 57,
+        "width": 1392,
+        "height": 49
+      },
+      "main": {
+        "x": 24,
+        "y": 106,
+        "width": 1392,
+        "height": 843.859375
+      },
+      "row": {
+        "x": 25,
+        "y": 247,
+        "width": 1390,
+        "height": 48
+      },
+      "teamFont": "14px",
+      "recordFont": "12px",
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "scheduled",
+      "path": "/nhl/games/401892449",
+      "width": 390,
+      "theme": "light",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 89
+      },
+      "headerContent": {
+        "x": 12,
+        "y": 0,
+        "width": 366,
+        "height": 88
+      },
+      "ticker": {
+        "x": 12,
+        "y": 89,
+        "width": 366,
+        "height": 132
+      },
+      "main": {
+        "x": 12,
+        "y": 221,
+        "width": 366,
+        "height": 1958.515625
+      },
+      "row": null,
+      "teamFont": null,
+      "recordFont": null,
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "scheduled",
+      "path": "/nhl/games/401892449",
+      "width": 390,
+      "theme": "dark",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 89
+      },
+      "headerContent": {
+        "x": 12,
+        "y": 0,
+        "width": 366,
+        "height": 88
+      },
+      "ticker": {
+        "x": 12,
+        "y": 89,
+        "width": 366,
+        "height": 132
+      },
+      "main": {
+        "x": 12,
+        "y": 221,
+        "width": 366,
+        "height": 1958.515625
+      },
+      "row": null,
+      "teamFont": null,
+      "recordFont": null,
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "scheduled",
+      "path": "/nhl/games/401892449",
+      "width": 1440,
+      "theme": "light",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 57
+      },
+      "headerContent": {
+        "x": 24,
+        "y": 0,
+        "width": 1392,
+        "height": 56
+      },
+      "ticker": {
+        "x": 24,
+        "y": 57,
+        "width": 1392,
+        "height": 49
+      },
+      "main": {
+        "x": 24,
+        "y": 106,
+        "width": 1392,
+        "height": 1922.125
+      },
+      "row": null,
+      "teamFont": null,
+      "recordFont": null,
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "scheduled",
+      "path": "/nhl/games/401892449",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 57
+      },
+      "headerContent": {
+        "x": 24,
+        "y": 0,
+        "width": 1392,
+        "height": 56
+      },
+      "ticker": {
+        "x": 24,
+        "y": 57,
+        "width": 1392,
+        "height": 49
+      },
+      "main": {
+        "x": 24,
+        "y": 106,
+        "width": 1392,
+        "height": 1922.125
+      },
+      "row": null,
+      "teamFont": null,
+      "recordFont": null,
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "replay",
+      "path": "/nhl/games/401803652",
+      "width": 390,
+      "theme": "light",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 89
+      },
+      "headerContent": {
+        "x": 12,
+        "y": 0,
+        "width": 366,
+        "height": 88
+      },
+      "ticker": {
+        "x": 12,
+        "y": 89,
+        "width": 366,
+        "height": 132
+      },
+      "main": {
+        "x": 12,
+        "y": 221,
+        "width": 366,
+        "height": 4229.671875
+      },
+      "row": null,
+      "teamFont": null,
+      "recordFont": null,
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "replay",
+      "path": "/nhl/games/401803652",
+      "width": 390,
+      "theme": "dark",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 89
+      },
+      "headerContent": {
+        "x": 12,
+        "y": 0,
+        "width": 366,
+        "height": 88
+      },
+      "ticker": {
+        "x": 12,
+        "y": 89,
+        "width": 366,
+        "height": 132
+      },
+      "main": {
+        "x": 12,
+        "y": 221,
+        "width": 366,
+        "height": 4229.671875
+      },
+      "row": null,
+      "teamFont": null,
+      "recordFont": null,
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "replay",
+      "path": "/nhl/games/401803652",
+      "width": 1440,
+      "theme": "light",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 57
+      },
+      "headerContent": {
+        "x": 24,
+        "y": 0,
+        "width": 1392,
+        "height": 56
+      },
+      "ticker": {
+        "x": 24,
+        "y": 57,
+        "width": 1392,
+        "height": 49
+      },
+      "main": {
+        "x": 24,
+        "y": 106,
+        "width": 1392,
+        "height": 2104.28125
+      },
+      "row": null,
+      "teamFont": null,
+      "recordFont": null,
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "replay",
+      "path": "/nhl/games/401803652",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 57
+      },
+      "headerContent": {
+        "x": 24,
+        "y": 0,
+        "width": 1392,
+        "height": 56
+      },
+      "ticker": {
+        "x": 24,
+        "y": 57,
+        "width": 1392,
+        "height": 49
+      },
+      "main": {
+        "x": 24,
+        "y": 106,
+        "width": 1392,
+        "height": 2104.28125
+      },
+      "row": null,
+      "teamFont": null,
+      "recordFont": null,
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "not-found",
+      "path": "/no-such-page",
+      "width": 390,
+      "theme": "light",
+      "status": 404,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 89
+      },
+      "headerContent": {
+        "x": 12,
+        "y": 0,
+        "width": 366,
+        "height": 88
+      },
+      "ticker": {
+        "x": 12,
+        "y": 89,
+        "width": 366,
+        "height": 132
+      },
+      "main": {
+        "x": 12,
+        "y": 221,
+        "width": 366,
+        "height": 719.71875
+      },
+      "row": null,
+      "teamFont": null,
+      "recordFont": null,
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "not-found",
+      "path": "/no-such-page",
+      "width": 390,
+      "theme": "dark",
+      "status": 404,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 89
+      },
+      "headerContent": {
+        "x": 12,
+        "y": 0,
+        "width": 366,
+        "height": 88
+      },
+      "ticker": {
+        "x": 12,
+        "y": 89,
+        "width": 366,
+        "height": 132
+      },
+      "main": {
+        "x": 12,
+        "y": 221,
+        "width": 366,
+        "height": 719.71875
+      },
+      "row": null,
+      "teamFont": null,
+      "recordFont": null,
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "not-found",
+      "path": "/no-such-page",
+      "width": 1440,
+      "theme": "light",
+      "status": 404,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 57
+      },
+      "headerContent": {
+        "x": 24,
+        "y": 0,
+        "width": 1392,
+        "height": 56
+      },
+      "ticker": {
+        "x": 24,
+        "y": 57,
+        "width": 1392,
+        "height": 49
+      },
+      "main": {
+        "x": 24,
+        "y": 106,
+        "width": 1392,
+        "height": 843.859375
+      },
+      "row": null,
+      "teamFont": null,
+      "recordFont": null,
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "not-found",
+      "path": "/no-such-page",
+      "width": 1440,
+      "theme": "dark",
+      "status": 404,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 57
+      },
+      "headerContent": {
+        "x": 24,
+        "y": 0,
+        "width": 1392,
+        "height": 56
+      },
+      "ticker": {
+        "x": 24,
+        "y": 57,
+        "width": 1392,
+        "height": 49
+      },
+      "main": {
+        "x": 24,
+        "y": 106,
+        "width": 1392,
+        "height": 843.859375
+      },
+      "row": null,
+      "teamFont": null,
+      "recordFont": null,
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "game-states",
+      "path": "/skeleton/live",
+      "width": 390,
+      "theme": "light",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 89
+      },
+      "headerContent": {
+        "x": 12,
+        "y": 0,
+        "width": 366,
+        "height": 88
+      },
+      "ticker": {
+        "x": 12,
+        "y": 89,
+        "width": 366,
+        "height": 132
+      },
+      "main": {
+        "x": 12,
+        "y": 221,
+        "width": 366,
+        "height": 1425
+      },
+      "row": {
+        "x": 13,
+        "y": 611,
+        "width": 364,
+        "height": 56
+      },
+      "teamFont": "14px",
+      "recordFont": "12px",
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "game-states",
+      "path": "/skeleton/live",
+      "width": 390,
+      "theme": "dark",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 89
+      },
+      "headerContent": {
+        "x": 12,
+        "y": 0,
+        "width": 366,
+        "height": 88
+      },
+      "ticker": {
+        "x": 12,
+        "y": 89,
+        "width": 366,
+        "height": 132
+      },
+      "main": {
+        "x": 12,
+        "y": 221,
+        "width": 366,
+        "height": 1425
+      },
+      "row": {
+        "x": 13,
+        "y": 611,
+        "width": 364,
+        "height": 56
+      },
+      "teamFont": "14px",
+      "recordFont": "12px",
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "game-states",
+      "path": "/skeleton/live",
+      "width": 1440,
+      "theme": "light",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 57
+      },
+      "headerContent": {
+        "x": 24,
+        "y": 0,
+        "width": 1392,
+        "height": 56
+      },
+      "ticker": {
+        "x": 24,
+        "y": 57,
+        "width": 1392,
+        "height": 49
+      },
+      "main": {
+        "x": 24,
+        "y": 106,
+        "width": 1392,
+        "height": 1207
+      },
+      "row": {
+        "x": 25,
+        "y": 362,
+        "width": 1390,
+        "height": 48
+      },
+      "teamFont": "14px",
+      "recordFont": "12px",
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    },
+    {
+      "name": "game-states",
+      "path": "/skeleton/live",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 57
+      },
+      "headerContent": {
+        "x": 24,
+        "y": 0,
+        "width": 1392,
+        "height": 56
+      },
+      "ticker": {
+        "x": 24,
+        "y": 57,
+        "width": 1392,
+        "height": 49
+      },
+      "main": {
+        "x": 24,
+        "y": 106,
+        "width": 1392,
+        "height": 1207
+      },
+      "row": {
+        "x": 25,
+        "y": 362,
+        "width": 1390,
+        "height": 48
+      },
+      "teamFont": "14px",
+      "recordFont": "12px",
+      "navTargets": [
+        {
+          "text": "Home",
+          "height": 44
+        },
+        {
+          "text": "Scores",
+          "height": 44
+        },
+        {
+          "text": "Standings",
+          "height": 44
+        },
+        {
+          "text": "Teams",
+          "height": 44
+        },
+        {
+          "text": "Players",
+          "height": 44
+        }
+      ],
+      "scores": 9
+    }
+  ]
+}

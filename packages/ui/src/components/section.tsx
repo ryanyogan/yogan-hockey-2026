@@ -3,7 +3,13 @@ import type { ComponentProps, ReactNode } from "react";
 
 /** One subject on a page: a `SectionHeader` and, usually, one `Ledger`. */
 function Section({ className, ...props }: ComponentProps<"section">) {
-  return <section data-slot="section" className={className} {...props} />;
+  return (
+    <section
+      data-slot="section"
+      className={cn("min-w-0 border border-rule bg-panel", className)}
+      {...props}
+    />
+  );
 }
 
 /**
@@ -20,16 +26,19 @@ function SectionHeader({
   return (
     <div
       data-slot="section-header"
-      className={cn("mb-1 flex flex-wrap items-baseline justify-between gap-x-4", className)}
+      className={cn(
+        "section-header flex min-h-11 flex-wrap items-center justify-between gap-x-4 gap-y-1 border-rule border-b px-3 py-2.5 sm:min-h-12 sm:px-4",
+        className,
+      )}
       {...props}
     >
-      <h2 className="font-bold uppercase">
+      <h2 className="font-semibold text-sm tracking-tight">
         {title}
         {count != null && (
-          <span className="font-normal text-foreground/50 normal-case"> {count}</span>
+          <span className="ml-1 font-normal text-muted-foreground normal-case"> {count}</span>
         )}
       </h2>
-      {children != null && <div className="text-foreground/50">{children}</div>}
+      {children != null && <div className="text-xs text-muted-foreground">{children}</div>}
     </div>
   );
 }

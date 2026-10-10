@@ -113,8 +113,7 @@ export type PagePolicy = {
  *   know a player's team without a read, and every final is a superset of his team's.
  * - A team's pages depend on that team alone; the conference and division in the header come
  *   from the standings and catch up within `FRESH_MS` of the next visit.
- * - A Tracked Player's page and the player search with nothing searched for are drawn from the
- *   build alone. A search (`?q=`) is a query the policy does not name, so it is rendered.
+ * - The player search with nothing searched for is drawn from the build alone. A search (`?q=`) is a query the policy does not name, so it is rendered.
  * - A game's page is kept only once the game is over and its plays are D1's: the page says so
  *   itself (`doNotKeepPage()` for any other game), since the Worker cannot tell without a read.
  *   Such a page never changes, so it is answered however old it is, and still rendered again
@@ -130,7 +129,6 @@ export function pagePolicy(pathname: string): PagePolicy | null {
   }
   if (path === "/players") return policy([], []);
   if (/^\/players\/[^/]+$/.test(path)) return policy([STANDINGS_TAG], ["games"]);
-  if (/^\/family\/[^/]+$/.test(path)) return policy([], ["tab"]);
   return null;
 }
 

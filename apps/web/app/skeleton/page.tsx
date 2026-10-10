@@ -35,7 +35,7 @@ export default async function SkeletonPage() {
     <>
       <Section data-testid="join-ui">
         <SectionHeader title="1. Shared UI package" count="packages/ui" />
-        <p className="mb-2 text-foreground/70">
+        <p className="mb-2 text-muted-foreground">
           The ledgers and the button come from packages/ui, styled by its Tailwind theme.
         </p>
         <form action={bumpSkeleton}>
@@ -45,7 +45,7 @@ export default async function SkeletonPage() {
 
       <Section data-testid="join-cache">
         <SectionHeader title="2. Data cache on KV" count='60 seconds, tag "skeleton"' />
-        <p className="mb-2 text-foreground/70">
+        <p className="mb-2 text-muted-foreground">
           A reload shows the same reading until the Agent invalidates the tag.
         </p>
         <Ledger>

@@ -20,8 +20,8 @@ const SAMPLE_PICKS = Object.fromEntries(
 
 /*
  * Scaffolding for #47: the dashboard drawn from the invented slate of `/skeleton/live`, which has
- * a game in every state, because no recorded ESPN slate has a game in progress. Family, the
- * favorite players and the standings are the real ones. `?slate=empty` is a day with no games;
+ * a game in every state, because no recorded ESPN slate has a game in progress. The favorite
+ * players and the standings are the real ones. `?slate=empty` is a day with no games;
  * `?picks=1` fills the two places the picks go, with invented picks. The shell's own ticker,
  * above, still shows the real slate.
  */

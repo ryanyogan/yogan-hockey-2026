@@ -8,26 +8,26 @@ export type NavItem = {
 const under = (pathname: string, root: string) =>
   pathname === root || pathname.startsWith(`${root}/`);
 
-/** The site's places, in the Parity Reference's order. The wordmark, not an item, leads to `/`. */
+/** The same five destinations stay visible on desktop and phone. */
 export const NAV_ITEMS: readonly NavItem[] = [
+  { label: "Home", href: "/", owns: (pathname) => pathname === "/" },
   {
-    label: "standings",
+    label: "Scores",
+    href: "/nhl/live",
+    owns: (pathname) => under(pathname, "/nhl/live") || under(pathname, "/nhl/games"),
+  },
+  {
+    label: "Standings",
     href: "/nhl",
     owns: (pathname, tab) => pathname === "/nhl" && tab !== "teams",
   },
   {
-    label: "teams",
+    label: "Teams",
     href: "/nhl?tab=teams",
     owns: (pathname, tab) =>
       (pathname === "/nhl" && tab === "teams") || under(pathname, "/nhl/teams"),
   },
-  { label: "players", href: "/players", owns: (pathname) => under(pathname, "/players") },
-  { label: "family", href: "/family/rylan", owns: (pathname) => under(pathname, "/family") },
-  {
-    label: "live scores",
-    href: "/nhl/live",
-    owns: (pathname) => under(pathname, "/nhl/live") || under(pathname, "/nhl/games"),
-  },
+  { label: "Players", href: "/players", owns: (pathname) => under(pathname, "/players") },
 ];
 
 export function currentNavItem(pathname: string, tab: string | null): NavItem | undefined {

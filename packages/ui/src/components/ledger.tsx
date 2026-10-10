@@ -3,7 +3,7 @@ import type { ComponentProps } from "react";
 
 /**
  * The ledger: the one dense table every subject on the site is drawn with (tonight's games,
- * standings, rosters, career stats). No cards and no team logos.
+ * standings, rosters, career stats), within the shared boxed panels.
  *
  *   <Ledger>
  *     <LedgerHead>
@@ -23,7 +23,7 @@ function Ledger({
   density = "default",
   ...props
 }: ComponentProps<"table"> & {
-  /** `compact` is for long reference tables such as standings: 4px less per row. */
+  /** `compact` is for long reference tables such as standings: 36px rows on desktop, 40px on phones. */
   density?: "default" | "compact";
 }) {
   return (
@@ -63,7 +63,7 @@ function LedgerColumn({
       data-slot="ledger-column"
       scope={Cell === "th" ? "col" : undefined}
       className={cn(
-        "border-foreground/20 border-b px-2 py-1 font-normal text-[10px] text-foreground/50 uppercase tracking-wider",
+        "h-8 border-rule border-b bg-muted px-2 py-1.5 font-normal text-xs text-muted-foreground",
         numeric ? "text-right" : "text-left",
         className,
       )}
@@ -96,7 +96,7 @@ function LedgerRow({
       data-live={live ? "" : undefined}
       data-cutoff={cutoff ? "" : undefined}
       className={cn(
-        "relative border-b",
+        "relative border-b last:border-b-0",
         live && "bg-live-tint",
         interactive && "hover:bg-highlight",
         cutoff && "border-b-foreground/50",
@@ -114,9 +114,9 @@ const cellTone = {
   /** A score: larger than the row's text, and it does not add to the row's height. */
   score: "py-0! text-base font-bold",
   /** A note column, such as the pick. */
-  note: "text-foreground/70",
+  note: "text-muted-foreground",
   /** An aside, such as a rank. */
-  aside: "text-foreground/40",
+  aside: "text-muted-foreground",
   /** A figure above zero, and one below it: a goal difference. */
   positive: "text-positive",
   negative: "text-negative",
@@ -132,8 +132,8 @@ function LedgerCell({
     <td
       data-slot="ledger-cell"
       className={cn(
-        "px-2 py-1.5 group-data-[density=compact]/ledger:py-1",
-        (numeric || tone === "score") && "text-right tabular-nums",
+        "h-11 px-2 py-2 group-data-[density=compact]/ledger:h-10 sm:group-data-[density=compact]/ledger:h-9",
+        (numeric || tone === "score") && "text-right font-mono text-[13px] tabular-nums",
         cellTone[tone],
         className,
       )}
@@ -147,33 +147,16 @@ function LedgerAside({ className, ...props }: ComponentProps<"span">) {
   return (
     <span
       data-slot="ledger-aside"
-      className={cn("whitespace-nowrap text-foreground/40", className)}
+      className={cn("whitespace-nowrap text-xs text-muted-foreground", className)}
       {...props}
     />
   );
 }
 
-/**
- * A second line under a cell's main value: a Tracked Player's next game under his team. `fine` is
- * small print for a narrow column, such as a game's venue under its status on a phone: it wraps,
- * and it keeps the room of two lines whatever it holds, so the rows of a table stay one height.
- */
-function LedgerDetail({
-  className,
-  fine = false,
-  ...props
-}: ComponentProps<"div"> & { fine?: boolean }) {
+/** A second line under a cell's main value. */
+function LedgerDetail({ className, ...props }: ComponentProps<"div">) {
   return (
-    <div
-      data-slot="ledger-detail"
-      className={cn(
-        fine
-          ? "line-clamp-2 h-6 whitespace-normal text-[10px] text-foreground/50 leading-3"
-          : "text-foreground/60",
-        className,
-      )}
-      {...props}
-    />
+    <div data-slot="ledger-detail" className={cn("text-muted-foreground", className)} {...props} />
   );
 }
 

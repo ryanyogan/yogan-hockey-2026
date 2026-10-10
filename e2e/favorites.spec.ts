@@ -27,8 +27,8 @@ test("a player and a team are made favorites, kept over a reload, and let go", a
   await expect(ticker.getByRole("listitem").first()).toContainText(/NSH.+TOR/);
   await expect(ticker.getByRole("listitem").first()).toContainText("favorite team");
 
-  // ...and its section of /nhl/live, where the note column says why.
-  await ticker.getByRole("link", { name: "scores" }).click();
+  // ...and its section of /nhl/live, where the team is marked.
+  await site.getByRole("link", { name: "Scores", exact: true }).click();
   const upcoming = page.getByRole("region", { name: "Upcoming" });
   await expect(upcoming.getByRole("row").nth(1)).toContainText("NSH at TOR");
   await expect(upcoming.getByRole("row").nth(1)).toContainText("favorite team");

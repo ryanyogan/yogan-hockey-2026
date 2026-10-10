@@ -22,7 +22,7 @@ export default async function SamplePicksPage({
   return (
     <Section>
       <SectionHeader title="Sample picks" count="fixture mode" />
-      <p className="mb-2 max-w-prose text-foreground/70">
+      <p className="mb-2 max-w-prose text-muted-foreground">
         A pick for every game of the recorded slate but one, whose Prediction failed; a pick for the
         recorded final, Dallas 4 at Buffalo 3, right or wrong; and five decided games for the season
         record.

@@ -12,7 +12,7 @@ const buttonVariants = cva(
         default: "bg-primary text-primary-foreground hover:bg-primary/80",
         outline: "border-rule hover:bg-highlight",
         /** Reads as text until hovered: the theme toggle, the menu button. */
-        ghost: "text-foreground/60 hover:text-foreground",
+        ghost: "text-muted-foreground hover:text-foreground",
       },
       size: {
         default: "h-7 px-2.5",

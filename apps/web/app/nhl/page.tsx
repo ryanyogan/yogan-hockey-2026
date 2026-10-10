@@ -71,9 +71,9 @@ async function Standings({ view }: { view: StandingsView }) {
   return (
     // One column per conference from `xl` up. The league table, alone, keeps to the first column:
     // a row twice as wide puts a team too far from its figures to read across.
-    <div className="grid gap-8 xl:grid-cols-2">
+    <div className="grid gap-4 xl:grid-cols-2">
       {columns.map((tables) => (
-        <div key={tables[0]?.conference} className="space-y-8">
+        <div key={tables[0]?.conference} className="space-y-4">
           {tables.map((table) => (
             <StandingsLedger key={table.title} table={table} />
           ))}

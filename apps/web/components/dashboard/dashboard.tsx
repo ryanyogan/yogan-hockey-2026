@@ -4,12 +4,10 @@ import { topOfConferences } from "../../lib/dashboard";
 import { cachedStandings } from "../../lib/espn";
 import { nhlHref } from "../../lib/nhl-page";
 import { doNotKeepPage } from "../../lib/render-failure";
-import { familyRow, trackedPlayers } from "../../lib/tracked-players";
 import { Link } from "../link";
 import { StandingsLedger } from "../nhl/standings-ledger";
 import { EmptyLedger } from "../team/empty-ledger";
 import { DashboardFavorites } from "./dashboard-favorites";
-import { FamilyLedger } from "./family-ledger";
 import { headerLink } from "./header-link";
 import { TonightGames } from "./tonight-games";
 
@@ -25,7 +23,7 @@ function StandingsHeader({ of }: { of?: string }) {
   );
 }
 
-/** Each conference's top eight, a table a conference, side by side on a wide page. */
+/** Each conference's top eight, in the dashboard's responsive standings column. */
 async function Standings() {
   // The standings are ESPN's: when they cannot be read the block says so and the rest is drawn.
   const tables = await cachedStandings()
@@ -57,14 +55,7 @@ async function Standings() {
   ));
 }
 
-/**
- * The dashboard, the Reference UI's "Tonight ledger": tonight's games across the page, then
- * Family, Favorites and the standings two to a row. Family and the standings are the server's;
- * the games and the favorite players are the browser's (the socket and `localStorage`).
- *
- * `picks` and `record` are the pick of each game and the season record of the picks, which
- * `TonightGames` draws and describes. Both are left out until there are picks to show.
- */
+/** Tonight and favorites beside the conference standings, stacked on a phone. */
 export function Dashboard({
   picks,
   record,
@@ -74,12 +65,18 @@ export function Dashboard({
 }) {
   return (
     <>
-      <TonightGames picks={picks} record={record} />
-      {/* `grid-cols-1`: a column no wider than the page, whatever a ledger in it would like. */}
-      <div className="grid grid-cols-1 gap-8 xl:grid-cols-2">
-        <FamilyLedger rows={trackedPlayers().map(familyRow)} />
-        <DashboardFavorites />
-        <Standings />
+      <div className="page-heading">
+        <h1>Hockey, at a glance</h1>
+        <p>NHL</p>
+      </div>
+      <div className="dashboard-grid">
+        <div className="dashboard-stack">
+          <TonightGames picks={picks} record={record} />
+          <DashboardFavorites />
+        </div>
+        <div className="dashboard-stack dashboard-standings">
+          <Standings />
+        </div>
       </div>
     </>
   );

@@ -154,7 +154,7 @@ const noSelection = () => {};
 /** What a game still to come says in the pick's place until its Prediction arrives. */
 function GamePickPending() {
   return (
-    <p data-slot="game-pick-pending" className="max-w-prose text-foreground/70">
+    <p data-slot="game-pick-pending" className="max-w-prose text-muted-foreground">
       {PICK_PENDING}
     </p>
   );
@@ -186,13 +186,13 @@ function ScheduledGame({
           selectedId={null}
           onSelect={noSelection}
         />
-        <p data-slot="timeline-hint" className="mt-1 text-foreground/50">
+        <p data-slot="timeline-hint" className="mt-1 text-muted-foreground">
           {calledOff
             ? "This game will not be played as scheduled."
             : "The plays are drawn here once the puck drops. This page follows the game by itself."}
         </p>
       </div>
-      <div className="mt-6 space-y-8">
+      <div className="mt-6 space-y-4">
         {pick != null && (
           <Section data-slot="game-pick">
             <SectionHeader title="The pick" />

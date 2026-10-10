@@ -31,11 +31,11 @@ function PlayRow({
         focused ? "bg-highlight" : ""
       }`}
     >
-      <span className="w-[9ch] shrink-0 text-foreground/50">{playTime(play)}</span>
+      <span className="w-[9ch] shrink-0 text-muted-foreground">{playTime(play)}</span>
       <span className="w-[3ch] shrink-0">{teamAbbreviation(header, play.teamId)}</span>
       <span className={markKind(play) === "goal" ? "font-bold text-live" : ""}>
         {play.text}
-        {note != null && <span className="font-normal text-foreground/50"> {note}</span>}
+        {note != null && <span className="font-normal text-muted-foreground"> {note}</span>}
       </span>
     </button>
   );
@@ -61,7 +61,7 @@ export function PlaysList({
   /** The plays to list, in the game's order: the Key plays, or every play. */
   plays: readonly Play[];
 }) {
-  if (plays.length === 0) return <p className="text-foreground/50">No plays yet.</p>;
+  if (plays.length === 0) return <p className="text-muted-foreground">No plays yet.</p>;
   return (
     <div data-slot="plays-list" className="@container">
       <div className="grid gap-x-8 @3xl:grid-cols-2">
@@ -136,7 +136,7 @@ export function ScoringSummary({
 }: ListProps & { plays: readonly Play[] }) {
   const { goals, shootout } = scoringPlays(plays);
   if (goals.length + shootout.length === 0) {
-    return <p className="text-foreground/50">No goals yet.</p>;
+    return <p className="text-muted-foreground">No goals yet.</p>;
   }
   const { home, away } = header;
   return (

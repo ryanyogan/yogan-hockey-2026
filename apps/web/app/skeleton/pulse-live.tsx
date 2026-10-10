@@ -25,17 +25,17 @@ export function PulseLive({ name, initial }: { name: string; initial: Pulse }) {
 
   return (
     <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
-      <dt className="text-foreground/60">Socket</dt>
+      <dt className="text-muted-foreground">Socket</dt>
       <dd>
         <Badge variant={socket === "open" ? "default" : "outline"} data-testid="socket">
           {socket}
         </Badge>
       </dd>
-      <dt className="text-foreground/60">Count at first paint (RPC)</dt>
+      <dt className="text-muted-foreground">Count at first paint (RPC)</dt>
       <dd data-testid="pulse-initial">{initial.count}</dd>
-      <dt className="text-foreground/60">Count now (pushed)</dt>
+      <dt className="text-muted-foreground">Count now (pushed)</dt>
       <dd data-testid="pulse-count">{pulse.count}</dd>
-      <dt className="text-foreground/60">Pushes received</dt>
+      <dt className="text-muted-foreground">Pushes received</dt>
       <dd data-testid="pulse-pushes">{pushes}</dd>
     </dl>
   );

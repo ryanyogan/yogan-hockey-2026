@@ -19,7 +19,7 @@ export default function LoadingStatesPage() {
       {/* The newest first, so a screenshot of the top of the page holds them. */}
       <LiveSkeleton />
       <GameSkeleton />
-      <div className="grid gap-8 xl:grid-cols-2">
+      <div className="grid gap-4 xl:grid-cols-2">
         <TeamStatsSkeleton />
         <NextGameSkeleton />
       </div>

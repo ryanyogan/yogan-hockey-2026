@@ -153,7 +153,7 @@ function ReplayTransport({
       {/* One line at every width, so the page below it stays put when playing starts. */}
       <p
         data-slot="replay-position"
-        className="min-w-0 flex-1 truncate text-foreground/50 max-sm:basis-full"
+        className="min-w-0 flex-1 truncate text-muted-foreground max-sm:basis-full"
       >
         {wholeGame ? (
           <>
@@ -215,7 +215,7 @@ export function ReplayPending({ gaveUp }: { gaveUp: boolean }) {
       </Button>
       <p
         data-slot="replay-pending-note"
-        className="min-w-0 flex-1 truncate text-foreground/50 max-sm:basis-full"
+        className="min-w-0 flex-1 truncate text-muted-foreground max-sm:basis-full"
       >
         {gaveUp
           ? "The replay could not be made ready. Load the page again to try once more."

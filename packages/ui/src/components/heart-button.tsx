@@ -31,7 +31,7 @@ function HeartButton({
         // No further right than a ledger cell's padding, or the ledger would scroll sideways.
         "after:absolute after:-inset-y-[7px] after:-right-2 after:-left-4 after:content-['']",
         "focus-visible:outline-1 focus-visible:outline-solidfocus-visible:outline-foreground focus-visible:outline-offset-4",
-        pressed ? "text-foreground" : "text-foreground/40 hover:text-foreground",
+        pressed ? "text-foreground" : "text-muted-foreground hover:text-foreground",
         className,
       )}
       {...props}

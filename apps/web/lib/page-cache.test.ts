@@ -53,7 +53,6 @@ describe("which pages are cached", () => {
     "/players/4024123",
     "/players",
     "/players.rsc",
-    "/family/rylan",
     // Kept only when the game is over: the page itself says so for any other.
     "/nhl/games/401892449",
   ])("%s is", (path) => expect(pagePolicy(path)).not.toBeNull());
@@ -64,6 +63,7 @@ describe("which pages are cached", () => {
     "/nhl/games/not-a-game",
     "/nhl/games/401892449/plays",
     "/family",
+    "/family/rylan",
     "/family/rylan/schedule",
     "/picks",
     "/nhl/teams/1/nonsense",
@@ -133,7 +133,7 @@ describe("the page cache's key", () => {
     expect(await keyOf("/nhl/live")).toBeNull();
     // A search is the player search's own query, and is rendered.
     expect(await keyOf("/players?q=mcdavid")).toBeNull();
-    expect(await keyOf("/family/rylan?tab=schedule")).not.toBe(await keyOf("/family/rylan"));
+    expect(await keyOf("/family/rylan?tab=schedule")).toBeNull();
     expect(await keyOf("/nhl", "b1", { method: "POST" })).toBeNull();
   });
 });

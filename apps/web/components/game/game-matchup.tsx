@@ -264,7 +264,7 @@ export function GameMatchup({ header, pregame }: { header: GameHeader; pregame: 
   return (
     <>
       <Teams sides={sides} />
-      <div className="grid gap-8 xl:grid-cols-2">
+      <div className="grid gap-4 xl:grid-cols-2">
         <Goalies sides={sides} />
         <Leaders sides={sides} />
         <Injuries sides={sides} />

@@ -20,8 +20,8 @@ import { Rink } from "./rink";
  * and the caption, too long for the ice, moves under the rink.
  */
 const SCORE_SIDE = {
-  away: "left-[30.6cqw] -translate-x-1/2 text-center @2xl:left-[24.5cqw] @2xl:translate-x-0 @2xl:text-left",
-  home: "right-[30.6cqw] translate-x-1/2 text-center @2xl:right-[24.5cqw] @2xl:translate-x-0 @2xl:text-right",
+  away: "left-[24cqw] -translate-x-1/2 text-center @2xl:left-[24.5cqw] @2xl:translate-x-0 @2xl:text-left",
+  home: "right-[24cqw] translate-x-1/2 text-center @2xl:right-[24.5cqw] @2xl:translate-x-0 @2xl:text-right",
 } as const;
 
 type Place = keyof typeof SCORE_SIDE;
@@ -50,14 +50,14 @@ function OverIce({
       data-side={place}
       className={`absolute top-1 @2xl:top-[1.43cqw] ${SCORE_SIDE[place]}`}
     >
-      <div className="whitespace-nowrap text-[10px] text-foreground/60 leading-[15px] @2xl:text-[clamp(10px,1.25cqw,14px)] @2xl:leading-[1.43]">
+      <div className="whitespace-nowrap text-sm text-muted-foreground leading-[18px] @2xl:text-[clamp(14px,1.25cqw,16px)] @2xl:leading-[1.43]">
         {line}
         <span className="hidden @2xl:inline"> · {wide}</span>
       </div>
       <div className="font-bold text-2xl leading-none @2xl:text-[clamp(24px,5.36cqw,60px)]">
         {figure}
       </div>
-      <div className="whitespace-nowrap text-[10px] text-foreground/60 leading-[15px] @2xl:hidden">
+      <div className="whitespace-nowrap text-xs text-muted-foreground leading-[15px] @2xl:hidden">
         {narrow}
       </div>
     </div>
@@ -83,8 +83,8 @@ function Score({ side, place }: { side: GameHeaderSide; place: Place }) {
 }
 
 const STATUS_PLACE =
-  "absolute top-1 left-1/2 -translate-x-1/2 whitespace-nowrap text-center text-[10px] leading-[15px] @2xl:top-[1.43cqw] @2xl:text-[clamp(10px,1.43cqw,16px)] @2xl:leading-normal";
-const STATUS_KICKER = "block uppercase @2xl:text-[clamp(10px,1.07cqw,12px)] @2xl:leading-[1.33]";
+  "absolute top-1 left-1/2 -translate-x-1/2 whitespace-nowrap text-center text-xs leading-[15px] @2xl:top-[1.43cqw] @2xl:text-[clamp(12px,1.43cqw,16px)] @2xl:leading-normal";
+const STATUS_KICKER = "block uppercase @2xl:text-[clamp(12px,1.07cqw,12px)] @2xl:leading-[1.33]";
 const CAPTION_ON_ICE = "max-w-[50cqw] truncate bg-black/70 px-4 py-1 text-slate-100 leading-5";
 /* Under the ice where the ice is too small to write on. Two lines tall, so it never jumps. */
 const CAPTION_UNDER_ICE =
@@ -121,7 +121,7 @@ export function MatchupRink({ header, status }: { header: GameHeader; status?: s
         <div data-slot="rink-overlay" className="pointer-events-none absolute inset-0">
           {team("away")}
           <div data-slot="rink-status" className={STATUS_PLACE}>
-            <span className={`${STATUS_KICKER} text-foreground/60`}>
+            <span className={`${STATUS_KICKER} text-muted-foreground`}>
               <LocalTime at={header.startTime} show="day" />
             </span>
             {status ?? <LocalTime at={header.startTime} show="time" />}
@@ -153,7 +153,7 @@ function EndLabel({ end, header, plays, period, periodText }: EndProps & { end: 
     <div
       data-slot="rink-end"
       data-end={end}
-      className={`absolute top-1/2 hidden -translate-y-1/2 whitespace-nowrap text-[10px] text-foreground/60 [writing-mode:vertical-rl] @2xl:block ${
+      className={`absolute top-1/2 hidden -translate-y-1/2 whitespace-nowrap text-xs text-muted-foreground [writing-mode:vertical-rl] @2xl:block ${
         end === "left"
           ? "left-[3.7cqw] -translate-x-1/2 rotate-180"
           : "right-[3.7cqw] translate-x-1/2"
@@ -214,7 +214,7 @@ export function GameRink({
             {live && <LiveMarker className={STATUS_KICKER} />}
             {status ?? text}
             {notice != null && (
-              <span data-slot="rink-notice" className="block text-[10px] text-live leading-[15px]">
+              <span data-slot="rink-notice" className="block text-xs text-live leading-[15px]">
                 {notice}
               </span>
             )}

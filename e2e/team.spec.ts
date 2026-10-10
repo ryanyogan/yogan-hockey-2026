@@ -99,8 +99,9 @@ test("a team's page shows each tab from a pasted URL, titled with the team's nam
       });
       const playing = rows(page, /^Playing now/);
       await expect(playing.getByRole("link")).toHaveAttribute("href", `/nhl/games/${GAME_ID}`);
+      await expect(playing.locator('[data-slot="game-pick"]')).toHaveText("TOR 58%");
       await expect(playing.getByRole("cell").last()).toHaveText(
-        "TOR 58%Scotiabank Arena · ESPN+, Scripps Sports",
+        "Scotiabank Arena · ESPN+, Scripps Sports",
       );
       await expect(section(page, /^Next game/)).toHaveCount(0);
     },
@@ -111,13 +112,13 @@ test("a team's page shows each tab from a pasted URL, titled with the team's nam
   await paste("/nhl/teams/21/roster", async (page) => {
     await expect(page).toHaveTitle(TITLE);
     await expect(tabs(page).locator('[aria-current="page"]')).toHaveText("roster");
-    // ESPN's 24 and, ahead of them, the fictional player of #46 (`e2e/family.spec.ts`).
-    await expect(section(page, /^Roster/).getByRole("heading")).toHaveText(/25 players/);
-    await expect(rows(page, /^Roster/)).toHaveCount(25);
-    // After him in jersey order, each player linking to his page.
+    // Every player comes from ESPN's roster.
+    await expect(section(page, /^Roster/).getByRole("heading")).toHaveText(/24 players/);
+    await expect(rows(page, /^Roster/)).toHaveCount(24);
+    // Jersey order, each player linking to his page.
     await expect(
       rows(page, /^Roster/)
-        .nth(1)
+        .first()
         .getByRole("cell"),
       // The last cell is his heart (#45), which has a name and no text.
     ).toHaveText(["3", "Nick Blankenburg", "D", ""]);
@@ -237,7 +238,7 @@ test("a team opens from a link the pointer rested on with no further request, an
   await expect(page).toHaveURL(/\/nhl\/teams\/21\/roster$/);
   await expect(tabs(page).locator('[aria-current="page"]')).toHaveText("roster");
   await expect(section(page, /^Toronto Maple Leafs/)).toBeVisible();
-  await expect(rows(page, /^Roster/)).toHaveCount(25);
+  await expect(rows(page, /^Roster/)).toHaveCount(24);
 
   // The addresses the tabs had in the query string lead to the new ones, for good.
   for (const tab of ["roster", "stats"]) {

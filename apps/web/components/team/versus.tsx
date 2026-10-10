@@ -4,7 +4,7 @@
  */
 export function Versus({ home }: { home: boolean }) {
   return (
-    <span className="inline-block w-[2ch] text-foreground/40">
+    <span className="inline-block w-[2ch] text-muted-foreground">
       {home ? (
         "vs"
       ) : (

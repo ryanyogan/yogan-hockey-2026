@@ -1,0 +1,26 @@
+[
+  {
+    "width": 390,
+    "theme": "light",
+    "header": 89,
+    "mainY": 222
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "header": 89,
+    "mainY": 222
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "header": 57,
+    "mainY": 106
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "header": 57,
+    "mainY": 106
+  }
+]

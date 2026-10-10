@@ -10,6 +10,10 @@ What earlier tickets learned that the code does not show. Read before building; 
 - **Family and the fictional player are retired.** Their public routes and redirect, roster/search injection, content and unused helpers were removed at Ryan's request. Old stored favorites for those ids resolve to no player and are skipped by the existing favorite resolver. The earlier Family/Tracked Player notes below are historical, not current behavior.
 - **Typography and skeletons share the primitives.** Geist sans is for interface text, Geist Mono for score and numeric columns; muted text uses the contrast-checked token rather than foreground opacity. `SectionHeader` and `Ledger` set both real and loading geometry; update a skeleton alongside any column changes. All links still use the 65ms intent-prefetch component, and the shell stays in the root server layout.
 
+## On-demand scores proposal (#109, awaiting design review)
+
+- `prototypes/scores-grit-preview` is a separate, unapproved sample. Serve the whole `prototypes` directory: it reuses `navigation-preview` data and assets by relative URL. Scores stays a direct link on touch; desktop hover/focus adds an optional recorded-game preview. Production and the #99 approved sample are unchanged. Its README records the interaction and design constraints for a future implementation.
+
 ## Running things
 
 - **Ports.** The dev server is pinned to `PORT` (default 5173) with `strictPort`. Parallel worktrees each use their own `PORT`; the orchestrator assigns it. vinext refuses a second dev server in the same directory, so stop strays before Playwright.

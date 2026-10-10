@@ -1,0 +1,250 @@
+[
+  {
+    "width": 320,
+    "theme": "light",
+    "overflow": false,
+    "header": 89,
+    "mainY": 89,
+    "nav": [
+      {
+        "text": "Home",
+        "height": 44
+      },
+      {
+        "text": "Scores",
+        "height": 44
+      },
+      {
+        "text": "Standings",
+        "height": 44
+      },
+      {
+        "text": "Teams",
+        "height": 44
+      },
+      {
+        "text": "Players",
+        "height": 44
+      }
+    ],
+    "picks": 9,
+    "errors": []
+  },
+  {
+    "width": 390,
+    "theme": "light",
+    "overflow": false,
+    "header": 89,
+    "mainY": 89,
+    "nav": [
+      {
+        "text": "Home",
+        "height": 44
+      },
+      {
+        "text": "Scores",
+        "height": 44
+      },
+      {
+        "text": "Standings",
+        "height": 44
+      },
+      {
+        "text": "Teams",
+        "height": 44
+      },
+      {
+        "text": "Players",
+        "height": 44
+      }
+    ],
+    "picks": 9,
+    "errors": []
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "overflow": false,
+    "header": 89,
+    "mainY": 89,
+    "nav": [
+      {
+        "text": "Home",
+        "height": 44
+      },
+      {
+        "text": "Scores",
+        "height": 44
+      },
+      {
+        "text": "Standings",
+        "height": 44
+      },
+      {
+        "text": "Teams",
+        "height": 44
+      },
+      {
+        "text": "Players",
+        "height": 44
+      }
+    ],
+    "picks": 9,
+    "errors": []
+  },
+  {
+    "width": 768,
+    "theme": "light",
+    "overflow": false,
+    "header": 57,
+    "mainY": 57,
+    "nav": [
+      {
+        "text": "Home",
+        "height": 45
+      },
+      {
+        "text": "Scores",
+        "height": 45
+      },
+      {
+        "text": "Standings",
+        "height": 45
+      },
+      {
+        "text": "Teams",
+        "height": 45
+      },
+      {
+        "text": "Players",
+        "height": 45
+      }
+    ],
+    "picks": 9,
+    "errors": []
+  },
+  {
+    "width": 1024,
+    "theme": "light",
+    "overflow": false,
+    "header": 57,
+    "mainY": 57,
+    "nav": [
+      {
+        "text": "Home",
+        "height": 45
+      },
+      {
+        "text": "Scores",
+        "height": 45
+      },
+      {
+        "text": "Standings",
+        "height": 45
+      },
+      {
+        "text": "Teams",
+        "height": 45
+      },
+      {
+        "text": "Players",
+        "height": 45
+      }
+    ],
+    "picks": 9,
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "overflow": false,
+    "header": 57,
+    "mainY": 57,
+    "nav": [
+      {
+        "text": "Home",
+        "height": 45
+      },
+      {
+        "text": "Scores",
+        "height": 45
+      },
+      {
+        "text": "Standings",
+        "height": 45
+      },
+      {
+        "text": "Teams",
+        "height": 45
+      },
+      {
+        "text": "Players",
+        "height": 45
+      }
+    ],
+    "picks": 9,
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "overflow": false,
+    "header": 57,
+    "mainY": 57,
+    "nav": [
+      {
+        "text": "Home",
+        "height": 45
+      },
+      {
+        "text": "Scores",
+        "height": 45
+      },
+      {
+        "text": "Standings",
+        "height": 45
+      },
+      {
+        "text": "Teams",
+        "height": 45
+      },
+      {
+        "text": "Players",
+        "height": 45
+      }
+    ],
+    "picks": 9,
+    "errors": []
+  },
+  {
+    "width": 1920,
+    "theme": "light",
+    "overflow": false,
+    "header": 57,
+    "mainY": 57,
+    "nav": [
+      {
+        "text": "Home",
+        "height": 45
+      },
+      {
+        "text": "Scores",
+        "height": 45
+      },
+      {
+        "text": "Standings",
+        "height": 45
+      },
+      {
+        "text": "Teams",
+        "height": 45
+      },
+      {
+        "text": "Players",
+        "height": 45
+      }
+    ],
+    "picks": 9,
+    "errors": []
+  }
+]

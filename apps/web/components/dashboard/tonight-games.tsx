@@ -12,8 +12,8 @@ import { EmptyLedger } from "../team/empty-ledger";
 import { headerLink } from "./header-link";
 
 /**
- * The dashboard's first block: tonight's games, kept current by the Scoreboard socket, with the
- * favorite teams' games first.
+ * The dashboard's first block: tonight's games in stable start order, kept current by the
+ * Scoreboard socket. Favorites are marked without moving their rows.
  *
  * The picks are not this component's to read (they are in D1, and this is the browser). The
  * page, a server component, hands them in:
@@ -44,7 +44,7 @@ export function TonightGames({
       </SectionHeader>
       {games.length > 0 ? (
         <GameLedger
-          games={tonightGames(games, favoriteTeamIds)}
+          games={tonightGames(games)}
           favoriteTeamIds={favoriteTeamIds}
           pick={
             picks &&

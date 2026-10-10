@@ -2,6 +2,10 @@
 
 What earlier tickets learned that the code does not show. Read before building; add a line when you learn something the next subagent would otherwise rediscover. Keep each note to what cannot be found by reading the code.
 
+## Stable home slate (#111)
+
+- **Home order differs intentionally from Scores and the ticker.** Ryan wants home games to stay put during live updates and favorite hydration: scheduled start, then game id for ties. Do not reuse `tickerGames` or `favoritesFirst` for the home ledger; their status/favorite promotion caused rows to jump. Favorite markers and live details still update in place.
+
 ## Approved navigation and panels (#99, current visual direction)
 
 - **The approved direction supersedes the old variant C measurements below.** The durable sample is `prototypes/navigation-preview`; `docs/design/navigation-direction.md` records the user's approval. `docs/design/aligned-ui` holds the production comparisons. Shared edges use a 1440px maximum width with 24px desktop, 16px intermediate and 12px phone gutters. The server root layout owns the 56px desktop / 88px phone header; all five destinations stay visible and no menu/sidebar remains.

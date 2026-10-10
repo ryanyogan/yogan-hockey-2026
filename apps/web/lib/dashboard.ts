@@ -4,18 +4,15 @@ import {
   type StandingsTable,
   standingsView,
 } from "@yogan-hockey/schemas";
-import { favoritesFirst } from "./favorites";
-import { tickerGames } from "./scoreboard-view";
 
 /**
- * Tonight's games in the dashboard's order: what is on, what is to come, what is over, and the
- * favorite teams' games ahead of all of them, in that same order among themselves.
+ * Keep each home row in scheduled-start order as status, scores and favorites change.
+ * Game ids break ties so an upstream array reorder does not move equal-start games.
  */
-export function tonightGames(
-  games: ScoreboardGame[],
-  favoriteTeamIds: readonly string[],
-): ScoreboardGame[] {
-  return favoritesFirst(tickerGames(games), favoriteTeamIds);
+export function tonightGames(games: readonly ScoreboardGame[]): ScoreboardGame[] {
+  return games.toSorted(
+    (a, b) => Date.parse(a.startTime) - Date.parse(b.startTime) || a.id.localeCompare(b.id),
+  );
 }
 
 /** "6 games, 2 live", the count beside "Tonight". Null on a day with no games. */

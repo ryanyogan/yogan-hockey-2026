@@ -36,7 +36,7 @@ test("the shared header keeps every page visible on phones, remembers theme and 
     await expect(link).toBeInViewport({ ratio: 1 });
   // vinext rebuilds its not-found fallback on the way back to a real route.
   await nav.getByRole("link", { name: "Home", exact: true }).click();
-  await expect(page.getByRole("heading", { name: "Hockey, at a glance" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Games", exact: true })).toBeVisible();
   // A browser-only marker is lost if the persistent shell remounts.
   await header.evaluate((node) => node.setAttribute("data-persistence-check", "kept"));
   await nav.getByRole("link", { name: "Players", exact: true }).click();

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { cache } from "react";
 import { FavoriteHeart } from "../../../components/favorites/favorite-heart";
 import { Link } from "../../../components/link";
 import {
@@ -10,6 +9,7 @@ import {
   TeamSection,
 } from "../../../components/players/player-sections";
 import { pageNotFound } from "../../../lib/page-not-found";
+import { perRequest } from "../../../lib/per-request";
 import { careerView, gameLogView, seasonView } from "../../../lib/player-view";
 import { loadPlayer } from "../../../lib/players";
 
@@ -19,7 +19,7 @@ export const dynamic = "force-dynamic";
 const LATEST_GAMES = 10;
 
 /** The title and the page ask for the same player; within one request he is loaded once. */
-const playerOf = cache(loadPlayer);
+const playerOf = (id: string) => perRequest(`load-player:${id}`, () => loadPlayer(id));
 
 type Props = {
   params: Promise<{ id: string }>;

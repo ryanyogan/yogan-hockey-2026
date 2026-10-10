@@ -1,7 +1,7 @@
 import { exports } from "cloudflare:workers";
 import type { ScoreboardReading } from "@yogan-hockey/schemas";
 import { getAgentByName } from "agents";
-import { cache } from "react";
+import { perRequest } from "./per-request";
 import { SCOREBOARD_CONNECTION } from "./scoreboard-connection";
 
 /**
@@ -12,7 +12,8 @@ import { SCOREBOARD_CONNECTION } from "./scoreboard-connection";
  *
  * One read a request (`cache`): the layout wants it for first paint and a page for its picks.
  */
-export const readScoreboard: () => Promise<ScoreboardReading> = cache(async () => {
-  const scoreboard = await getAgentByName(exports.ScoreboardAgent, SCOREBOARD_CONNECTION.name);
-  return structuredClone(await scoreboard.getScoreboard());
-});
+export const readScoreboard = (): Promise<ScoreboardReading> =>
+  perRequest("scoreboard", async () => {
+    const scoreboard = await getAgentByName(exports.ScoreboardAgent, SCOREBOARD_CONNECTION.name);
+    return structuredClone(await scoreboard.getScoreboard());
+  });

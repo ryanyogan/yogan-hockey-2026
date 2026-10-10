@@ -41,6 +41,14 @@ function Team({
   );
 }
 
+/** Shared with the streamed slate placeholder so its columns keep the same geometry. */
+export const GAME_LEDGER_COLUMNS = {
+  status: "game-status-column",
+  team: "game-team-column",
+  pick: "game-pick-column",
+  location: "game-location",
+};
+
 /** Aligned game rows share one visible AI-pick column at every width. No probability is invented. */
 export function GameLedger({
   games,
@@ -55,11 +63,11 @@ export function GameLedger({
   return (
     <Ledger className="game-ledger">
       <LedgerHead>
-        <LedgerColumn className="game-status-column">Status</LedgerColumn>
-        <LedgerColumn className="game-team-column">Away</LedgerColumn>
-        <LedgerColumn className="game-team-column">Home</LedgerColumn>
-        <LedgerColumn className="game-pick-column">AI pick</LedgerColumn>
-        <LedgerColumn className="game-location">Venue / TV</LedgerColumn>
+        <LedgerColumn className={GAME_LEDGER_COLUMNS.status}>Status</LedgerColumn>
+        <LedgerColumn className={GAME_LEDGER_COLUMNS.team}>Away</LedgerColumn>
+        <LedgerColumn className={GAME_LEDGER_COLUMNS.team}>Home</LedgerColumn>
+        <LedgerColumn className={GAME_LEDGER_COLUMNS.pick}>AI pick</LedgerColumn>
+        <LedgerColumn className={GAME_LEDGER_COLUMNS.location}>Venue / TV</LedgerColumn>
       </LedgerHead>
       <LedgerBody>
         {games.map((game) => {
@@ -104,7 +112,7 @@ export function GameLedger({
                   <span className="text-muted-foreground">No pick</span>
                 )}
               </LedgerCell>
-              <LedgerCell className="game-location">
+              <LedgerCell className={GAME_LEDGER_COLUMNS.location}>
                 <span title={where || undefined}>{where}</span>
               </LedgerCell>
             </LedgerRow>

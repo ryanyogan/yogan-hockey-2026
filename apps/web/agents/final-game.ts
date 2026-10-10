@@ -2,7 +2,7 @@ import { type Db, gameHasPlays, replaceGamePlays, saveFinalGame } from "@yogan-h
 import { getGameSummary, getTeam } from "@yogan-hockey/espn";
 import { FinalGameSchema, type Game } from "@yogan-hockey/schemas";
 import { gameTag, playerTag, STANDINGS_TAG, teamTag } from "../lib/espn";
-import { invalidateTag } from "../lib/invalidate-tag";
+import { invalidateTag, invalidateTags } from "../lib/invalidate-tag";
 
 /**
  * What the site does about a finished game (spec section 4), apart from who decides when: the
@@ -26,7 +26,8 @@ export function teamIdsOf(game: Game): string[] {
  */
 export async function invalidateStandingsAndTeams(teamIds: Iterable<string>): Promise<void> {
   const tags = [STANDINGS_TAG, ...[...new Set(teamIds)].map(teamTag)];
-  await Promise.all(tags.map(invalidateTag));
+  // One call: the tags' page-cache times are one KV document, written once.
+  await invalidateTags(tags);
 }
 
 /**

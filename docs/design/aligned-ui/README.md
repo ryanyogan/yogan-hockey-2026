@@ -57,3 +57,9 @@ Additional narrow-screen verification drove 0, 1, 8, 9 and 16 games through the 
 The loading score grid uses the same nine cells and responsive grid as the real typical slate, including intermediate-width wrapping. Other initial slate sizes retain the documented first-arrival height tradeoff.
 
 Validation: typecheck and Biome passed; the full Vitest suite passed once (60 files, 672 tests); production build passed. All 14 existing browser smoke tests passed across the route suite and focused reruns: the retired ticker-link selector in Favorites was updated to the visible Scores navigation, and the shared-shell test verifies Home → Players preserves the header DOM. The two independent code-review axes found one tablet-placeholder mismatch and one typography gap; both were fixed and independently rechecked with no outstanding findings.
+
+## Performance integration
+
+Merged `f07b4bb` (#95 / #106) after the original comparison, preserving the cache and per-request improvements and nonblocking game-page Scoreboard reads. Its new live/game loading boundaries use the approved geometry. Family-only helpers and its cache policy remain retired. Four additional [loading captures](after/loading-manifest.json) cover `/skeleton/loading` at 390px and 1440px in both themes; no earlier capture exists for this new combined outline. All four have no page overflow or page errors, with live-placeholder rows measuring 56px / 48px. These supplement the original 104 before/after images.
+
+Post-merge validation passed: typecheck, Biome, production build, 61 Vitest files / 693 tests, and the existing live/game/replay/player-search/player-profile smokes (six Playwright checks including setup). Both reviewers rechecked the merge overlaps without outstanding findings.

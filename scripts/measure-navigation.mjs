@@ -46,7 +46,7 @@ const contentReady = () => {
   return (
     main != null &&
     main.querySelector("h1, h2") != null &&
-    main.querySelector("tbody tr") != null &&
+    main.querySelector(window.__ready ?? "tbody tr") != null &&
     main.querySelector("[aria-busy=true]") == null
   );
 };
@@ -66,6 +66,12 @@ async function newPage() {
   });
   const page = await context.newPage();
   await page.addInitScript(watchShifts);
+  // READY names what must be drawn on a page with no table (`READY='input[type=search]'`).
+  if (process.env.READY) {
+    await page.addInitScript((ready) => {
+      window.__ready = ready;
+    }, process.env.READY);
+  }
   if (Number(slow) > 0) {
     await page.route(
       (url) => !url.pathname.startsWith("/agents/"),
@@ -111,7 +117,9 @@ for (let run = 0; run < Number(runs); run++) {
     const { context, page } = await newPage();
     await page.goto(base + from, { waitUntil: "networkidle" });
     await page.waitForTimeout(1000);
-    const link = page.locator(`main a[href="${to}"]`).first();
+    // A link in the page's own content when there is one, else the shell's (the nav).
+    const inMain = page.locator(`main a[href="${to}"]`);
+    const link = ((await inMain.count()) > 0 ? inMain : page.locator(`a[href="${to}"]`)).first();
     let documents = 0;
     let rsc = 0;
     let rscAfterClick = 0;

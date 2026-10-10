@@ -1,0 +1,369 @@
+{
+  "commit": "bba6ce3",
+  "results": [
+    {
+      "name": "dashboard",
+      "path": "/",
+      "width": 390,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "name": "dashboard",
+      "path": "/",
+      "width": 390,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "name": "dashboard",
+      "path": "/",
+      "width": 1440,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "name": "dashboard",
+      "path": "/",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "name": "standings",
+      "path": "/nhl",
+      "width": 390,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "name": "standings",
+      "path": "/nhl",
+      "width": 390,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "name": "standings",
+      "path": "/nhl",
+      "width": 1440,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "name": "standings",
+      "path": "/nhl",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "name": "teams",
+      "path": "/nhl?tab=teams",
+      "width": 390,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "name": "teams",
+      "path": "/nhl?tab=teams",
+      "width": 390,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "name": "teams",
+      "path": "/nhl?tab=teams",
+      "width": 1440,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "name": "teams",
+      "path": "/nhl?tab=teams",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "name": "players",
+      "path": "/players",
+      "width": 390,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "name": "players",
+      "path": "/players",
+      "width": 390,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "name": "players",
+      "path": "/players",
+      "width": 1440,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "name": "players",
+      "path": "/players",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "name": "player",
+      "path": "/players/4024123",
+      "width": 390,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "name": "player",
+      "path": "/players/4024123",
+      "width": 390,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "name": "player",
+      "path": "/players/4024123",
+      "width": 1440,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "name": "player",
+      "path": "/players/4024123",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "name": "team",
+      "path": "/nhl/teams/21",
+      "width": 390,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "name": "team",
+      "path": "/nhl/teams/21",
+      "width": 390,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "name": "team",
+      "path": "/nhl/teams/21",
+      "width": 1440,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "name": "team",
+      "path": "/nhl/teams/21",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "name": "roster",
+      "path": "/nhl/teams/21/roster",
+      "width": 390,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "name": "roster",
+      "path": "/nhl/teams/21/roster",
+      "width": 390,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "name": "roster",
+      "path": "/nhl/teams/21/roster",
+      "width": 1440,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "name": "roster",
+      "path": "/nhl/teams/21/roster",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "name": "stats",
+      "path": "/nhl/teams/21/stats",
+      "width": 390,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "name": "stats",
+      "path": "/nhl/teams/21/stats",
+      "width": 390,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "name": "stats",
+      "path": "/nhl/teams/21/stats",
+      "width": 1440,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "name": "stats",
+      "path": "/nhl/teams/21/stats",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "name": "scores",
+      "path": "/nhl/live",
+      "width": 390,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "name": "scores",
+      "path": "/nhl/live",
+      "width": 390,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "name": "scores",
+      "path": "/nhl/live",
+      "width": 1440,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "name": "scores",
+      "path": "/nhl/live",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "name": "scheduled",
+      "path": "/nhl/games/401892449",
+      "width": 390,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "name": "scheduled",
+      "path": "/nhl/games/401892449",
+      "width": 390,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "name": "scheduled",
+      "path": "/nhl/games/401892449",
+      "width": 1440,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "name": "scheduled",
+      "path": "/nhl/games/401892449",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "name": "replay",
+      "path": "/nhl/games/401803652",
+      "width": 390,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "name": "replay",
+      "path": "/nhl/games/401803652",
+      "width": 390,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "name": "replay",
+      "path": "/nhl/games/401803652",
+      "width": 1440,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "name": "replay",
+      "path": "/nhl/games/401803652",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "name": "not-found",
+      "path": "/no-such-page",
+      "width": 390,
+      "theme": "light",
+      "status": 404
+    },
+    {
+      "name": "not-found",
+      "path": "/no-such-page",
+      "width": 390,
+      "theme": "dark",
+      "status": 404
+    },
+    {
+      "name": "not-found",
+      "path": "/no-such-page",
+      "width": 1440,
+      "theme": "light",
+      "status": 404
+    },
+    {
+      "name": "not-found",
+      "path": "/no-such-page",
+      "width": 1440,
+      "theme": "dark",
+      "status": 404
+    },
+    {
+      "name": "game-states",
+      "path": "/skeleton/live",
+      "width": 390,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "name": "game-states",
+      "path": "/skeleton/live",
+      "width": 390,
+      "theme": "dark",
+      "status": 200
+    },
+    {
+      "name": "game-states",
+      "path": "/skeleton/live",
+      "width": 1440,
+      "theme": "light",
+      "status": 200
+    },
+    {
+      "name": "game-states",
+      "path": "/skeleton/live",
+      "width": 1440,
+      "theme": "dark",
+      "status": 200
+    }
+  ]
+}

@@ -51,10 +51,13 @@ export function LiveScores({ picks = {} }: { picks?: Picks }) {
       <header className="flex flex-wrap items-baseline justify-between gap-x-4">
         <h1 className="font-bold uppercase">
           Live scores
-          <span className="font-normal text-foreground/50 normal-case"> {summary.join(", ")}</span>
+          <span className="font-normal text-muted-foreground normal-case">
+            {" "}
+            {summary.join(", ")}
+          </span>
         </h1>
         {heardAt && (
-          <p className="text-foreground/50">
+          <p className="text-muted-foreground">
             updated <LocalTime at={heardAt} show="clock" />
           </p>
         )}
@@ -67,7 +70,7 @@ export function LiveScores({ picks = {} }: { picks?: Picks }) {
         <Section>
           {/* Without a date the Scoreboard has not answered yet, which is not a day off. */}
           <SectionHeader title={date == null ? "Scores unavailable" : "No games today"} />
-          <p className="border-foreground/20 border-t px-2 py-1.5 text-foreground/70">
+          <p className="border-foreground/20 border-t px-2 py-1.5 text-muted-foreground">
             {date == null
               ? "Today's games could not be read. They appear here as soon as they can be."
               : "Nothing is on the NHL's slate. Scores appear here as soon as there is a game."}

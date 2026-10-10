@@ -16,7 +16,7 @@ export default function GlobalError() {
     <html lang="en" style={{ "--font-geist-mono": "ui-monospace" } as CSSProperties}>
       <body>
         <title>Not answering · Yogan Hockey</title>
-        <main data-slot="global-error" className="space-y-8 p-4 md:p-6">
+        <main data-slot="global-error" className="space-y-4 p-4 md:p-6">
           <a href="/" className="block font-bold text-sm">
             YOGAN/HOCKEY
           </a>

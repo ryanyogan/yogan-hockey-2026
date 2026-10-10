@@ -1,6 +1,6 @@
 import type { ScoreboardReading } from "@yogan-hockey/schemas";
 import type { Metadata } from "next";
-import { Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import { headers } from "next/headers";
 import { ThemeProvider } from "next-themes";
 import type { ReactNode } from "react";
@@ -10,6 +10,7 @@ import { PAGE_CACHE_REQUEST_HEADER } from "../lib/page-cache";
 import { readScoreboard } from "../lib/scoreboard";
 import "./globals.css";
 
+const sans = Geist({ subsets: ["latin"], variable: "--font-geist-sans" });
 const mono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" });
 
 export const metadata: Metadata = {
@@ -38,11 +39,11 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const scoreboard = cached ? null : scoreboardForFirstPaint();
   return (
     // next-themes sets the class on <html> before first paint, which React must not undo.
-    <html lang="en" className={mono.variable} suppressHydrationWarning>
+    <html lang="en" className={`${sans.variable} ${mono.variable}`} suppressHydrationWarning>
       <body>
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="light"
           enableSystem
           disableTransitionOnChange
         >

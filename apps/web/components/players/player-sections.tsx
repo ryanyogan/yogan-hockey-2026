@@ -25,8 +25,7 @@ import { TeamMark } from "../team-mark";
 
 /*
  * The parts of a player page, in the ledger's language: a header line, then one dense table per
- * subject. Each takes what `lib/player-view.ts` works out, so a player who is not ESPN's (the
- * Tracked Player's page, and the fictional player, of #46) is drawn by the same parts.
+ * subject. Each takes what `lib/player-view.ts` works out from the ESPN data.
  */
 
 /** A stat column's heading, spelled out for a pointer and a screen reader where it is known. */
@@ -91,7 +90,7 @@ export function PlayerHeader({ profile, action }: { profile: PlayerProfile; acti
 
 /**
  * The header line itself, for anybody with a name: `detail` is the quiet text after it, `facts`
- * the labelled row under it. A Tracked Player's page (#46) is headed by this directly.
+ * the labelled row under it.
  */
 export function HeaderLine({
   name,
@@ -110,7 +109,7 @@ export function HeaderLine({
         <h1 className="font-bold text-base uppercase">
           {name}
           {detail ? (
-            <span className="font-normal text-[13px] text-foreground/50 normal-case max-sm:block">
+            <span className="font-normal text-[13px] text-muted-foreground normal-case max-sm:block">
               {" "}
               {detail}
             </span>
@@ -122,7 +121,7 @@ export function HeaderLine({
         <dl className="flex flex-wrap gap-x-6 gap-y-1 border-foreground/20 border-t px-2 py-1">
           {facts.map((fact) => (
             <div key={fact.label}>
-              <dt className="text-[10px] text-foreground/50 uppercase tracking-wider">
+              <dt className="text-xs text-muted-foreground uppercase tracking-wider">
                 {fact.label}
               </dt>
               <dd>{fact.value}</dd>

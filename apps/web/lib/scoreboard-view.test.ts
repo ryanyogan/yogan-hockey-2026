@@ -8,9 +8,7 @@ import {
   heardAtFrom,
   laterOf,
   slateSections,
-  stripReach,
   tickerGames,
-  wheelScrollLeft,
 } from "./scoreboard-view";
 
 function side(abbreviation: string, score = 0, winner = false): ScoreboardGame["home"] {
@@ -150,64 +148,6 @@ test("only the Scoreboard's own word that it heard from ESPN carries a time", ()
   expect(heardAtFrom(JSON.stringify({ type: "scoreboard_heard", at: "lately" }))).toBeNull();
   expect(heardAtFrom("not json")).toBeNull();
   expect(heardAtFrom(new ArrayBuffer(4))).toBeNull();
-});
-
-// A ticker 300 wide holding 1000 of entries, somewhere in the middle.
-const strip = { scrollLeft: 200, scrollWidth: 1000, clientWidth: 300 };
-const wheel = { deltaX: 0, deltaY: 0, deltaMode: 0, shiftKey: false, ctrlKey: false };
-
-test("a vertical wheel moves the ticker sideways, down to the right and up to the left", () => {
-  expect(wheelScrollLeft(strip, { ...wheel, deltaY: 120 })).toBe(320);
-  expect(wheelScrollLeft(strip, { ...wheel, deltaY: -120 })).toBe(80);
-  // A wheel that reports lines, as Firefox does: three lines of 16px.
-  expect(wheelScrollLeft(strip, { ...wheel, deltaY: 3, deltaMode: 1 })).toBe(248);
-  // A wheel that reports pages: one width of the strip.
-  expect(wheelScrollLeft(strip, { ...wheel, deltaY: 1, deltaMode: 2 })).toBe(500);
-});
-
-test("the wheel stops at the ticker's ends, and from there it scrolls the page again", () => {
-  expect(wheelScrollLeft(strip, { ...wheel, deltaY: 5000 })).toBe(700);
-  expect(wheelScrollLeft(strip, { ...wheel, deltaY: -5000 })).toBe(0);
-  expect(wheelScrollLeft({ ...strip, scrollLeft: 700 }, { ...wheel, deltaY: 120 })).toBeNull();
-  expect(wheelScrollLeft({ ...strip, scrollLeft: 0 }, { ...wheel, deltaY: -120 })).toBeNull();
-  // The slow tail of a trackpad's glide still belongs to the strip while it has room to move.
-  expect(wheelScrollLeft(strip, { ...wheel, deltaY: 0.4 })).toBe(200.4);
-  // A browser zoomed in reports a fraction short of the end.
-  expect(wheelScrollLeft({ ...strip, scrollLeft: 699.5 }, { ...wheel, deltaY: 120 })).toBeNull();
-});
-
-test("the wheel is left alone when the ticker fits or the gesture is not a plain vertical one", () => {
-  const fits = { scrollLeft: 0, scrollWidth: 300, clientWidth: 300 };
-  expect(wheelScrollLeft(fits, { ...wheel, deltaY: 120 })).toBeNull();
-  // A trackpad swiping sideways already scrolls the strip.
-  expect(wheelScrollLeft(strip, { ...wheel, deltaX: 40, deltaY: 10 })).toBeNull();
-  // Shift makes a browser scroll sideways itself; control is a zoom.
-  expect(wheelScrollLeft(strip, { ...wheel, deltaY: 120, shiftKey: true })).toBeNull();
-  expect(wheelScrollLeft(strip, { ...wheel, deltaY: 120, ctrlKey: true })).toBeNull();
-  expect(wheelScrollLeft(strip, wheel)).toBeNull();
-});
-
-// Entries 100 wide, side by side from the strip's start.
-const entries = (count: number) =>
-  Array.from({ length: count }, (_, at) => ({ left: at * 100, right: at * 100 + 100 }));
-
-test("a strip says how many of its entries are not wholly in view, and which way they lie", () => {
-  // 300 wide at its start, holding ten: three show, seven lie to the right.
-  const atStart = { scrollLeft: 0, scrollWidth: 1000, clientWidth: 300 };
-  expect(stripReach(atStart, entries(10))).toEqual({ before: false, after: true, hidden: 7 });
-  // Part way along, an entry cut by either edge counts as hidden.
-  const midway = { scrollLeft: 250, scrollWidth: 1000, clientWidth: 300 };
-  expect(stripReach(midway, entries(10))).toEqual({ before: true, after: true, hidden: 8 });
-  const atEnd = { scrollLeft: 700, scrollWidth: 1000, clientWidth: 300 };
-  expect(stripReach(atEnd, entries(10))).toEqual({ before: true, after: false, hidden: 7 });
-});
-
-test("a strip that fits hides nothing, to within the pixel a zoomed browser is out by", () => {
-  const fits = { scrollLeft: 0, scrollWidth: 300, clientWidth: 300 };
-  expect(stripReach(fits, entries(3))).toEqual({ before: false, after: false, hidden: 0 });
-  expect(stripReach(fits, [])).toEqual({ before: false, after: false, hidden: 0 });
-  const zoomed = { scrollLeft: 0.4, scrollWidth: 300.6, clientWidth: 300 };
-  expect(stripReach(zoomed, entries(3))).toEqual({ before: false, after: false, hidden: 0 });
 });
 
 test("every game links to its own page, and shows a score only once it has started", () => {

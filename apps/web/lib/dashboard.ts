@@ -5,7 +5,6 @@ import {
   standingsView,
 } from "@yogan-hockey/schemas";
 import { favoritesFirst } from "./favorites";
-import type { HeadlineStat } from "./player-view";
 import { tickerGames } from "./scoreboard-view";
 
 /**
@@ -39,17 +38,6 @@ export function gamePlayingNow(
   return games.find(
     (game) => game.status === "live" && (game.away.id === teamId || game.home.id === teamId),
   );
-}
-
-/** The Family ledger's figures, as its column headers. */
-export const FAMILY_COLUMNS = ["gp", "g", "a", "pts"] as const;
-
-/** The Family ledger's four figures, in its columns' order, with a dash where a file has none. */
-export function familyTotals(totals: readonly HeadlineStat[]): HeadlineStat[] {
-  return FAMILY_COLUMNS.map((label) => ({
-    label,
-    value: totals.find((total) => total.label.toLowerCase() === label)?.value ?? "-",
-  }));
 }
 
 /** How many teams of each conference the dashboard lists, as the Parity Reference did. */

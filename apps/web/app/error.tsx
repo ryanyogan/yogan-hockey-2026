@@ -45,7 +45,7 @@ export default function ErrorPage({ reset }: { error: Error; reset?: () => void 
           type="button"
           onClick={retry}
           disabled={retrying}
-          className="cursor-pointer font-bold underline disabled:cursor-default disabled:text-foreground/50"
+          className="cursor-pointer font-bold underline disabled:cursor-default disabled:text-muted-foreground"
         >
           {retrying ? "Trying again" : "Try again"}
         </button>{" "}

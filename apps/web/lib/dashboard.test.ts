@@ -1,13 +1,7 @@
 import { getStandings } from "@yogan-hockey/espn";
 import type { ScoreboardGame } from "@yogan-hockey/schemas";
 import { beforeAll, expect, test, vi } from "vitest";
-import {
-  familyTotals,
-  gamePlayingNow,
-  tonightGames,
-  tonightSummary,
-  topOfConferences,
-} from "./dashboard";
+import { gamePlayingNow, tonightGames, tonightSummary, topOfConferences } from "./dashboard";
 
 beforeAll(() => {
   vi.stubEnv("ESPN_FIXTURES", "1");
@@ -85,19 +79,6 @@ test("a player is playing now when his team is in a game in progress", () => {
   expect(gamePlayingNow("CAR", SLATE)).toBeUndefined();
   // A free agent has no team.
   expect(gamePlayingNow(undefined, SLATE)).toBeUndefined();
-});
-
-test("the family row always has its four figures, a dash for one his file lacks", () => {
-  const totals = [
-    { label: "GP", value: "6" },
-    { label: "PTS", value: "8" },
-  ];
-  expect(familyTotals(totals)).toEqual([
-    { label: "gp", value: "6" },
-    { label: "g", value: "-" },
-    { label: "a", value: "-" },
-    { label: "pts", value: "8" },
-  ]);
 });
 
 test("the dashboard's standings are each conference's top eight by points", async () => {

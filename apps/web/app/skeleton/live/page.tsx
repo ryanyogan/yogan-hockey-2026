@@ -22,11 +22,8 @@ export default async function SampleLiveScoresPage({
   const scoreboard = SLATES[(await searchParams).slate ?? ""] ?? SAMPLE_SLATE;
   return (
     <StaticScoreboard scoreboard={scoreboard}>
-      {/* Pulled out to the edges of the content column, where the shell's ticker sits. */}
-      <div
-        data-slot="sample-score-ticker"
-        className="-mx-4 -mt-4 border-rule border-b md:-mx-6 md:-mt-6"
-      >
+      {/* The sample uses the same boxed edges as the production score grid. */}
+      <div data-slot="sample-score-ticker" className="border border-rule">
         <ScoreTicker />
       </div>
       <LiveScores />

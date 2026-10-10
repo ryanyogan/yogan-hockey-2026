@@ -52,8 +52,7 @@ const views = {
   scores: { title: "Scores", render: () => gamePanel("Tuesday, October 6") },
   standings: {
     title: "Standings",
-    render: () =>
-      `<div class="conference-grid">${standings.map(conferencePanel).join("")}</div>`,
+    render: () => `<div class="conference-grid">${standings.map(conferencePanel).join("")}</div>`,
   },
   teams: { title: "Teams", render: teamPanel },
   players: { title: "Players", render: () => playerPanel("Players") },
@@ -67,9 +66,7 @@ document.querySelector(".scoreboard").innerHTML = games
 function render() {
   let route = location.hash.slice(1) || "home";
   if (route === "live") route = "scores";
-  const game = route.startsWith("game/")
-    ? games.find((g) => g.id === route.slice(5))
-    : null;
+  const game = route.startsWith("game/") ? games.find((g) => g.id === route.slice(5)) : null;
   const view = game
     ? {
         title: `${game.away.abbreviation} at ${game.home.abbreviation}`,
@@ -77,13 +74,10 @@ function render() {
       }
     : views[route] || views.home;
   const navRoute = game || route === "scores" ? "live" : route;
-  document
-    .querySelectorAll("nav a")
-    .forEach((a) =>
-      a.hash === `#${navRoute}`
-        ? a.setAttribute("aria-current", "page")
-        : a.removeAttribute("aria-current"),
-    );
+  document.querySelectorAll("nav a").forEach((a) => {
+    if (a.hash === `#${navRoute}`) a.setAttribute("aria-current", "page");
+    else a.removeAttribute("aria-current");
+  });
   document.querySelector("#content").innerHTML =
     `<div class="page-heading"><h1>${view.title}</h1><span class="page-meta">Oct 6, 2026 · Sample</span></div>${view.render()}`;
   document.title = `${view.title} · Yogan Hockey preview`;
@@ -97,8 +91,7 @@ const themeLabel = () =>
   );
 themeLabel();
 theme.addEventListener("click", () => {
-  const next =
-    document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+  const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
   document.documentElement.dataset.theme = next;
   localStorage.setItem("preview-theme", next);
   themeLabel();

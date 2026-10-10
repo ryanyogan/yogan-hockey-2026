@@ -8,7 +8,7 @@ const MATTHEWS = "4024123";
 
 type Slate = { games: { id: string; [field: string]: unknown }[]; [field: string]: unknown };
 
-test("the dashboard shows its four blocks, puts favorites first and follows the socket", async ({
+test("the dashboard shows its games, favorites and standings, puts favorites first and follows the socket", async ({
   page,
 }) => {
   // The visitor already has a favorite team and a favorite player.
@@ -41,8 +41,10 @@ test("the dashboard shows its four blocks, puts favorites first and follows the 
   await expect(tonight.getByRole("row")).toHaveCount(10);
   const first = tonight.getByRole("row").nth(1);
   await expect(first).toContainText("NSH at TOR");
+  await expect(first).toContainText("favorite team");
+  await expect(first.locator('[data-slot="game-pick"]')).toHaveText("TOR 58%");
   await expect(first.getByRole("cell").last()).toHaveText(
-    "★ favorite teamTOR 58%Scotiabank Arena · ESPN+, Scripps Sports",
+    "Scotiabank Arena · ESPN+, Scripps Sports",
   );
   await expect(first.getByRole("link")).toHaveAttribute("href", `/nhl/games/${GAME_ID}`);
   await expect(tonight.getByRole("row").nth(2)).not.toContainText("favorite team");
@@ -51,12 +53,7 @@ test("the dashboard shows its four blocks, puts favorites first and follows the 
     "/nhl/live",
   );
 
-  // Family: Rylan's season, leading to his page.
-  const family = page.getByRole("region", { name: "Family" });
-  const rylan = family.getByRole("row").filter({ hasText: "Rylan Yogan" });
-  await expect(rylan.getByRole("link")).toHaveAttribute("href", "/family/rylan");
-  await expect(rylan.getByRole("cell").nth(1)).toContainText("Chicago Falcons");
-  await expect(rylan.getByRole("cell").last()).toHaveText(/^\d+$/);
+  await expect(page.getByRole("region", { name: "Family" })).toHaveCount(0);
 
   // Favorites: the favorite player with his season, not playing yet.
   const favorites = page.getByRole("region", { name: "Favorites" });

@@ -2,6 +2,14 @@
 
 What earlier tickets learned that the code does not show. Read before building; add a line when you learn something the next subagent would otherwise rediscover. Keep each note to what cannot be found by reading the code.
 
+## Approved navigation and panels (#99, current visual direction)
+
+- **The approved direction supersedes the old variant C measurements below.** The durable sample is `prototypes/navigation-preview`; `docs/design/navigation-direction.md` records the user's approval. `docs/design/aligned-ui` holds the production comparisons. Shared edges use a 1440px maximum width with 24px desktop, 16px intermediate and 12px phone gutters. The server root layout owns the 56px desktop / 88px phone header; all five destinations stay visible and no menu/sidebar remains.
+- **No carousel machinery remains.** `ScoreTicker` uses one CSS grid, with all games visible and wrapping, and the existing single Scoreboard socket. Its initial unknown slate uses the same nine-cell CSS grid as a typical slate (including its intermediate-width wrapping). A different game count can move the page on first data arrival; navigation retains the filled grid. Do not claim arbitrary initial slates have zero layout shift.
+- **AI picks have their own column, including phones.** `GameLedger` places each score in its team's cell; the four primary columns are Status, Away, Home and AI pick, with Venue / TV added on wide screens. The pick is still D1's value, `pick pending` keeps its eligibility rules, and missing/failed picks say `No pick`. Game pages retain reasoning, factors and actual final outcome.
+- **Family and the fictional player are retired.** Their public routes and redirect, roster/search injection, content and unused helpers were removed at Ryan's request. Old stored favorites for those ids resolve to no player and are skipped by the existing favorite resolver. The earlier Family/Tracked Player notes below are historical, not current behavior.
+- **Typography and skeletons share the primitives.** Geist sans is for interface text, Geist Mono for score and numeric columns; muted text uses the contrast-checked token rather than foreground opacity. `SectionHeader` and `Ledger` set both real and loading geometry; update a skeleton alongside any column changes. All links still use the 65ms intent-prefetch component, and the shell stays in the root server layout.
+
 ## Running things
 
 - **Ports.** The dev server is pinned to `PORT` (default 5173) with `strictPort`. Parallel worktrees each use their own `PORT`; the orchestrator assigns it. vinext refuses a second dev server in the same directory, so stop strays before Playwright.

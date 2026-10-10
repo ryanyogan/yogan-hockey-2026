@@ -23,7 +23,7 @@ export default async function TeamSchedulePage({ params }: Props) {
 
   const view = scheduleView(await schedule);
   return (
-    <div className="grid gap-8 xl:grid-cols-2">
+    <div className="grid gap-4 xl:grid-cols-2">
       <UpcomingLedger rows={view.upcoming} postponed={view.postponed} />
       <ResultsLedger rows={view.results} wins={view.wins} losses={view.losses} />
     </div>

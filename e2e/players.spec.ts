@@ -33,7 +33,10 @@ test("/players searches as the visitor types and keeps the search in the URL", a
 
   // Arriving by a link starts the box from that link's URL.
   await expect(async () => {
-    await page.getByRole("complementary").getByRole("link", { name: "players" }).click();
+    await page
+      .getByRole("navigation", { name: "Site" })
+      .getByRole("link", { name: "Players", exact: true })
+      .click();
     await expect(box).toHaveValue("", { timeout: 1000 });
   }).toPass();
   await expect(page).toHaveURL(/\/players$/);

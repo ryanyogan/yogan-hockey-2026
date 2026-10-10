@@ -64,7 +64,7 @@ export default async function PlayerPage({ params, searchParams }: Props) {
       {career ? (
         <CareerSection career={career} />
       ) : (
-        <p className="px-2 text-foreground/70">{profile.name} has yet to play in the NHL.</p>
+        <p className="px-2 text-muted-foreground">{profile.name} has yet to play in the NHL.</p>
       )}
       {profile.team && <TeamSection team={profile.team} />}
       <p className="px-2">

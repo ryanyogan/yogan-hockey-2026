@@ -7,14 +7,7 @@ import {
   type PlayerSearchResult,
 } from "@yogan-hockey/schemas";
 import { cachedPlayer, cachedPlayerCareer, cachedPlayerGameLog, cachedPlayerSearch } from "./espn";
-import { LEGEND_ID, legendPlayer, legendSearchResult, searchFindsLegend } from "./legend";
 import { MAX_SEARCH_LENGTH, MIN_SEARCH_LENGTH } from "./player-search";
-
-/**
- * Where the players pages get their players. The search page, its Server Action and the player
- * page all read through here, so a player who is not ESPN's (the fictional Rylan Yogan of #46)
- * is added in this one file: ahead of ESPN's results in `findPlayers`, and by id in `loadPlayer`.
- */
 
 /**
  * The answer to a search. `idle`: the query is too short to search for. `unavailable`: ESPN could
@@ -30,17 +23,13 @@ export type PlayerSearch = {
 export async function findPlayers(rawQuery: string): Promise<PlayerSearch> {
   const query = rawQuery.trim().slice(0, MAX_SEARCH_LENGTH);
   if (query.length < MIN_SEARCH_LENGTH) return { status: "idle", query, players: [] };
-  // The fictional player (#46) is not ESPN's to find: he leads whatever ESPN answers.
-  const legend = searchFindsLegend(query) ? [legendSearchResult()] : [];
   try {
-    const players = [...legend, ...(await cachedPlayerSearch(query))];
+    const players = await cachedPlayerSearch(query);
     return { status: "found", query, players: players.slice(0, PLAYER_SEARCH_LIMIT) };
   } catch (error) {
     // Down, or answering in a shape this site no longer reads: either way there is no search.
     if (!(error instanceof EspnFetchError || error instanceof EspnParseError)) throw error;
     console.error(error);
-    // He is found without ESPN, so a search for him is answered even then.
-    if (legend.length > 0) return { status: "found", query, players: legend };
     return { status: "unavailable", query, players: [] };
   }
 }
@@ -57,7 +46,6 @@ const ESPN_ID = /^\d{1,12}$/;
 
 /** A player by the `:id` of his page. Null when there is no such player. */
 export async function loadPlayer(playerId: string): Promise<Player | null> {
-  if (playerId === LEGEND_ID) return legendPlayer();
   if (!ESPN_ID.test(playerId)) return null;
   try {
     const [profile, career, gameLog] = await Promise.all([

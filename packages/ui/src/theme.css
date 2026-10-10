@@ -1,11 +1,7 @@
 /*
- * The Tailwind theme shared by every app that renders these components: the "Tonight ledger".
- * An app's stylesheet imports "tailwindcss" and then this file, and sets --font-geist-mono
- * (Geist Mono) on <html>.
- *
- * Secondary text is the foreground at an opacity, as the Reference UI draws it:
- *   /70 a note, /60 an idle nav link or a second line, /50 a column header or a section count,
- *   /40 an aside (a team's record, a rank, the footer).
+ * Shared boxed panels, restrained borders and readable light/dark tokens.
+ * Geist sans is for interface text; Geist Mono is for tabular figures and game scores.
+ * The root layout supplies both font variables. Secondary text uses --muted-foreground.
  */
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -18,63 +14,68 @@
 :root {
   color-scheme: light;
   --radius: 0;
-  --background: #fbfaf7;
-  --foreground: #171717;
-  --popover: #fbfaf7;
-  --popover-foreground: #171717;
-  --primary: #171717;
+  --panel: #ffffff;
+  --background: #fafafa;
+  --foreground: #18181b;
+  --popover: #fafafa;
+  --popover-foreground: #18181b;
+  --primary: #18181b;
   --primary-foreground: #ffffff;
-  --secondary: #f0eee8;
-  --secondary-foreground: #171717;
-  --muted: #f0eee8;
-  --muted-foreground: #737373;
-  --accent: #fef9c2;
-  --accent-foreground: #171717;
+  --secondary: #f4f4f5;
+  --secondary-foreground: #18181b;
+  --muted: #f4f4f5;
+  --muted-foreground: #52525b;
+  --accent: #f5f5f2;
+  --accent-foreground: #18181b;
   --destructive: #dc2626;
   /* The rule under a ledger row. */
-  --border: #e5e5e5;
-  /* The heavier rule that frames the shell: sidebar, top bar, tab strip. */
-  --rule: #d4d4d4;
-  --input: #d4d4d4;
+  --border: #dedee3;
+  /* The shared frame of header, score strip, panels and tabs. */
+  --rule: #dedee3;
+  --input: #dedee3;
   --ring: #a3a3a3;
   /* A game in progress: the marker's colour and the tint behind its row. */
   --live: #dc2626;
   --live-tint: #fef2f2;
   /* The row under the pointer. */
-  --highlight: #fef9c2;
+  --highlight: #f5f5f2;
   /* A figure above or below zero, such as a goal difference. */
   --positive: #15803d;
   --negative: #dc2626;
 }
 
 .dark {
+  --panel: #141e2d;
   color-scheme: dark;
-  --background: #0f172a;
-  --foreground: #f1f5f9;
-  --popover: #0f172a;
-  --popover-foreground: #f1f5f9;
-  --primary: #f1f5f9;
-  --primary-foreground: #0f172a;
-  --secondary: #1e293b;
-  --secondary-foreground: #f1f5f9;
-  --muted: #1e293b;
-  --muted-foreground: #94a3b8;
-  --accent: #1e293b;
-  --accent-foreground: #f1f5f9;
+  --background: #101723;
+  --foreground: #f4f4f5;
+  --popover: #101723;
+  --popover-foreground: #f4f4f5;
+  --primary: #f4f4f5;
+  --primary-foreground: #101723;
+  --secondary: #1d2a3c;
+  --secondary-foreground: #f4f4f5;
+  --muted: #1d2a3c;
+  --muted-foreground: #b5bdca;
+  --accent: #1d2a3c;
+  --accent-foreground: #f4f4f5;
   --destructive: #f87171;
-  --border: #1e293b;
-  --rule: #475569;
-  --input: #475569;
+  --border: #1d2a3c;
+  --rule: #344155;
+  --input: #344155;
   --ring: #64748b;
   --live: #f87171;
   --live-tint: #2a1a2a;
-  --highlight: #1e293b;
+  --highlight: #1d2a3c;
   --positive: #4ade80;
   --negative: #f87171;
 }
 
 @theme inline {
-  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-sans: var(--font-geist-sans, ui-sans-serif), system-ui, sans-serif;
+  --color-panel: var(--panel);
+  --font-mono:
+    var(--font-geist-mono, ui-monospace), ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-popover: var(--popover);
@@ -108,7 +109,7 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background font-mono text-[13px] text-foreground;
+    @apply bg-background font-sans text-sm text-foreground antialiased;
   }
 }
 

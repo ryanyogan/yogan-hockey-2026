@@ -53,7 +53,7 @@ export function PeriodTimeline({
           className={`absolute inset-y-0 border-rule ${period.start > 0 ? "border-l" : ""}`}
           style={{ left: `${period.start * 100}%`, width: `${period.width * 100}%` }}
         >
-          <span className="absolute top-0.5 left-1 text-[10px] text-foreground/40">
+          <span className="absolute top-0.5 left-1 text-xs text-muted-foreground">
             {period.label}
           </span>
         </div>

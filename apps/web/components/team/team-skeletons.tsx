@@ -28,7 +28,7 @@ export function NextGameSkeleton() {
 /** The Schedule tab: `UpcomingLedger` beside `ResultsLedger` (`schedule-ledgers.tsx`). */
 export function ScheduleSkeleton() {
   return (
-    <div className="grid gap-8 xl:grid-cols-2">
+    <div className="grid gap-4 xl:grid-cols-2">
       <SectionSkeleton
         title="Upcoming"
         density="compact"
@@ -57,7 +57,7 @@ export function ScheduleSkeleton() {
 /** The Roster tab: `RosterLedger` with its column of hearts (`roster-ledger.tsx`). */
 export function RosterSkeleton() {
   return (
-    <div className="grid gap-8 xl:grid-cols-2">
+    <div className="grid gap-4 xl:grid-cols-2">
       <SectionSkeleton
         title="Roster"
         density="compact"

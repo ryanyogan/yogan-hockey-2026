@@ -15,7 +15,7 @@ export const metadata = { title: "Loading states" };
 export default function LoadingStatesPage() {
   return (
     <>
-      <div className="grid gap-8 xl:grid-cols-2">
+      <div className="grid gap-4 xl:grid-cols-2">
         <TeamStatsSkeleton />
         <NextGameSkeleton />
       </div>

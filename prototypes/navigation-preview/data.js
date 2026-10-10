@@ -1,0 +1,438 @@
+// Recorded ESPN fixture values. See README.md for provenance.
+window.previewData = {
+  games: [
+    {
+      id: "401891815",
+      date: "2026-10-06T23:00Z",
+      venue: "Bell Centre",
+      away: {
+        id: "7",
+        abbreviation: "CAR",
+        displayName: "Carolina Hurricanes",
+      },
+      home: {
+        id: "10",
+        abbreviation: "MTL",
+        displayName: "Montreal Canadiens",
+      },
+    },
+    {
+      id: "401892449",
+      date: "2026-10-06T23:00Z",
+      venue: "Scotiabank Arena",
+      away: {
+        id: "27",
+        abbreviation: "NSH",
+        displayName: "Nashville Predators",
+      },
+      home: {
+        id: "21",
+        abbreviation: "TOR",
+        displayName: "Toronto Maple Leafs",
+      },
+    },
+    {
+      id: "401892450",
+      date: "2026-10-06T23:00Z",
+      venue: "Little Caesars Arena",
+      away: {
+        id: "14",
+        abbreviation: "OTT",
+        displayName: "Ottawa Senators",
+      },
+      home: {
+        id: "5",
+        abbreviation: "DET",
+        displayName: "Detroit Red Wings",
+      },
+    },
+    {
+      id: "401892451",
+      date: "2026-10-06T23:00Z",
+      venue: "Prudential Center",
+      away: {
+        id: "129764",
+        abbreviation: "UTA",
+        displayName: "Utah Mammoth",
+      },
+      home: {
+        id: "11",
+        abbreviation: "NJ",
+        displayName: "New Jersey Devils",
+      },
+    },
+    {
+      id: "401892453",
+      date: "2026-10-06T23:00Z",
+      venue: "KeyBank Center",
+      away: {
+        id: "30",
+        abbreviation: "MIN",
+        displayName: "Minnesota Wild",
+      },
+      home: {
+        id: "2",
+        abbreviation: "BUF",
+        displayName: "Buffalo Sabres",
+      },
+    },
+    {
+      id: "401892452",
+      date: "2026-10-06T23:30Z",
+      venue: "Madison Square Garden",
+      away: {
+        id: "12",
+        abbreviation: "NYI",
+        displayName: "New York Islanders",
+      },
+      home: {
+        id: "13",
+        abbreviation: "NYR",
+        displayName: "New York Rangers",
+      },
+    },
+    {
+      id: "401891779",
+      date: "2026-10-07T00:00Z",
+      venue: "United Center",
+      away: {
+        id: "19",
+        abbreviation: "STL",
+        displayName: "St. Louis Blues",
+      },
+      home: {
+        id: "4",
+        abbreviation: "CHI",
+        displayName: "Chicago Blackhawks",
+      },
+    },
+    {
+      id: "401892454",
+      date: "2026-10-07T01:40Z",
+      venue: "Climate Pledge Arena",
+      away: {
+        id: "37",
+        abbreviation: "VGK",
+        displayName: "Vegas Golden Knights",
+      },
+      home: {
+        id: "124292",
+        abbreviation: "SEA",
+        displayName: "Seattle Kraken",
+      },
+    },
+    {
+      id: "401891806",
+      date: "2026-10-07T02:00Z",
+      venue: "crypto.com Arena",
+      away: {
+        id: "26",
+        abbreviation: "FLA",
+        displayName: "Florida Panthers",
+      },
+      home: {
+        id: "8",
+        abbreviation: "LA",
+        displayName: "Los Angeles Kings",
+      },
+    },
+  ],
+  standings: [
+    {
+      name: "Eastern Conference",
+      rows: [
+        {
+          team: {
+            id: "13",
+            abbreviation: "NYR",
+            displayName: "New York Rangers",
+          },
+          stats: {
+            gamesPlayed: "4",
+            wins: "3",
+            losses: "1",
+            otLosses: "0",
+            pointDifferential: "+5",
+            points: "6",
+          },
+        },
+        {
+          team: {
+            id: "14",
+            abbreviation: "OTT",
+            displayName: "Ottawa Senators",
+          },
+          stats: {
+            gamesPlayed: "2",
+            wins: "2",
+            losses: "0",
+            otLosses: "0",
+            pointDifferential: "+4",
+            points: "4",
+          },
+        },
+        {
+          team: {
+            id: "20",
+            abbreviation: "TB",
+            displayName: "Tampa Bay Lightning",
+          },
+          stats: {
+            gamesPlayed: "3",
+            wins: "2",
+            losses: "1",
+            otLosses: "0",
+            pointDifferential: "+1",
+            points: "4",
+          },
+        },
+        {
+          team: {
+            id: "1",
+            abbreviation: "BOS",
+            displayName: "Boston Bruins",
+          },
+          stats: {
+            gamesPlayed: "4",
+            wins: "2",
+            losses: "2",
+            otLosses: "0",
+            pointDifferential: "-2",
+            points: "4",
+          },
+        },
+        {
+          team: {
+            id: "16",
+            abbreviation: "PIT",
+            displayName: "Pittsburgh Penguins",
+          },
+          stats: {
+            gamesPlayed: "3",
+            wins: "2",
+            losses: "1",
+            otLosses: "0",
+            pointDifferential: "+7",
+            points: "4",
+          },
+        },
+        {
+          team: {
+            id: "26",
+            abbreviation: "FLA",
+            displayName: "Florida Panthers",
+          },
+          stats: {
+            gamesPlayed: "3",
+            wins: "1",
+            losses: "0",
+            otLosses: "2",
+            pointDifferential: "-1",
+            points: "4",
+          },
+        },
+        {
+          team: {
+            id: "10",
+            abbreviation: "MTL",
+            displayName: "Montreal Canadiens",
+          },
+          stats: {
+            gamesPlayed: "2",
+            wins: "1",
+            losses: "0",
+            otLosses: "1",
+            pointDifferential: "0",
+            points: "3",
+          },
+        },
+        {
+          team: {
+            id: "7",
+            abbreviation: "CAR",
+            displayName: "Carolina Hurricanes",
+          },
+          stats: {
+            gamesPlayed: "3",
+            wins: "1",
+            losses: "1",
+            otLosses: "1",
+            pointDifferential: "-3",
+            points: "3",
+          },
+        },
+      ],
+    },
+    {
+      name: "Western Conference",
+      rows: [
+        {
+          team: {
+            id: "28",
+            abbreviation: "WPG",
+            displayName: "Winnipeg Jets",
+          },
+          stats: {
+            gamesPlayed: "3",
+            wins: "2",
+            losses: "0",
+            otLosses: "1",
+            pointDifferential: "+1",
+            points: "5",
+          },
+        },
+        {
+          team: {
+            id: "6",
+            abbreviation: "EDM",
+            displayName: "Edmonton Oilers",
+          },
+          stats: {
+            gamesPlayed: "3",
+            wins: "2",
+            losses: "0",
+            otLosses: "1",
+            pointDifferential: "+3",
+            points: "5",
+          },
+        },
+        {
+          team: {
+            id: "17",
+            abbreviation: "COL",
+            displayName: "Colorado Avalanche",
+          },
+          stats: {
+            gamesPlayed: "2",
+            wins: "2",
+            losses: "0",
+            otLosses: "0",
+            pointDifferential: "+9",
+            points: "4",
+          },
+        },
+        {
+          team: {
+            id: "30",
+            abbreviation: "MIN",
+            displayName: "Minnesota Wild",
+          },
+          stats: {
+            gamesPlayed: "2",
+            wins: "2",
+            losses: "0",
+            otLosses: "0",
+            pointDifferential: "+5",
+            points: "4",
+          },
+        },
+        {
+          team: {
+            id: "129764",
+            abbreviation: "UTA",
+            displayName: "Utah Mammoth",
+          },
+          stats: {
+            gamesPlayed: "3",
+            wins: "2",
+            losses: "1",
+            otLosses: "0",
+            pointDifferential: "+7",
+            points: "4",
+          },
+        },
+        {
+          team: {
+            id: "25",
+            abbreviation: "ANA",
+            displayName: "Anaheim Ducks",
+          },
+          stats: {
+            gamesPlayed: "2",
+            wins: "2",
+            losses: "0",
+            otLosses: "0",
+            pointDifferential: "+2",
+            points: "4",
+          },
+        },
+        {
+          team: {
+            id: "124292",
+            abbreviation: "SEA",
+            displayName: "Seattle Kraken",
+          },
+          stats: {
+            gamesPlayed: "3",
+            wins: "2",
+            losses: "1",
+            otLosses: "0",
+            pointDifferential: "+8",
+            points: "4",
+          },
+        },
+        {
+          team: {
+            id: "37",
+            abbreviation: "VGK",
+            displayName: "Vegas Golden Knights",
+          },
+          stats: {
+            gamesPlayed: "3",
+            wins: "2",
+            losses: "1",
+            otLosses: "0",
+            pointDifferential: "+3",
+            points: "4",
+          },
+        },
+      ],
+    },
+  ],
+  marks: {
+    9: "assets/team-marks/9-28.c6ce1921.webp",
+    8: "assets/team-marks/8-28.a54c708f.webp",
+    7: "assets/team-marks/7-28.c7a38b52.webp",
+    6: "assets/team-marks/6-28.25d755cb.webp",
+    5: "assets/team-marks/5-28.373e370d.webp",
+    4: "assets/team-marks/4-28.68ff7df3.webp",
+    37: "assets/team-marks/37-28.1b50fce1.webp",
+    30: "assets/team-marks/30-28.3f10e69f.webp",
+    3: "assets/team-marks/3-28.cd7907ad.webp",
+    29: "assets/team-marks/29-28.2dc3b58c.webp",
+    28: "assets/team-marks/28-28.ecdfd90a.webp",
+    27: "assets/team-marks/27-28.7b64337b.webp",
+    26: "assets/team-marks/26-28.a1b78988.webp",
+    25: "assets/team-marks/25-28.abd55e00.webp",
+    23: "assets/team-marks/23-28.53e50590.webp",
+    22: "assets/team-marks/22-28.b47d024e.webp",
+    21: "assets/team-marks/21-28.b0a72ff2.webp",
+    20: "assets/team-marks/20-28.89b95512.webp",
+    2: "assets/team-marks/2-28.ebb65973.webp",
+    19: "assets/team-marks/19-28.65fb0025.webp",
+    18: "assets/team-marks/18-28.e077dad4.webp",
+    17: "assets/team-marks/17-28.73e3c355.webp",
+    16: "assets/team-marks/16-28.1ddf1716.webp",
+    15: "assets/team-marks/15-28.fd429ba8.webp",
+    14: "assets/team-marks/14-28.f5de1be9.webp",
+    13: "assets/team-marks/13-28.3cbec6ef.webp",
+    129764: "assets/team-marks/129764-28.c4c5ca81.webp",
+    124292: "assets/team-marks/124292-28.6037eefa.webp",
+    12: "assets/team-marks/12-28.741bb4bf.webp",
+    11: "assets/team-marks/11-28.21bae07f.webp",
+    10: "assets/team-marks/10-28.2288c70a.webp",
+    1: "assets/team-marks/1-28.85e93ec9.webp",
+  },
+  darkMarks: {
+    9: "assets/team-marks/9-dark-28.c6ce1921.webp",
+    8: "assets/team-marks/8-dark-28.a54c708f.webp",
+    5: "assets/team-marks/5-dark-28.373e370d.webp",
+    26: "assets/team-marks/26-dark-28.a1b78988.webp",
+    23: "assets/team-marks/23-dark-28.53e50590.webp",
+    22: "assets/team-marks/22-dark-28.b47d024e.webp",
+    21: "assets/team-marks/21-dark-28.b0a72ff2.webp",
+    20: "assets/team-marks/20-dark-28.89b95512.webp",
+    19: "assets/team-marks/19-dark-28.65fb0025.webp",
+    1: "assets/team-marks/1-dark-28.85e93ec9.webp",
+  },
+};

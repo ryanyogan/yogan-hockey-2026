@@ -467,3 +467,7 @@ The policy and the table are spec section 2; the code is `apps/web/lib/page-cach
 - The Next Game placeholder assumes the card. A team playing now gets the banner, which is taller and spans both columns, so that swap moves the tabs; a team with no next game gets nothing there.
 - After a final, the first visitor to each of the two teams' pages waits on ESPN (the tag was invalidated). The Scoreboard could read the team and schedule again after invalidating, which would hide it.
 - `e2e/favorites.spec.ts` failed once in a full run with a crashed page ("session closed") and passed alone.
+
+## Accepted navigation direction (2026-10-10, #99 checkpoint)
+
+- **The approved visual direction is saved in `docs/design/navigation-direction.md`**, with a self-contained sample under `prototypes/navigation-preview`. Run it with the Python command in its README; it needs no app dependencies. This supersedes the earlier sidebar/mobile-menu treatment for the forthcoming UI work, but is a design checkpoint only: production still needs implementation and review. The sample's AI picks are the existing seeded values from `lib/sample-picks.ts`, not live model outputs. Its hash router is not a production routing pattern; retain the shared server Shell and existing intent-prefetch Link.

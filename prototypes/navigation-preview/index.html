@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Yogan Hockey · Design preview</title>
+    <link
+      rel="preload"
+      href="assets/geist.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="assets/geist-mono.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script>
+      document.documentElement.dataset.theme =
+        localStorage.getItem("preview-theme") || "light";
+    </script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="wordmark" href="#home" aria-label="Yogan Hockey home"
+          >YOGAN<span>/</span>HOCKEY</a
+        >
+        <nav aria-label="Site">
+          <a href="#home">Home</a><a href="#live">Scores</a
+          ><a href="#standings">Standings</a><a href="#teams">Teams</a
+          ><a href="#players">Players</a>
+        </nav>
+        <button
+          id="theme"
+          class="icon-button"
+          aria-label="Switch to dark mode"
+          title="Switch theme"
+        >
+          <svg
+            class="moon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            aria-hidden="true"
+          >
+            <path d="M20.9 13A9 9 0 0 1 11 3.1 9 9 0 1 0 20.9 13Z" /></svg
+          ><svg
+            class="sun"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            aria-hidden="true"
+          >
+            <circle cx="12" cy="12" r="4" />
+            <path
+              d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"
+            />
+          </svg>
+        </button>
+      </div>
+    </header>
+    <div
+      class="container scoreboard ticker"
+      aria-label="All nine recorded games"
+    ></div>
+    <main class="container" id="content" tabindex="-1"></main>
+    <footer class="container">
+      <span>Scores and stats from ESPN.</span
+      ><span>Design preview · recorded October 6 data</span>
+    </footer>
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

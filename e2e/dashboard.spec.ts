@@ -8,7 +8,7 @@ const MATTHEWS = "4024123";
 
 type Slate = { games: { id: string; [field: string]: unknown }[]; [field: string]: unknown };
 
-test("the dashboard shows its games, favorites and standings, puts favorites first and follows the socket", async ({
+test("the dashboard keeps games in start order while favorites and live details update", async ({
   page,
 }) => {
   // The visitor already has a favorite team and a favorite player.
@@ -34,20 +34,27 @@ test("the dashboard shows its games, favorites and standings, puts favorites fir
 
   await page.goto("/");
   await expect(page).toHaveTitle("Dashboard · Yogan Hockey");
+  await expect(page.getByRole("heading", { name: "Games", exact: true })).toBeVisible();
 
-  // Tonight: every game of the slate, the favorite team's first and marked, each a link.
+  // Tonight: every game in start order, with favorites marked without being promoted.
   const tonight = page.getByRole("region", { name: "Tonight" });
   await expect(tonight.getByRole("heading")).toHaveText("Tonight 9 games");
   await expect(tonight.getByRole("row")).toHaveCount(10);
-  const first = tonight.getByRole("row").nth(1);
-  await expect(first).toContainText("NSH at TOR");
-  await expect(first).toContainText("favorite team");
-  await expect(first.locator('[data-slot="game-pick"]')).toHaveText("TOR 58%");
-  await expect(first.getByRole("cell").last()).toHaveText(
+  const toronto = tonight.getByRole("row").nth(2);
+  await expect(tonight.getByRole("row").nth(1)).toContainText("CAR at MTL");
+  await expect(tonight.getByRole("row").nth(1)).not.toContainText("favorite team");
+  await expect(toronto).toContainText("NSH at TOR");
+  await expect(toronto).toContainText("favorite team");
+  await expect(toronto.locator('[data-slot="game-pick"]')).toHaveText("TOR 58%");
+  await expect(toronto.getByRole("cell").last()).toHaveText(
     "Scotiabank Arena · ESPN+, Scripps Sports",
   );
-  await expect(first.getByRole("link")).toHaveAttribute("href", `/nhl/games/${GAME_ID}`);
-  await expect(tonight.getByRole("row").nth(2)).not.toContainText("favorite team");
+  await expect(toronto.getByRole("link")).toHaveAttribute("href", `/nhl/games/${GAME_ID}`);
+  await expect(toronto.locator("time")).toBeVisible();
+  const gameLinks = tonight.locator("tbody a");
+  const initialOrder = await gameLinks.evaluateAll((links) =>
+    links.map((link) => link.getAttribute("href")),
+  );
   await expect(tonight.getByRole("link", { name: "all scores" })).toHaveAttribute(
     "href",
     "/nhl/live",
@@ -85,13 +92,35 @@ test("the dashboard shows its games, favorites and standings, puts favorites fir
   if (!slate) throw new Error("no slate");
   pushState({
     ...slate,
-    games: slate.games.map((game) =>
-      game.id === GAME_ID ? { ...game, status: "live", period: 2, clock: "12:34" } : game,
-    ),
+    games: slate.games
+      .toReversed()
+      .map((game) =>
+        game.id === GAME_ID ? { ...game, status: "live", period: 2, clock: "12:34" } : game,
+      ),
   });
   await expect(tonight.getByRole("heading")).toHaveText("Tonight 9 games, 1 live");
-  await expect(first.getByRole("link")).toHaveText("NSH at TOR, live, 2nd 12:34");
-  await expect(first).toHaveAttribute("data-live", "");
+  await expect(toronto.getByRole("link")).toHaveText("NSH at TOR, live, 2nd 12:34");
+  await expect(toronto).toHaveAttribute("data-live", "");
+  await expect(toronto.locator('[data-slot="game-pick"]')).toHaveText("TOR 58%");
+  expect(
+    await gameLinks.evaluateAll((links) => links.map((link) => link.getAttribute("href"))),
+  ).toEqual(initialOrder);
   const live = matthews.getByRole("link", { name: "Auston Matthews's game, live now" });
   await expect(live).toHaveAttribute("href", `/nhl/games/${GAME_ID}`);
+
+  // A favorite change from another tab updates the marker, never the home row order.
+  await page.evaluate(() => {
+    localStorage.setItem("favorite_teams", "[]");
+    window.dispatchEvent(
+      new StorageEvent("storage", {
+        key: "favorite_teams",
+        newValue: "[]",
+        storageArea: localStorage,
+      }),
+    );
+  });
+  await expect(toronto).not.toContainText("favorite team");
+  expect(
+    await gameLinks.evaluateAll((links) => links.map((link) => link.getAttribute("href"))),
+  ).toEqual(initialOrder);
 });

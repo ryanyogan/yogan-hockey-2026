@@ -49,18 +49,47 @@ const SLATE = [
 
 const ids = (games: ScoreboardGame[]) => games.map((each) => each.id);
 
-test("tonight's games run from what is on, to what is to come, to what is over", () => {
-  expect(ids(tonightGames(SLATE, []))).toEqual(["live", "early", "late", "final", "off"]);
+test("tonight's games stay in scheduled start order regardless of their state", () => {
+  expect(ids(tonightGames(SLATE))).toEqual(["final", "live", "off", "early", "late"]);
 });
 
-test("a favorite team's game comes first, whatever its state", () => {
-  expect(ids(tonightGames(SLATE, ["VAN", "TB"]))).toEqual([
-    "late",
-    "final",
-    "live",
-    "early",
-    "off",
-  ]);
+test("live updates replace game details without moving a row", () => {
+  const before = [
+    game("1", "scheduled", ["TOR", "MTL"]),
+    game("2", "scheduled", ["EDM", "VAN"], "2026-10-07T02:00:00Z"),
+  ];
+  for (const status of ["live", "final", "postponed"] as const) {
+    const updated = before.map((each) => ({
+      ...each,
+      status: each.id === "2" ? status : each.status,
+      period: 2,
+      clock: "12:34",
+      home: { ...each.home, score: 3 },
+    }));
+    const sorted = tonightGames(updated);
+    expect(ids(sorted)).toEqual(ids(tonightGames(before)));
+    expect(sorted[1]).toBe(updated[1]);
+    expect(sorted[1]).toMatchObject({ status, period: 2, clock: "12:34", home: { score: 3 } });
+  }
+});
+
+test("equal-start games use their ids even when the feed arrives in another order", () => {
+  const tied = [
+    game("401892450", "scheduled", ["BOS", "NYR"]),
+    game("401892449", "scheduled", ["NSH", "TOR"]),
+    game("401892448", "scheduled", ["CAR", "MTL"]),
+  ];
+  expect(ids(tonightGames(tied))).toEqual(["401892448", "401892449", "401892450"]);
+  expect(ids(tonightGames(tied.toReversed()))).toEqual(ids(tonightGames(tied)));
+});
+
+test("sorting leaves the shared scoreboard array and its games untouched", () => {
+  const source = Object.freeze(SLATE.map((each) => Object.freeze({ ...each })));
+  const original = structuredClone(source);
+  const sorted = tonightGames(source);
+  expect(source).toEqual(original);
+  expect(sorted).not.toBe(source);
+  expect(sorted.every((each) => source.includes(each))).toBe(true);
 });
 
 test("the header counts the games and those in progress", () => {

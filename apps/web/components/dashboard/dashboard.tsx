@@ -66,7 +66,7 @@ export function Dashboard({
   return (
     <>
       <div className="page-heading">
-        <h1>Hockey, at a glance</h1>
+        <h1>Games</h1>
         <p>NHL</p>
       </div>
       <div className="dashboard-grid">

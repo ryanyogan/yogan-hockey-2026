@@ -1,5 +1,7 @@
 # Shared API and native app plan
 
+> **Superseded on 2026-10-11 by [#123](https://github.com/ryanyogan/yogan-hockey-2026/issues/123).** The React Native app and its Hono API are cancelled: the installed site (a PWA) is the mobile app, and ADR 0007's "no API" stands. Kept for its research on notifications and the socket contract; nothing below is a plan to build.
+
 Planning for [#110](https://github.com/ryanyogan/yogan-hockey-2026/issues/110). Research checked **2026-10-11** against official documentation and repository commit `838f0ce`. This is a proposed implementation sequence, not an implemented API or authorization to start it. No native app, auth provider, push delivery, or new backend is installed by this change.
 
 ## Recommendation and first release

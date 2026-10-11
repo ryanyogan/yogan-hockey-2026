@@ -12,6 +12,18 @@ _Avoid_: Featured player, family player
 The name the site and this project use for the younger Tracked Player. It is not his legal name, which leagues list him under and which is never written in this repo, its issues or the site (ADR 0005).
 _Avoid_: his legal surname, anywhere
 
+**Account**:
+A family member's sign-in to the site, by username and password. Ryan creates every Account; nobody can make their own.
+_Avoid_: User, profile, member
+
+**Favorite**:
+A player or a team an Account has marked with a heart. A Favorite belongs to the Account, so it is the same on every device; someone who is not signed in has none.
+_Avoid_: Follow, bookmark, subscription
+
+**Alert**:
+A push notification the site sends to an Account's devices. An Account asks for Alerts by putting a bell on a Favorite: a team's bell sends that team's goals and the finals of its games, a player's bell sends the goals he scores.
+_Avoid_: Notification, subscription, push
+
 **Game Stream**:
 The live play-by-play of one in-progress game, pushed to viewers as plays happen. It runs only while someone is watching that game.
 _Avoid_: Live feed, game feed

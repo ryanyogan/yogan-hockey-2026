@@ -69,6 +69,10 @@ test("the Replay opens laid out, plays, pauses, jumps to a tick, and follows the
     "goal",
   );
   await expect(rows.first()).toHaveAttribute("aria-pressed", "true");
+  // The goal is played on the ice: its line is drawn, in the goal's colour.
+  const drawn = rink.locator('[data-slot="rink-fx"]');
+  await expect(drawn).toHaveAttribute("data-kind", "goal");
+  await expect(drawn).toHaveCSS("opacity", "1");
   const keyRows = await rows.count();
   expect(keyRows).toBeLessThan(74);
 
@@ -95,6 +99,8 @@ test("the Replay opens laid out, plays, pauses, jumps to a tick, and follows the
   await page.getByRole("button", { name: "whole game" }).click();
   await expect(score).toHaveText([/DAL.*4/, /BUF.*3/]);
   await expect(status).toHaveText("Final/SO");
+  // Nothing of the last play stepped onto is left on the ice.
+  await expect(drawn).toHaveCSS("opacity", "0");
   await expect(page.getByRole("heading", { name: "Shootout" })).toBeVisible();
   await expect(page.locator('[data-slot="play-row"]')).toHaveCount(11);
 });

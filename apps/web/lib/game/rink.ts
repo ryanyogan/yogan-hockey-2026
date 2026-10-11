@@ -16,6 +16,10 @@ export const RINK = {
   circleX: 69,
   circleY: 22,
   circleRadius: 15,
+  /** The crease's radius about the middle of the goal line, and the net behind it. */
+  creaseRadius: 6,
+  netDepth: 3.4,
+  netHalfWidth: 3,
   /** Room left round the boards for their stroke. */
   margin: 2,
 } as const;

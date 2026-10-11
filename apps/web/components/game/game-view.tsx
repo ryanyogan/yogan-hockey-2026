@@ -100,8 +100,10 @@ export function GameView({
       <GameRink
         header={header}
         plays={game}
+        played={plays}
         drawn={shown}
         focus={focus}
+        picked={picked}
         status={status}
         notice={notice}
       />

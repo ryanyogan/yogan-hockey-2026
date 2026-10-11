@@ -1,12 +1,15 @@
+"use client";
+
 import type { GameHeader, GameHeaderSide, Play } from "@yogan-hockey/schemas";
 import { LiveMarker } from "@yogan-hockey/ui/components/marker";
-import type { ReactNode } from "react";
+import { type ReactNode, useRef } from "react";
 import { gameStatus, markKind, playTime } from "../../lib/game/plays";
 import { attackedEnd, type RinkEnd } from "../../lib/game/rink";
 import { periodLabel } from "../../lib/game/timeline";
 import { LocalTime } from "../local-time";
 import { TeamMark } from "../team-mark";
 import { Rink } from "./rink";
+import { RinkAnimations } from "./rink-animations";
 
 /*
  * Where the overlay sits, as fractions of the rink's width (`cqw`), so it keeps its place at any
@@ -176,24 +179,31 @@ function Caption({ play }: { play: Play }) {
 
 /**
  * The rink as the page: the ice filling the width, the score, shots and clock laid over it, and
- * the play in focus ringed and captioned.
+ * the play in focus ringed and captioned. Shots, saves and misses are played on the ice as they
+ * arrive, and when a play is picked (`RinkAnimations`).
  */
 export function GameRink({
   header,
   plays,
+  played = plays,
   drawn = plays,
   focus,
+  picked = false,
   status,
   notice,
 }: {
   /** Its score, shots, period and clock are what is laid over the ice. */
   header: GameHeader;
-  /** Every play so far: which end each team shoots at is read from them. */
+  /** Every play known: which end each team shoots at is read from them. */
   plays: readonly Play[];
+  /** The plays so far, where a Replay's playhead is short of the end. All of `plays` if left out. */
+  played?: readonly Play[];
   /** The plays to put a dot on: the Key plays, or every play. All of `plays` if left out. */
   drawn?: readonly Play[];
   /** The play to ring and caption. */
   focus: Play | null;
+  /** The focus was chosen, by a Replay's playhead or a click, and is not just the latest play. */
+  picked?: boolean;
   /** Words to put over centre ice in place of the period and clock ("End of 2nd"). */
   status?: string;
   /** A warning under the clock: "Updates delayed". */
@@ -204,10 +214,19 @@ export function GameRink({
   const period = focus?.period ?? Math.max(header.period, 1);
   const periodText = focus?.periodText || periodLabel(period, header.seasonType);
   const ends = { header, plays, period, periodText };
+  const rink = useRef<SVGSVGElement>(null);
   return (
     <div data-slot="game-rink" className="@container">
       <div className="relative">
-        <Rink plays={drawn} focus={focus} />
+        <Rink ref={rink} plays={drawn} focus={focus} />
+        <RinkAnimations
+          rink={rink}
+          game={plays}
+          plays={played}
+          homeTeamId={header.home.id}
+          focusId={focus?.id ?? null}
+          picked={picked}
+        />
         <div data-slot="rink-overlay" className="pointer-events-none absolute inset-0">
           <Score side={header.away} place="away" />
           <div data-slot="rink-status" className={STATUS_PLACE}>

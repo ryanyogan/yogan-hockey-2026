@@ -64,14 +64,60 @@ export function playRinkCue(
   };
 }
 
-/** One timeline per kind of `RinkAnimation`: the goal sequence and penalties add theirs here. */
+/** One timeline per kind of `RinkAnimation`: the goal sequence adds its own here. */
 function timelineFor(root: SVGSVGElement, animation: RinkAnimation): gsap.core.Timeline {
   switch (animation.kind) {
     case "goal":
     case "save":
     case "miss":
       return shot(root, animation);
+    case "penalty":
+      return whistle(root, animation);
   }
+}
+
+/**
+ * A penalty: the play's dot popping in where it was called and two short rings off it, a whistle
+ * blown. It ends as the dot alone. Who sits, and the power play, are the page's to draw
+ * (`penalty-box.tsx`, `rink.tsx`): they last as long as the penalty does, not as long as a cue.
+ */
+function whistle(root: SVGSVGElement, { playId, at }: Extract<RinkAnimation, { kind: "penalty" }>) {
+  const fx = root.querySelector('[data-slot="rink-fx"]');
+  const pulse = part(root, "pulse");
+  const timeline = gsap.timeline({ defaults: { ease: "power2.out" } });
+  if (!fx || !pulse) return timeline;
+  const dot = root.querySelector(`[data-slot="rink-mark"][data-play="${CSS.escape(playId)}"]`);
+
+  fx.setAttribute("data-kind", "penalty");
+  setAttributes(pulse, { cx: at.x, cy: at.y });
+  gsap.set(fx, { opacity: 1 });
+  gsap.set([part(root, "trail"), part(root, "puck"), part(root, "stop"), pulse], { opacity: 0 });
+
+  for (const start of [0, 0.22]) {
+    timeline.fromTo(
+      pulse,
+      { attr: { r: 1.5 }, opacity: 0.9, strokeWidth: 1 },
+      { attr: { r: 8 }, opacity: 0, strokeWidth: 0.2, duration: 0.45, immediateRender: false },
+      start,
+    );
+  }
+  if (dot) {
+    timeline.fromTo(
+      dot,
+      { scale: 0, svgOrigin: `${at.x} ${at.y}` },
+      { scale: 1, duration: 0.25, ease: "back.out(3)" },
+      0,
+    );
+    if (dot.hasAttribute("data-focused")) {
+      timeline.fromTo(
+        captions(root),
+        { opacity: 0, y: 6 },
+        { opacity: 1, y: 0, duration: 0.3 },
+        0.2,
+      );
+    }
+  }
+  return timeline;
 }
 
 /**
@@ -79,7 +125,10 @@ function timelineFor(root: SVGSVGElement, animation: RinkAnimation): gsap.core.T
  * A goal's reaches the net. A save's stops at the crease, with a bar across it, one ring, and the
  * crease lit. A miss's runs wide to the boards, where the puck goes and the line fades back.
  */
-function shot(root: SVGSVGElement, { kind, playId, end, from, to, distance }: RinkAnimation) {
+function shot(
+  root: SVGSVGElement,
+  { kind, playId, end, from, to, distance }: Exclude<RinkAnimation, { kind: "penalty" }>,
+) {
   const fx = root.querySelector('[data-slot="rink-fx"]');
   const [trail, puck, stop, pulse] = [
     part(root, "trail"),

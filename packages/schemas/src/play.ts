@@ -44,6 +44,12 @@ export const PlaySchema = z.object({
   scoring: z.boolean(),
   /** The play is a penalty. ESPN has one type per infraction, so the type alone does not say. */
   penalty: z.boolean(),
+  /**
+   * The minutes ESPN records against a penalty: 2 for a minor, 4 for a double minor, 5 for a
+   * major, 10 for a misconduct. Absent on a play that is not a penalty, and on a penalty stored
+   * before the site kept them.
+   */
+  penaltyMinutes: z.number().nonnegative().optional(),
   /** The score once the play has happened. */
   homeScore: z.number().int().nonnegative(),
   awayScore: z.number().int().nonnegative(),

@@ -1,29 +1,53 @@
 "use client";
 
-import { navItemVariants } from "@yogan-hockey/ui/components/nav-item";
+import { navItemVariants, tabBarItemVariants } from "@yogan-hockey/ui/components/nav-item";
 import { usePathname, useSearchParams } from "next/navigation";
-import { currentNavItem, NAV_ITEMS } from "../../lib/nav";
+import { Suspense } from "react";
+import { currentNavItem, NAV_ITEMS, type NavItem, navItemByPathAlone } from "../../lib/nav";
 import { Link } from "../link";
 
-type NavLinksProps = {
-  /** `touch` gives each link a row tall enough for a thumb. */
-  size?: "default" | "touch";
-  /** Called when a link is followed, so the phone menu can close. */
-  onNavigate?: () => void;
-};
+const VARIANTS = { sidebar: navItemVariants, tabBar: tabBarItemVariants };
 
-/** The site's places as links, the current one marked. A client component only to know the path. */
-export function NavLinks({ size = "default", onNavigate }: NavLinksProps) {
-  const current = currentNavItem(usePathname(), useSearchParams().get("tab"));
+type Variant = keyof typeof VARIANTS;
+
+function Links({ variant, current }: { variant: Variant; current: NavItem | undefined }) {
   return NAV_ITEMS.map((item) => (
     <Link
       key={item.href}
       href={item.href}
       aria-current={item === current ? "page" : undefined}
-      className={navItemVariants({ current: item === current, size })}
-      onClick={onNavigate}
+      className={VARIANTS[variant]({ current: item === current })}
     >
       {item.label}
     </Link>
   ));
+}
+
+function LinksByQuery({ variant }: { variant: Variant }) {
+  return (
+    <Links
+      variant={variant}
+      current={currentNavItem(usePathname(), useSearchParams().get("tab"))}
+    />
+  );
+}
+
+function LinksByPath({ variant }: { variant: Variant }) {
+  return <Links variant={variant} current={navItemByPathAlone(usePathname())} />;
+}
+
+/**
+ * The site's places as links, the current one marked: down the desktop sidebar, or across the
+ * phone's tab bar. A client component only to know the address.
+ *
+ * Reading the query string suspends while the server renders, until it knows whether the page is
+ * static, and what suspends is sent after the page. So the links are drawn at once from the path,
+ * which settles the place everywhere but on `/nhl`, and again when the query is known.
+ */
+export function NavLinks({ variant = "sidebar" }: { variant?: Variant }) {
+  return (
+    <Suspense fallback={<LinksByPath variant={variant} />}>
+      <LinksByQuery variant={variant} />
+    </Suspense>
+  );
 }

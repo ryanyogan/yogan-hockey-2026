@@ -11,7 +11,7 @@ const buttonVariants = cva(
       variant: {
         default: "bg-primary text-primary-foreground hover:bg-primary/80",
         outline: "border-rule hover:bg-highlight",
-        /** Reads as text until hovered: the theme toggle, the menu button. */
+        /** Reads as text until hovered: the theme toggle. */
         ghost: "text-note hover:text-foreground",
       },
       size: {
@@ -19,8 +19,6 @@ const buttonVariants = cva(
         sm: "h-6 px-2",
         /** No box of its own: sits on a line of text. */
         inline: "min-h-6 px-0",
-        /** Reads as text and takes a thumb: a button in the phone's top bar, 44px tall. */
-        touch: "min-h-11 px-2",
       },
     },
     defaultVariants: {

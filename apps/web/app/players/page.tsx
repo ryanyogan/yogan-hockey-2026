@@ -21,7 +21,7 @@ export default async function PlayersPage({
     <>
       <Section>
         <SectionHeader title="Players" count="search the NHL">
-          <Link href="/nhl?tab=teams" className="underline">
+          <Link href="/nhl?tab=teams" className="tap-target underline">
             or browse a team's roster
           </Link>
         </SectionHeader>

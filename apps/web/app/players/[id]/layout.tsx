@@ -56,7 +56,7 @@ export default async function PlayerLayout({ params, children }: Props) {
       )}
       {profile.team && <TeamSection team={profile.team} />}
       <p className="px-2">
-        <Link href="/players" className="underline">
+        <Link href="/players" className="tap-target underline">
           back to players
         </Link>
       </p>

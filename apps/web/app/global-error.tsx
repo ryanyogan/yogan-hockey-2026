@@ -27,12 +27,12 @@ export default function GlobalError() {
               <button
                 type="button"
                 onClick={() => window.location.reload()}
-                className="cursor-pointer font-strong underline"
+                className="tap-target cursor-pointer font-strong underline"
               >
                 Try again
               </button>{" "}
               or go to{" "}
-              <a href="/" className="font-strong underline">
+              <a href="/" className="tap-target font-strong underline">
                 tonight
               </a>
               .

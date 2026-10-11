@@ -1,0 +1,3156 @@
+{
+  "baseURL": "http://localhost:5323",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "minimum": 44,
+  "exempt": {
+    "timeline-tick": "A game's plays on a line 358px long: a hundred of them cannot each be 44px wide. The Replay's step buttons and the plays list's rows pick the same plays."
+  },
+  "measuredAt": "2026-10-11T21:31:35.086Z",
+  "pages": [
+    {
+      "route": "home",
+      "path": "/",
+      "state": "as it loads",
+      "controls": 50,
+      "exempt": 0,
+      "narrowest": 45,
+      "shortest": 44,
+      "shell": {
+        "places": [
+          "Home",
+          "Scores",
+          "Standings",
+          "Teams",
+          "Players"
+        ],
+        "current": [
+          "Home"
+        ],
+        "barTop": 788,
+        "barHeight": 56,
+        "viewportHeight": 844,
+        "footerTextBottom": 776,
+        "menuButtons": 0,
+        "dialogs": 0,
+        "sidebarShown": false,
+        "overflow": 0,
+        "scrollingTables": 0,
+        "stripBottom": 100
+      },
+      "small": [],
+      "kinds": [
+        {
+          "within": "header",
+          "slot": null,
+          "tag": "a",
+          "size": "109x44",
+          "count": 1,
+          "example": "YOGAN/HOCKEY"
+        },
+        {
+          "within": "header",
+          "slot": "button",
+          "tag": "button",
+          "size": "98x44",
+          "count": 1,
+          "example": "dark modelight mode"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "a",
+          "size": "70.5x55",
+          "count": 1,
+          "example": "scores"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "a",
+          "size": "89x55",
+          "count": 9,
+          "example": "★ favorite team, NSH@atTOR6:00 PM"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "button",
+          "size": "47.5x55",
+          "count": 1,
+          "example": "All 9 games+6"
+        },
+        {
+          "within": "main",
+          "slot": "section-aside",
+          "tag": "a",
+          "size": "91x45",
+          "count": 1,
+          "example": "all scores"
+        },
+        {
+          "within": "main",
+          "slot": "ledger-cell",
+          "tag": "a",
+          "size": "359x55",
+          "count": 9,
+          "example": "CAR at MTL, 6:00 PM"
+        },
+        {
+          "within": "main",
+          "slot": "section-aside",
+          "tag": "a",
+          "size": "100x45",
+          "count": 1,
+          "example": "all players"
+        },
+        {
+          "within": "main",
+          "slot": "ledger-cell",
+          "tag": "a",
+          "size": "314x61",
+          "count": 1,
+          "example": "Auston Matthews"
+        },
+        {
+          "within": "main",
+          "slot": "heart-button",
+          "tag": "button",
+          "size": "45x45",
+          "count": 1,
+          "example": "Favorite Auston Matthews"
+        },
+        {
+          "within": "main",
+          "slot": "section-aside",
+          "tag": "a",
+          "size": "127x45",
+          "count": 2,
+          "example": "full standings"
+        },
+        {
+          "within": "main",
+          "slot": "ledger-cell",
+          "tag": "a",
+          "size": "359x45",
+          "count": 16,
+          "example": "New York Rangers"
+        },
+        {
+          "within": "footer",
+          "slot": null,
+          "tag": "a",
+          "size": "45x45",
+          "count": 1,
+          "example": "ESPN"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "77.5x55.5",
+          "count": 1,
+          "example": "Home"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "78x55.5",
+          "count": 3,
+          "example": "Scores"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "78.5x55.5",
+          "count": 1,
+          "example": "Players"
+        }
+      ],
+      "failed": []
+    },
+    {
+      "route": "home",
+      "path": "/",
+      "state": "the whole slate open",
+      "controls": 59,
+      "exempt": 0,
+      "narrowest": 45,
+      "shortest": 44,
+      "shell": {
+        "places": [
+          "Home",
+          "Scores",
+          "Standings",
+          "Teams",
+          "Players"
+        ],
+        "current": [
+          "Home"
+        ],
+        "barTop": 788,
+        "barHeight": 56,
+        "viewportHeight": 844,
+        "footerTextBottom": 776,
+        "menuButtons": 0,
+        "dialogs": 0,
+        "sidebarShown": false,
+        "overflow": 0,
+        "scrollingTables": 0,
+        "stripBottom": 505
+      },
+      "small": [],
+      "kinds": [
+        {
+          "within": "header",
+          "slot": null,
+          "tag": "a",
+          "size": "109x44",
+          "count": 1,
+          "example": "YOGAN/HOCKEY"
+        },
+        {
+          "within": "header",
+          "slot": "button",
+          "tag": "button",
+          "size": "98x44",
+          "count": 1,
+          "example": "dark modelight mode"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "a",
+          "size": "70.5x55",
+          "count": 1,
+          "example": "scores"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "a",
+          "size": "89x55",
+          "count": 9,
+          "example": "★ favorite team, NSH@atTOR6:00 PM"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "button",
+          "size": "47.5x55",
+          "count": 1,
+          "example": "Close the slate"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "a",
+          "size": "389.5x45",
+          "count": 9,
+          "example": "★ favorite team, NSH@atTOR6:00 PM"
+        },
+        {
+          "within": "main",
+          "slot": "section-aside",
+          "tag": "a",
+          "size": "91x45",
+          "count": 1,
+          "example": "all scores"
+        },
+        {
+          "within": "main",
+          "slot": "ledger-cell",
+          "tag": "a",
+          "size": "359x55",
+          "count": 9,
+          "example": "CAR at MTL, 6:00 PM"
+        },
+        {
+          "within": "main",
+          "slot": "section-aside",
+          "tag": "a",
+          "size": "100x45",
+          "count": 1,
+          "example": "all players"
+        },
+        {
+          "within": "main",
+          "slot": "ledger-cell",
+          "tag": "a",
+          "size": "314x61",
+          "count": 1,
+          "example": "Auston Matthews"
+        },
+        {
+          "within": "main",
+          "slot": "heart-button",
+          "tag": "button",
+          "size": "45x45",
+          "count": 1,
+          "example": "Favorite Auston Matthews"
+        },
+        {
+          "within": "main",
+          "slot": "section-aside",
+          "tag": "a",
+          "size": "127x45",
+          "count": 2,
+          "example": "full standings"
+        },
+        {
+          "within": "main",
+          "slot": "ledger-cell",
+          "tag": "a",
+          "size": "359x45",
+          "count": 16,
+          "example": "New York Rangers"
+        },
+        {
+          "within": "footer",
+          "slot": null,
+          "tag": "a",
+          "size": "45x45",
+          "count": 1,
+          "example": "ESPN"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "77.5x55.5",
+          "count": 1,
+          "example": "Home"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "78x55.5",
+          "count": 3,
+          "example": "Scores"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "78.5x55.5",
+          "count": 1,
+          "example": "Players"
+        }
+      ],
+      "failed": []
+    },
+    {
+      "route": "scores",
+      "path": "/nhl/live",
+      "state": "as it loads",
+      "controls": 28,
+      "exempt": 0,
+      "narrowest": 45,
+      "shortest": 44,
+      "shell": {
+        "places": [
+          "Home",
+          "Scores",
+          "Standings",
+          "Teams",
+          "Players"
+        ],
+        "current": [
+          "Scores"
+        ],
+        "barTop": 788,
+        "barHeight": 56,
+        "viewportHeight": 844,
+        "footerTextBottom": 776,
+        "menuButtons": 0,
+        "dialogs": 0,
+        "sidebarShown": false,
+        "overflow": 0,
+        "scrollingTables": 0,
+        "stripBottom": 100
+      },
+      "small": [],
+      "kinds": [
+        {
+          "within": "header",
+          "slot": null,
+          "tag": "a",
+          "size": "109x44",
+          "count": 1,
+          "example": "YOGAN/HOCKEY"
+        },
+        {
+          "within": "header",
+          "slot": "button",
+          "tag": "button",
+          "size": "98x44",
+          "count": 1,
+          "example": "dark modelight mode"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "a",
+          "size": "70.5x55",
+          "count": 1,
+          "example": "scores"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "a",
+          "size": "89x55",
+          "count": 9,
+          "example": "★ favorite team, NSH@atTOR6:00 PM"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "button",
+          "size": "47.5x55",
+          "count": 1,
+          "example": "All 9 games+6"
+        },
+        {
+          "within": "main",
+          "slot": "ledger-cell",
+          "tag": "a",
+          "size": "359x55",
+          "count": 9,
+          "example": "NSH at TOR, 6:00 PM"
+        },
+        {
+          "within": "footer",
+          "slot": null,
+          "tag": "a",
+          "size": "45x45",
+          "count": 1,
+          "example": "ESPN"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "77.5x55.5",
+          "count": 1,
+          "example": "Home"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "78x55.5",
+          "count": 3,
+          "example": "Scores"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "78.5x55.5",
+          "count": 1,
+          "example": "Players"
+        }
+      ],
+      "failed": []
+    },
+    {
+      "route": "standings",
+      "path": "/nhl",
+      "state": "as it loads",
+      "controls": 57,
+      "exempt": 0,
+      "narrowest": 45,
+      "shortest": 44,
+      "shell": {
+        "places": [
+          "Home",
+          "Scores",
+          "Standings",
+          "Teams",
+          "Players"
+        ],
+        "current": [
+          "Standings"
+        ],
+        "barTop": 788,
+        "barHeight": 56,
+        "viewportHeight": 844,
+        "footerTextBottom": 776,
+        "menuButtons": 0,
+        "dialogs": 0,
+        "sidebarShown": false,
+        "overflow": 0,
+        "scrollingTables": 0,
+        "stripBottom": 100
+      },
+      "small": [],
+      "kinds": [
+        {
+          "within": "header",
+          "slot": null,
+          "tag": "a",
+          "size": "109x44",
+          "count": 1,
+          "example": "YOGAN/HOCKEY"
+        },
+        {
+          "within": "header",
+          "slot": "button",
+          "tag": "button",
+          "size": "98x44",
+          "count": 1,
+          "example": "dark modelight mode"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "a",
+          "size": "70.5x55",
+          "count": 1,
+          "example": "scores"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "a",
+          "size": "89x55",
+          "count": 9,
+          "example": "★ favorite team, NSH@atTOR6:00 PM"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "button",
+          "size": "47.5x55",
+          "count": 1,
+          "example": "All 9 games+6"
+        },
+        {
+          "within": "nav",
+          "slot": "url-tabs",
+          "tag": "a",
+          "size": "193.5x45",
+          "count": 1,
+          "example": "standings"
+        },
+        {
+          "within": "nav",
+          "slot": "url-tabs",
+          "tag": "a",
+          "size": "163.5x45",
+          "count": 1,
+          "example": "teams"
+        },
+        {
+          "within": "nav",
+          "slot": "url-tabs",
+          "tag": "a",
+          "size": "86.2x45",
+          "count": 1,
+          "example": "division"
+        },
+        {
+          "within": "nav",
+          "slot": "url-tabs",
+          "tag": "a",
+          "size": "103.2x45",
+          "count": 1,
+          "example": "conference"
+        },
+        {
+          "within": "nav",
+          "slot": "url-tabs",
+          "tag": "a",
+          "size": "95.2x45",
+          "count": 1,
+          "example": "wild card"
+        },
+        {
+          "within": "nav",
+          "slot": "url-tabs",
+          "tag": "a",
+          "size": "72.2x45",
+          "count": 1,
+          "example": "league"
+        },
+        {
+          "within": "main",
+          "slot": "ledger-cell",
+          "tag": "a",
+          "size": "359x45",
+          "count": 32,
+          "example": "OTTOttawa Senators"
+        },
+        {
+          "within": "footer",
+          "slot": null,
+          "tag": "a",
+          "size": "45x45",
+          "count": 1,
+          "example": "ESPN"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "77.5x55.5",
+          "count": 1,
+          "example": "Home"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "78x55.5",
+          "count": 3,
+          "example": "Scores"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "78.5x55.5",
+          "count": 1,
+          "example": "Players"
+        }
+      ],
+      "failed": []
+    },
+    {
+      "route": "teams",
+      "path": "/nhl?tab=teams",
+      "state": "as it loads",
+      "controls": 53,
+      "exempt": 0,
+      "narrowest": 45,
+      "shortest": 44,
+      "shell": {
+        "places": [
+          "Home",
+          "Scores",
+          "Standings",
+          "Teams",
+          "Players"
+        ],
+        "current": [
+          "Teams"
+        ],
+        "barTop": 788,
+        "barHeight": 56,
+        "viewportHeight": 844,
+        "footerTextBottom": 776,
+        "menuButtons": 0,
+        "dialogs": 0,
+        "sidebarShown": false,
+        "overflow": 0,
+        "scrollingTables": 0,
+        "stripBottom": 100
+      },
+      "small": [],
+      "kinds": [
+        {
+          "within": "header",
+          "slot": null,
+          "tag": "a",
+          "size": "109x44",
+          "count": 1,
+          "example": "YOGAN/HOCKEY"
+        },
+        {
+          "within": "header",
+          "slot": "button",
+          "tag": "button",
+          "size": "98x44",
+          "count": 1,
+          "example": "dark modelight mode"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "a",
+          "size": "70.5x55",
+          "count": 1,
+          "example": "scores"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "a",
+          "size": "89x55",
+          "count": 9,
+          "example": "★ favorite team, NSH@atTOR6:00 PM"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "button",
+          "size": "47.5x55",
+          "count": 1,
+          "example": "All 9 games+6"
+        },
+        {
+          "within": "nav",
+          "slot": "url-tabs",
+          "tag": "a",
+          "size": "193.5x45",
+          "count": 1,
+          "example": "standings"
+        },
+        {
+          "within": "nav",
+          "slot": "url-tabs",
+          "tag": "a",
+          "size": "163.5x45",
+          "count": 1,
+          "example": "teams"
+        },
+        {
+          "within": "main",
+          "slot": "ledger-cell",
+          "tag": "a",
+          "size": "359x45",
+          "count": 32,
+          "example": "Anaheim Ducks"
+        },
+        {
+          "within": "footer",
+          "slot": null,
+          "tag": "a",
+          "size": "45x45",
+          "count": 1,
+          "example": "ESPN"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "77.5x55.5",
+          "count": 1,
+          "example": "Home"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "78x55.5",
+          "count": 3,
+          "example": "Scores"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "78.5x55.5",
+          "count": 1,
+          "example": "Players"
+        }
+      ],
+      "failed": []
+    },
+    {
+      "route": "team",
+      "path": "/nhl/teams/21",
+      "state": "as it loads",
+      "controls": 111,
+      "exempt": 0,
+      "narrowest": 45,
+      "shortest": 44,
+      "shell": {
+        "places": [
+          "Home",
+          "Scores",
+          "Standings",
+          "Teams",
+          "Players"
+        ],
+        "current": [
+          "Teams"
+        ],
+        "barTop": 788,
+        "barHeight": 56,
+        "viewportHeight": 844,
+        "footerTextBottom": 776,
+        "menuButtons": 0,
+        "dialogs": 0,
+        "sidebarShown": false,
+        "overflow": 0,
+        "scrollingTables": 0,
+        "stripBottom": 100
+      },
+      "small": [],
+      "kinds": [
+        {
+          "within": "header",
+          "slot": null,
+          "tag": "a",
+          "size": "109x44",
+          "count": 1,
+          "example": "YOGAN/HOCKEY"
+        },
+        {
+          "within": "header",
+          "slot": "button",
+          "tag": "button",
+          "size": "98x44",
+          "count": 1,
+          "example": "dark modelight mode"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "a",
+          "size": "70.5x55",
+          "count": 1,
+          "example": "scores"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "a",
+          "size": "89x55",
+          "count": 9,
+          "example": "★ favorite team, NSH@atTOR6:00 PM"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "button",
+          "size": "47.5x55",
+          "count": 1,
+          "example": "All 9 games+6"
+        },
+        {
+          "within": "main",
+          "slot": "heart-button",
+          "tag": "button",
+          "size": "45x45",
+          "count": 1,
+          "example": "Favorite Toronto Maple Leafs"
+        },
+        {
+          "within": "main",
+          "slot": "ledger-cell",
+          "tag": "a",
+          "size": "359x45",
+          "count": 85,
+          "example": "Tue Oct 6"
+        },
+        {
+          "within": "nav",
+          "slot": "url-tabs",
+          "tag": "a",
+          "size": "131.3x45",
+          "count": 1,
+          "example": "schedule"
+        },
+        {
+          "within": "nav",
+          "slot": "url-tabs",
+          "tag": "a",
+          "size": "116.3x45",
+          "count": 1,
+          "example": "roster"
+        },
+        {
+          "within": "nav",
+          "slot": "url-tabs",
+          "tag": "a",
+          "size": "109.3x45",
+          "count": 1,
+          "example": "stats"
+        },
+        {
+          "within": "main",
+          "slot": "section-aside",
+          "tag": "a",
+          "size": "64x45",
+          "count": 1,
+          "example": "results"
+        },
+        {
+          "within": "main",
+          "slot": "section-aside",
+          "tag": "a",
+          "size": "73x45",
+          "count": 1,
+          "example": "upcoming"
+        },
+        {
+          "within": "main",
+          "slot": null,
+          "tag": "a",
+          "size": "100x45",
+          "count": 1,
+          "example": "back to NHL"
+        },
+        {
+          "within": "footer",
+          "slot": null,
+          "tag": "a",
+          "size": "45x45",
+          "count": 1,
+          "example": "ESPN"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "77.5x55.5",
+          "count": 1,
+          "example": "Home"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "78x55.5",
+          "count": 3,
+          "example": "Scores"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "78.5x55.5",
+          "count": 1,
+          "example": "Players"
+        }
+      ],
+      "failed": []
+    },
+    {
+      "route": "roster",
+      "path": "/nhl/teams/21/roster",
+      "state": "as it loads",
+      "controls": 73,
+      "exempt": 0,
+      "narrowest": 45,
+      "shortest": 44,
+      "shell": {
+        "places": [
+          "Home",
+          "Scores",
+          "Standings",
+          "Teams",
+          "Players"
+        ],
+        "current": [
+          "Teams"
+        ],
+        "barTop": 788,
+        "barHeight": 56,
+        "viewportHeight": 844,
+        "footerTextBottom": 776.375,
+        "menuButtons": 0,
+        "dialogs": 0,
+        "sidebarShown": false,
+        "overflow": 0,
+        "scrollingTables": 0,
+        "stripBottom": 100
+      },
+      "small": [],
+      "kinds": [
+        {
+          "within": "header",
+          "slot": null,
+          "tag": "a",
+          "size": "109x44",
+          "count": 1,
+          "example": "YOGAN/HOCKEY"
+        },
+        {
+          "within": "header",
+          "slot": "button",
+          "tag": "button",
+          "size": "98x44",
+          "count": 1,
+          "example": "dark modelight mode"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "a",
+          "size": "70.5x55",
+          "count": 1,
+          "example": "scores"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "a",
+          "size": "89x55",
+          "count": 9,
+          "example": "★ favorite team, NSH@atTOR6:00 PM"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "button",
+          "size": "47.5x55",
+          "count": 1,
+          "example": "All 9 games+6"
+        },
+        {
+          "within": "main",
+          "slot": "heart-button",
+          "tag": "button",
+          "size": "45x45",
+          "count": 25,
+          "example": "Favorite Toronto Maple Leafs"
+        },
+        {
+          "within": "main",
+          "slot": "ledger-cell",
+          "tag": "a",
+          "size": "359x45",
+          "count": 1,
+          "example": "Tue Oct 6"
+        },
+        {
+          "within": "nav",
+          "slot": "url-tabs",
+          "tag": "a",
+          "size": "131.3x45",
+          "count": 1,
+          "example": "schedule"
+        },
+        {
+          "within": "nav",
+          "slot": "url-tabs",
+          "tag": "a",
+          "size": "116.3x45",
+          "count": 1,
+          "example": "roster"
+        },
+        {
+          "within": "nav",
+          "slot": "url-tabs",
+          "tag": "a",
+          "size": "109.3x45",
+          "count": 1,
+          "example": "stats"
+        },
+        {
+          "within": "main",
+          "slot": "ledger-cell",
+          "tag": "a",
+          "size": "314x45",
+          "count": 24,
+          "example": "Nick Blankenburg"
+        },
+        {
+          "within": "main",
+          "slot": null,
+          "tag": "a",
+          "size": "100x45",
+          "count": 1,
+          "example": "back to NHL"
+        },
+        {
+          "within": "footer",
+          "slot": null,
+          "tag": "a",
+          "size": "45x45",
+          "count": 1,
+          "example": "ESPN"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "77.5x55.5",
+          "count": 1,
+          "example": "Home"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "78x55.5",
+          "count": 3,
+          "example": "Scores"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "78.5x55.5",
+          "count": 1,
+          "example": "Players"
+        }
+      ],
+      "failed": []
+    },
+    {
+      "route": "stats",
+      "path": "/nhl/teams/21/stats",
+      "state": "as it loads",
+      "controls": 25,
+      "exempt": 0,
+      "narrowest": 45,
+      "shortest": 44,
+      "shell": {
+        "places": [
+          "Home",
+          "Scores",
+          "Standings",
+          "Teams",
+          "Players"
+        ],
+        "current": [
+          "Teams"
+        ],
+        "barTop": 788,
+        "barHeight": 56,
+        "viewportHeight": 844,
+        "footerTextBottom": 776,
+        "menuButtons": 0,
+        "dialogs": 0,
+        "sidebarShown": false,
+        "overflow": 0,
+        "scrollingTables": 0,
+        "stripBottom": 100
+      },
+      "small": [],
+      "kinds": [
+        {
+          "within": "header",
+          "slot": null,
+          "tag": "a",
+          "size": "109x44",
+          "count": 1,
+          "example": "YOGAN/HOCKEY"
+        },
+        {
+          "within": "header",
+          "slot": "button",
+          "tag": "button",
+          "size": "98x44",
+          "count": 1,
+          "example": "dark modelight mode"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "a",
+          "size": "70.5x55",
+          "count": 1,
+          "example": "scores"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "a",
+          "size": "89x55",
+          "count": 9,
+          "example": "★ favorite team, NSH@atTOR6:00 PM"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "button",
+          "size": "47.5x55",
+          "count": 1,
+          "example": "All 9 games+6"
+        },
+        {
+          "within": "main",
+          "slot": "heart-button",
+          "tag": "button",
+          "size": "45x45",
+          "count": 1,
+          "example": "Favorite Toronto Maple Leafs"
+        },
+        {
+          "within": "main",
+          "slot": "ledger-cell",
+          "tag": "a",
+          "size": "359x45",
+          "count": 1,
+          "example": "Tue Oct 6"
+        },
+        {
+          "within": "nav",
+          "slot": "url-tabs",
+          "tag": "a",
+          "size": "131.3x45",
+          "count": 1,
+          "example": "schedule"
+        },
+        {
+          "within": "nav",
+          "slot": "url-tabs",
+          "tag": "a",
+          "size": "116.3x45",
+          "count": 1,
+          "example": "roster"
+        },
+        {
+          "within": "nav",
+          "slot": "url-tabs",
+          "tag": "a",
+          "size": "109.3x45",
+          "count": 1,
+          "example": "stats"
+        },
+        {
+          "within": "main",
+          "slot": null,
+          "tag": "a",
+          "size": "100x45",
+          "count": 1,
+          "example": "back to NHL"
+        },
+        {
+          "within": "footer",
+          "slot": null,
+          "tag": "a",
+          "size": "45x45",
+          "count": 1,
+          "example": "ESPN"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "77.5x55.5",
+          "count": 1,
+          "example": "Home"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "78x55.5",
+          "count": 3,
+          "example": "Scores"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "78.5x55.5",
+          "count": 1,
+          "example": "Players"
+        }
+      ],
+      "failed": []
+    },
+    {
+      "route": "players",
+      "path": "/players",
+      "state": "as it loads",
+      "controls": 23,
+      "exempt": 0,
+      "narrowest": 45,
+      "shortest": 44,
+      "shell": {
+        "places": [
+          "Home",
+          "Scores",
+          "Standings",
+          "Teams",
+          "Players"
+        ],
+        "current": [
+          "Players"
+        ],
+        "barTop": 788,
+        "barHeight": 56,
+        "viewportHeight": 844,
+        "footerTextBottom": 776,
+        "menuButtons": 0,
+        "dialogs": 0,
+        "sidebarShown": false,
+        "overflow": 0,
+        "scrollingTables": 0,
+        "stripBottom": 100
+      },
+      "small": [],
+      "kinds": [
+        {
+          "within": "header",
+          "slot": null,
+          "tag": "a",
+          "size": "109x44",
+          "count": 1,
+          "example": "YOGAN/HOCKEY"
+        },
+        {
+          "within": "header",
+          "slot": "button",
+          "tag": "button",
+          "size": "98x44",
+          "count": 1,
+          "example": "dark modelight mode"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "a",
+          "size": "70.5x55",
+          "count": 1,
+          "example": "scores"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "a",
+          "size": "89x55",
+          "count": 9,
+          "example": "★ favorite team, NSH@atTOR6:00 PM"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "button",
+          "size": "47.5x55",
+          "count": 1,
+          "example": "All 9 games+6"
+        },
+        {
+          "within": "main",
+          "slot": "section-aside",
+          "tag": "a",
+          "size": "226x45",
+          "count": 1,
+          "example": "or browse a team's roster"
+        },
+        {
+          "within": "main",
+          "slot": "section",
+          "tag": "label",
+          "size": "343x69",
+          "count": 1,
+          "example": "player name"
+        },
+        {
+          "within": "main",
+          "slot": "ledger-cell",
+          "tag": "a",
+          "size": "313.6x61",
+          "count": 1,
+          "example": "Auston Matthews"
+        },
+        {
+          "within": "main",
+          "slot": "heart-button",
+          "tag": "button",
+          "size": "45x45",
+          "count": 1,
+          "example": "Favorite Auston Matthews"
+        },
+        {
+          "within": "footer",
+          "slot": null,
+          "tag": "a",
+          "size": "45x45",
+          "count": 1,
+          "example": "ESPN"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "77.5x55.5",
+          "count": 1,
+          "example": "Home"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "78x55.5",
+          "count": 3,
+          "example": "Scores"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "78.5x55.5",
+          "count": 1,
+          "example": "Players"
+        }
+      ],
+      "failed": []
+    },
+    {
+      "route": "players",
+      "path": "/players",
+      "state": "search results",
+      "controls": 23,
+      "exempt": 0,
+      "narrowest": 45,
+      "shortest": 44,
+      "shell": {
+        "places": [
+          "Home",
+          "Scores",
+          "Standings",
+          "Teams",
+          "Players"
+        ],
+        "current": [
+          "Players"
+        ],
+        "barTop": 788,
+        "barHeight": 56,
+        "viewportHeight": 844,
+        "footerTextBottom": 776,
+        "menuButtons": 0,
+        "dialogs": 0,
+        "sidebarShown": false,
+        "overflow": 0,
+        "scrollingTables": 0,
+        "stripBottom": 100
+      },
+      "small": [],
+      "kinds": [
+        {
+          "within": "header",
+          "slot": null,
+          "tag": "a",
+          "size": "109x44",
+          "count": 1,
+          "example": "YOGAN/HOCKEY"
+        },
+        {
+          "within": "header",
+          "slot": "button",
+          "tag": "button",
+          "size": "98x44",
+          "count": 1,
+          "example": "dark modelight mode"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "a",
+          "size": "70.5x55",
+          "count": 1,
+          "example": "scores"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "a",
+          "size": "89x55",
+          "count": 9,
+          "example": "★ favorite team, NSH@atTOR6:00 PM"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "button",
+          "size": "47.5x55",
+          "count": 1,
+          "example": "All 9 games+6"
+        },
+        {
+          "within": "main",
+          "slot": "section-aside",
+          "tag": "a",
+          "size": "226x45",
+          "count": 1,
+          "example": "or browse a team's roster"
+        },
+        {
+          "within": "main",
+          "slot": "section",
+          "tag": "label",
+          "size": "343x69",
+          "count": 1,
+          "example": "player name"
+        },
+        {
+          "within": "main",
+          "slot": "ledger-cell",
+          "tag": "a",
+          "size": "313.6x61",
+          "count": 1,
+          "example": "Auston Matthews"
+        },
+        {
+          "within": "main",
+          "slot": "heart-button",
+          "tag": "button",
+          "size": "45x45",
+          "count": 1,
+          "example": "Favorite Auston Matthews"
+        },
+        {
+          "within": "footer",
+          "slot": null,
+          "tag": "a",
+          "size": "45x45",
+          "count": 1,
+          "example": "ESPN"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "77.5x55.5",
+          "count": 1,
+          "example": "Home"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "78x55.5",
+          "count": 3,
+          "example": "Scores"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "78.5x55.5",
+          "count": 1,
+          "example": "Players"
+        }
+      ],
+      "failed": []
+    },
+    {
+      "route": "player",
+      "path": "/players/4024123",
+      "state": "as it loads",
+      "controls": 37,
+      "exempt": 0,
+      "narrowest": 44,
+      "shortest": 44,
+      "shell": {
+        "places": [
+          "Home",
+          "Scores",
+          "Standings",
+          "Teams",
+          "Players"
+        ],
+        "current": [
+          "Players"
+        ],
+        "barTop": 788,
+        "barHeight": 56,
+        "viewportHeight": 844,
+        "footerTextBottom": 776,
+        "menuButtons": 0,
+        "dialogs": 0,
+        "sidebarShown": false,
+        "overflow": 0,
+        "scrollingTables": 0,
+        "stripBottom": 100
+      },
+      "small": [],
+      "kinds": [
+        {
+          "within": "header",
+          "slot": null,
+          "tag": "a",
+          "size": "109x44",
+          "count": 1,
+          "example": "YOGAN/HOCKEY"
+        },
+        {
+          "within": "header",
+          "slot": "button",
+          "tag": "button",
+          "size": "98x44",
+          "count": 1,
+          "example": "dark modelight mode"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "a",
+          "size": "70.5x55",
+          "count": 1,
+          "example": "scores"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "a",
+          "size": "89x55",
+          "count": 9,
+          "example": "★ favorite team, NSH@atTOR6:00 PM"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "button",
+          "size": "47.5x55",
+          "count": 1,
+          "example": "All 9 games+6"
+        },
+        {
+          "within": "header",
+          "slot": "player-header",
+          "tag": "a",
+          "size": "197x45",
+          "count": 1,
+          "example": "Toronto Maple Leafs"
+        },
+        {
+          "within": "header",
+          "slot": "heart-button",
+          "tag": "button",
+          "size": "44x45",
+          "count": 1,
+          "example": "Favorite Auston Matthews"
+        },
+        {
+          "within": "main",
+          "slot": "ledger-cell",
+          "tag": "a",
+          "size": "359x45",
+          "count": 3,
+          "example": "Oct 3"
+        },
+        {
+          "within": "main",
+          "slot": "ledger-cell",
+          "tag": "a",
+          "size": "45x45",
+          "count": 11,
+          "example": "TOR"
+        },
+        {
+          "within": "main",
+          "slot": "ledger-cell",
+          "tag": "a",
+          "size": "359x44",
+          "count": 1,
+          "example": "Toronto Maple Leafs"
+        },
+        {
+          "within": "main",
+          "slot": null,
+          "tag": "a",
+          "size": "136x45",
+          "count": 1,
+          "example": "back to players"
+        },
+        {
+          "within": "footer",
+          "slot": null,
+          "tag": "a",
+          "size": "45x45",
+          "count": 1,
+          "example": "ESPN"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "77.5x55.5",
+          "count": 1,
+          "example": "Home"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "78x55.5",
+          "count": 3,
+          "example": "Scores"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "78.5x55.5",
+          "count": 1,
+          "example": "Players"
+        }
+      ],
+      "failed": []
+    },
+    {
+      "route": "player-games",
+      "path": "/players/4024123/games",
+      "state": "as it loads",
+      "controls": 38,
+      "exempt": 0,
+      "narrowest": 44,
+      "shortest": 44,
+      "shell": {
+        "places": [
+          "Home",
+          "Scores",
+          "Standings",
+          "Teams",
+          "Players"
+        ],
+        "current": [
+          "Players"
+        ],
+        "barTop": 788,
+        "barHeight": 56,
+        "viewportHeight": 844,
+        "footerTextBottom": 776,
+        "menuButtons": 0,
+        "dialogs": 0,
+        "sidebarShown": false,
+        "overflow": 0,
+        "scrollingTables": 0,
+        "stripBottom": 100
+      },
+      "small": [],
+      "kinds": [
+        {
+          "within": "header",
+          "slot": null,
+          "tag": "a",
+          "size": "109x44",
+          "count": 1,
+          "example": "YOGAN/HOCKEY"
+        },
+        {
+          "within": "header",
+          "slot": "button",
+          "tag": "button",
+          "size": "98x44",
+          "count": 1,
+          "example": "dark modelight mode"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "a",
+          "size": "70.5x55",
+          "count": 1,
+          "example": "scores"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "a",
+          "size": "89x55",
+          "count": 9,
+          "example": "★ favorite team, NSH@atTOR6:00 PM"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "button",
+          "size": "47.5x55",
+          "count": 1,
+          "example": "All 9 games+6"
+        },
+        {
+          "within": "header",
+          "slot": "player-header",
+          "tag": "a",
+          "size": "197x45",
+          "count": 1,
+          "example": "Toronto Maple Leafs"
+        },
+        {
+          "within": "header",
+          "slot": "heart-button",
+          "tag": "button",
+          "size": "44x45",
+          "count": 1,
+          "example": "Favorite Auston Matthews"
+        },
+        {
+          "within": "main",
+          "slot": "section-aside",
+          "tag": "a",
+          "size": "100x45",
+          "count": 1,
+          "example": "show latest"
+        },
+        {
+          "within": "main",
+          "slot": "ledger-cell",
+          "tag": "a",
+          "size": "359x45",
+          "count": 3,
+          "example": "Oct 3"
+        },
+        {
+          "within": "main",
+          "slot": "ledger-cell",
+          "tag": "a",
+          "size": "45x45",
+          "count": 11,
+          "example": "TOR"
+        },
+        {
+          "within": "main",
+          "slot": "ledger-cell",
+          "tag": "a",
+          "size": "359x44",
+          "count": 1,
+          "example": "Toronto Maple Leafs"
+        },
+        {
+          "within": "main",
+          "slot": null,
+          "tag": "a",
+          "size": "136x45",
+          "count": 1,
+          "example": "back to players"
+        },
+        {
+          "within": "footer",
+          "slot": null,
+          "tag": "a",
+          "size": "45x45",
+          "count": 1,
+          "example": "ESPN"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "77.5x55.5",
+          "count": 1,
+          "example": "Home"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "78x55.5",
+          "count": 3,
+          "example": "Scores"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "78.5x55.5",
+          "count": 1,
+          "example": "Players"
+        }
+      ],
+      "failed": []
+    },
+    {
+      "route": "game",
+      "path": "/nhl/games/401803652",
+      "state": "as it loads",
+      "controls": 178,
+      "exempt": 75,
+      "narrowest": 45,
+      "shortest": 44,
+      "shell": {
+        "places": [
+          "Home",
+          "Scores",
+          "Standings",
+          "Teams",
+          "Players"
+        ],
+        "current": [
+          "Scores"
+        ],
+        "barTop": 788,
+        "barHeight": 56,
+        "viewportHeight": 844,
+        "footerTextBottom": 776.171875,
+        "menuButtons": 0,
+        "dialogs": 0,
+        "sidebarShown": false,
+        "overflow": 0,
+        "scrollingTables": 0,
+        "stripBottom": 100
+      },
+      "small": [],
+      "kinds": [
+        {
+          "within": "header",
+          "slot": null,
+          "tag": "a",
+          "size": "109x44",
+          "count": 1,
+          "example": "YOGAN/HOCKEY"
+        },
+        {
+          "within": "header",
+          "slot": "button",
+          "tag": "button",
+          "size": "98x44",
+          "count": 1,
+          "example": "dark modelight mode"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "a",
+          "size": "70.5x55",
+          "count": 1,
+          "example": "scores"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "a",
+          "size": "89x55",
+          "count": 9,
+          "example": "★ favorite team, NSH@atTOR6:00 PM"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "button",
+          "size": "47.5x55",
+          "count": 1,
+          "example": "All 9 games+6"
+        },
+        {
+          "within": "main",
+          "slot": "timeline-tick",
+          "tag": "button",
+          "size": "exempt",
+          "count": 75,
+          "example": "1st 0:00 Start of 1st Period"
+        },
+        {
+          "within": "main",
+          "slot": "replay-play",
+          "tag": "button",
+          "size": "81x45",
+          "count": 1,
+          "example": "Play the replay"
+        },
+        {
+          "within": "main",
+          "slot": "replay-end",
+          "tag": "button",
+          "size": "117x45",
+          "count": 1,
+          "example": "whole game"
+        },
+        {
+          "within": "main",
+          "slot": "replay-speed",
+          "tag": "label",
+          "size": "50x45",
+          "count": 2,
+          "example": "1x"
+        },
+        {
+          "within": "main",
+          "slot": "replay-speed",
+          "tag": "label",
+          "size": "51x45",
+          "count": 1,
+          "example": "4x"
+        },
+        {
+          "within": "nav",
+          "slot": "url-tabs",
+          "tag": "a",
+          "size": "104.6x45",
+          "count": 1,
+          "example": "plays"
+        },
+        {
+          "within": "nav",
+          "slot": "url-tabs",
+          "tag": "a",
+          "size": "121.7x45",
+          "count": 1,
+          "example": "scoring"
+        },
+        {
+          "within": "nav",
+          "slot": "url-tabs",
+          "tag": "a",
+          "size": "130.6x45",
+          "count": 1,
+          "example": "the pick"
+        },
+        {
+          "within": "main",
+          "slot": "key-plays-toggle",
+          "tag": "label",
+          "size": "169.5x45",
+          "count": 1,
+          "example": "key plays 74"
+        },
+        {
+          "within": "main",
+          "slot": "key-plays-toggle",
+          "tag": "label",
+          "size": "187.5x45",
+          "count": 1,
+          "example": "every play 307"
+        },
+        {
+          "within": "main",
+          "slot": "play-row",
+          "tag": "button",
+          "size": "359x45",
+          "count": 9,
+          "example": "SOEnd of OT"
+        },
+        {
+          "within": "main",
+          "slot": "play-row",
+          "tag": "button",
+          "size": "359x67",
+          "count": 40,
+          "example": "SODALWyatt Johnston Goal Wrist Shot"
+        },
+        {
+          "within": "main",
+          "slot": "play-row",
+          "tag": "button",
+          "size": "359x89",
+          "count": 20,
+          "example": "3rd 17:04DALMichael Bunting Wrist Shot saved by "
+        },
+        {
+          "within": "main",
+          "slot": "play-row",
+          "tag": "button",
+          "size": "359x111",
+          "count": 3,
+          "example": "2nd 11:09BUFAlex Tuch Goal (33) Snap Shot, assis"
+        },
+        {
+          "within": "main",
+          "slot": "play-row",
+          "tag": "button",
+          "size": "359x133",
+          "count": 1,
+          "example": "1st 2:19DALMavrik Bourque Goal (20) Snap Shot, a"
+        },
+        {
+          "within": "main",
+          "slot": "play-row",
+          "tag": "button",
+          "size": "359x46",
+          "count": 1,
+          "example": "1st 0:00Start of 1st Period"
+        },
+        {
+          "within": "footer",
+          "slot": null,
+          "tag": "a",
+          "size": "45x45",
+          "count": 1,
+          "example": "ESPN"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "77.5x55.5",
+          "count": 1,
+          "example": "Home"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "78x55.5",
+          "count": 3,
+          "example": "Scores"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "78.5x55.5",
+          "count": 1,
+          "example": "Players"
+        }
+      ],
+      "failed": []
+    },
+    {
+      "route": "game-scoring",
+      "path": "/nhl/games/401803652/scoring",
+      "state": "as it loads",
+      "controls": 115,
+      "exempt": 75,
+      "narrowest": 45,
+      "shortest": 44,
+      "shell": {
+        "places": [
+          "Home",
+          "Scores",
+          "Standings",
+          "Teams",
+          "Players"
+        ],
+        "current": [
+          "Scores"
+        ],
+        "barTop": 788,
+        "barHeight": 56,
+        "viewportHeight": 844,
+        "footerTextBottom": 776.171875,
+        "menuButtons": 0,
+        "dialogs": 0,
+        "sidebarShown": false,
+        "overflow": 0,
+        "scrollingTables": 0,
+        "stripBottom": 100
+      },
+      "small": [],
+      "kinds": [
+        {
+          "within": "header",
+          "slot": null,
+          "tag": "a",
+          "size": "109x44",
+          "count": 1,
+          "example": "YOGAN/HOCKEY"
+        },
+        {
+          "within": "header",
+          "slot": "button",
+          "tag": "button",
+          "size": "98x44",
+          "count": 1,
+          "example": "dark modelight mode"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "a",
+          "size": "70.5x55",
+          "count": 1,
+          "example": "scores"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "a",
+          "size": "89x55",
+          "count": 9,
+          "example": "★ favorite team, NSH@atTOR6:00 PM"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "button",
+          "size": "47.5x55",
+          "count": 1,
+          "example": "All 9 games+6"
+        },
+        {
+          "within": "main",
+          "slot": "timeline-tick",
+          "tag": "button",
+          "size": "exempt",
+          "count": 75,
+          "example": "1st 0:00 Start of 1st Period"
+        },
+        {
+          "within": "main",
+          "slot": "replay-play",
+          "tag": "button",
+          "size": "81x45",
+          "count": 1,
+          "example": "Play the replay"
+        },
+        {
+          "within": "main",
+          "slot": "replay-end",
+          "tag": "button",
+          "size": "117x45",
+          "count": 1,
+          "example": "whole game"
+        },
+        {
+          "within": "main",
+          "slot": "replay-speed",
+          "tag": "label",
+          "size": "50x45",
+          "count": 2,
+          "example": "1x"
+        },
+        {
+          "within": "main",
+          "slot": "replay-speed",
+          "tag": "label",
+          "size": "51x45",
+          "count": 1,
+          "example": "4x"
+        },
+        {
+          "within": "nav",
+          "slot": "url-tabs",
+          "tag": "a",
+          "size": "104.6x45",
+          "count": 1,
+          "example": "plays"
+        },
+        {
+          "within": "nav",
+          "slot": "url-tabs",
+          "tag": "a",
+          "size": "121.7x45",
+          "count": 1,
+          "example": "scoring"
+        },
+        {
+          "within": "nav",
+          "slot": "url-tabs",
+          "tag": "a",
+          "size": "130.6x45",
+          "count": 1,
+          "example": "the pick"
+        },
+        {
+          "within": "main",
+          "slot": "key-plays-toggle",
+          "tag": "label",
+          "size": "169.5x45",
+          "count": 1,
+          "example": "key plays 74"
+        },
+        {
+          "within": "main",
+          "slot": "key-plays-toggle",
+          "tag": "label",
+          "size": "187.5x45",
+          "count": 1,
+          "example": "every play 307"
+        },
+        {
+          "within": "main",
+          "slot": "play-row",
+          "tag": "button",
+          "size": "359x133",
+          "count": 3,
+          "example": "1st 2:19DALMavrik Bourque Goal (20) Snap Shot, a"
+        },
+        {
+          "within": "main",
+          "slot": "play-row",
+          "tag": "button",
+          "size": "359x111",
+          "count": 2,
+          "example": "1st 12:48BUFJosh Norris Goal (13) Wrist Shot, as"
+        },
+        {
+          "within": "main",
+          "slot": "play-row",
+          "tag": "button",
+          "size": "359x112",
+          "count": 1,
+          "example": "2nd 16:00DALJustin Hryckowian Goal (14) Wrist Sh"
+        },
+        {
+          "within": "main",
+          "slot": "play-row",
+          "tag": "button",
+          "size": "359x67",
+          "count": 4,
+          "example": "SOBUFJosh Norris Goal Snap Shot"
+        },
+        {
+          "within": "main",
+          "slot": "play-row",
+          "tag": "button",
+          "size": "359x68",
+          "count": 1,
+          "example": "SODALWyatt Johnston Goal Wrist Shot"
+        },
+        {
+          "within": "footer",
+          "slot": null,
+          "tag": "a",
+          "size": "45x45",
+          "count": 1,
+          "example": "ESPN"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "77.5x55.5",
+          "count": 1,
+          "example": "Home"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "78x55.5",
+          "count": 3,
+          "example": "Scores"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "78.5x55.5",
+          "count": 1,
+          "example": "Players"
+        }
+      ],
+      "failed": []
+    },
+    {
+      "route": "game-pick",
+      "path": "/nhl/games/401803652/pick",
+      "state": "as it loads",
+      "controls": 104,
+      "exempt": 75,
+      "narrowest": 45,
+      "shortest": 44,
+      "shell": {
+        "places": [
+          "Home",
+          "Scores",
+          "Standings",
+          "Teams",
+          "Players"
+        ],
+        "current": [
+          "Scores"
+        ],
+        "barTop": 788,
+        "barHeight": 56,
+        "viewportHeight": 844,
+        "footerTextBottom": 776.171875,
+        "menuButtons": 0,
+        "dialogs": 0,
+        "sidebarShown": false,
+        "overflow": 0,
+        "scrollingTables": 0,
+        "stripBottom": 100
+      },
+      "small": [],
+      "kinds": [
+        {
+          "within": "header",
+          "slot": null,
+          "tag": "a",
+          "size": "109x44",
+          "count": 1,
+          "example": "YOGAN/HOCKEY"
+        },
+        {
+          "within": "header",
+          "slot": "button",
+          "tag": "button",
+          "size": "98x44",
+          "count": 1,
+          "example": "dark modelight mode"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "a",
+          "size": "70.5x55",
+          "count": 1,
+          "example": "scores"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "a",
+          "size": "89x55",
+          "count": 9,
+          "example": "★ favorite team, NSH@atTOR6:00 PM"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "button",
+          "size": "47.5x55",
+          "count": 1,
+          "example": "All 9 games+6"
+        },
+        {
+          "within": "main",
+          "slot": "timeline-tick",
+          "tag": "button",
+          "size": "exempt",
+          "count": 75,
+          "example": "1st 0:00 Start of 1st Period"
+        },
+        {
+          "within": "main",
+          "slot": "replay-play",
+          "tag": "button",
+          "size": "81x45",
+          "count": 1,
+          "example": "Play the replay"
+        },
+        {
+          "within": "main",
+          "slot": "replay-end",
+          "tag": "button",
+          "size": "117x45",
+          "count": 1,
+          "example": "whole game"
+        },
+        {
+          "within": "main",
+          "slot": "replay-speed",
+          "tag": "label",
+          "size": "50x45",
+          "count": 2,
+          "example": "1x"
+        },
+        {
+          "within": "main",
+          "slot": "replay-speed",
+          "tag": "label",
+          "size": "51x45",
+          "count": 1,
+          "example": "4x"
+        },
+        {
+          "within": "nav",
+          "slot": "url-tabs",
+          "tag": "a",
+          "size": "104.6x45",
+          "count": 1,
+          "example": "plays"
+        },
+        {
+          "within": "nav",
+          "slot": "url-tabs",
+          "tag": "a",
+          "size": "121.7x45",
+          "count": 1,
+          "example": "scoring"
+        },
+        {
+          "within": "nav",
+          "slot": "url-tabs",
+          "tag": "a",
+          "size": "130.6x45",
+          "count": 1,
+          "example": "the pick"
+        },
+        {
+          "within": "main",
+          "slot": "key-plays-toggle",
+          "tag": "label",
+          "size": "169.5x45",
+          "count": 1,
+          "example": "key plays 74"
+        },
+        {
+          "within": "main",
+          "slot": "key-plays-toggle",
+          "tag": "label",
+          "size": "187.5x45",
+          "count": 1,
+          "example": "every play 307"
+        },
+        {
+          "within": "footer",
+          "slot": null,
+          "tag": "a",
+          "size": "45x45",
+          "count": 1,
+          "example": "ESPN"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "77.5x55.5",
+          "count": 1,
+          "example": "Home"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "78x55.5",
+          "count": 3,
+          "example": "Scores"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "78.5x55.5",
+          "count": 1,
+          "example": "Players"
+        }
+      ],
+      "failed": []
+    },
+    {
+      "route": "game-scheduled",
+      "path": "/nhl/games/401892449",
+      "state": "as it loads",
+      "controls": 52,
+      "exempt": 0,
+      "narrowest": 44.5,
+      "shortest": 44,
+      "shell": {
+        "places": [
+          "Home",
+          "Scores",
+          "Standings",
+          "Teams",
+          "Players"
+        ],
+        "current": [
+          "Scores"
+        ],
+        "barTop": 788,
+        "barHeight": 56,
+        "viewportHeight": 844,
+        "footerTextBottom": 776.171875,
+        "menuButtons": 0,
+        "dialogs": 0,
+        "sidebarShown": false,
+        "overflow": 0,
+        "scrollingTables": 0,
+        "stripBottom": 100
+      },
+      "small": [],
+      "kinds": [
+        {
+          "within": "header",
+          "slot": null,
+          "tag": "a",
+          "size": "109x44",
+          "count": 1,
+          "example": "YOGAN/HOCKEY"
+        },
+        {
+          "within": "header",
+          "slot": "button",
+          "tag": "button",
+          "size": "98x44",
+          "count": 1,
+          "example": "dark modelight mode"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "a",
+          "size": "70.5x55",
+          "count": 1,
+          "example": "scores"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "a",
+          "size": "89x55",
+          "count": 9,
+          "example": "★ favorite team, NSH@atTOR6:00 PM"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "button",
+          "size": "47.5x55",
+          "count": 1,
+          "example": "All 9 games+6"
+        },
+        {
+          "within": "main",
+          "slot": "ledger-cell",
+          "tag": "a",
+          "size": "44.5x45",
+          "count": 17,
+          "example": "NSH"
+        },
+        {
+          "within": "main",
+          "slot": "ledger-cell",
+          "tag": "a",
+          "size": "100.1x45",
+          "count": 2,
+          "example": "Juuse Saros"
+        },
+        {
+          "within": "main",
+          "slot": "ledger-cell",
+          "tag": "a",
+          "size": "145.1x45",
+          "count": 4,
+          "example": "Sergei Bobrovsky"
+        },
+        {
+          "within": "main",
+          "slot": "ledger-cell",
+          "tag": "a",
+          "size": "136.1x45",
+          "count": 1,
+          "example": "Anthony Stolarz"
+        },
+        {
+          "within": "main",
+          "slot": "ledger-cell",
+          "tag": "a",
+          "size": "91.1x45",
+          "count": 2,
+          "example": "Roman Josi"
+        },
+        {
+          "within": "main",
+          "slot": "ledger-cell",
+          "tag": "a",
+          "size": "127.1x45",
+          "count": 2,
+          "example": "Steven Stamkos"
+        },
+        {
+          "within": "main",
+          "slot": "ledger-cell",
+          "tag": "a",
+          "size": "118.1x45",
+          "count": 2,
+          "example": "Morgan Rielly"
+        },
+        {
+          "within": "main",
+          "slot": "ledger-cell",
+          "tag": "a",
+          "size": "73.1x45",
+          "count": 1,
+          "example": "Max Domi"
+        },
+        {
+          "within": "main",
+          "slot": "ledger-cell",
+          "tag": "a",
+          "size": "163.1x45",
+          "count": 1,
+          "example": "William Villeneuve"
+        },
+        {
+          "within": "main",
+          "slot": "ledger-cell",
+          "tag": "a",
+          "size": "91x45",
+          "count": 1,
+          "example": "TOR at NSH"
+        },
+        {
+          "within": "footer",
+          "slot": null,
+          "tag": "a",
+          "size": "45x45",
+          "count": 1,
+          "example": "ESPN"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "77.5x55.5",
+          "count": 1,
+          "example": "Home"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "78x55.5",
+          "count": 3,
+          "example": "Scores"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "78.5x55.5",
+          "count": 1,
+          "example": "Players"
+        }
+      ],
+      "failed": []
+    },
+    {
+      "route": "not-found",
+      "path": "/no-such-page",
+      "state": "as it loads",
+      "controls": 20,
+      "exempt": 0,
+      "narrowest": 45,
+      "shortest": 44,
+      "shell": {
+        "places": [
+          "Home",
+          "Scores",
+          "Standings",
+          "Teams",
+          "Players"
+        ],
+        "current": [],
+        "barTop": 788,
+        "barHeight": 56,
+        "viewportHeight": 844,
+        "footerTextBottom": 776,
+        "menuButtons": 0,
+        "dialogs": 0,
+        "sidebarShown": false,
+        "overflow": 0,
+        "scrollingTables": 0,
+        "stripBottom": 100
+      },
+      "small": [],
+      "kinds": [
+        {
+          "within": "header",
+          "slot": null,
+          "tag": "a",
+          "size": "109x44",
+          "count": 1,
+          "example": "YOGAN/HOCKEY"
+        },
+        {
+          "within": "header",
+          "slot": "button",
+          "tag": "button",
+          "size": "98x44",
+          "count": 1,
+          "example": "dark modelight mode"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "a",
+          "size": "70.5x55",
+          "count": 1,
+          "example": "scores"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "a",
+          "size": "89x55",
+          "count": 9,
+          "example": "★ favorite team, NSH@atTOR6:00 PM"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "button",
+          "size": "47.5x55",
+          "count": 1,
+          "example": "All 9 games+6"
+        },
+        {
+          "within": "main",
+          "slot": "section",
+          "tag": "a",
+          "size": "59x45",
+          "count": 1,
+          "example": "Back to tonight"
+        },
+        {
+          "within": "footer",
+          "slot": null,
+          "tag": "a",
+          "size": "45x45",
+          "count": 1,
+          "example": "ESPN"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "77.5x55.5",
+          "count": 1,
+          "example": "Home"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "78x55.5",
+          "count": 3,
+          "example": "Scores"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "78.5x55.5",
+          "count": 1,
+          "example": "Players"
+        }
+      ],
+      "failed": []
+    },
+    {
+      "route": "error",
+      "path": "/nhl/teams/1",
+      "state": "as it loads",
+      "controls": 21,
+      "exempt": 0,
+      "narrowest": 45,
+      "shortest": 44,
+      "shell": {
+        "places": [
+          "Home",
+          "Scores",
+          "Standings",
+          "Teams",
+          "Players"
+        ],
+        "current": [
+          "Teams"
+        ],
+        "barTop": 788,
+        "barHeight": 56,
+        "viewportHeight": 844,
+        "footerTextBottom": 776,
+        "menuButtons": 0,
+        "dialogs": 0,
+        "sidebarShown": false,
+        "overflow": 0,
+        "scrollingTables": 0,
+        "stripBottom": 100
+      },
+      "small": [],
+      "kinds": [
+        {
+          "within": "header",
+          "slot": null,
+          "tag": "a",
+          "size": "109x44",
+          "count": 1,
+          "example": "YOGAN/HOCKEY"
+        },
+        {
+          "within": "header",
+          "slot": "button",
+          "tag": "button",
+          "size": "98x44",
+          "count": 1,
+          "example": "dark modelight mode"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "a",
+          "size": "70.5x55",
+          "count": 1,
+          "example": "scores"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "a",
+          "size": "89x55",
+          "count": 9,
+          "example": "★ favorite team, NSH@atTOR6:00 PM"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "button",
+          "size": "47.5x55",
+          "count": 1,
+          "example": "All 9 games+6"
+        },
+        {
+          "within": "main",
+          "slot": "error-page",
+          "tag": "button",
+          "size": "82x45",
+          "count": 1,
+          "example": "Try again"
+        },
+        {
+          "within": "main",
+          "slot": "error-page",
+          "tag": "a",
+          "size": "82x45",
+          "count": 1,
+          "example": "all teams"
+        },
+        {
+          "within": "footer",
+          "slot": null,
+          "tag": "a",
+          "size": "45x45",
+          "count": 1,
+          "example": "ESPN"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "77.5x55.5",
+          "count": 1,
+          "example": "Home"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "78x55.5",
+          "count": 3,
+          "example": "Scores"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "78.5x55.5",
+          "count": 1,
+          "example": "Players"
+        }
+      ],
+      "failed": []
+    },
+    {
+      "route": "sample-live",
+      "path": "/skeleton/live",
+      "state": "as it loads",
+      "controls": 47,
+      "exempt": 0,
+      "narrowest": 45,
+      "shortest": 44,
+      "shell": {
+        "places": [
+          "Home",
+          "Scores",
+          "Standings",
+          "Teams",
+          "Players"
+        ],
+        "current": [],
+        "barTop": 788,
+        "barHeight": 56,
+        "viewportHeight": 844,
+        "footerTextBottom": 776,
+        "menuButtons": 0,
+        "dialogs": 0,
+        "sidebarShown": false,
+        "overflow": 0,
+        "scrollingTables": 0,
+        "stripBottom": 100
+      },
+      "small": [],
+      "kinds": [
+        {
+          "within": "header",
+          "slot": null,
+          "tag": "a",
+          "size": "109x44",
+          "count": 1,
+          "example": "YOGAN/HOCKEY"
+        },
+        {
+          "within": "header",
+          "slot": "button",
+          "tag": "button",
+          "size": "98x44",
+          "count": 1,
+          "example": "dark modelight mode"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "a",
+          "size": "70.5x55",
+          "count": 1,
+          "example": "scores"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "a",
+          "size": "89x55",
+          "count": 9,
+          "example": "★ favorite team, NSH@atTOR6:00 PM"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "button",
+          "size": "47.5x55",
+          "count": 1,
+          "example": "All 9 games+6"
+        },
+        {
+          "within": "nav",
+          "slot": "sample-score-ticker",
+          "tag": "a",
+          "size": "71x56",
+          "count": 1,
+          "example": "scores"
+        },
+        {
+          "within": "nav",
+          "slot": "sample-score-ticker",
+          "tag": "a",
+          "size": "89x56",
+          "count": 13,
+          "example": "★ favorite team, TOR 2@atMTL 1live, 2nd 12:34"
+        },
+        {
+          "within": "nav",
+          "slot": "sample-score-ticker",
+          "tag": "button",
+          "size": "48x56",
+          "count": 1,
+          "example": "All 13 games+11"
+        },
+        {
+          "within": "main",
+          "slot": "ledger-cell",
+          "tag": "a",
+          "size": "359x55",
+          "count": 13,
+          "example": "TOR at MTL, live, 2nd 12:34"
+        },
+        {
+          "within": "footer",
+          "slot": null,
+          "tag": "a",
+          "size": "45x45",
+          "count": 1,
+          "example": "ESPN"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "77.5x55.5",
+          "count": 1,
+          "example": "Home"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "78x55.5",
+          "count": 3,
+          "example": "Scores"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "78.5x55.5",
+          "count": 1,
+          "example": "Players"
+        }
+      ],
+      "failed": []
+    },
+    {
+      "route": "sample-loading",
+      "path": "/skeleton/loading",
+      "state": "as it loads",
+      "controls": 19,
+      "exempt": 0,
+      "narrowest": 45,
+      "shortest": 44,
+      "shell": {
+        "places": [
+          "Home",
+          "Scores",
+          "Standings",
+          "Teams",
+          "Players"
+        ],
+        "current": [],
+        "barTop": 788,
+        "barHeight": 56,
+        "viewportHeight": 844,
+        "footerTextBottom": 776.171875,
+        "menuButtons": 0,
+        "dialogs": 0,
+        "sidebarShown": false,
+        "overflow": 0,
+        "scrollingTables": 0,
+        "stripBottom": 100
+      },
+      "small": [],
+      "kinds": [
+        {
+          "within": "header",
+          "slot": null,
+          "tag": "a",
+          "size": "109x44",
+          "count": 1,
+          "example": "YOGAN/HOCKEY"
+        },
+        {
+          "within": "header",
+          "slot": "button",
+          "tag": "button",
+          "size": "98x44",
+          "count": 1,
+          "example": "dark modelight mode"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "a",
+          "size": "70.5x55",
+          "count": 1,
+          "example": "scores"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "a",
+          "size": "89x55",
+          "count": 9,
+          "example": "★ favorite team, NSH@atTOR6:00 PM"
+        },
+        {
+          "within": "nav",
+          "slot": "score-ticker",
+          "tag": "button",
+          "size": "47.5x55",
+          "count": 1,
+          "example": "All 9 games+6"
+        },
+        {
+          "within": "footer",
+          "slot": null,
+          "tag": "a",
+          "size": "45x45",
+          "count": 1,
+          "example": "ESPN"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "77.5x55.5",
+          "count": 1,
+          "example": "Home"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "78x55.5",
+          "count": 3,
+          "example": "Scores"
+        },
+        {
+          "within": "nav",
+          "slot": "tab-bar",
+          "tag": "a",
+          "size": "78.5x55.5",
+          "count": 1,
+          "example": "Players"
+        }
+      ],
+      "failed": []
+    }
+  ]
+}

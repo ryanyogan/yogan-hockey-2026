@@ -24,7 +24,7 @@ const figure = (value: number | null, digits = 0) => (value == null ? "-" : valu
 function TeamCell({ team }: { team: GameHeaderSide }) {
   return (
     <LedgerCell tone="strong">
-      <Link href={teamHref(team)} className="underline-offset-2 hover:underline">
+      <Link href={teamHref(team)} className="tap-target underline-offset-2 hover:underline">
         {team.abbreviation}
       </Link>
     </LedgerCell>
@@ -33,7 +33,7 @@ function TeamCell({ team }: { team: GameHeaderSide }) {
 
 function Player({ id, children }: { id: string; children: ReactNode }) {
   return (
-    <Link href={playerHref({ id })} className="underline-offset-2 hover:underline">
+    <Link href={playerHref({ id })} className="tap-target underline-offset-2 hover:underline">
       {children}
     </Link>
   );
@@ -233,7 +233,7 @@ function SeasonSeries({ gameId, series }: { gameId: string; series: Pregame["sea
                     ) : (
                       <Link
                         href={gameHref({ id: game.gameId })}
-                        className="underline-offset-2 hover:underline"
+                        className="tap-target underline-offset-2 hover:underline"
                       >
                         {line}
                       </Link>

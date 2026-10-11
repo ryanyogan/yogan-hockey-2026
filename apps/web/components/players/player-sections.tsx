@@ -74,7 +74,10 @@ export function PlayerHeader({ profile, action }: { profile: PlayerProfile; acti
           {profile.team ? (
             <>
               {" · "}
-              <Link href={teamHref(profile.team)} className="whitespace-nowrap underline">
+              <Link
+                href={teamHref(profile.team)}
+                className="tap-target whitespace-nowrap underline"
+              >
                 <TeamMark teamId={profile.team.id} eager />
                 {profile.team.name}
               </Link>
@@ -210,7 +213,7 @@ export function CareerSection({ career }: { career: CareerView }) {
               <LedgerCell className="whitespace-nowrap">{row.season}</LedgerCell>
               {row.team ? (
                 <LedgerCell>
-                  <Link href={teamHref(row.team)} className="hover:underline">
+                  <Link href={teamHref(row.team)} className="tap-target hover:underline">
                     {row.team.abbreviation}
                   </Link>
                 </LedgerCell>
@@ -256,7 +259,7 @@ export function GameLogSection({
         {shown < log.gameCount ? (
           <>
             latest {shown} of {log.gameCount} ·{" "}
-            <Link href={allHref} className="underline">
+            <Link href={allHref} className="tap-target underline">
               show all
             </Link>
           </>
@@ -266,7 +269,7 @@ export function GameLogSection({
             {latestHref && (
               <>
                 {" · "}
-                <Link href={latestHref} className="underline">
+                <Link href={latestHref} className="tap-target underline">
                   show latest
                 </Link>
               </>

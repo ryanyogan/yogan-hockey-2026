@@ -7,16 +7,47 @@
       "width": 390,
       "theme": "light",
       "overflow": 0,
-      "rulesMeasured": 42,
-      "rules": [],
+      "rulesMeasured": 47,
+      "rules": [
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "overshoots the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 9.5px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "overshoots the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 9.5px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "overshoots the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 9.5px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "overshoots the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 9.5px"
+        }
+      ],
       "unmeasured": [],
-      "spacing": [],
+      "spacing": [
+        {
+          "element": "(shell) | <div> flex min-w-0 flex-1 flex-col border-rule max-md:pb-(--tab-bar) md:bord",
+          "property": "padding-bottom",
+          "value": 56
+        }
+      ],
       "shift": {
-        "total": 0.0043,
+        "total": 0.004,
         "shifts": [
           {
             "value": 0.0031363404420501075,
-            "at": 3077,
+            "at": 2187,
             "moved": [
               {
                 "what": "li[score-ticker] \"★ favorite team, NSH@atTOR6:00 PM\"",
@@ -34,8 +65,8 @@
             ]
           },
           {
-            "value": 0.0011455340291732106,
-            "at": 3262,
+            "value": 0.0008981860476099151,
+            "at": 2367,
             "moved": [
               {
                 "what": "div \"Standings eastern conferenceeastfull sta\"",
@@ -43,19 +74,6 @@
                   16,
                   827,
                   17
-                ],
-                "to": [
-                  0,
-                  0,
-                  0
-                ]
-              },
-              {
-                "what": "::after[section-aside] \"\"",
-                "from": [
-                  244,
-                  815,
-                  29
                 ],
                 "to": [
                   0,
@@ -71,8 +89,8 @@
         "total": 0.0006,
         "shifts": [
           {
-            "value": 0.0006146767961417227,
-            "at": 3352,
+            "value": 0.0005917115460926247,
+            "at": 2105,
             "moved": [
               {
                 "what": "div \"Standings eastern conferenceeastfull sta\"",
@@ -90,14 +108,14 @@
               {
                 "what": "::after[section-aside] \"\"",
                 "from": [
-                  244,
-                  815,
-                  29
+                  248,
+                  816,
+                  28
                 ],
                 "to": [
-                  244,
-                  837,
-                  7
+                  248,
+                  838,
+                  6
                 ]
               }
             ]
@@ -111,16 +129,47 @@
       "width": 390,
       "theme": "dark",
       "overflow": 0,
-      "rulesMeasured": 42,
-      "rules": [],
+      "rulesMeasured": 47,
+      "rules": [
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "overshoots the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 9.5px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "overshoots the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 9.5px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "overshoots the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 9.5px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "overshoots the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 9.5px"
+        }
+      ],
       "unmeasured": [],
-      "spacing": [],
+      "spacing": [
+        {
+          "element": "(shell) | <div> flex min-w-0 flex-1 flex-col border-rule max-md:pb-(--tab-bar) md:bord",
+          "property": "padding-bottom",
+          "value": 56
+        }
+      ],
       "shift": {
-        "total": 0.0043,
+        "total": 0.004,
         "shifts": [
           {
             "value": 0.0031363404420501075,
-            "at": 3818,
+            "at": 2318,
             "moved": [
               {
                 "what": "li[score-ticker] \"★ favorite team, NSH@atTOR6:00 PM\"",
@@ -138,8 +187,8 @@
             ]
           },
           {
-            "value": 0.0011455340291732106,
-            "at": 4158,
+            "value": 0.0008981860476099151,
+            "at": 2507,
             "moved": [
               {
                 "what": "div \"Standings eastern conferenceeastfull sta\"",
@@ -147,19 +196,6 @@
                   16,
                   827,
                   17
-                ],
-                "to": [
-                  0,
-                  0,
-                  0
-                ]
-              },
-              {
-                "what": "::after[section-aside] \"\"",
-                "from": [
-                  244,
-                  815,
-                  29
                 ],
                 "to": [
                   0,
@@ -175,8 +211,8 @@
         "total": 0.0006,
         "shifts": [
           {
-            "value": 0.0006146767961417227,
-            "at": 3615,
+            "value": 0.0005917115460926247,
+            "at": 2240,
             "moved": [
               {
                 "what": "div \"Standings eastern conferenceeastfull sta\"",
@@ -194,14 +230,14 @@
               {
                 "what": "::after[section-aside] \"\"",
                 "from": [
-                  244,
-                  815,
-                  29
+                  248,
+                  816,
+                  28
                 ],
                 "to": [
-                  244,
-                  837,
-                  7
+                  248,
+                  838,
+                  6
                 ]
               }
             ]
@@ -224,7 +260,7 @@
         "shifts": [
           {
             "value": 0.0004992584019204389,
-            "at": 3630,
+            "at": 2245,
             "moved": [
               {
                 "what": "span[ledger-cell] \"Scotiabank Arena · ESPN+, Scripps Sports\"",
@@ -243,7 +279,7 @@
           },
           {
             "value": 0.0046027028276105966,
-            "at": 3706,
+            "at": 2345,
             "moved": [
               {
                 "what": "li[score-ticker] \"★ favorite team, NSH@atTOR6:00 PM\"",
@@ -288,7 +324,7 @@
           },
           {
             "value": 0.005760379158093279,
-            "at": 3902,
+            "at": 2530,
             "moved": [
               {
                 "what": "div \"Standings eastern conferenceeastfull sta\"",
@@ -325,7 +361,7 @@
         "shifts": [
           {
             "value": 0.004544056498628257,
-            "at": 3119,
+            "at": 2124,
             "moved": [
               {
                 "what": "div \"Standings eastern conferenceeastfull sta\"",
@@ -357,7 +393,7 @@
           },
           {
             "value": 0.0015861625514403293,
-            "at": 3243,
+            "at": 2219,
             "moved": [
               {
                 "what": "li[score-ticker] \"UTA@atNJ6:00 PM\"",
@@ -418,7 +454,7 @@
         "shifts": [
           {
             "value": 0.005439235977151922,
-            "at": 3458,
+            "at": 2335,
             "moved": [
               {
                 "what": "li[score-ticker] \"★ favorite team, NSH@atTOR6:00 PM\"",
@@ -463,7 +499,7 @@
           },
           {
             "value": 0.005760379158093279,
-            "at": 3792,
+            "at": 2526,
             "moved": [
               {
                 "what": "div \"Standings eastern conferenceeastfull sta\"",
@@ -500,7 +536,7 @@
         "shifts": [
           {
             "value": 0.02339763374485597,
-            "at": 3159,
+            "at": 2161,
             "moved": [
               {
                 "what": "div \"Standings eastern conferenceeastfull sta\"",
@@ -552,35 +588,47 @@
       "width": 390,
       "theme": "light",
       "overflow": 0,
-      "rulesMeasured": 22,
-      "rules": [],
+      "rulesMeasured": 27,
+      "rules": [
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        }
+      ],
       "unmeasured": [],
-      "spacing": [],
+      "spacing": [
+        {
+          "element": "(shell) | <div> flex min-w-0 flex-1 flex-col border-rule max-md:pb-(--tab-bar) md:bord",
+          "property": "padding-bottom",
+          "value": 56
+        }
+      ],
       "shift": {
-        "total": 0.0161,
+        "total": 0.0158,
         "shifts": [
           {
-            "value": 0.00030743918600211135,
-            "at": 2732,
-            "moved": [
-              {
-                "what": "footer \"Scores and stats from ESPN. Yogan Hockey\"",
-                "from": [
-                  0,
-                  771,
-                  73
-                ],
-                "to": [
-                  0,
-                  774,
-                  70
-                ]
-              }
-            ]
-          },
-          {
             "value": 0.015752181770746044,
-            "at": 3420,
+            "at": 2303,
             "moved": [
               {
                 "what": "tr[ledger-row] \"NSH at TOR, 6:00 PMTOR 58%NSH 1-1-0TOR ★\"",
@@ -613,28 +661,8 @@
         ]
       },
       "shiftNoFavorites": {
-        "total": 0.0003,
-        "shifts": [
-          {
-            "value": 0.00030743918600211135,
-            "at": 2257,
-            "moved": [
-              {
-                "what": "footer \"Scores and stats from ESPN. Yogan Hockey\"",
-                "from": [
-                  0,
-                  771,
-                  73
-                ],
-                "to": [
-                  0,
-                  774,
-                  70
-                ]
-              }
-            ]
-          }
-        ]
+        "total": 0,
+        "shifts": []
       }
     },
     {
@@ -643,35 +671,47 @@
       "width": 390,
       "theme": "dark",
       "overflow": 0,
-      "rulesMeasured": 22,
-      "rules": [],
+      "rulesMeasured": 27,
+      "rules": [
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        }
+      ],
       "unmeasured": [],
-      "spacing": [],
+      "spacing": [
+        {
+          "element": "(shell) | <div> flex min-w-0 flex-1 flex-col border-rule max-md:pb-(--tab-bar) md:bord",
+          "property": "padding-bottom",
+          "value": 56
+        }
+      ],
       "shift": {
-        "total": 0.0161,
+        "total": 0.0158,
         "shifts": [
           {
-            "value": 0.00030743918600211135,
-            "at": 2294,
-            "moved": [
-              {
-                "what": "footer \"Scores and stats from ESPN. Yogan Hockey\"",
-                "from": [
-                  0,
-                  771,
-                  73
-                ],
-                "to": [
-                  0,
-                  774,
-                  70
-                ]
-              }
-            ]
-          },
-          {
             "value": 0.015752181770746044,
-            "at": 2619,
+            "at": 2190,
             "moved": [
               {
                 "what": "tr[ledger-row] \"NSH at TOR, 6:00 PMTOR 58%NSH 1-1-0TOR ★\"",
@@ -723,7 +763,7 @@
         "shifts": [
           {
             "value": 0.014636460677619171,
-            "at": 2225,
+            "at": 2158,
             "moved": [
               {
                 "what": "tr[ledger-row] \"NSH at TOR, 6:00 PMTOR 58%NSH 1-1-0TOR ★\"",
@@ -773,7 +813,7 @@
         "shifts": [
           {
             "value": 0.0017425411522633747,
-            "at": 2255,
+            "at": 2136,
             "moved": [
               {
                 "what": "li[score-ticker] \"UTA@atNJ6:00 PM\"",
@@ -834,7 +874,7 @@
         "shifts": [
           {
             "value": 0.014636460677619171,
-            "at": 2296,
+            "at": 2155,
             "moved": [
               {
                 "what": "tr[ledger-row] \"NSH at TOR, 6:00 PMTOR 58%NSH 1-1-0TOR ★\"",
@@ -884,7 +924,7 @@
         "shifts": [
           {
             "value": 0.0017425411522633747,
-            "at": 2222,
+            "at": 2206,
             "moved": [
               {
                 "what": "li[score-ticker] \"UTA@atNJ6:00 PM\"",
@@ -936,33 +976,44 @@
       "width": 390,
       "theme": "light",
       "overflow": 0,
-      "rulesMeasured": 60,
-      "rules": [],
+      "rulesMeasured": 65,
+      "rules": [
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "stops short of the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 15.5px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "stops short of the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 15.5px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "stops short of the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 15.5px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "stops short of the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 15.5px"
+        }
+      ],
       "unmeasured": [],
-      "spacing": [],
+      "spacing": [
+        {
+          "element": "(shell) | <div> flex min-w-0 flex-1 flex-col border-rule max-md:pb-(--tab-bar) md:bord",
+          "property": "padding-bottom",
+          "value": 56
+        }
+      ],
       "shift": {
-        "total": 0.0013,
-        "shifts": [
-          {
-            "value": 0.0013085441096941286,
-            "at": 1472,
-            "moved": [
-              {
-                "what": "div \"dark modelight modemenu\"",
-                "from": [
-                  283,
-                  0,
-                  43.5
-                ],
-                "to": [
-                  229,
-                  0,
-                  43.5
-                ]
-              }
-            ]
-          }
-        ]
+        "total": 0,
+        "shifts": []
       },
       "shiftNoFavorites": {
         "total": 0,
@@ -975,10 +1026,41 @@
       "width": 390,
       "theme": "dark",
       "overflow": 0,
-      "rulesMeasured": 60,
-      "rules": [],
+      "rulesMeasured": 65,
+      "rules": [
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "stops short of the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 15.5px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "stops short of the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 15.5px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "stops short of the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 15.5px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "stops short of the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 15.5px"
+        }
+      ],
       "unmeasured": [],
-      "spacing": [],
+      "spacing": [
+        {
+          "element": "(shell) | <div> flex min-w-0 flex-1 flex-col border-rule max-md:pb-(--tab-bar) md:bord",
+          "property": "padding-bottom",
+          "value": 56
+        }
+      ],
       "shift": {
         "total": 0,
         "shifts": []
@@ -1032,37 +1114,48 @@
       "width": 390,
       "theme": "light",
       "overflow": 0,
-      "rulesMeasured": 50,
-      "rules": [],
+      "rulesMeasured": 55,
+      "rules": [
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "stops short of the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 18.5px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "stops short of the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 18.5px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "stops short of the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 18.5px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "stops short of the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 18.5px"
+        }
+      ],
       "unmeasured": [],
-      "spacing": [],
+      "spacing": [
+        {
+          "element": "(shell) | <div> flex min-w-0 flex-1 flex-col border-rule max-md:pb-(--tab-bar) md:bord",
+          "property": "padding-bottom",
+          "value": 56
+        }
+      ],
       "shift": {
         "total": 0,
         "shifts": []
       },
       "shiftNoFavorites": {
-        "total": 0.0013,
-        "shifts": [
-          {
-            "value": 0.0013085441096941286,
-            "at": 1332,
-            "moved": [
-              {
-                "what": "div \"dark modelight modemenu\"",
-                "from": [
-                  283,
-                  0,
-                  43.5
-                ],
-                "to": [
-                  229,
-                  0,
-                  43.5
-                ]
-              }
-            ]
-          }
-        ]
+        "total": 0,
+        "shifts": []
       }
     },
     {
@@ -1071,57 +1164,48 @@
       "width": 390,
       "theme": "dark",
       "overflow": 0,
-      "rulesMeasured": 50,
-      "rules": [],
+      "rulesMeasured": 55,
+      "rules": [
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "stops short of the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 18.5px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "stops short of the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 18.5px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "stops short of the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 18.5px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "stops short of the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 18.5px"
+        }
+      ],
       "unmeasured": [],
-      "spacing": [],
+      "spacing": [
+        {
+          "element": "(shell) | <div> flex min-w-0 flex-1 flex-col border-rule max-md:pb-(--tab-bar) md:bord",
+          "property": "padding-bottom",
+          "value": 56
+        }
+      ],
       "shift": {
-        "total": 0.0014,
-        "shifts": [
-          {
-            "value": 0.0013855172926173127,
-            "at": 1369,
-            "moved": [
-              {
-                "what": "div \"dark modelight modemenu\"",
-                "from": [
-                  274,
-                  0,
-                  43.5
-                ],
-                "to": [
-                  220,
-                  0,
-                  43.5
-                ]
-              }
-            ]
-          }
-        ]
+        "total": 0,
+        "shifts": []
       },
       "shiftNoFavorites": {
-        "total": 0.0014,
-        "shifts": [
-          {
-            "value": 0.0013855172926173127,
-            "at": 1597,
-            "moved": [
-              {
-                "what": "div \"dark modelight modemenu\"",
-                "from": [
-                  274,
-                  0,
-                  43.5
-                ],
-                "to": [
-                  220,
-                  0,
-                  43.5
-                ]
-              }
-            ]
-          }
-        ]
+        "total": 0,
+        "shifts": []
       }
     },
     {
@@ -1168,16 +1252,47 @@
       "width": 390,
       "theme": "light",
       "overflow": 0,
-      "rulesMeasured": 108,
-      "rules": [],
+      "rulesMeasured": 113,
+      "rules": [
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "overshoots the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 20.5px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "overshoots the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 20.5px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "overshoots the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 20.5px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "overshoots the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 20.5px"
+        }
+      ],
       "unmeasured": [],
-      "spacing": [],
+      "spacing": [
+        {
+          "element": "(shell) | <div> flex min-w-0 flex-1 flex-col border-rule max-md:pb-(--tab-bar) md:bord",
+          "property": "padding-bottom",
+          "value": 56
+        }
+      ],
       "shift": {
         "total": 0.0047,
         "shifts": [
           {
             "value": 0.0046792956824178045,
-            "at": 3044,
+            "at": 3069,
             "moved": [
               {
                 "what": "td[ledger-cell] \"6:00 PM\"",
@@ -1227,7 +1342,7 @@
         "shifts": [
           {
             "value": 0.0046792956824178045,
-            "at": 2986,
+            "at": 3324,
             "moved": [
               {
                 "what": "td[ledger-cell] \"6:00 PM\"",
@@ -1279,16 +1394,47 @@
       "width": 390,
       "theme": "dark",
       "overflow": 0,
-      "rulesMeasured": 108,
-      "rules": [],
+      "rulesMeasured": 113,
+      "rules": [
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "overshoots the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 20.5px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "overshoots the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 20.5px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "overshoots the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 20.5px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "overshoots the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 20.5px"
+        }
+      ],
       "unmeasured": [],
-      "spacing": [],
+      "spacing": [
+        {
+          "element": "(shell) | <div> flex min-w-0 flex-1 flex-col border-rule max-md:pb-(--tab-bar) md:bord",
+          "property": "padding-bottom",
+          "value": 56
+        }
+      ],
       "shift": {
         "total": 0.0047,
         "shifts": [
           {
             "value": 0.0046792956824178045,
-            "at": 3172,
+            "at": 3248,
             "moved": [
               {
                 "what": "td[ledger-cell] \"6:00 PM\"",
@@ -1338,7 +1484,7 @@
         "shifts": [
           {
             "value": 0.0046792956824178045,
-            "at": 3412,
+            "at": 3219,
             "moved": [
               {
                 "what": "td[ledger-cell] \"6:00 PM\"",
@@ -1399,7 +1545,7 @@
         "shifts": [
           {
             "value": 0.000987928669410151,
-            "at": 3310,
+            "at": 3588,
             "moved": [
               {
                 "what": "td[ledger-cell] \"6:00 PM\"",
@@ -1444,7 +1590,7 @@
           },
           {
             "value": 0.0005417438271604939,
-            "at": 3506,
+            "at": 3754,
             "moved": [
               {
                 "what": "td[ledger-cell] \"TOR 58%Scotiabank Arena\"",
@@ -1468,7 +1614,7 @@
         "shifts": [
           {
             "value": 0.000987928669410151,
-            "at": 3688,
+            "at": 3402,
             "moved": [
               {
                 "what": "td[ledger-cell] \"6:00 PM\"",
@@ -1513,7 +1659,7 @@
           },
           {
             "value": 0.0005417438271604939,
-            "at": 3982,
+            "at": 3601,
             "moved": [
               {
                 "what": "td[ledger-cell] \"TOR 58%Scotiabank Arena\"",
@@ -1548,7 +1694,7 @@
         "shifts": [
           {
             "value": 0.000987928669410151,
-            "at": 3312,
+            "at": 3399,
             "moved": [
               {
                 "what": "td[ledger-cell] \"6:00 PM\"",
@@ -1593,7 +1739,7 @@
           },
           {
             "value": 0.0005417438271604939,
-            "at": 3619,
+            "at": 3729,
             "moved": [
               {
                 "what": "td[ledger-cell] \"TOR 58%Scotiabank Arena\"",
@@ -1617,7 +1763,7 @@
         "shifts": [
           {
             "value": 0.000987928669410151,
-            "at": 2879,
+            "at": 3221,
             "moved": [
               {
                 "what": "td[ledger-cell] \"6:00 PM\"",
@@ -1662,7 +1808,7 @@
           },
           {
             "value": 0.0005417438271604939,
-            "at": 3255,
+            "at": 3508,
             "moved": [
               {
                 "what": "td[ledger-cell] \"TOR 58%Scotiabank Arena\"",
@@ -1688,10 +1834,41 @@
       "width": 390,
       "theme": "light",
       "overflow": 0,
-      "rulesMeasured": 47,
-      "rules": [],
+      "rulesMeasured": 52,
+      "rules": [
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "overshoots the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 20.41px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "overshoots the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 20.41px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "overshoots the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 20.41px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "overshoots the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 20.41px"
+        }
+      ],
       "unmeasured": [],
-      "spacing": [],
+      "spacing": [
+        {
+          "element": "(shell) | <div> flex min-w-0 flex-1 flex-col border-rule max-md:pb-(--tab-bar) md:bord",
+          "property": "padding-bottom",
+          "value": 56
+        }
+      ],
       "shift": {
         "total": 0,
         "shifts": []
@@ -1707,10 +1884,41 @@
       "width": 390,
       "theme": "dark",
       "overflow": 0,
-      "rulesMeasured": 47,
-      "rules": [],
+      "rulesMeasured": 52,
+      "rules": [
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "overshoots the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 20.41px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "overshoots the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 20.41px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "overshoots the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 20.41px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "overshoots the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 20.41px"
+        }
+      ],
       "unmeasured": [],
-      "spacing": [],
+      "spacing": [
+        {
+          "element": "(shell) | <div> flex min-w-0 flex-1 flex-col border-rule max-md:pb-(--tab-bar) md:bord",
+          "property": "padding-bottom",
+          "value": 56
+        }
+      ],
       "shift": {
         "total": 0,
         "shifts": []
@@ -1735,7 +1943,7 @@
         "shifts": [
           {
             "value": 0.0005417438271604939,
-            "at": 2737,
+            "at": 2992,
             "moved": [
               {
                 "what": "td[ledger-cell] \"TOR 58%Scotiabank Arena\"",
@@ -1759,7 +1967,7 @@
         "shifts": [
           {
             "value": 0.0005417438271604939,
-            "at": 3296,
+            "at": 2843,
             "moved": [
               {
                 "what": "td[ledger-cell] \"TOR 58%Scotiabank Arena\"",
@@ -1794,7 +2002,7 @@
         "shifts": [
           {
             "value": 0.0005417438271604939,
-            "at": 3782,
+            "at": 2813,
             "moved": [
               {
                 "what": "td[ledger-cell] \"TOR 58%Scotiabank Arena\"",
@@ -1818,7 +2026,7 @@
         "shifts": [
           {
             "value": 0.0005417438271604939,
-            "at": 4038,
+            "at": 2759,
             "moved": [
               {
                 "what": "td[ledger-cell] \"TOR 58%Scotiabank Arena\"",
@@ -1844,33 +2052,44 @@
       "width": 390,
       "theme": "light",
       "overflow": 0,
-      "rulesMeasured": 24,
-      "rules": [],
+      "rulesMeasured": 29,
+      "rules": [
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        }
+      ],
       "unmeasured": [],
-      "spacing": [],
+      "spacing": [
+        {
+          "element": "(shell) | <div> flex min-w-0 flex-1 flex-col border-rule max-md:pb-(--tab-bar) md:bord",
+          "property": "padding-bottom",
+          "value": 56
+        }
+      ],
       "shift": {
-        "total": 0.0013,
-        "shifts": [
-          {
-            "value": 0.0013085441096941286,
-            "at": 2041,
-            "moved": [
-              {
-                "what": "div \"dark modelight modemenu\"",
-                "from": [
-                  283,
-                  0,
-                  43.5
-                ],
-                "to": [
-                  229,
-                  0,
-                  43.5
-                ]
-              }
-            ]
-          }
-        ]
+        "total": 0,
+        "shifts": []
       },
       "shiftNoFavorites": {
         "total": 0,
@@ -1883,10 +2102,41 @@
       "width": 390,
       "theme": "dark",
       "overflow": 0,
-      "rulesMeasured": 24,
-      "rules": [],
+      "rulesMeasured": 29,
+      "rules": [
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        }
+      ],
       "unmeasured": [],
-      "spacing": [],
+      "spacing": [
+        {
+          "element": "(shell) | <div> flex min-w-0 flex-1 flex-col border-rule max-md:pb-(--tab-bar) md:bord",
+          "property": "padding-bottom",
+          "value": 56
+        }
+      ],
       "shift": {
         "total": 0,
         "shifts": []
@@ -1911,7 +2161,7 @@
         "shifts": [
           {
             "value": 0.0005417438271604939,
-            "at": 3294,
+            "at": 2790,
             "moved": [
               {
                 "what": "td[ledger-cell] \"TOR 58%Scotiabank Arena\"",
@@ -1935,7 +2185,7 @@
         "shifts": [
           {
             "value": 0.0005417438271604939,
-            "at": 2835,
+            "at": 2328,
             "moved": [
               {
                 "what": "td[ledger-cell] \"TOR 58%Scotiabank Arena\"",
@@ -1970,7 +2220,7 @@
         "shifts": [
           {
             "value": 0.0005417438271604939,
-            "at": 2544,
+            "at": 2720,
             "moved": [
               {
                 "what": "td[ledger-cell] \"TOR 58%Scotiabank Arena\"",
@@ -1994,7 +2244,7 @@
         "shifts": [
           {
             "value": 0.0005417438271604939,
-            "at": 2418,
+            "at": 2535,
             "moved": [
               {
                 "what": "td[ledger-cell] \"TOR 58%Scotiabank Arena\"",
@@ -2020,10 +2270,41 @@
       "width": 390,
       "theme": "light",
       "overflow": 0,
-      "rulesMeasured": 18,
-      "rules": [],
+      "rulesMeasured": 23,
+      "rules": [
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        }
+      ],
       "unmeasured": [],
-      "spacing": [],
+      "spacing": [
+        {
+          "element": "(shell) | <div> flex min-w-0 flex-1 flex-col border-rule max-md:pb-(--tab-bar) md:bord",
+          "property": "padding-bottom",
+          "value": 56
+        }
+      ],
       "shift": {
         "total": 0,
         "shifts": []
@@ -2039,10 +2320,41 @@
       "width": 390,
       "theme": "dark",
       "overflow": 0,
-      "rulesMeasured": 18,
-      "rules": [],
+      "rulesMeasured": 23,
+      "rules": [
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        }
+      ],
       "unmeasured": [],
-      "spacing": [],
+      "spacing": [
+        {
+          "element": "(shell) | <div> flex min-w-0 flex-1 flex-col border-rule max-md:pb-(--tab-bar) md:bord",
+          "property": "padding-bottom",
+          "value": 56
+        }
+      ],
       "shift": {
         "total": 0,
         "shifts": []
@@ -2096,10 +2408,41 @@
       "width": 390,
       "theme": "light",
       "overflow": 0,
-      "rulesMeasured": 36,
-      "rules": [],
+      "rulesMeasured": 41,
+      "rules": [
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "stops short of the rule of ledger > ledger-head > ledger-column | <th> whitespace-nowrap border-rule-head border-b px-2 py-1 font-label text- by 3.5px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "stops short of the rule of ledger > ledger-head > ledger-column | <th> whitespace-nowrap border-rule-head border-b px-2 py-1 font-label text- by 3.5px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "stops short of the rule of ledger > ledger-head > ledger-column | <th> whitespace-nowrap border-rule-head border-b px-2 py-1 font-label text- by 3.5px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "stops short of the rule of ledger > ledger-head > ledger-column | <th> whitespace-nowrap border-rule-head border-b px-2 py-1 font-label text- by 3.5px"
+        }
+      ],
       "unmeasured": [],
-      "spacing": [],
+      "spacing": [
+        {
+          "element": "(shell) | <div> flex min-w-0 flex-1 flex-col border-rule max-md:pb-(--tab-bar) md:bord",
+          "property": "padding-bottom",
+          "value": 56
+        }
+      ],
       "shift": {
         "total": 0,
         "shifts": []
@@ -2115,10 +2458,41 @@
       "width": 390,
       "theme": "dark",
       "overflow": 0,
-      "rulesMeasured": 36,
-      "rules": [],
+      "rulesMeasured": 41,
+      "rules": [
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "stops short of the rule of ledger > ledger-head > ledger-column | <th> whitespace-nowrap border-rule-head border-b px-2 py-1 font-label text- by 3.5px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "stops short of the rule of ledger > ledger-head > ledger-column | <th> whitespace-nowrap border-rule-head border-b px-2 py-1 font-label text- by 3.5px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "stops short of the rule of ledger > ledger-head > ledger-column | <th> whitespace-nowrap border-rule-head border-b px-2 py-1 font-label text- by 3.5px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "stops short of the rule of ledger > ledger-head > ledger-column | <th> whitespace-nowrap border-rule-head border-b px-2 py-1 font-label text- by 3.5px"
+        }
+      ],
       "unmeasured": [],
-      "spacing": [],
+      "spacing": [
+        {
+          "element": "(shell) | <div> flex min-w-0 flex-1 flex-col border-rule max-md:pb-(--tab-bar) md:bord",
+          "property": "padding-bottom",
+          "value": 56
+        }
+      ],
       "shift": {
         "total": 0,
         "shifts": []
@@ -2172,33 +2546,44 @@
       "width": 390,
       "theme": "light",
       "overflow": 0,
-      "rulesMeasured": 36,
-      "rules": [],
+      "rulesMeasured": 41,
+      "rules": [
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        }
+      ],
       "unmeasured": [],
-      "spacing": [],
+      "spacing": [
+        {
+          "element": "(shell) | <div> flex min-w-0 flex-1 flex-col border-rule max-md:pb-(--tab-bar) md:bord",
+          "property": "padding-bottom",
+          "value": 56
+        }
+      ],
       "shift": {
-        "total": 0.0013,
-        "shifts": [
-          {
-            "value": 0.0013085441096941286,
-            "at": 2232,
-            "moved": [
-              {
-                "what": "div \"dark modelight modemenu\"",
-                "from": [
-                  283,
-                  0,
-                  43.5
-                ],
-                "to": [
-                  229,
-                  0,
-                  43.5
-                ]
-              }
-            ]
-          }
-        ]
+        "total": 0,
+        "shifts": []
       },
       "shiftNoFavorites": {
         "total": 0,
@@ -2211,33 +2596,44 @@
       "width": 390,
       "theme": "dark",
       "overflow": 0,
-      "rulesMeasured": 36,
-      "rules": [],
+      "rulesMeasured": 41,
+      "rules": [
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        }
+      ],
       "unmeasured": [],
-      "spacing": [],
+      "spacing": [
+        {
+          "element": "(shell) | <div> flex min-w-0 flex-1 flex-col border-rule max-md:pb-(--tab-bar) md:bord",
+          "property": "padding-bottom",
+          "value": 56
+        }
+      ],
       "shift": {
-        "total": 0.0014,
-        "shifts": [
-          {
-            "value": 0.0013855172926173127,
-            "at": 2525,
-            "moved": [
-              {
-                "what": "div \"dark modelight modemenu\"",
-                "from": [
-                  274,
-                  0,
-                  43.5
-                ],
-                "to": [
-                  220,
-                  0,
-                  43.5
-                ]
-              }
-            ]
-          }
-        ]
+        "total": 0,
+        "shifts": []
       },
       "shiftNoFavorites": {
         "total": 0,
@@ -2288,57 +2684,23 @@
       "width": 390,
       "theme": "light",
       "overflow": 0,
-      "rulesMeasured": 110,
+      "rulesMeasured": 120,
       "rules": [],
       "unmeasured": [],
-      "spacing": [],
+      "spacing": [
+        {
+          "element": "(shell) | <div> flex min-w-0 flex-1 flex-col border-rule max-md:pb-(--tab-bar) md:bord",
+          "property": "padding-bottom",
+          "value": 56
+        }
+      ],
       "shift": {
-        "total": 0.0581,
-        "shifts": [
-          {
-            "value": 0.058056872037914695,
-            "at": 3454,
-            "moved": [
-              {
-                "what": "footer \"Scores and stats from ESPN. Yogan Hockey\"",
-                "from": [
-                  0,
-                  795.171875,
-                  48.828125
-                ],
-                "to": [
-                  0,
-                  0,
-                  0
-                ]
-              }
-            ]
-          }
-        ]
+        "total": 0,
+        "shifts": []
       },
       "shiftNoFavorites": {
-        "total": 0.0581,
-        "shifts": [
-          {
-            "value": 0.058056872037914695,
-            "at": 3159,
-            "moved": [
-              {
-                "what": "footer \"Scores and stats from ESPN. Yogan Hockey\"",
-                "from": [
-                  0,
-                  795.171875,
-                  48.828125
-                ],
-                "to": [
-                  0,
-                  0,
-                  0
-                ]
-              }
-            ]
-          }
-        ]
+        "total": 0,
+        "shifts": []
       }
     },
     {
@@ -2347,57 +2709,23 @@
       "width": 390,
       "theme": "dark",
       "overflow": 0,
-      "rulesMeasured": 110,
+      "rulesMeasured": 120,
       "rules": [],
       "unmeasured": [],
-      "spacing": [],
+      "spacing": [
+        {
+          "element": "(shell) | <div> flex min-w-0 flex-1 flex-col border-rule max-md:pb-(--tab-bar) md:bord",
+          "property": "padding-bottom",
+          "value": 56
+        }
+      ],
       "shift": {
-        "total": 0.0581,
-        "shifts": [
-          {
-            "value": 0.058056872037914695,
-            "at": 2764,
-            "moved": [
-              {
-                "what": "footer \"Scores and stats from ESPN. Yogan Hockey\"",
-                "from": [
-                  0,
-                  795.171875,
-                  48.828125
-                ],
-                "to": [
-                  0,
-                  0,
-                  0
-                ]
-              }
-            ]
-          }
-        ]
+        "total": 0,
+        "shifts": []
       },
       "shiftNoFavorites": {
-        "total": 0.0581,
-        "shifts": [
-          {
-            "value": 0.058056872037914695,
-            "at": 1852,
-            "moved": [
-              {
-                "what": "footer \"Scores and stats from ESPN. Yogan Hockey\"",
-                "from": [
-                  0,
-                  795.171875,
-                  48.828125
-                ],
-                "to": [
-                  0,
-                  0,
-                  0
-                ]
-              }
-            ]
-          }
-        ]
+        "total": 0,
+        "shifts": []
       }
     },
     {
@@ -2406,7 +2734,7 @@
       "width": 1440,
       "theme": "light",
       "overflow": 0,
-      "rulesMeasured": 101,
+      "rulesMeasured": 107,
       "rules": [],
       "unmeasured": [],
       "spacing": [],
@@ -2425,7 +2753,7 @@
       "width": 1440,
       "theme": "dark",
       "overflow": 0,
-      "rulesMeasured": 101,
+      "rulesMeasured": 107,
       "rules": [],
       "unmeasured": [],
       "spacing": [],
@@ -2444,10 +2772,41 @@
       "width": 390,
       "theme": "light",
       "overflow": 0,
-      "rulesMeasured": 48,
-      "rules": [],
+      "rulesMeasured": 58,
+      "rules": [
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "stops short of the rule of game-tab > scoring-summary > play-row | <button> flex w-full cursor-pointer gap-2 border-border border-b px-2 py-row te by 21.17px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "stops short of the rule of game-tab > scoring-summary > play-row | <button> flex w-full cursor-pointer gap-2 border-border border-b px-2 py-row te by 21.17px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "stops short of the rule of game-tab > scoring-summary > play-row | <button> flex w-full cursor-pointer gap-2 border-border border-b px-2 py-row te by 21.17px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "stops short of the rule of game-tab > scoring-summary > play-row | <button> flex w-full cursor-pointer gap-2 border-border border-b px-2 py-row te by 21.17px"
+        }
+      ],
       "unmeasured": [],
-      "spacing": [],
+      "spacing": [
+        {
+          "element": "(shell) | <div> flex min-w-0 flex-1 flex-col border-rule max-md:pb-(--tab-bar) md:bord",
+          "property": "padding-bottom",
+          "value": 56
+        }
+      ],
       "shift": {
         "total": 0,
         "shifts": []
@@ -2463,33 +2822,44 @@
       "width": 390,
       "theme": "dark",
       "overflow": 0,
-      "rulesMeasured": 48,
-      "rules": [],
+      "rulesMeasured": 58,
+      "rules": [
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "stops short of the rule of game-tab > scoring-summary > play-row | <button> flex w-full cursor-pointer gap-2 border-border border-b px-2 py-row te by 21.17px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "stops short of the rule of game-tab > scoring-summary > play-row | <button> flex w-full cursor-pointer gap-2 border-border border-b px-2 py-row te by 21.17px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "stops short of the rule of game-tab > scoring-summary > play-row | <button> flex w-full cursor-pointer gap-2 border-border border-b px-2 py-row te by 21.17px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "stops short of the rule of game-tab > scoring-summary > play-row | <button> flex w-full cursor-pointer gap-2 border-border border-b px-2 py-row te by 21.17px"
+        }
+      ],
       "unmeasured": [],
-      "spacing": [],
+      "spacing": [
+        {
+          "element": "(shell) | <div> flex min-w-0 flex-1 flex-col border-rule max-md:pb-(--tab-bar) md:bord",
+          "property": "padding-bottom",
+          "value": 56
+        }
+      ],
       "shift": {
-        "total": 0.0581,
-        "shifts": [
-          {
-            "value": 0.058056872037914695,
-            "at": 2194,
-            "moved": [
-              {
-                "what": "footer \"Scores and stats from ESPN. Yogan Hockey\"",
-                "from": [
-                  0,
-                  795.171875,
-                  48.828125
-                ],
-                "to": [
-                  0,
-                  0,
-                  0
-                ]
-              }
-            ]
-          }
-        ]
+        "total": 0,
+        "shifts": []
       },
       "shiftNoFavorites": {
         "total": 0,
@@ -2502,7 +2872,7 @@
       "width": 1440,
       "theme": "light",
       "overflow": 0,
-      "rulesMeasured": 39,
+      "rulesMeasured": 45,
       "rules": [],
       "unmeasured": [],
       "spacing": [],
@@ -2521,7 +2891,7 @@
       "width": 1440,
       "theme": "dark",
       "overflow": 0,
-      "rulesMeasured": 39,
+      "rulesMeasured": 45,
       "rules": [],
       "unmeasured": [],
       "spacing": [],
@@ -2540,37 +2910,48 @@
       "width": 390,
       "theme": "light",
       "overflow": 0,
-      "rulesMeasured": 35,
-      "rules": [],
+      "rulesMeasured": 45,
+      "rules": [
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        }
+      ],
       "unmeasured": [],
-      "spacing": [],
+      "spacing": [
+        {
+          "element": "(shell) | <div> flex min-w-0 flex-1 flex-col border-rule max-md:pb-(--tab-bar) md:bord",
+          "property": "padding-bottom",
+          "value": 56
+        }
+      ],
       "shift": {
         "total": 0,
         "shifts": []
       },
       "shiftNoFavorites": {
-        "total": 0.0116,
-        "shifts": [
-          {
-            "value": 0.01162513196019856,
-            "at": 1652,
-            "moved": [
-              {
-                "what": "footer \"Scores and stats from ESPN. Yogan Hockey\"",
-                "from": [
-                  0,
-                  795.171875,
-                  48.828125
-                ],
-                "to": [
-                  0,
-                  0,
-                  0
-                ]
-              }
-            ]
-          }
-        ]
+        "total": 0,
+        "shifts": []
       }
     },
     {
@@ -2579,37 +2960,48 @@
       "width": 390,
       "theme": "dark",
       "overflow": 0,
-      "rulesMeasured": 35,
-      "rules": [],
+      "rulesMeasured": 45,
+      "rules": [
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        }
+      ],
       "unmeasured": [],
-      "spacing": [],
+      "spacing": [
+        {
+          "element": "(shell) | <div> flex min-w-0 flex-1 flex-col border-rule max-md:pb-(--tab-bar) md:bord",
+          "property": "padding-bottom",
+          "value": 56
+        }
+      ],
       "shift": {
         "total": 0,
         "shifts": []
       },
       "shiftNoFavorites": {
-        "total": 0.0116,
-        "shifts": [
-          {
-            "value": 0.01162513196019856,
-            "at": 1816,
-            "moved": [
-              {
-                "what": "footer \"Scores and stats from ESPN. Yogan Hockey\"",
-                "from": [
-                  0,
-                  795.171875,
-                  48.828125
-                ],
-                "to": [
-                  0,
-                  0,
-                  0
-                ]
-              }
-            ]
-          }
-        ]
+        "total": 0,
+        "shifts": []
       }
     },
     {
@@ -2618,7 +3010,7 @@
       "width": 1440,
       "theme": "light",
       "overflow": 0,
-      "rulesMeasured": 26,
+      "rulesMeasured": 32,
       "rules": [],
       "unmeasured": [],
       "spacing": [],
@@ -2637,7 +3029,7 @@
       "width": 1440,
       "theme": "dark",
       "overflow": 0,
-      "rulesMeasured": 26,
+      "rulesMeasured": 32,
       "rules": [],
       "unmeasured": [],
       "spacing": [],
@@ -2656,169 +3048,58 @@
       "width": 390,
       "theme": "light",
       "overflow": 0,
-      "rulesMeasured": 42,
-      "rules": [],
+      "rulesMeasured": 47,
+      "rules": [
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        }
+      ],
       "unmeasured": [],
-      "spacing": [],
+      "spacing": [
+        {
+          "element": "(shell) | <div> flex min-w-0 flex-1 flex-col border-rule max-md:pb-(--tab-bar) md:bord",
+          "property": "padding-bottom",
+          "value": 56
+        }
+      ],
       "shift": {
-        "total": 0.0598,
+        "total": 0.0018,
         "shifts": [
           {
-            "value": 0.058056872037914695,
-            "at": 2289,
-            "moved": [
-              {
-                "what": "footer \"Scores and stats from ESPN. Yogan Hockey\"",
-                "from": [
-                  0,
-                  795.171875,
-                  48.828125
-                ],
-                "to": [
-                  0,
-                  0,
-                  0
-                ]
-              }
-            ]
-          },
-          {
             "value": 0.001753083678747972,
-            "at": 3031,
+            "at": 2505,
             "moved": [
               {
                 "what": "p[pick-made] \"made Tue Oct 6, 11:02 AM · generated by \"",
                 "from": [
                   16,
-                  713.171875,
+                  791.171875,
                   41
                 ],
                 "to": [
                   16,
-                  713.171875,
-                  41
-                ]
-              },
-              {
-                "what": "time[rink-status] \"6:00 PM\"",
-                "from": [
-                  179.5,
-                  134,
-                  16
-                ],
-                "to": [
-                  179.5,
-                  134,
-                  16
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      "shiftNoFavorites": {
-        "total": 0.0598,
-        "shifts": [
-          {
-            "value": 0.058056872037914695,
-            "at": 2520,
-            "moved": [
-              {
-                "what": "footer \"Scores and stats from ESPN. Yogan Hockey\"",
-                "from": [
-                  0,
-                  795.171875,
-                  48.828125
-                ],
-                "to": [
-                  0,
-                  0,
-                  0
-                ]
-              }
-            ]
-          },
-          {
-            "value": 0.001753083678747972,
-            "at": 3374,
-            "moved": [
-              {
-                "what": "p[pick-made] \"made Tue Oct 6, 11:02 AM · generated by \"",
-                "from": [
-                  16,
-                  713.171875,
-                  41
-                ],
-                "to": [
-                  16,
-                  713.171875,
-                  41
-                ]
-              },
-              {
-                "what": "time[rink-status] \"6:00 PM\"",
-                "from": [
-                  179.5,
-                  134,
-                  16
-                ],
-                "to": [
-                  179.5,
-                  134,
-                  16
-                ]
-              }
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "page": "game-scheduled",
-      "path": "/nhl/games/401892449",
-      "width": 390,
-      "theme": "dark",
-      "overflow": 0,
-      "rulesMeasured": 42,
-      "rules": [],
-      "unmeasured": [],
-      "spacing": [],
-      "shift": {
-        "total": 0.0598,
-        "shifts": [
-          {
-            "value": 0.058056872037914695,
-            "at": 2345,
-            "moved": [
-              {
-                "what": "footer \"Scores and stats from ESPN. Yogan Hockey\"",
-                "from": [
-                  0,
-                  795.171875,
-                  48.828125
-                ],
-                "to": [
-                  0,
-                  0,
-                  0
-                ]
-              }
-            ]
-          },
-          {
-            "value": 0.001753083678747972,
-            "at": 3109,
-            "moved": [
-              {
-                "what": "p[pick-made] \"made Tue Oct 6, 11:02 AM · generated by \"",
-                "from": [
-                  16,
-                  713.171875,
-                  41
-                ],
-                "to": [
-                  16,
-                  713.171875,
+                  791.171875,
                   41
                 ]
               },
@@ -2844,18 +3125,134 @@
         "shifts": [
           {
             "value": 0.001753083678747972,
-            "at": 2993,
+            "at": 2443,
             "moved": [
               {
                 "what": "p[pick-made] \"made Tue Oct 6, 11:02 AM · generated by \"",
                 "from": [
                   16,
-                  713.171875,
+                  791.171875,
                   41
                 ],
                 "to": [
                   16,
-                  713.171875,
+                  791.171875,
+                  41
+                ]
+              },
+              {
+                "what": "time[rink-status] \"6:00 PM\"",
+                "from": [
+                  179.5,
+                  134,
+                  16
+                ],
+                "to": [
+                  179.5,
+                  134,
+                  16
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "page": "game-scheduled",
+      "path": "/nhl/games/401892449",
+      "width": 390,
+      "theme": "dark",
+      "overflow": 0,
+      "rulesMeasured": 47,
+      "rules": [
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        }
+      ],
+      "unmeasured": [],
+      "spacing": [
+        {
+          "element": "(shell) | <div> flex min-w-0 flex-1 flex-col border-rule max-md:pb-(--tab-bar) md:bord",
+          "property": "padding-bottom",
+          "value": 56
+        }
+      ],
+      "shift": {
+        "total": 0.0018,
+        "shifts": [
+          {
+            "value": 0.001753083678747972,
+            "at": 2209,
+            "moved": [
+              {
+                "what": "p[pick-made] \"made Tue Oct 6, 11:02 AM · generated by \"",
+                "from": [
+                  16,
+                  791.171875,
+                  41
+                ],
+                "to": [
+                  16,
+                  791.171875,
+                  41
+                ]
+              },
+              {
+                "what": "time[rink-status] \"6:00 PM\"",
+                "from": [
+                  179.5,
+                  134,
+                  16
+                ],
+                "to": [
+                  179.5,
+                  134,
+                  16
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0.0018,
+        "shifts": [
+          {
+            "value": 0.001753083678747972,
+            "at": 2279,
+            "moved": [
+              {
+                "what": "p[pick-made] \"made Tue Oct 6, 11:02 AM · generated by \"",
+                "from": [
+                  16,
+                  791.171875,
+                  41
+                ],
+                "to": [
+                  16,
+                  791.171875,
                   41
                 ]
               },
@@ -2888,52 +3285,12 @@
       "unmeasured": [],
       "spacing": [],
       "shift": {
-        "total": 0.0001,
-        "shifts": [
-          {
-            "value": 0.00011368312757201646,
-            "at": 3736,
-            "moved": [
-              {
-                "what": "p[pick-made] \"made Tue Oct 6, 11:02 AM · generated by \"",
-                "from": [
-                  217,
-                  876.078125,
-                  17
-                ],
-                "to": [
-                  217,
-                  876.078125,
-                  17
-                ]
-              }
-            ]
-          }
-        ]
+        "total": 0,
+        "shifts": []
       },
       "shiftNoFavorites": {
-        "total": 0.0001,
-        "shifts": [
-          {
-            "value": 0.00011368312757201646,
-            "at": 3041,
-            "moved": [
-              {
-                "what": "p[pick-made] \"made Tue Oct 6, 11:02 AM · generated by \"",
-                "from": [
-                  217,
-                  876.078125,
-                  17
-                ],
-                "to": [
-                  217,
-                  876.078125,
-                  17
-                ]
-              }
-            ]
-          }
-        ]
+        "total": 0,
+        "shifts": []
       }
     },
     {
@@ -2947,52 +3304,12 @@
       "unmeasured": [],
       "spacing": [],
       "shift": {
-        "total": 0.0001,
-        "shifts": [
-          {
-            "value": 0.00011368312757201646,
-            "at": 3421,
-            "moved": [
-              {
-                "what": "p[pick-made] \"made Tue Oct 6, 11:02 AM · generated by \"",
-                "from": [
-                  217,
-                  876.078125,
-                  17
-                ],
-                "to": [
-                  217,
-                  876.078125,
-                  17
-                ]
-              }
-            ]
-          }
-        ]
+        "total": 0,
+        "shifts": []
       },
       "shiftNoFavorites": {
-        "total": 0.0001,
-        "shifts": [
-          {
-            "value": 0.00011368312757201646,
-            "at": 3132,
-            "moved": [
-              {
-                "what": "p[pick-made] \"made Tue Oct 6, 11:02 AM · generated by \"",
-                "from": [
-                  217,
-                  876.078125,
-                  17
-                ],
-                "to": [
-                  217,
-                  876.078125,
-                  17
-                ]
-              }
-            ]
-          }
-        ]
+        "total": 0,
+        "shifts": []
       }
     },
     {
@@ -3001,16 +3318,47 @@
       "width": 390,
       "theme": "light",
       "overflow": 0,
-      "rulesMeasured": 13,
-      "rules": [],
+      "rulesMeasured": 18,
+      "rules": [
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        }
+      ],
       "unmeasured": [],
-      "spacing": [],
+      "spacing": [
+        {
+          "element": "(shell) | <div> flex min-w-0 flex-1 flex-col border-rule max-md:pb-(--tab-bar) md:bord",
+          "property": "padding-bottom",
+          "value": 56
+        }
+      ],
       "shift": {
         "total": 0.0031,
         "shifts": [
           {
             "value": 0.0031363404420501075,
-            "at": 2021,
+            "at": 1564,
             "moved": [
               {
                 "what": "li[score-ticker] \"★ favorite team, NSH@atTOR6:00 PM\"",
@@ -3040,16 +3388,47 @@
       "width": 390,
       "theme": "dark",
       "overflow": 0,
-      "rulesMeasured": 13,
-      "rules": [],
+      "rulesMeasured": 18,
+      "rules": [
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        }
+      ],
       "unmeasured": [],
-      "spacing": [],
+      "spacing": [
+        {
+          "element": "(shell) | <div> flex min-w-0 flex-1 flex-col border-rule max-md:pb-(--tab-bar) md:bord",
+          "property": "padding-bottom",
+          "value": 56
+        }
+      ],
       "shift": {
         "total": 0.0031,
         "shifts": [
           {
             "value": 0.0031363404420501075,
-            "at": 2131,
+            "at": 1417,
             "moved": [
               {
                 "what": "li[score-ticker] \"★ favorite team, NSH@atTOR6:00 PM\"",
@@ -3088,7 +3467,7 @@
         "shifts": [
           {
             "value": 0.0046027028276105966,
-            "at": 1765,
+            "at": 1298,
             "moved": [
               {
                 "what": "li[score-ticker] \"★ favorite team, NSH@atTOR6:00 PM\"",
@@ -3138,7 +3517,7 @@
         "shifts": [
           {
             "value": 0.0015861625514403293,
-            "at": 2173,
+            "at": 1306,
             "moved": [
               {
                 "what": "li[score-ticker] \"UTA@atNJ6:00 PM\"",
@@ -3199,7 +3578,7 @@
         "shifts": [
           {
             "value": 0.0046027028276105966,
-            "at": 1713,
+            "at": 1480,
             "moved": [
               {
                 "what": "li[score-ticker] \"★ favorite team, NSH@atTOR6:00 PM\"",
@@ -3249,7 +3628,7 @@
         "shifts": [
           {
             "value": 0.0015861625514403293,
-            "at": 2578,
+            "at": 1450,
             "moved": [
               {
                 "what": "li[score-ticker] \"UTA@atNJ6:00 PM\"",
@@ -3301,16 +3680,47 @@
       "width": 390,
       "theme": "light",
       "overflow": 0,
-      "rulesMeasured": 13,
-      "rules": [],
+      "rulesMeasured": 18,
+      "rules": [
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        }
+      ],
       "unmeasured": [],
-      "spacing": [],
+      "spacing": [
+        {
+          "element": "(shell) | <div> flex min-w-0 flex-1 flex-col border-rule max-md:pb-(--tab-bar) md:bord",
+          "property": "padding-bottom",
+          "value": 56
+        }
+      ],
       "shift": {
-        "total": 0.0278,
+        "total": 0.0335,
         "shifts": [
           {
-            "value": 0.027772006468857396,
-            "at": 3503,
+            "value": 0.033510871274230136,
+            "at": 2465,
             "moved": [
               {
                 "what": "footer \"Scores and stats from ESPN. Yogan Hockey\"",
@@ -3321,7 +3731,7 @@
                 ],
                 "to": [
                   0,
-                  771,
+                  715,
                   73
                 ]
               }
@@ -3330,30 +3740,11 @@
         ]
       },
       "shiftNoFavorites": {
-        "total": 0.0291,
+        "total": 0.0335,
         "shifts": [
           {
-            "value": 0.0013085441096941286,
-            "at": 1942,
-            "moved": [
-              {
-                "what": "div \"dark modelight modemenu\"",
-                "from": [
-                  283,
-                  0,
-                  43.5
-                ],
-                "to": [
-                  229,
-                  0,
-                  43.5
-                ]
-              }
-            ]
-          },
-          {
-            "value": 0.027772006468857396,
-            "at": 2599,
+            "value": 0.033510871274230136,
+            "at": 2161,
             "moved": [
               {
                 "what": "footer \"Scores and stats from ESPN. Yogan Hockey\"",
@@ -3364,7 +3755,7 @@
                 ],
                 "to": [
                   0,
-                  771,
+                  715,
                   73
                 ]
               }
@@ -3379,16 +3770,47 @@
       "width": 390,
       "theme": "dark",
       "overflow": 0,
-      "rulesMeasured": 13,
-      "rules": [],
+      "rulesMeasured": 18,
+      "rules": [
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        }
+      ],
       "unmeasured": [],
-      "spacing": [],
+      "spacing": [
+        {
+          "element": "(shell) | <div> flex min-w-0 flex-1 flex-col border-rule max-md:pb-(--tab-bar) md:bord",
+          "property": "padding-bottom",
+          "value": 56
+        }
+      ],
       "shift": {
-        "total": 0.0278,
+        "total": 0.0336,
         "shifts": [
           {
-            "value": 0.027772006468857396,
-            "at": 2344,
+            "value": 0.03356266187261672,
+            "at": 2061,
             "moved": [
               {
                 "what": "footer \"Scores and stats from ESPN. Yogan Hockey\"",
@@ -3399,8 +3821,21 @@
                 ],
                 "to": [
                   0,
-                  771,
+                  715,
                   73
+                ]
+              },
+              {
+                "what": "::after \"\"",
+                "from": [
+                  0,
+                  0,
+                  0
+                ],
+                "to": [
+                  162,
+                  714,
+                  44
                 ]
               }
             ]
@@ -3408,11 +3843,11 @@
         ]
       },
       "shiftNoFavorites": {
-        "total": 0.0278,
+        "total": 0.0336,
         "shifts": [
           {
-            "value": 0.027772006468857396,
-            "at": 2960,
+            "value": 0.03356266187261672,
+            "at": 1948,
             "moved": [
               {
                 "what": "footer \"Scores and stats from ESPN. Yogan Hockey\"",
@@ -3423,8 +3858,21 @@
                 ],
                 "to": [
                   0,
-                  771,
+                  715,
                   73
+                ]
+              },
+              {
+                "what": "::after \"\"",
+                "from": [
+                  0,
+                  0,
+                  0
+                ],
+                "to": [
+                  162,
+                  714,
+                  44
                 ]
               }
             ]
@@ -3476,16 +3924,47 @@
       "width": 390,
       "theme": "light",
       "overflow": 0,
-      "rulesMeasured": 37,
-      "rules": [],
+      "rulesMeasured": 42,
+      "rules": [
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "stops short of the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 17.5px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "stops short of the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 17.5px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "stops short of the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 17.5px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "stops short of the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 17.5px"
+        }
+      ],
       "unmeasured": [],
-      "spacing": [],
+      "spacing": [
+        {
+          "element": "(shell) | <div> flex min-w-0 flex-1 flex-col border-rule max-md:pb-(--tab-bar) md:bord",
+          "property": "padding-bottom",
+          "value": 56
+        }
+      ],
       "shift": {
         "total": 0.0336,
         "shifts": [
           {
             "value": 0.030447170134059467,
-            "at": 3510,
+            "at": 2104,
             "moved": [
               {
                 "what": "tr[ledger-row] \"TOR at MTL, live, 2nd 12:34No pickTOR ★ \"",
@@ -3517,7 +3996,7 @@
           },
           {
             "value": 0.0031363404420501075,
-            "at": 3582,
+            "at": 2177,
             "moved": [
               {
                 "what": "li[score-ticker] \"★ favorite team, NSH@atTOR6:00 PM\"",
@@ -3547,16 +4026,47 @@
       "width": 390,
       "theme": "dark",
       "overflow": 0,
-      "rulesMeasured": 37,
-      "rules": [],
+      "rulesMeasured": 42,
+      "rules": [
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "stops short of the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 17.5px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "stops short of the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 17.5px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "stops short of the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 17.5px"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "stops short of the rule of ledger > ledger-body > ledger-row | <tr> relative border-b hover:bg-highlight by 17.5px"
+        }
+      ],
       "unmeasured": [],
-      "spacing": [],
+      "spacing": [
+        {
+          "element": "(shell) | <div> flex min-w-0 flex-1 flex-col border-rule max-md:pb-(--tab-bar) md:bord",
+          "property": "padding-bottom",
+          "value": 56
+        }
+      ],
       "shift": {
         "total": 0.0367,
         "shifts": [
           {
             "value": 0.03671985101815968,
-            "at": 3565,
+            "at": 2115,
             "moved": [
               {
                 "what": "tr[ledger-row] \"TOR at MTL, live, 2nd 12:34No pickTOR ★ \"",
@@ -3621,7 +4131,7 @@
         "shifts": [
           {
             "value": 0.025644022874871397,
-            "at": 3632,
+            "at": 2145,
             "moved": [
               {
                 "what": "tr[ledger-row] \"TOR at MTL, live, 2nd 12:34No pickTOR ★ \"",
@@ -3666,7 +4176,7 @@
           },
           {
             "value": 0.0046027028276105966,
-            "at": 3676,
+            "at": 2205,
             "moved": [
               {
                 "what": "li[score-ticker] \"★ favorite team, NSH@atTOR6:00 PM\"",
@@ -3716,7 +4226,7 @@
         "shifts": [
           {
             "value": 0.00003909465020576132,
-            "at": 3586,
+            "at": 2074,
             "moved": [
               {
                 "what": "p \"updated 19:14:07\"",
@@ -3735,7 +4245,7 @@
           },
           {
             "value": 0.0015861625514403293,
-            "at": 3651,
+            "at": 2132,
             "moved": [
               {
                 "what": "li[score-ticker] \"UTA@atNJ6:00 PM\"",
@@ -3796,7 +4306,7 @@
         "shifts": [
           {
             "value": 0.034203080793467074,
-            "at": 2975,
+            "at": 2176,
             "moved": [
               {
                 "what": "tr[ledger-row] \"TOR at MTL, live, 2nd 12:34No pickTOR ★ \"",
@@ -3846,7 +4356,7 @@
         "shifts": [
           {
             "value": 0.0017425411522633747,
-            "at": 2682,
+            "at": 2115,
             "moved": [
               {
                 "what": "li[score-ticker] \"UTA@atNJ6:00 PM\"",
@@ -3898,16 +4408,47 @@
       "width": 390,
       "theme": "light",
       "overflow": 0,
-      "rulesMeasured": 63,
-      "rules": [],
+      "rulesMeasured": 68,
+      "rules": [
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        }
+      ],
       "unmeasured": [],
-      "spacing": [],
+      "spacing": [
+        {
+          "element": "(shell) | <div> flex min-w-0 flex-1 flex-col border-rule max-md:pb-(--tab-bar) md:bord",
+          "property": "padding-bottom",
+          "value": 56
+        }
+      ],
       "shift": {
         "total": 0.0031,
         "shifts": [
           {
             "value": 0.0031363404420501075,
-            "at": 2449,
+            "at": 2099,
             "moved": [
               {
                 "what": "li[score-ticker] \"★ favorite team, NSH@atTOR6:00 PM\"",
@@ -3937,16 +4478,47 @@
       "width": 390,
       "theme": "dark",
       "overflow": 0,
-      "rulesMeasured": 63,
-      "rules": [],
+      "rulesMeasured": 68,
+      "rules": [
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        },
+        {
+          "rule": "tab-bar | <a> flex h-14 items-center justify-center border-rule border-l text-small ",
+          "end": "bottom",
+          "at": 845,
+          "fault": "ends at nothing (no rule )"
+        }
+      ],
       "unmeasured": [],
-      "spacing": [],
+      "spacing": [
+        {
+          "element": "(shell) | <div> flex min-w-0 flex-1 flex-col border-rule max-md:pb-(--tab-bar) md:bord",
+          "property": "padding-bottom",
+          "value": 56
+        }
+      ],
       "shift": {
         "total": 0.0031,
         "shifts": [
           {
             "value": 0.0031363404420501075,
-            "at": 2467,
+            "at": 2131,
             "moved": [
               {
                 "what": "li[score-ticker] \"★ favorite team, NSH@atTOR6:00 PM\"",
@@ -3985,7 +4557,7 @@
         "shifts": [
           {
             "value": 0.0046027028276105966,
-            "at": 2997,
+            "at": 2211,
             "moved": [
               {
                 "what": "li[score-ticker] \"★ favorite team, NSH@atTOR6:00 PM\"",
@@ -4035,7 +4607,7 @@
         "shifts": [
           {
             "value": 0.0015861625514403293,
-            "at": 2916,
+            "at": 2400,
             "moved": [
               {
                 "what": "li[score-ticker] \"UTA@atNJ6:00 PM\"",
@@ -4096,7 +4668,7 @@
         "shifts": [
           {
             "value": 0.0046027028276105966,
-            "at": 2989,
+            "at": 2231,
             "moved": [
               {
                 "what": "li[score-ticker] \"★ favorite team, NSH@atTOR6:00 PM\"",
@@ -4146,7 +4718,7 @@
         "shifts": [
           {
             "value": 0.0015861625514403293,
-            "at": 3516,
+            "at": 2403,
             "moved": [
               {
                 "what": "li[score-ticker] \"UTA@atNJ6:00 PM\"",

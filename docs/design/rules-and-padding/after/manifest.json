@@ -1,7 +1,7 @@
 {
   "baseURL": "http://localhost:5325",
   "fixtureMode": true,
-  "capturedAt": "2026-10-11T22:00:16.899Z",
+  "capturedAt": "2026-10-11T22:18:44.580Z",
   "pages": [
     {
       "file": "home-390-light.png",
@@ -18,6 +18,8 @@
       "row": 55,
       "tab": null,
       "strip": 56,
+      "tabBar": 56,
+      "tabBarPlace": 56,
       "errors": [],
       "failed": []
     },
@@ -36,6 +38,8 @@
       "row": 55,
       "tab": null,
       "strip": 56,
+      "tabBar": 56,
+      "tabBarPlace": 56,
       "errors": [],
       "failed": []
     },
@@ -54,6 +58,8 @@
       "row": 33,
       "tab": null,
       "strip": 36,
+      "tabBar": null,
+      "tabBarPlace": null,
       "errors": [],
       "failed": []
     },
@@ -72,6 +78,8 @@
       "row": 33,
       "tab": null,
       "strip": 36,
+      "tabBar": null,
+      "tabBarPlace": null,
       "errors": [],
       "failed": []
     },
@@ -90,6 +98,8 @@
       "row": 55,
       "tab": null,
       "strip": 56,
+      "tabBar": 56,
+      "tabBarPlace": 56,
       "errors": [],
       "failed": []
     },
@@ -108,6 +118,8 @@
       "row": 55,
       "tab": null,
       "strip": 56,
+      "tabBar": 56,
+      "tabBarPlace": 56,
       "errors": [],
       "failed": []
     },
@@ -126,6 +138,8 @@
       "row": 33,
       "tab": null,
       "strip": 36,
+      "tabBar": null,
+      "tabBarPlace": null,
       "errors": [],
       "failed": []
     },
@@ -144,6 +158,8 @@
       "row": 33,
       "tab": null,
       "strip": 36,
+      "tabBar": null,
+      "tabBarPlace": null,
       "errors": [],
       "failed": []
     },
@@ -162,6 +178,8 @@
       "row": 45,
       "tab": 44,
       "strip": 56,
+      "tabBar": 56,
+      "tabBarPlace": 56,
       "errors": [],
       "failed": []
     },
@@ -180,6 +198,8 @@
       "row": 45,
       "tab": 44,
       "strip": 56,
+      "tabBar": 56,
+      "tabBarPlace": 56,
       "errors": [],
       "failed": []
     },
@@ -198,6 +218,8 @@
       "row": 33,
       "tab": 28,
       "strip": 36,
+      "tabBar": null,
+      "tabBarPlace": null,
       "errors": [],
       "failed": []
     },
@@ -216,6 +238,8 @@
       "row": 33,
       "tab": 28,
       "strip": 36,
+      "tabBar": null,
+      "tabBarPlace": null,
       "errors": [],
       "failed": []
     },
@@ -234,6 +258,8 @@
       "row": 45,
       "tab": 44,
       "strip": 56,
+      "tabBar": 56,
+      "tabBarPlace": 56,
       "errors": [],
       "failed": []
     },
@@ -252,6 +278,8 @@
       "row": 45,
       "tab": 44,
       "strip": 56,
+      "tabBar": 56,
+      "tabBarPlace": 56,
       "errors": [],
       "failed": []
     },
@@ -270,6 +298,8 @@
       "row": 33,
       "tab": 28,
       "strip": 36,
+      "tabBar": null,
+      "tabBarPlace": null,
       "errors": [],
       "failed": []
     },
@@ -288,6 +318,8 @@
       "row": 33,
       "tab": 28,
       "strip": 36,
+      "tabBar": null,
+      "tabBarPlace": null,
       "errors": [],
       "failed": []
     },
@@ -306,6 +338,8 @@
       "row": 67,
       "tab": 44,
       "strip": 56,
+      "tabBar": 56,
+      "tabBarPlace": 56,
       "errors": [],
       "failed": []
     },
@@ -324,6 +358,8 @@
       "row": 67,
       "tab": 44,
       "strip": 56,
+      "tabBar": 56,
+      "tabBarPlace": 56,
       "errors": [],
       "failed": []
     },
@@ -342,6 +378,8 @@
       "row": 33,
       "tab": 28,
       "strip": 36,
+      "tabBar": null,
+      "tabBarPlace": null,
       "errors": [],
       "failed": []
     },
@@ -360,6 +398,8 @@
       "row": 33,
       "tab": 28,
       "strip": 36,
+      "tabBar": null,
+      "tabBarPlace": null,
       "errors": [],
       "failed": []
     },
@@ -378,6 +418,8 @@
       "row": 67,
       "tab": 44,
       "strip": 56,
+      "tabBar": 56,
+      "tabBarPlace": 56,
       "errors": [],
       "failed": []
     },
@@ -396,6 +438,8 @@
       "row": 67,
       "tab": 44,
       "strip": 56,
+      "tabBar": 56,
+      "tabBarPlace": 56,
       "errors": [],
       "failed": []
     },
@@ -414,6 +458,8 @@
       "row": 33,
       "tab": 28,
       "strip": 36,
+      "tabBar": null,
+      "tabBarPlace": null,
       "errors": [],
       "failed": []
     },
@@ -432,6 +478,8 @@
       "row": 33,
       "tab": 28,
       "strip": 36,
+      "tabBar": null,
+      "tabBarPlace": null,
       "errors": [],
       "failed": []
     },
@@ -450,6 +498,8 @@
       "row": 67,
       "tab": 44,
       "strip": 56,
+      "tabBar": 56,
+      "tabBarPlace": 56,
       "errors": [],
       "failed": []
     },
@@ -468,6 +518,8 @@
       "row": 67,
       "tab": 44,
       "strip": 56,
+      "tabBar": 56,
+      "tabBarPlace": 56,
       "errors": [],
       "failed": []
     },
@@ -486,6 +538,8 @@
       "row": 33,
       "tab": 28,
       "strip": 36,
+      "tabBar": null,
+      "tabBarPlace": null,
       "errors": [],
       "failed": []
     },
@@ -504,6 +558,8 @@
       "row": 33,
       "tab": 28,
       "strip": 36,
+      "tabBar": null,
+      "tabBarPlace": null,
       "errors": [],
       "failed": []
     },
@@ -522,6 +578,8 @@
       "row": 61,
       "tab": null,
       "strip": 56,
+      "tabBar": 56,
+      "tabBarPlace": 56,
       "errors": [],
       "failed": []
     },
@@ -540,6 +598,8 @@
       "row": 61,
       "tab": null,
       "strip": 56,
+      "tabBar": 56,
+      "tabBarPlace": 56,
       "errors": [],
       "failed": []
     },
@@ -558,6 +618,8 @@
       "row": 33,
       "tab": null,
       "strip": 36,
+      "tabBar": null,
+      "tabBarPlace": null,
       "errors": [],
       "failed": []
     },
@@ -576,6 +638,8 @@
       "row": 33,
       "tab": null,
       "strip": 36,
+      "tabBar": null,
+      "tabBarPlace": null,
       "errors": [],
       "failed": []
     },
@@ -594,6 +658,8 @@
       "row": 45,
       "tab": null,
       "strip": 56,
+      "tabBar": 56,
+      "tabBarPlace": 56,
       "errors": [],
       "failed": []
     },
@@ -612,6 +678,8 @@
       "row": 45,
       "tab": null,
       "strip": 56,
+      "tabBar": 56,
+      "tabBarPlace": 56,
       "errors": [],
       "failed": []
     },
@@ -630,6 +698,8 @@
       "row": 33,
       "tab": null,
       "strip": 36,
+      "tabBar": null,
+      "tabBarPlace": null,
       "errors": [],
       "failed": []
     },
@@ -648,6 +718,8 @@
       "row": 33,
       "tab": null,
       "strip": 36,
+      "tabBar": null,
+      "tabBarPlace": null,
       "errors": [],
       "failed": []
     },
@@ -666,6 +738,8 @@
       "row": 45,
       "tab": null,
       "strip": 56,
+      "tabBar": 56,
+      "tabBarPlace": 56,
       "errors": [],
       "failed": []
     },
@@ -684,6 +758,8 @@
       "row": 45,
       "tab": null,
       "strip": 56,
+      "tabBar": 56,
+      "tabBarPlace": 56,
       "errors": [],
       "failed": []
     },
@@ -702,6 +778,8 @@
       "row": 33,
       "tab": null,
       "strip": 36,
+      "tabBar": null,
+      "tabBarPlace": null,
       "errors": [],
       "failed": []
     },
@@ -720,6 +798,8 @@
       "row": 33,
       "tab": null,
       "strip": 36,
+      "tabBar": null,
+      "tabBarPlace": null,
       "errors": [],
       "failed": []
     },
@@ -738,6 +818,8 @@
       "row": null,
       "tab": 44,
       "strip": 56,
+      "tabBar": 56,
+      "tabBarPlace": 56,
       "errors": [],
       "failed": []
     },
@@ -756,6 +838,8 @@
       "row": null,
       "tab": 44,
       "strip": 56,
+      "tabBar": 56,
+      "tabBarPlace": 56,
       "errors": [],
       "failed": []
     },
@@ -774,6 +858,8 @@
       "row": null,
       "tab": 28,
       "strip": 36,
+      "tabBar": null,
+      "tabBarPlace": null,
       "errors": [],
       "failed": []
     },
@@ -792,6 +878,8 @@
       "row": null,
       "tab": 28,
       "strip": 36,
+      "tabBar": null,
+      "tabBarPlace": null,
       "errors": [],
       "failed": []
     },
@@ -810,6 +898,8 @@
       "row": null,
       "tab": 44,
       "strip": 56,
+      "tabBar": 56,
+      "tabBarPlace": 56,
       "errors": [],
       "failed": []
     },
@@ -828,6 +918,8 @@
       "row": null,
       "tab": 44,
       "strip": 56,
+      "tabBar": 56,
+      "tabBarPlace": 56,
       "errors": [],
       "failed": []
     },
@@ -846,6 +938,8 @@
       "row": null,
       "tab": 28,
       "strip": 36,
+      "tabBar": null,
+      "tabBarPlace": null,
       "errors": [],
       "failed": []
     },
@@ -864,6 +958,8 @@
       "row": null,
       "tab": 28,
       "strip": 36,
+      "tabBar": null,
+      "tabBarPlace": null,
       "errors": [],
       "failed": []
     },
@@ -882,6 +978,8 @@
       "row": null,
       "tab": 44,
       "strip": 56,
+      "tabBar": 56,
+      "tabBarPlace": 56,
       "errors": [],
       "failed": []
     },
@@ -900,6 +998,8 @@
       "row": null,
       "tab": 44,
       "strip": 56,
+      "tabBar": 56,
+      "tabBarPlace": 56,
       "errors": [],
       "failed": []
     },
@@ -918,6 +1018,8 @@
       "row": null,
       "tab": 28,
       "strip": 36,
+      "tabBar": null,
+      "tabBarPlace": null,
       "errors": [],
       "failed": []
     },
@@ -936,6 +1038,8 @@
       "row": null,
       "tab": 28,
       "strip": 36,
+      "tabBar": null,
+      "tabBarPlace": null,
       "errors": [],
       "failed": []
     },
@@ -954,6 +1058,8 @@
       "row": 45,
       "tab": null,
       "strip": 56,
+      "tabBar": 56,
+      "tabBarPlace": 56,
       "errors": [],
       "failed": []
     },
@@ -972,6 +1078,8 @@
       "row": 45,
       "tab": null,
       "strip": 56,
+      "tabBar": 56,
+      "tabBarPlace": 56,
       "errors": [],
       "failed": []
     },
@@ -990,6 +1098,8 @@
       "row": 33,
       "tab": null,
       "strip": 36,
+      "tabBar": null,
+      "tabBarPlace": null,
       "errors": [],
       "failed": []
     },
@@ -1008,6 +1118,8 @@
       "row": 33,
       "tab": null,
       "strip": 36,
+      "tabBar": null,
+      "tabBarPlace": null,
       "errors": [],
       "failed": []
     },
@@ -1026,6 +1138,8 @@
       "row": null,
       "tab": null,
       "strip": 56,
+      "tabBar": 56,
+      "tabBarPlace": 56,
       "errors": [],
       "failed": []
     },
@@ -1044,6 +1158,8 @@
       "row": null,
       "tab": null,
       "strip": 56,
+      "tabBar": 56,
+      "tabBarPlace": 56,
       "errors": [],
       "failed": []
     },
@@ -1062,6 +1178,8 @@
       "row": null,
       "tab": null,
       "strip": 36,
+      "tabBar": null,
+      "tabBarPlace": null,
       "errors": [],
       "failed": []
     },
@@ -1080,13 +1198,15 @@
       "row": null,
       "tab": null,
       "strip": 36,
+      "tabBar": null,
+      "tabBarPlace": null,
       "errors": [],
       "failed": []
     },
     {
       "file": "error-390-light.png",
       "path": "/nhl/teams/1",
-      "status": 503,
+      "status": 200,
       "theme": "light",
       "overflow": 0,
       "font": "\"Geist Mono\"",
@@ -1098,6 +1218,8 @@
       "row": null,
       "tab": null,
       "strip": 56,
+      "tabBar": 56,
+      "tabBarPlace": 56,
       "errors": [
         "Switched to client rendering because the server rendering errored:\n\nESPN teams/1 could not be fetched: fixture mode has no recorded response fixtures/team-1.json; add a sample of the endpoint to check/samples.ts and run pnpm record:fixtures",
         "Switched to client rendering because the server rendering errored:\n\nESPN teams/1 could not be fetched: fixture mode has no recorded response fixtures/team-1.json; add a sample of the endpoint to check/samples.ts and run pnpm record:fixtures"
@@ -1107,7 +1229,7 @@
     {
       "file": "error-390-dark.png",
       "path": "/nhl/teams/1",
-      "status": 503,
+      "status": 200,
       "theme": "dark",
       "overflow": 0,
       "font": "\"Geist Mono\"",
@@ -1119,6 +1241,8 @@
       "row": null,
       "tab": null,
       "strip": 56,
+      "tabBar": 56,
+      "tabBarPlace": 56,
       "errors": [
         "Switched to client rendering because the server rendering errored:\n\nESPN teams/1 could not be fetched: fixture mode has no recorded response fixtures/team-1.json; add a sample of the endpoint to check/samples.ts and run pnpm record:fixtures",
         "Switched to client rendering because the server rendering errored:\n\nESPN teams/1 could not be fetched: fixture mode has no recorded response fixtures/team-1.json; add a sample of the endpoint to check/samples.ts and run pnpm record:fixtures"
@@ -1128,7 +1252,7 @@
     {
       "file": "error-1440-light.png",
       "path": "/nhl/teams/1",
-      "status": 503,
+      "status": 200,
       "theme": "light",
       "overflow": 0,
       "font": "\"Geist Mono\"",
@@ -1140,6 +1264,8 @@
       "row": null,
       "tab": null,
       "strip": 36,
+      "tabBar": null,
+      "tabBarPlace": null,
       "errors": [
         "Switched to client rendering because the server rendering errored:\n\nESPN teams/1 could not be fetched: fixture mode has no recorded response fixtures/team-1.json; add a sample of the endpoint to check/samples.ts and run pnpm record:fixtures",
         "Switched to client rendering because the server rendering errored:\n\nESPN teams/1 could not be fetched: fixture mode has no recorded response fixtures/team-1.json; add a sample of the endpoint to check/samples.ts and run pnpm record:fixtures"
@@ -1149,7 +1275,7 @@
     {
       "file": "error-1440-dark.png",
       "path": "/nhl/teams/1",
-      "status": 503,
+      "status": 200,
       "theme": "dark",
       "overflow": 0,
       "font": "\"Geist Mono\"",
@@ -1161,6 +1287,8 @@
       "row": null,
       "tab": null,
       "strip": 36,
+      "tabBar": null,
+      "tabBarPlace": null,
       "errors": [
         "Switched to client rendering because the server rendering errored:\n\nESPN teams/1 could not be fetched: fixture mode has no recorded response fixtures/team-1.json; add a sample of the endpoint to check/samples.ts and run pnpm record:fixtures",
         "Switched to client rendering because the server rendering errored:\n\nESPN teams/1 could not be fetched: fixture mode has no recorded response fixtures/team-1.json; add a sample of the endpoint to check/samples.ts and run pnpm record:fixtures"
@@ -1182,6 +1310,8 @@
       "row": 55,
       "tab": null,
       "strip": 56,
+      "tabBar": 56,
+      "tabBarPlace": 56,
       "errors": [],
       "failed": []
     },
@@ -1200,6 +1330,8 @@
       "row": 55,
       "tab": null,
       "strip": 56,
+      "tabBar": 56,
+      "tabBarPlace": 56,
       "errors": [],
       "failed": []
     },
@@ -1218,6 +1350,8 @@
       "row": 33,
       "tab": null,
       "strip": 36,
+      "tabBar": null,
+      "tabBarPlace": null,
       "errors": [],
       "failed": []
     },
@@ -1236,6 +1370,8 @@
       "row": 33,
       "tab": null,
       "strip": 36,
+      "tabBar": null,
+      "tabBarPlace": null,
       "errors": [],
       "failed": []
     },
@@ -1254,6 +1390,8 @@
       "row": 55,
       "tab": null,
       "strip": 56,
+      "tabBar": 56,
+      "tabBarPlace": 56,
       "errors": [],
       "failed": []
     },
@@ -1272,6 +1410,8 @@
       "row": 55,
       "tab": null,
       "strip": 56,
+      "tabBar": 56,
+      "tabBarPlace": 56,
       "errors": [],
       "failed": []
     },
@@ -1290,6 +1430,8 @@
       "row": 33,
       "tab": null,
       "strip": 36,
+      "tabBar": null,
+      "tabBarPlace": null,
       "errors": [],
       "failed": []
     },
@@ -1308,6 +1450,8 @@
       "row": 33,
       "tab": null,
       "strip": 36,
+      "tabBar": null,
+      "tabBarPlace": null,
       "errors": [],
       "failed": []
     }

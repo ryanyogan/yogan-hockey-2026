@@ -1,12 +1,26 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
   budgetTable,
   judge,
+  type Measurement,
   median,
   type RouteResult,
+  report,
+  SCRIPT_BUDGETS_KB,
   scriptBudgetKb,
   weightTable,
 } from "./budgets.ts";
+import { FIXTURE_SUBJECTS, measuredRoutes } from "./routes.ts";
+
+const recorded = (target: "local" | "deployed"): { json: Measurement; markdown: string } => {
+  const read = (extension: string) =>
+    readFileSync(
+      new URL(`../../docs/performance/results/${target}.${extension}`, import.meta.url),
+      "utf8",
+    );
+  return { json: JSON.parse(read("json")), markdown: read("md") };
+};
 
 const measured = (changes: Partial<RouteResult> = {}): RouteResult => ({
   route: "/nhl",
@@ -107,6 +121,47 @@ describe("the script budget", () => {
     expect(scriptBudgetKb(1024 * 147)).toBe(147);
     expect(scriptBudgetKb(1024 * 147 + 1)).toBe(148);
   });
+
+  it("is, for every route measured, what the recorded baseline sent", () => {
+    const sent = new Map<string, number>();
+    for (const result of recorded("local").json.results) {
+      sent.set(result.route, Math.max(sent.get(result.route) ?? 0, result.script.gzipBytes));
+    }
+    const fromBaseline = Object.fromEntries(
+      [...sent].map(([route, gzipBytes]) => [route, scriptBudgetKb(gzipBytes)]),
+    );
+    expect(SCRIPT_BUDGETS_KB).toEqual(fromBaseline);
+    expect(Object.keys(SCRIPT_BUDGETS_KB).sort()).toEqual(
+      measuredRoutes(FIXTURE_SUBJECTS)
+        .map((route) => route.route)
+        .sort(),
+    );
+  });
+
+  it("is missed by a route that sends a byte more, and met at the budget itself", () => {
+    const budget = (SCRIPT_BUDGETS_KB["/nhl"] as number) * 1024;
+    const sending = (gzipBytes: number) =>
+      judge(measured({ script: { files: 29, rawBytes: 800_000, gzipBytes } }));
+    expect(sending(budget)).toMatchObject({ script: "pass", scriptBudgetKb: 244 });
+    expect(sending(budget + 1).script).toBe("miss");
+    expect(
+      budgetTable([measured({ script: { files: 29, rawBytes: 800_000, gzipBytes: budget + 1 } })]),
+    ).toContain("**244.0** ✗");
+  });
+
+  it("does not judge a route that has no budget yet", () => {
+    expect(judge(measured({ route: "/new" }))).toMatchObject({
+      script: "not measured",
+      scriptBudgetKb: null,
+    });
+  });
+});
+
+describe("the recorded results", () => {
+  it.each(["local", "deployed"] as const)("%s.md is what its JSON reports", (target) => {
+    const { json, markdown } = recorded(target);
+    expect(report(json)).toBe(markdown);
+  });
 });
 
 describe("the tables", () => {
@@ -120,12 +175,19 @@ describe("the tables", () => {
     expect(missing).toContain("**0.0102** ✗");
   });
 
-  it("sets one script budget a route, from the mode that sent more", () => {
+  it("gives one row a route, the mode that sent more, against the route's script budget", () => {
     const text = weightTable([
       measured(),
       measured({ mode: "rendered", script: { files: 13, rawBytes: 510_000, gzipBytes: 151_000 } }),
     ]);
     expect(text.split("\n")).toHaveLength(3);
+    expect(text).toContain("| 13 | 498.0 | 147.5 | **244** |");
+  });
+
+  it("gives a route with no budget the one its own measurement sets", () => {
+    const text = weightTable([
+      measured({ route: "/new", script: { files: 13, rawBytes: 510_000, gzipBytes: 151_000 } }),
+    ]);
     expect(text).toContain("| 13 | 498.0 | 147.5 | **148** |");
   });
 });

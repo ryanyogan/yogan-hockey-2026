@@ -12,9 +12,9 @@ PORT=<your port> scripts/performance-baseline.sh local      # about 50 minutes
 scripts/performance-baseline.sh deployed                    # about 50 minutes, reads only
 ```
 
-Each writes `docs/performance/results/<target>.json` and `<target>.md` (every table below, plus each tap, navigation and layout shift). Flags after the target go to `scripts/measure-performance.ts`: `--only='/nhl,/players'` for some routes (names as in the first column of `scripts/performance/routes.ts`), `--runs=1`, `--out=node_modules/.tmp/try` to leave the committed results alone, `--favorites=off`.
+Each writes `docs/performance/results/<target>.json` and `<target>.md` (every table below, plus each tap, navigation and layout shift). Flags after the target go to `scripts/measure-performance.ts`: `--only='/nhl,/players'` for some routes (the `route` names of `scripts/performance/routes.ts`; a name that matches none stops the run and lists them), `--runs=1`, `--out=node_modules/.tmp/try` to leave the committed results alone, `--favorites=off`.
 
-- **local** builds this checkout with `ESPN_FIXTURES=1`, serves it with `vite preview` on `PORT+10000` behind `scripts/performance/compressing-proxy.ts` on `PORT`, migrates the local D1 the build reads, seeds the sample picks and archives the recorded finished game (`scripts/performance/prepare-fixtures.ts`), measures, and stops both servers.
+- **local** builds this checkout with `ESPN_FIXTURES=1`, serves it with `vite preview` on `PORT+10000` behind `scripts/performance/compressing-proxy.ts` on `PORT` (both ports must be free: it refuses to start otherwise, and stops only the two servers it started), migrates the local D1 the build reads, seeds the sample picks and archives the recorded finished game (`scripts/performance/prepare-fixtures.ts`), measures, and stops both servers.
 - **deployed** measures `https://hockey.yogan.dev` as it stands, with GET requests and the Scoreboard's socket only. It first writes `results/deployed-first-byte.md` (`scripts/performance/deployed-first-byte.sh`, no throttling).
 
 After a local run, delete `apps/web/.cloudflare/state` before running Playwright: the build leaves the finished game archived in Agent state that `pnpm dev` shares, and three game specs fail until it is gone.
@@ -49,6 +49,10 @@ Run it on a machine doing nothing else. Other worktrees were building and testin
 - A game in progress was not measured: no recorded fixture has one (build notes, "ESPN"). The live game page's shift as plays arrive is unknown. `e2e/game-driver.ts` can drive one against a dev server; it needs a build to count.
 - Not routes of the site, not measured: `/skeleton/*` (scaffolding), `/picks` (JSON), the not-found and error pages.
 - A second visit with the browser's cache warm was not measured (see "Other findings", 2).
+- A tap is read 1.2 s after it. One whose next paint came later than that would have no entry yet and be recorded as 16 ms (the least the browser reports). No tap here is near it, but a 16 in a later run deserves a second look.
+- The "shell" is the first frame in which `<main>`'s heading, placeholders or length of text differ from the page tapped on. Text that changes by itself after the tap (a clock, a score) would count. It did not here (shell and content are the same frame on most rows), but once shells are drawn at the tap, check a passing number against the frames in the JSON.
+- On the deployed site "open the whole slate" was not found on any row (`n/a` in `results/deployed.md`: the selector matched nothing visible, and why was not looked into), so deployed interaction rests on the theme toggle, the menu and each route's own control: 77 medians, against 105 locally.
+- The JSON does not record the commit measured. It is the line at the top of this file.
 
 ## Local build, fixture data
 
@@ -85,7 +89,7 @@ From `results/local.md`. A miss is bold with a cross.
 | `/players/3067313` (goalie) | cached (hit) | 1588 | **1588** ✗ (1500) | 0.0000 | 0.0000 | 72 (theme toggle) | **1647** ✗ | 0 | no | 244.6 |
 | `/players/3067313` (goalie) | rendered (bypass) | 1600 | 1600 (2500) | 0.0000 | 0.0000 | 80 (theme toggle) | **1604** ✗ | 0 | no | 244.6 |
 
-**In short**: interaction passes everywhere (slowest tap 104 ms against 200). A rendered page's largest paint passes everywhere but the dashboard. A cached page's largest paint misses on every route by 12 to 128 ms. Navigation misses on every route: 0.66 to 1.65 s with nothing shown and no view transition. Layout shift misses on six routes on load and on `/nhl/live` as scores arrive.
+**In short**: interaction passes everywhere (slowest tap 104 ms against 200). A rendered page's largest paint passes everywhere but the dashboard. A cached page's largest paint misses on every route by 12 to 128 ms. Navigation misses on every route: 0.66 to 1.65 s with nothing shown and no view transition. Layout shift misses on five routes on load (seven rows: `/`, `/nhl/live`, a team, a finished game's pick tab, a scheduled game) and on `/nhl/live` as scores arrive.
 
 One number has no budget and explains most of the misses: **a page hydrates seconds after it paints**: 4.3 to 7.0 s here ("Taps work from ms" in `results/local.md`), 3.4 to 3.9 s on the deployed site, which is the truer figure (see below: the local preview is HTTP/1.1). Until then a button does nothing and a tap on a link loads a whole document. Every load shift in the table happens at that moment.
 
@@ -93,7 +97,7 @@ One number has no budget and explains most of the misses: **a page hydrates seco
 
 `https://hockey.yogan.dev` on real data, measured 2026-10-11 19:48 to 20:24 UTC from Ryan's machine (Chicago; the edge answered from ORD), with the same throttling laid over the real network. Full tables: `results/deployed.md`.
 
-**It was not the baseline commit.** `main` moved during the day: the deployed Worker already carried #147 (install to a home screen), and #148 (the animated rink) was merged at 20:11 UTC, inside the run. Its script is 10.6 kB larger than the local build's on every route (254.6 to 262.7 kB gzipped). So the local table is the before-and-after reference; this one shows what the real edge changes: HTTP/2, Brotli, and a real cached-against-rendered difference.
+**It was not the baseline commit.** `main` moved during the day: the deployed Worker already carried #147 (install to a home screen), and #148 (the animated rink) was merged at 20:11 UTC, inside the run. Its script is 10.1 to 10.7 kB larger than the local build's on every route (254.6 to 262.7 kB gzipped), so every row of `results/deployed.md` is marked over its script budget. Nearly all of that is not ours: Cloudflare Web Analytics adds its beacon to every deployed document (`static.cloudflareinsights.com/beacon.min.js`, one more file, 31.6 kB, about 10.1 kB gzipped), which no local build has. A local build of `main` with #147 and #148 sends 251.6 kB on `/players` against the baseline's 250.9 (one run, in review). So the local table is the before-and-after reference; this one shows what the real edge changes: HTTP/2, Brotli, and a real cached-against-rendered difference.
 
 | Route | Page | Largest paint ms (budget) | Shift on load | Shift as scores arrive | Slowest tap ms | Next shell ms | Hydrated ms |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -116,7 +120,7 @@ One number has no budget and explains most of the misses: **a page hydrates seco
 | `/players/4024123/games` | cached | **1756** ✗ (1500) | 0.0000 | **0.0030** ✗ | 72 | **789** ✗ | 3363 |
 | `/players/3067313` (goalie) | cached | **1796** ✗ (1500) | 0.0000 | **0.0030** ✗ | 88 | **1624** ✗ | 3453 |
 
-The rendered rows left out here are within 60 ms of their cached rows and are in `results/deployed.md`. No blank frame and no view transition on any row.
+The rendered rows left out here are in `results/deployed.md`: their largest paint is within 60 ms of the cached row's, their next shell within 120 ms. No blank frame and no view transition on any row.
 
 What differs from the local table, and why:
 
@@ -124,13 +128,13 @@ What differs from the local table, and why:
 - **Largest paint is 130 to 300 ms over the cached budget** (1.63 to 1.80 s; 2.0 s on the scoring tab, whose largest element is painted late), a little worse than local: a real round trip under the throttle's.
 - **The ticker moves by 0.0030 on every route as scores arrive**: the one game still to come (CAR at PHI) took the lead when it went live. Local missed it only by chance of order (item 6).
 - **The dashboard's largest paint passes (1.7 s) but its shift is 0.0209**: with real data the favorites ledger arriving at hydration pushes the standings down further. The largest element differs with the data; the mechanism is item 3's.
-- **One tap of 108 reached the budget**: the theme toggle on the rendered team page, 200 ms, against 104 ms on the cached pass of the same page. Noise most likely (other work was running); it is the heaviest restyle on the site (190 rows) and the one to watch.
+- **One tap of the 77 measured reached the budget**: the theme toggle on the rendered team page, 200 ms, against 104 ms on the cached pass of the same page and 104 ms locally. It is a median of three runs, so at least two of them took that long; other work was running on the machine, but that is not established as the cause. It is the heaviest restyle on the site (190 rows). Cause and fix: item 8.
 
-**First byte, no throttling** (`results/deployed-first-byte.md`, ms after the TLS handshake, median of 7): a cached answer 59 to 87 ms; rendered 87 to 267 ms (`/players` 87, a team 132 to 200, a finished game 221 to 267, `/` 236 to 306, `/nhl/live` 94 to 151). So on the deployed site the cache is worth 30 to 200 ms, which on this profile is hidden behind 1.1 s of round trips.
+**First byte, no throttling** (`results/deployed-first-byte.md`, ms after the TLS handshake, median of 7): a cached answer 69 to 119 ms; rendered 83 to 369 ms (`/players` 83, a team's pages 198 to 369, a finished game's 228 to 286, a player's 171 to 206); never cached, `/` 280 to 306 and `/nhl/live` 94 to 124. So on the deployed site the cache is worth 90 to 280 ms on every route but `/players` (8 ms), which on this profile is hidden behind 1.1 s of round trips.
 
 ## Script size: the measurement, and the budget it sets
 
-The budget is the gzipped script a route sent in this baseline, rounded up to a whole kB (`scriptBudgetKb`). A route that sends more has missed until the budget is changed on purpose. The numbers are of the local build at the baseline commit. The deployed site had already grown by 10.6 kB (#147, #148) when it was measured; those tickets' own additions are theirs to account for against this table.
+The budget is the gzipped script a route sent in this baseline, rounded up to a whole kB (`scriptBudgetKb`). The numbers are `SCRIPT_BUDGETS_KB` in `scripts/performance/budgets.ts`, one a route; `judge()` marks a route that sends more as a miss in both tables of a later run, until the budget is changed there on purpose (a test holds the numbers to `results/local.json`). The numbers are of the local build at the baseline commit. The deployed site sends about 10.6 kB more: about 10 kB is the analytics beacon Cloudflare adds at the edge, the rest is #147 and #148. The budgets are for the local build, which is what the baseline command measures; whether the beacon counts against them, or is worth its 10 kB, is a question for #127 to put to Ryan.
 
 | Route | Script files | Script kB | Script gzip kB | **Budget, gzip kB** | Document kB | Document gzip kB |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -142,7 +146,7 @@ The budget is the gzipped script a route sent in this baseline, rounded up to a 
 | `/players` (and a search) | 36 | 798.2 | 250.9 | **251** | 44.1 | 7.6 |
 | `/players/:id` (and `/games`) | 30 | 784.4 | 244.6 | **245** | 142.9 | 12.9 |
 
-The stylesheet is 39.6 kB (8.1 kB gzip) and is sent twice (see "Other findings", 1).
+The stylesheet is 38.6 kB (8.1 kB gzip) and is sent twice (see "Other findings", 1).
 
 Where the 244 kB every route sends comes from (chunks of the build, gzip -9; names lose their hashes):
 
@@ -162,7 +166,7 @@ So about 158 kB is React and vinext, and about 80 kB is three libraries and a cl
 
 ## Client components
 
-Every module with `"use client"`: 31, none in `packages/db`, `espn` or `schemas`. "Every route" means it is in the root layout's tree.
+Every module with `"use client"` at the baseline commit: 31, none in `packages/db`, `espn` or `schemas`. "Every route" means it is in the root layout's tree.
 
 | Module | On | Why it runs in the browser | Could be a server component? |
 | --- | --- | --- | --- |
@@ -200,6 +204,8 @@ Every module with `"use client"`: 31, none in `packages/db`, `espn` or `schemas`
 
 Not marked but shipped, because only client modules import them: `game-rink.tsx`, `plays-list.tsx`, `period-timeline.tsx`, `player-ledger.tsx`, `game-ledger.tsx`, `packages/ui`'s `ledger.tsx`, and the `lib/` code behind them. `next-themes`' `ThemeProvider` is the root layout's other client component.
 
+**Added since the baseline** (on `main` when this was merged, not in the table or the local numbers above): `components/shell/theme-color.tsx` (#147, every route: the browser bars' colour follows the theme shown, known only after hydration; no), `components/game/rink-animations.tsx` (#148, game: plays the rink's animations and fetches GSAP on the first cue; no), and `components/game/game-rink.tsx`, which #148 marked `"use client"` itself (it was already shipped, as the paragraph above says).
+
 ## Each miss: cause and proposed fix
 
 Ordered by what a visitor feels most. "Run" is the command that shows it alone.
@@ -208,7 +214,7 @@ Ordered by what a visitor feels most. "Run" is the command that shows it alone.
 
 - **Measured**: tap to the first changed frame 661 to 842 ms, 1.6 s from a player to his team. "Shell" and "content" are the same frame on 24 of 28 rows: the next page arrives whole, no placeholder is ever drawn. No blank frame: the old page stays, with no sign the tap was heard. `document.startViewTransition` never runs.
 - **Cause**: `components/link.tsx` prefetches on press with `kind: "full"`, and the router shows nothing until that answer is in. On a phone the press and the tap are one gesture, so the prefetch saves nothing: the wait is one round trip (562 ms) plus the render and the download (a team's first page is 22 kB gzipped, 384 kB to parse). A `loading.tsx` is only drawn if the answer streams it, which a prefetched full page does not.
-- **Fix**: (a) draw the next route's outline in the browser at the tap, without a request: the outlines exist (`components/route-skeletons.tsx`, `team-skeletons.tsx`); a small client "pending route" holder in the shell, set on press by `Link` and cleared when the route commits, keyed by the href's pattern; (b) wrap that swap and the commit in `document.startViewTransition` (vinext 1.0.1 has no view-transition support of its own: nothing in its `dist/` calls it); (c) on a touch pointer ask for the default prefetch (the `loading.tsx` shell, which vinext answers before the page) rather than the full page, so a streamed answer can paint its outline first; (d) cut the team page's document (item 7). Budget to meet: shell under 200 ms, which only (a) can do on this network.
+- **Fix**: (a) draw the next route's outline in the browser at the tap, without a request: the outlines exist (`components/route-skeletons.tsx`, `components/team/team-skeletons.tsx`); a small client "pending route" holder in the shell, set on press by `Link` and cleared when the route commits, keyed by the href's pattern; (b) wrap that swap and the commit in `document.startViewTransition` (vinext 1.0.1 has no view-transition support of its own: nothing in its `dist/` calls it); (c) on a touch pointer ask for the default prefetch (the `loading.tsx` shell, which vinext answers before the page) rather than the full page, so a streamed answer can paint its outline first; (d) cut the team page's document (item 9). Budget to meet: shell under 200 ms, which only (a) can do on this network.
 - **Run**: `--only='/players/:id (skater)'`, table "Every navigation".
 
 ### 2. Pages hydrate at 3.4 to 3.9 s deployed, 4.3 to 7.0 s locally (every route; no budget, but the cause of items 3 to 5)
@@ -247,7 +253,20 @@ Ordered by what a visitor feels most. "Run" is the command that shows it alone.
 - **Fix**: this is the page's design, so it is Ryan's call (noted on the pull request). Recommended: one ledger in the stable order the home page took in #111 (start time, then id), the status changing in its own cell, with the sections' counts as a line above. If the grouping stays, move rows with a transform (a view transition on the list) so nothing jumps under a finger; the browser does not count a transform as a shift.
 - **The ticker, on every route of the deployed site (0.0030)**: an entry moves when its game goes live, because `tickerGames` puts live games first. The same fix: a stable order, the status changing in place.
 
-### 7. Not misses, but in the way
+### 7. The scoring tab's largest paint is 2.0 s on the deployed site (cached budget 1.5 s)
+
+- **Measured**: first paint 1.74 s, as on the other tabs; the largest paint, 2.01 s cached and 1.98 s rendered, is a row of the scoring list (`span[play-row]`), about 270 ms after the first paint. Locally the two are the same frame (1.53 s).
+- **Cause**: not established. The row is in the document, so something draws or redraws it after the first paint with real data that does not with the fixture.
+- **Fix**: find it first: `node scripts/measure-performance.ts https://hockey.yogan.dev --only=/nhl/games/:id/scoring --runs=1 --out=node_modules/.tmp/try`, then a DevTools performance trace of that load on the same throttling. Item 4's fixes apply to it whatever the answer.
+
+### 8. The theme toggle takes 200 ms on a team's page (deployed, rendered; budget under 200 ms)
+
+- **Measured**: 200 ms as the median of three runs on the rendered pass, 104 ms on the cached pass and locally. The page has 190 ledger rows.
+- **Cause**: switching the theme restyles every element on the page, and this is the page with the most. Whether the doubling was the machine's other work is not established.
+- **Fix**: measure it again on an idle machine first (`--only=/nhl/teams/:id`). If it stands: the team page's document shrinks with item 9, and `content-visibility: auto` on the ledger sections below the fold keeps a restyle to what is on screen.
+- **Run**: `--only=/nhl/teams/:id`, table "Every tap".
+
+### 9. Not misses, but in the way
 
 - A team's first page is a 384 kB document (22 kB gzipped), a finished game's 294 kB: the placeholder rows and the page are both in the markup and again in the RSC payload (build notes, #94). It is why a player-to-team navigation takes 1.6 s. Fewer placeholder rows and shorter class strings on ledger cells.
 
@@ -256,11 +275,14 @@ Ordered by what a visitor feels most. "Run" is the command that shows it alone.
 1. **The stylesheet is linked twice.** `/_next/static/css/global-error.<hash>.css` and `layout.<hash>.css` are byte-identical (39,555 bytes; `cmp` says so) and every document links both: `app/global-error.tsx` imports `globals.css` as the layout does. Both block the first paint. Fix: do not import the stylesheet in `global-error.tsx` (give it the few inline styles it needs), then check the build emits one file.
 2. **Hashed script chunks are never kept by the browser.** The deployed site answers `/_next/static/chunks/framework-<hash>.js` with `cache-control: public, max-age=0, must-revalidate`, so every visit asks about all 30 to 39 files again (a round trip each, 562 ms on this profile, before hydration can start). `apps/web/public/_headers` gives only `/team-marks/*` a year. Fix: add `/_next/static/*` with `Cache-Control: public, max-age=31536000, immutable` and confirm with `curl -sD - -o /dev/null`. This matters most to the installed PWA of #123, and is why a repeat visit was not worth measuring before it is fixed.
 3. **The finished game's pages have no `h1` or `h2` in `<main>`** once the game is archived (found because the script first waited for one). Not a performance matter; noted for the UI ticket.
-4. **Interaction has room**: the slowest tap anywhere is 104 ms (the theme toggle on a team's 190-row page), most are 64 to 88 ms.
+4. **Interaction has room locally**: the slowest tap is 104 ms (the theme toggle on a team's 190-row page), most are 64 to 88 ms. The deployed run's one 200 ms is item 8.
 
 ## For #127
 
-1. The budgets and the profile are `BUDGETS` and `PROFILE` in `scripts/performance/budgets.ts`; `judge()` there is what marks a miss. Change a budget there and in this file together.
+1. The budgets and the profile are `BUDGETS`, `SCRIPT_BUDGETS_KB` and `PROFILE` in `scripts/performance/budgets.ts`; `judge()` there is what marks a miss, script size included. Change a budget there and in this file together.
 2. Work one item, then run that route alone (`--only=... --runs=1 --out=node_modules/.tmp/try`, two minutes) before a full run.
-3. The script budget per route is the table above. Items 2's cuts should lower it: set the new numbers from the final run.
-4. Decisions waiting on Ryan are in the pull request of #126: what "zero" and "at once" mean, the profile, and the grouping on `/nhl/live`.
+3. **Record the final run beside the baseline, not over it**: `scripts/performance-baseline.sh local --out=docs/performance/results/after-local` (and `deployed --out=docs/performance/results/after-deployed`). Without `--out` a run replaces `results/local.*`, which are the baseline and what the script budgets are tested against.
+4. `main` is already a little over the script budgets (`/players`: 251.6 kB against 251, from #147 and #148, merged after the baseline), and the deployed site is about 10 kB further over for the analytics beacon. #127 starts from there: item 2's cuts are about 70 kB, so the budgets should be met and then lowered. Set the new numbers in `SCRIPT_BUDGETS_KB` from the final run, and point its test at that run's JSON.
+5. The client components added since the baseline are listed under the table in "Client components".
+6. Two causes are not established and say so: the pick tab's shift (item 5) and the scoring tab's late largest paint (item 7). Each has the command that shows it.
+7. Decisions waiting on Ryan are in the pull request of #126: what "zero" and "at once" mean, the profile, and the grouping on `/nhl/live`.

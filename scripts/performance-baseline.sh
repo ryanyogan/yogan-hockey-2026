@@ -8,7 +8,7 @@
 # for a quick look at one route, --out=<path> to keep the committed results as they are.
 #
 # local: builds with ESPN_FIXTURES=1, serves the build with `vite preview` on PORT+10000, puts
-# the compressing proxy in front of it on PORT (default 5173), migrates the local database the
+# the compressing proxy in front of it on PORT (default 5173; both must be free), migrates the local database the
 # build reads, seeds the sample picks, measures, and stops both servers. About 50 minutes at the
 # default three runs. Run it on a machine doing nothing else: the CPU is slowed, not isolated.
 set -euo pipefail
@@ -25,7 +25,9 @@ if [ "$target" = "deployed" ]; then
   # 401803652 is a finished game of April 2026 that production has archived; the game still to
   # be played is whichever the live page lists first, and is left out on a day without one.
   # First, with no throttling: what a cached and a rendered answer cost before a phone's network.
-  bash scripts/performance/deployed-first-byte.sh >docs/performance/results/deployed-first-byte.md
+  # Written whole or not at all: a failed run leaves the committed table as it was.
+  bash scripts/performance/deployed-first-byte.sh >"$TMPDIR/deployed-first-byte.md"
+  mv "$TMPDIR/deployed-first-byte.md" docs/performance/results/deployed-first-byte.md
   exec node scripts/measure-performance.ts https://hockey.yogan.dev \
     --out=docs/performance/results/deployed --scheduled-game=auto "$@"
 fi
@@ -36,12 +38,22 @@ fi
 
 port=${PORT:-5173}
 inner=$((port + 10000))
+# Another worktree's server may be on either port, so nothing is killed by port: a port in use
+# stops the run, and only the two servers started here are stopped at the end.
+for taken in "$port" "$inner"; do
+  if fuser -n tcp "$taken" >/dev/null 2>&1; then
+    echo "port $taken is in use: give a free one, PORT=<port> (the build is served on PORT+10000)" >&2
+    exit 1
+  fi
+done
+preview=""
+proxy=""
 stop() {
-  fuser -k -n tcp "$port" >/dev/null 2>&1 || true
-  fuser -k -n tcp "$inner" >/dev/null 2>&1 || true
+  # The preview is pnpm, vite and workerd: its own session, so one signal reaches all three.
+  [ -z "$preview" ] || kill -- "-$preview" 2>/dev/null || true
+  [ -z "$proxy" ] || kill "$proxy" 2>/dev/null || true
 }
 trap stop EXIT
-stop
 
 cd apps/web
 ESPN_FIXTURES=1 pnpm build >"$TMPDIR/performance-build.log" 2>&1
@@ -51,10 +63,12 @@ ESPN_FIXTURES=1 pnpm build >"$TMPDIR/performance-build.log" 2>&1
 d1=$(node -p 'require("./cloudflare.resources.json").production.d1')
 timeout 30 pnpm exec cf d1 migrations apply "$d1" --local --persist-to .cloudflare/state \
   --dir ../../packages/db/migrations </dev/null >"$TMPDIR/performance-migrate.log" 2>&1 || true
-ESPN_FIXTURES=1 pnpm exec vite preview --port "$inner" --strictPort \
+ESPN_FIXTURES=1 setsid pnpm exec vite preview --port "$inner" --strictPort \
   >"$TMPDIR/performance-preview.log" 2>&1 &
+preview=$!
 cd "$root"
 node scripts/performance/compressing-proxy.ts "$port" "$inner" &
+proxy=$!
 
 up=""
 for _ in $(seq 60); do

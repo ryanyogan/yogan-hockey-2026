@@ -40,6 +40,31 @@ export const PROFILE = {
   timezone: "America/Chicago",
 } as const;
 
+/**
+ * The script-size budget of each route (`MeasuredRoute.route`), in gzipped kB: what the route
+ * sent in the baseline of #126 (docs/performance/results/local.json), rounded up by
+ * `scriptBudgetKb`. A route that sends more has missed until its number is changed here on
+ * purpose; budgets.test.ts holds these to the recorded baseline.
+ */
+export const SCRIPT_BUDGETS_KB: Record<string, number> = {
+  "/": 252,
+  "/nhl": 244,
+  "/nhl?tab=teams": 244,
+  "/nhl/live": 247,
+  "/nhl/teams/:id": 249,
+  "/nhl/teams/:id/roster": 249,
+  "/nhl/teams/:id/stats": 249,
+  "/nhl/games/:id (finished)": 253,
+  "/nhl/games/:id/scoring": 253,
+  "/nhl/games/:id/pick": 253,
+  "/nhl/games/:id (scheduled)": 253,
+  "/players": 251,
+  "/players?q=": 251,
+  "/players/:id (skater)": 245,
+  "/players/:id/games": 245,
+  "/players/:id (goalie)": 245,
+};
+
 export type Shift = { value: number; atMs: number; nodes: string };
 
 export type InteractionResult = { name: string; ms: number | null };
@@ -98,6 +123,9 @@ export type Judgement = {
   interaction: Verdict;
   worstInteraction: InteractionResult | null;
   navigation: Verdict;
+  /** Against `SCRIPT_BUDGETS_KB`; a route with no budget yet is not judged. */
+  script: Verdict;
+  scriptBudgetKb: number | null;
 };
 
 export function median(values: number[]): number {
@@ -119,7 +147,15 @@ export function judge(result: RouteResult): Judgement {
     null,
   );
   const navigation = result.navigation;
+  const scriptBudget = SCRIPT_BUDGETS_KB[result.route] ?? null;
   return {
+    script:
+      scriptBudget == null
+        ? "not measured"
+        : result.script.gzipBytes <= scriptBudget * 1024
+          ? "pass"
+          : "miss",
+    scriptBudgetKb: scriptBudget,
     loadShift: within(result.loadShift, BUDGETS.layoutShiftBelow),
     liveShift: within(result.liveShift, BUDGETS.layoutShiftBelow),
     largestPaint: within(result.largestPaintMs, largestPaintBudgetMs),
@@ -139,7 +175,7 @@ export function judge(result: RouteResult): Judgement {
 
 /**
  * The script-size budget a measurement sets: the gzipped script the route sent, rounded up to
- * the next whole kB. Anything more is a miss until the budget is changed on purpose.
+ * the next whole kB. It is how `SCRIPT_BUDGETS_KB` was set, and what a route not yet in it gets.
  */
 export function scriptBudgetKb(gzipBytes: number): number {
   return Math.ceil(gzipBytes / 1024);
@@ -189,13 +225,13 @@ export function budgetTable(results: RouteResult[]): string {
         navigation == null ? "n/a" : marked(ms(navigation.shellMs), verdict.navigation),
         navigation == null ? "n/a" : String(navigation.blankFrames),
         navigation == null ? "n/a" : navigation.viewTransition ? "yes" : "no",
-        kb(result.script.gzipBytes),
+        marked(kb(result.script.gzipBytes), verdict.script),
       ];
     }),
   );
 }
 
-/** What each route sent, and the script budget that sets. One row a route: the larger mode. */
+/** What each route sent against its script budget. One row a route: the larger mode. */
 export function weightTable(results: RouteResult[]): string {
   const heaviest = new Map<string, RouteResult>();
   for (const result of results) {
@@ -219,8 +255,8 @@ export function weightTable(results: RouteResult[]): string {
       named(result),
       String(result.script.files),
       kb(result.script.rawBytes),
-      kb(result.script.gzipBytes),
-      `**${scriptBudgetKb(result.script.gzipBytes)}**`,
+      marked(kb(result.script.gzipBytes), judge(result).script),
+      `**${SCRIPT_BUDGETS_KB[result.route] ?? scriptBudgetKb(result.script.gzipBytes)}**`,
       kb(result.document.rawBytes),
       kb(result.document.gzipBytes),
       kb(result.stylesheet.gzipBytes),
@@ -312,5 +348,35 @@ export function detailTables(results: RouteResult[]): string {
     shifts,
     "### Paint and hydration",
     paints,
+  ].join("\n\n");
+}
+
+export type Measurement = {
+  base: string;
+  measuredAt: string;
+  runs: number;
+  machine: string;
+  failures: { route: string; mode: string; error: string }[];
+  results: RouteResult[];
+};
+
+/** The Markdown beside a measurement's JSON: every table, and what could not be measured. */
+export function report(measurement: Measurement): string {
+  const { base, failures, results } = measurement;
+  return [
+    `<!-- Written by scripts/measure-performance.ts. Do not edit: measure again. -->`,
+    `Measured ${measurement.measuredAt} against \`${base}\`, ${measurement.runs} runs a route, on ${measurement.machine}.`,
+    ...(failures.length === 0
+      ? []
+      : [
+          `**Not measured**: ${failures.map((failure) => `\`${failure.route}\` ${failure.mode} (${failure.error})`).join("; ")}.`,
+        ]),
+    "## Every route against every budget",
+    budgetTable(results),
+    "## What each route sends",
+    weightTable(results),
+    "## Detail",
+    detailTables(results),
+    "",
   ].join("\n\n");
 }

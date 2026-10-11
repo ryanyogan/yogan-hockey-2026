@@ -30,16 +30,14 @@ import { gzipSync } from "node:zlib";
 import { type Browser, type BrowserContext, chromium, type Page } from "@playwright/test";
 import {
   BUDGETS,
-  budgetTable,
-  detailTables,
   type InteractionResult,
   median,
   type NavigationResult,
   PROFILE,
   type RouteResult,
+  report,
   type Shift,
   type Weight,
-  weightTable,
 } from "./performance/budgets.ts";
 import {
   FIXTURE_SUBJECTS,
@@ -59,6 +57,10 @@ if (!base) {
 const flag = (name: string, otherwise: string) =>
   args.findLast((arg) => arg.startsWith(`--${name}=`))?.slice(name.length + 3) ?? otherwise;
 const runs = Number(flag("runs", "3"));
+if (!Number.isInteger(runs) || runs < 1) {
+  console.error(`--runs=${flag("runs", "3")} is not a number of runs`);
+  process.exit(1);
+}
 const out = flag("out", "docs/performance/results/local");
 const only = flag("only", "");
 const favorites = flag("favorites", "on") !== "off";
@@ -462,6 +464,8 @@ async function measureOnce(browser: Browser, route: MeasuredRoute, path: string)
         largestPaintElement: seen.largestPaintElement,
       };
     });
+    // No entry would read as 0 ms and pass every budget.
+    if (timing.largestPaintMs <= 0) throw new Error("the browser reported no largest paint");
     const loadShifts = await readShifts(page);
     const weights = {
       script: weigh(visitor, "script"),
@@ -589,9 +593,16 @@ const subjects = {
     scheduled === "none" ? null : scheduled === "auto" ? await upcomingGame(browser) : scheduled,
   search: flag("search", FIXTURE_SUBJECTS.search),
 };
-const routes = measuredRoutes(subjects).filter(
-  (route) => only === "" || only.split(",").includes(route.route),
-);
+const every = measuredRoutes(subjects);
+const routes = every.filter((route) => only === "" || only.split(",").includes(route.route));
+if (routes.length === 0) {
+  // Before anything is written: an empty run would replace the results at `out` with nothing.
+  console.error(
+    `--only=${only} names no route. The routes: ${every.map((route) => route.route).join(", ")}`,
+  );
+  await browser.close();
+  process.exit(1);
+}
 const results: RouteResult[] = [];
 const failures: { route: string; mode: string; error: string }[] = [];
 
@@ -648,24 +659,6 @@ const measurement = {
 };
 mkdirSync(dirname(out), { recursive: true });
 writeFileSync(`${out}.json`, `${JSON.stringify(measurement, null, 1)}\n`);
-writeFileSync(
-  `${out}.md`,
-  [
-    `<!-- Written by scripts/measure-performance.ts. Do not edit: measure again. -->`,
-    `Measured ${measurement.measuredAt} against \`${base}\`, ${runs} runs a route, on ${measurement.machine}.`,
-    ...(failures.length === 0
-      ? []
-      : [
-          `**Not measured**: ${failures.map((failure) => `\`${failure.route}\` ${failure.mode} (${failure.error})`).join("; ")}.`,
-        ]),
-    "## Every route against every budget",
-    budgetTable(results),
-    "## What each route sends",
-    weightTable(results),
-    "## Detail",
-    detailTables(results),
-    "",
-  ].join("\n\n"),
-);
+writeFileSync(`${out}.md`, report(measurement));
 console.error(`wrote ${out}.json and ${out}.md`);
 if (failures.length > 0) process.exit(1);

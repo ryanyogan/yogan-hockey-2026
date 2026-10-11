@@ -14,6 +14,9 @@ export type RinkScene = {
   /** The plays so far, in the game's order: all of `game` but in a Replay short of its end. */
   plays: readonly Play[];
   homeTeamId: string;
+  /** Each team's colour as ESPN sends it, which a goal tints its end with. */
+  homeColour?: string | null;
+  awayColour?: string | null;
   /** The play ringed and captioned. */
   focusId: string | null;
   /**
@@ -127,7 +130,7 @@ function cueFor(scene: RinkScene, playId: string | null | undefined): RinkAnimat
     play.teamId == null
       ? null
       : attackedEnd(scene.game, scene.homeTeamId, play.teamId, play.period);
-  return describePlay(play, scene.plays[index - 1] ?? null, attacks);
+  return describePlay(play, scene.plays[index - 1] ?? null, attacks, scene);
 }
 
 const sameCue = (a: RinkCue, b: RinkCue) => JSON.stringify(a) === JSON.stringify(b);

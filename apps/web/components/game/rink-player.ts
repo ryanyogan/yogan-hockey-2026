@@ -1,4 +1,5 @@
 import { gsap } from "gsap";
+import { RINK } from "../../lib/game/rink";
 import type { RinkAnimation } from "../../lib/game/rink-animation";
 import type { RinkCue } from "../../lib/game/rink-queue";
 
@@ -35,7 +36,41 @@ export function clearRink(root: SVGSVGElement): void {
     crease.removeAttribute("data-lit");
     gsap.set(crease, { clearProps: "strokeWidth" });
   }
+  clearGoal(root);
 }
+
+/** The rink and everything laid over it (`GameRink`): the score and the clock are outside the `<svg>`. */
+const page = (root: SVGSVGElement) => root.closest('[data-slot="game-rink"]') ?? root;
+
+/** Everything a goal's sequence touches, put back: no lamp, no tint, no score but the header's. */
+function clearGoal(root: SVGSVGElement) {
+  for (const lit of root.querySelectorAll('[data-slot="rink-lamp"], [data-slot="rink-net"]')) {
+    lit.removeAttribute("data-lit");
+  }
+  for (const glow of root.querySelectorAll('[data-slot="rink-lamp-glow"]')) {
+    gsap.set(glow, { clearProps: "opacity,strokeWidth" });
+    glow.setAttribute("r", String(RINK.lampRadius));
+  }
+  for (const tint of root.querySelectorAll<SVGElement>('[data-slot="rink-tint"]')) {
+    gsap.set(tint, { clearProps: "opacity" });
+    tint.style.removeProperty("--tint");
+    tint.style.removeProperty("--tint-dark");
+  }
+  // One at a time: GSAP warns in the console when it is handed a list with nothing in it, and a
+  // Replay has no live marker, as a play that is no goal has no flag.
+  const over = page(root);
+  for (const moved of over.querySelectorAll(
+    `[data-fx="goal-kicker"], [data-fx="caption-part"], [data-fx="score-roll"], ${LIVE_MARKER}`,
+  )) {
+    gsap.set(moved, { clearProps: "opacity,transform" });
+  }
+  for (const before of over.querySelectorAll('[data-fx="score-before"]')) {
+    before.removeAttribute("data-from");
+  }
+}
+
+/** The "live" over the clock, which "GOAL" stands in for while a goal is on the ice. */
+const LIVE_MARKER = '[data-slot="rink-status"] [data-slot="live-marker"]';
 
 /**
  * Plays `cue` in place of whatever was on the ice, and calls `onFinished` once it has played out
@@ -68,10 +103,115 @@ export function playRinkCue(
 function timelineFor(root: SVGSVGElement, animation: RinkAnimation): gsap.core.Timeline {
   switch (animation.kind) {
     case "goal":
+      return goal(root, animation, shot(root, animation));
     case "save":
     case "miss":
       return shot(root, animation);
   }
+}
+
+/** Seconds a shot's puck is in flight: every step of what follows it starts from here. */
+const travelTime = (distance: number) => 0.28 + distance / 170;
+
+/**
+ * What a goal adds once its shot is in the net, as the approved prototype plays it: the lamp
+ * behind the net comes on and throws three rings, the net lights, the scoring end floods with the
+ * team's colour and settles to a tint, "GOAL" lands over centre ice, the score rolls up to its new
+ * figure, and the caption's flag and scorer slide in. The lamp, the net and the tint stay as long
+ * as the goal is on the ice.
+ */
+function goal(
+  root: SVGSVGElement,
+  { playId, end, distance, side, tint: colour, score }: Extract<RinkAnimation, { kind: "goal" }>,
+  timeline: gsap.core.Timeline,
+) {
+  const at = (slot: string) => root.querySelector(`[data-slot="${slot}"][data-end="${end}"]`);
+  const [lamp, glow, tint] = [at("rink-lamp"), at("rink-lamp-glow"), at("rink-tint")];
+  const net = root.querySelector(
+    `[data-slot="rink-goal"][data-end="${end}"] [data-slot="rink-net"]`,
+  );
+  const over = page(root);
+  const scored = travelTime(distance);
+
+  timeline.call(
+    () => {
+      lamp?.setAttribute("data-lit", "");
+      net?.setAttribute("data-lit", "");
+    },
+    undefined,
+    scored,
+  );
+  if (glow) {
+    timeline.fromTo(
+      glow,
+      { attr: { r: RINK.lampRadius }, opacity: 0.9, strokeWidth: 1.4 },
+      {
+        attr: { r: 12 },
+        opacity: 0,
+        strokeWidth: 0.2,
+        duration: 0.7,
+        repeat: 2,
+        immediateRender: false,
+      },
+      scored,
+    );
+  }
+  if (tint instanceof SVGElement) {
+    if (colour) {
+      tint.style.setProperty("--tint", colour.light);
+      tint.style.setProperty("--tint-dark", colour.dark);
+    }
+    timeline
+      .to(tint, { opacity: 0.55, duration: 0.12, ease: "none" }, scored)
+      .to(tint, { opacity: 0.2, duration: 1.4 }, scored + 0.12);
+  }
+
+  const [kicker, marker] = [
+    over.querySelector('[data-fx="goal-kicker"]'),
+    over.querySelector(LIVE_MARKER),
+  ];
+  if (marker) timeline.to(marker, { opacity: 0, duration: 0.1 }, scored);
+  if (kicker) {
+    timeline.fromTo(
+      kicker,
+      { opacity: 0, scale: 1.8 },
+      { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2)" },
+      scored,
+    );
+  }
+
+  // The figure is the header's, which ESPN may not have moved yet (or may have moved past this
+  // goal): then there is nothing true to roll to, and the figure changes when the header does.
+  const roll = over.querySelector(`[data-fx="score-roll"][data-side="${side}"]`);
+  if (score && roll?.textContent?.trim() === String(score.to)) {
+    roll.querySelector('[data-fx="score-before"]')?.setAttribute("data-from", String(score.from));
+    timeline.fromTo(
+      roll,
+      { yPercent: 100 },
+      { yPercent: 0, duration: 0.6, ease: "back.out(1.6)" },
+      scored + 0.15,
+    );
+  }
+
+  // The caption fades in and its flag and words slide up, one after the other. `GameRink` gives
+  // the caption to the goal on the ice, whatever is in focus.
+  const words = [...captions(root)].filter(
+    (caption) => caption.getAttribute("data-play") === playId,
+  );
+  const parts = words.flatMap((caption) => [
+    ...caption.querySelectorAll('[data-fx="caption-part"]'),
+  ]);
+  if (parts.length > 0) {
+    timeline
+      .fromTo(words, { opacity: 0 }, { opacity: 1, duration: 0.3 }, scored + 0.1)
+      .fromTo(
+        parts,
+        { opacity: 0, y: 6 },
+        { opacity: 1, y: 0, duration: 0.3, stagger: 0.08 },
+        scored + 0.1,
+      );
+  }
+  return timeline;
 }
 
 /**
@@ -90,7 +230,7 @@ function shot(root: SVGSVGElement, { kind, playId, end, from, to, distance }: Ri
   const timeline = gsap.timeline({ defaults: { ease: "power2.out" } });
   if (!fx || !trail || !puck || !stop || !pulse) return timeline;
   const dot = root.querySelector(`[data-slot="rink-mark"][data-play="${CSS.escape(playId)}"]`);
-  const travel = 0.28 + distance / 170;
+  const travel = travelTime(distance);
 
   fx.setAttribute("data-kind", kind);
   setAttributes(trail, { x1: from.x, y1: from.y });
@@ -119,8 +259,9 @@ function shot(root: SVGSVGElement, { kind, playId, end, from, to, distance }: Ri
       { scale: 1, duration: 0.25, ease: "back.out(3)" },
       0,
     );
-    // The caption is the play in focus's: its words come in as the shot lands.
-    if (dot.hasAttribute("data-focused")) {
+    // The caption is the play in focus's: its words come in as the shot lands. (A goal brings
+    // its own in, in focus or not: `goal`.)
+    if (dot.hasAttribute("data-focused") && kind !== "goal") {
       timeline.fromTo(
         captions(root),
         { opacity: 0, y: 6 },

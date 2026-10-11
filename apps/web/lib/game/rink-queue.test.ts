@@ -240,6 +240,62 @@ describe("a revised game", () => {
     expect(again.playing).toBe(true);
   });
 
+  test("an overturned goal leaves no lamp, tint or score behind: the ice is cleared", () => {
+    const scored = run([live("nowhere"), live("goal"), "finished"]);
+    expect(named(scored.current)).toBe("goal:goal");
+    const overturned = game.filter((each) => each.id !== "goal");
+    const after = run([live("nowhere", overturned)], scored);
+    expect(named(after.current)).toBe("clear");
+    expect(after.playing).toBe(false);
+  });
+
+  test("a goal overturned while its sequence is playing is cut off", () => {
+    const scoring = run([live("nowhere"), live("goal")]);
+    expect(scoring.playing).toBe(true);
+    const overturned = game.filter((each) => each.id !== "goal");
+    expect(named(run([live("nowhere", overturned)], scoring).current)).toBe("clear");
+  });
+
+  test("a goal overturned to a save is played again as the save", () => {
+    const scored = run([live("nowhere"), live("goal"), "finished"]);
+    const revised = game.map((each) =>
+      each.id === "goal" ? { ...each, type: "shot-on-goal", scoring: false } : each,
+    );
+    const again = run([live("goal", revised)], scored);
+    expect(named(again.current)).toBe("save:goal");
+    expect(again.current).not.toHaveProperty("score");
+  });
+
+  test("a goal given to another scorer is played again with the new name", () => {
+    const credit = (name: string) =>
+      game.map((each) =>
+        each.id === "goal"
+          ? { ...each, participants: [{ athleteId: "1", name, shortName: name, role: "scorer" }] }
+          : each,
+      );
+    const scored = run([live("nowhere", credit("Jamie Benn")), live("goal", credit("Jamie Benn"))]);
+    expect(scored.current).toMatchObject({ kind: "goal", scorer: "Jamie Benn" });
+    const settled = run(["finished"], scored);
+    const again = run([live("goal", credit("Esa Lindell"))], settled);
+    expect(again.current).toMatchObject({ kind: "goal", scorer: "Esa Lindell" });
+    expect(again.playing).toBe(true);
+  });
+
+  test("a goal knows its side, its colour and the score before it from the scene", () => {
+    const scored = game.map((each) => (each.id === "goal" ? { ...each, awayScore: 1 } : each));
+    const colours = { homeColour: "00468b", awayColour: "20864c" };
+    const queue = run([
+      { ...live("nowhere", scored), ...colours },
+      { ...live("goal", scored), ...colours },
+    ]);
+    expect(queue.current).toMatchObject({
+      kind: "goal",
+      side: "away",
+      tint: { light: "#20864c", dark: "#489c6c" },
+      score: { from: 0, to: 1 },
+    });
+  });
+
   test("a waiting play that is taken back is not played", () => {
     const burst = run([live("start"), live("miss")]);
     const without = game.filter((each) => each.id !== "miss");

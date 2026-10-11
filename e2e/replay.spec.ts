@@ -73,6 +73,10 @@ test("the Replay opens laid out, plays, pauses, jumps to a tick, and follows the
   const drawn = rink.locator('[data-slot="rink-fx"]');
   await expect(drawn).toHaveAttribute("data-kind", "goal");
   await expect(drawn).toHaveCSS("opacity", "1");
+  // And its sequence with it: the lamp behind the net it went into, and the scorer named.
+  const lamp = rink.locator('[data-slot="rink-lamp"][data-lit]');
+  await expect(lamp).toHaveAttribute("data-end", "right");
+  await expect(page.locator('[data-slot="goal-scorer"]').first()).toContainText("Esa Lindell (6)");
   const keyRows = await rows.count();
   expect(keyRows).toBeLessThan(74);
 
@@ -101,6 +105,7 @@ test("the Replay opens laid out, plays, pauses, jumps to a tick, and follows the
   await expect(status).toHaveText("Final/SO");
   // Nothing of the last play stepped onto is left on the ice.
   await expect(drawn).toHaveCSS("opacity", "0");
+  await expect(lamp).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "Shootout" })).toBeVisible();
   await expect(page.locator('[data-slot="play-row"]')).toHaveCount(11);
 });

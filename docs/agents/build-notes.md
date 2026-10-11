@@ -2,6 +2,19 @@
 
 What earlier tickets learned that the code does not show. Read before building; add a line when you learn something the next subagent would otherwise rediscover. Keep each note to what cannot be found by reading the code.
 
+## The goal sequence (#142)
+
+- **Where it is.** `lib/game/goal.ts` (pure: `goalSequence` is what the `goal` member of `RinkAnimation` carries besides its line, `goalCall` the caption's words, `goalTint` the team colour lifted for slate), the `goal` function in `rink-player.ts` (the steps after the shot lands), and in `rink.tsx` the lamps (`GoalLamp`) and the end zones (`EndTint`). Shots: `node scripts/rink-shots.ts <url> docs/design/rink-animations goal` runs only this part and prints what each step left on the page.
+- **The figure is always the header's, and the roll is laid over it.** The score before the goal is written above the figure (`data-from`, drawn by CSS `content`) and the pair slides up through a window one figure tall. So the roll cannot end on a wrong score, and `clearRink` has no score to put back. The player rolls only when the figure already reads the goal's new score: if ESPN's header is a poll behind the play, nothing rolls and the figure changes when the header does.
+- **Text the player shows is CSS `content`, not text nodes** ("GOAL" over centre ice, the score before): the smoke tests read `rink-status` and `rink-score` with `toHaveText`, which is `textContent`, hidden text included.
+- **A tint is two CSS variables on the end zone** (`--tint`, `--tint-dark`), so the theme picks and a theme change mid-goal is right; a team with no colour falls back to `--live`. The lifted colour is in the description, so it is tested without a browser.
+- **The caption is the goal on the ice, not always the play in focus.** One poll often brings a goal and the faceoff after it; the faceoff is then in focus (its dot ringed) while the goal's sequence plays. `RinkAnimations` tells `GameRink` which goal is on the ice (`onGoal`) and the caption names that one until another cue takes its place.
+- **A live game page fetches GSAP as it opens** (`live` on `RinkAnimations`), not at its first play. A first goal that waited for the chunk showed the new score for the length of the fetch and then went back to roll up to it. A Replay still fetches at the first step.
+- **Known and left**: a goal that waits behind another cue (a save in the same poll) shows its new score while it waits, then rolls from the old one when its turn comes.
+- **GSAP warns in the console for an empty target list** ("GSAP target [object NodeList] not found"), and the shots script counts console warnings. Clear optional elements one at a time.
+- **The strength leads the caption's second line** ("power play · Wrist Shot, assists: ..."). The prototype put it last, where two assists cut it off at both widths.
+- **Sizes** from `ESPN_FIXTURES=1 pnpm build`: `game-page` 28.21 kB (9.52 gzip) before, 32.46 kB (11.03) after (the caption, the lamps and end zones, `goal.ts`); `rink-player` 72.04 kB (28.35) before, 74.43 kB (29.03) after. GSAP is still only in `rink-player`.
+
 ## The animated rink (#141)
 
 - **Three parts.** `lib/game/rink-animation.ts` (`describePlay`: a play to a `RinkAnimation`, pure), `lib/game/rink-queue.ts` (a reducer: what the page shows to what the ice plays, pure) and `components/game/rink-player.ts` (GSAP draws one cue). `RinkAnimations` joins them and renders nothing. The goal sequence (#142) adds fields to the `goal` member and steps to its timeline; penalties (#143) add a member, a `case` in `timelineFor` and their own elements in `Effects`.

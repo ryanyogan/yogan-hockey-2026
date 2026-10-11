@@ -1,6 +1,6 @@
 "use client";
 
-import { type RefObject, useLayoutEffect, useReducer, useRef } from "react";
+import { type RefObject, useEffect, useLayoutEffect, useReducer, useRef } from "react";
 import {
   queuePace,
   RINK_QUEUE_OPENED,
@@ -32,18 +32,37 @@ export function RinkAnimations({
   game,
   plays,
   homeTeamId,
+  homeColour,
+  awayColour,
   focusId,
   picked,
+  live,
+  onGoal,
 }: RinkScene & {
   /** The rink's `<svg>`. */
   rink: RefObject<SVGSVGElement | null>;
+  /**
+   * The game is in progress, so something will be played: GSAP is fetched as the page opens. A
+   * first goal that had to wait for the fetch would show its new score before rolling up to it.
+   */
+  live: boolean;
+  /** Told the goal whose sequence is on the ice, and null when it no longer is. */
+  onGoal: (playId: string | null) => void;
 }) {
+  useEffect(() => {
+    // A fetch that fails here is tried again by the first cue.
+    if (live) loadPlayer().catch(() => {});
+  }, [live]);
+
   const [queue, dispatch] = useReducer(rinkQueueReducer, RINK_QUEUE_OPENED);
   // Layout effects throughout: a cue starts before the browser paints the play it is for, so its
   // dot and caption are not seen whole for a frame before they come in.
   useLayoutEffect(() => {
-    dispatch({ type: "scene", scene: { game, plays, homeTeamId, focusId, picked } });
-  }, [game, plays, homeTeamId, focusId, picked]);
+    dispatch({
+      type: "scene",
+      scene: { game, plays, homeTeamId, homeColour, awayColour, focusId, picked },
+    });
+  }, [game, plays, homeTeamId, homeColour, awayColour, focusId, picked]);
 
   // Read when a cue starts: more arriving behind it does not start it again.
   const pace = useRef(1);
@@ -52,6 +71,9 @@ export function RinkAnimations({
   }, [queue]);
 
   const { current } = queue;
+  // Before the cue is played, so the caption it brings in is already the goal's.
+  const goalOnIce = current?.kind === "goal" ? current.playId : null;
+  useLayoutEffect(() => onGoal(goalOnIce), [goalOnIce, onGoal]);
   useLayoutEffect(() => {
     const root = rink.current;
     if (current == null || root == null) return;

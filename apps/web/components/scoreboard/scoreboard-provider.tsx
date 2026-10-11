@@ -5,6 +5,7 @@ import {
   createContext,
   type ReactNode,
   Suspense,
+  startTransition,
   use,
   useContext,
   useEffect,
@@ -90,8 +91,13 @@ export function ScoreboardProvider({
     let current = true;
     initial.then((reading) => {
       if (!current) return;
-      setRendered(reading);
-      setLastHeardAt((heardAt) => laterOf(heardAt, reading.heardAt));
+      // A transition: this lands as the page hydrates, and a change of the context above a part
+      // of the page not yet hydrated would otherwise put that part's placeholder back for a
+      // moment (`/nhl/live` drew its skeleton again and the footer moved twice).
+      startTransition(() => {
+        setRendered(reading);
+        setLastHeardAt((heardAt) => laterOf(heardAt, reading.heardAt));
+      });
     });
     return () => {
       current = false;

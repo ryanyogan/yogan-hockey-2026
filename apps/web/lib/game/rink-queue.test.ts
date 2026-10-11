@@ -107,28 +107,31 @@ describe("a Game Stream", () => {
   });
 
   test("a play with no coordinate, or no shot to draw, is never put on the ice", () => {
-    // The miss, then a shot ESPN gave no place: the miss plays, then the ice is cleared of it.
-    const queue = run([live("faceoff"), live("nowhere")]);
-    expect(playedOut(queue)).toEqual(["miss:miss", "clear"]);
-    // Arriving alone with nothing on the ice, it changes nothing.
+    // The miss, a shot ESPN gave no place, a goal, a blocked shot: two of the four are drawn.
+    const queue = run([live("faceoff"), live("blocked")]);
+    expect(playedOut(queue)).toEqual(["miss:miss", "goal:goal"]);
+    // Arriving alone, the shot with no place changes nothing.
     const quiet = run([live("miss"), live("nowhere")]);
     expect(quiet.current).toBeNull();
     expect(quiet.playing).toBe(false);
     expect(quiet.waiting).toEqual([]);
   });
 
-  test("a shot followed by a faceoff is played, then cleared: the ice shows the play in focus", () => {
+  test("the last shot stays on the ice as it ended while plays with nothing to draw arrive", () => {
     const queue = run([live("start"), live("faceoff")]);
-    expect(named(queue.current)).toBe("save:save");
-    expect(waiting(queue)).toEqual(["clear"]);
-    const done = run(["finished"], queue);
-    expect(named(done.current)).toBe("clear");
-    expect(done.playing).toBe(false);
+    expect(playedOut(queue)).toEqual(["save:save"]);
+    expect(queue.waiting).toEqual([]);
+    expect(queuePace(queue)).toBe(1);
   });
 
-  test("a clear with a shot behind it is dropped: every shot starts from clean ice", () => {
-    const queue = run([live("start"), live("faceoff"), live("miss")]);
-    expect(waiting(queue)).toEqual(["miss:miss"]);
+  test("the whole game arriving on a page that had none of it is the page opening", () => {
+    const empty: RinkScene = { ...live("start"), game: [], plays: [], focusId: null };
+    const arrived = run([empty, live("late")]);
+    expect(arrived.current).toBeNull();
+    expect(arrived.playing).toBe(false);
+    // And from there the game is followed.
+    const more = [...game, play({ id: "next", type: "shot-on-goal", coordinate: { x: 70, y: 0 } })];
+    expect(named(run([live("next", more)], arrived).current)).toBe("save:next");
   });
 
   test("a long burst never stalls: only the latest few wait, in order, and the pace rises", () => {
@@ -241,6 +244,13 @@ describe("a revised game", () => {
     const burst = run([live("start"), live("miss")]);
     const without = game.filter((each) => each.id !== "miss");
     const queue = run([live("faceoff", without)], burst);
-    expect(playedOut(queue)).toEqual(["save:save", "clear"]);
+    expect(playedOut(queue)).toEqual(["save:save"]);
+  });
+
+  test("the latest play taken back as another arrives: the new one is still played", () => {
+    const shown = run([live("start"), live("faceoff"), "finished"]);
+    const rewritten = game.filter((each) => each.id !== "faceoff");
+    const queue = run([live("miss", rewritten)], shown);
+    expect(playedOut(queue)).toEqual(["miss:miss"]);
   });
 });

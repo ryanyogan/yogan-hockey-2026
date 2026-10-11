@@ -203,7 +203,8 @@ export function Rink({
       {ordered.map((play) => (
         <Mark key={play.id} play={play} focused={false} />
       ))}
-      {focus != null && <Mark play={focus} focused />}
+      {/* Keyed, so each focus is a dot of its own: an animation may be part-way through the last. */}
+      {focus != null && <Mark key={focus.id} play={focus} focused />}
       <Effects />
     </svg>
   );

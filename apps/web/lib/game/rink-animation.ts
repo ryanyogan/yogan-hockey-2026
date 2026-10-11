@@ -16,8 +16,8 @@ type ShotLine = {
 };
 
 /**
- * What the rink plays for one play: a description with no drawing in it, which
- * `playRinkAnimation` (`components/game/rink-animations.ts`) turns into a GSAP timeline.
+ * What the rink plays for one play: a description with no drawing in it, which `playRinkCue`
+ * (`components/game/rink-player.ts`) turns into a GSAP timeline.
  *
  * One member per kind of thing seen. The goal sequence (#142) adds what a goal says besides its
  * line to the `goal` member; penalties (#143) add a member of their own, with no line.

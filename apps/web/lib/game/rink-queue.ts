@@ -35,8 +35,8 @@ export type RinkQueue = {
   current: RinkCue | null;
   /** `current` is still running: the player reports `finished` when it has played out. */
   playing: boolean;
-  /** In the game's order. A clear is only ever last. */
-  waiting: readonly RinkCue[];
+  /** In the game's order. */
+  waiting: readonly RinkAnimation[];
 };
 
 export const RINK_QUEUE_OPENED: RinkQueue = {
@@ -70,7 +70,8 @@ export type RinkQueueAction =
  * - Following a game, each play that arrives is played in turn, and a burst queues up.
  * - A picked play (a Replay's playhead, a clicked tick) is played at once in place of whatever
  *   was on the ice, whether it is later or earlier in the game than the last.
- * - The ice shows the play in focus or nothing: a play with nothing to draw clears it.
+ * - A picked play with nothing to draw clears the ice, and so does letting go of a picked play.
+ *   Following a game, the last shot stays on the ice as it ended until the next one arrives.
  * - A play taken back or revised by ESPN leaves nothing stale.
  */
 export function rinkQueueReducer(queue: RinkQueue, action: RinkQueueAction): RinkQueue {
@@ -88,17 +89,16 @@ export function rinkQueueReducer(queue: RinkQueue, action: RinkQueueAction): Rin
   }
   if (before.picked) return show(next, CLEAR);
 
-  const appended = playsAfter(before.plays.at(-1)?.id, after.plays);
-  const cues: RinkCue[] = [];
-  for (const play of appended ?? []) {
+  const revised = revise(next, after);
+  // The game arriving whole (the socket's first word to a page that had none of it) is the page
+  // opening, not plays happening.
+  if (before.plays.length === 0) return revised;
+  const cues: RinkAnimation[] = [];
+  for (const play of arrivals(before.plays, after.plays)) {
     const cue = cueFor(after, play.id);
     if (cue) cues.push(cue);
   }
-  // The latest play has nothing to draw, or the game was rewritten under the page.
-  if (appended == null || (appended.length > 0 && cueFor(after, appended.at(-1)?.id) == null)) {
-    cues.push(CLEAR);
-  }
-  return enqueue(revise(next, after), cues);
+  return enqueue(revised, cues);
 }
 
 function sameScene(a: RinkScene, b: RinkScene): boolean {
@@ -107,11 +107,16 @@ function sameScene(a: RinkScene, b: RinkScene): boolean {
   );
 }
 
-/** The plays after the one with `lastId`; all of them when there was none; null when it is gone. */
-function playsAfter(lastId: string | undefined, plays: readonly Play[]): readonly Play[] | null {
-  if (lastId === undefined) return plays;
-  const last = plays.findLastIndex((play) => play.id === lastId);
-  return last === -1 ? null : plays.slice(last + 1);
+/**
+ * The plays that have arrived: those after the latest play the page already had. ESPN may have
+ * taken that one back in the same breath, so the one before it is looked for, and so on.
+ */
+function arrivals(had: readonly Play[], plays: readonly Play[]): readonly Play[] {
+  for (let at = had.length - 1; at >= 0; at--) {
+    const known = plays.findLastIndex((play) => play.id === had[at]?.id);
+    if (known !== -1) return plays.slice(known + 1);
+  }
+  return [];
 }
 
 function cueFor(scene: RinkScene, playId: string | null | undefined): RinkAnimation | null {
@@ -127,25 +132,18 @@ function cueFor(scene: RinkScene, playId: string | null | undefined): RinkAnimat
 
 const sameCue = (a: RinkCue, b: RinkCue) => JSON.stringify(a) === JSON.stringify(b);
 
-/** The queue with every cue brought up to the game as it now is: gone plays dropped, changed ones redrawn. */
+/** The queue brought up to the game as it now is: plays taken back dropped, changed ones redrawn. */
 function revise(queue: RinkQueue, scene: RinkScene): RinkQueue {
-  const fresh = (cue: RinkCue) => (cue.kind === "clear" ? cue : cueFor(scene, cue.playId));
   const waiting = queue.waiting.flatMap((cue) => {
-    const now = fresh(cue);
+    const now = cueFor(scene, cue.playId);
     return now == null ? [] : [sameCue(now, cue) ? cue : now];
   });
-  const kept = { ...queue, waiting: tidy(waiting, true) };
+  const kept = { ...queue, waiting };
   const { current } = queue;
   if (current == null || current.kind === "clear") return kept;
-  const now = fresh(current);
-  if (now == null) return advance({ ...kept, current: CLEAR, playing: true });
+  const now = cueFor(scene, current.playId);
+  if (now == null) return advance({ ...kept, current: CLEAR, playing: false });
   return sameCue(now, current) ? kept : { ...kept, current: now, playing: true };
-}
-
-/** A clear only ever last, and not at all when there is nothing before it to clear. */
-function tidy(cues: readonly RinkCue[], somethingShown: boolean): RinkCue[] {
-  const kept = cues.filter((cue, at) => cue.kind !== "clear" || at === cues.length - 1);
-  return kept.length === 1 && kept[0]?.kind === "clear" && !somethingShown ? [] : kept;
 }
 
 function show(queue: RinkQueue, cue: RinkCue): RinkQueue {
@@ -156,14 +154,12 @@ function show(queue: RinkQueue, cue: RinkCue): RinkQueue {
 function advance(queue: RinkQueue): RinkQueue {
   const [next, ...waiting] = queue.waiting;
   if (next == null) return { ...queue, playing: false };
-  return { ...queue, current: next, playing: next.kind !== "clear", waiting };
+  return { ...queue, current: next, playing: true, waiting };
 }
 
-function enqueue(queue: RinkQueue, cues: readonly RinkCue[]): RinkQueue {
+function enqueue(queue: RinkQueue, cues: readonly RinkAnimation[]): RinkQueue {
   if (cues.length === 0) return queue;
-  const shown = queue.playing || (queue.current != null && queue.current.kind !== "clear");
-  const all = tidy([...queue.waiting, ...cues], shown);
-  if (all.length === 0) return queue;
+  const all = [...queue.waiting, ...cues];
   if (queue.playing) return { ...queue, waiting: all.slice(-MAX_WAITING) };
   return advance({ ...queue, waiting: all.slice(-(MAX_WAITING + 1)) });
 }

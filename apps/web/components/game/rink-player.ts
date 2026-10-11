@@ -23,9 +23,14 @@ function setAttributes(element: Element, attributes: Record<string, number>) {
   }
 }
 
+/** The play's words, on the ice and under it (`game-rink.tsx`). */
+const captions = (root: SVGSVGElement) =>
+  root.closest('[data-slot="game-rink"]')?.querySelectorAll('[data-slot="rink-caption"]') ?? [];
+
 /** The ice as React drew it: nothing of any animation left on it. */
 export function clearRink(root: SVGSVGElement): void {
   gsap.set(root.querySelector('[data-slot="rink-fx"]'), { opacity: 0 });
+  gsap.set(captions(root), { clearProps: "opacity,transform" });
   for (const crease of root.querySelectorAll('[data-slot="rink-crease"]')) {
     crease.removeAttribute("data-lit");
     gsap.set(crease, { clearProps: "strokeWidth" });
@@ -114,6 +119,15 @@ function shot(root: SVGSVGElement, { kind, playId, end, from, to, distance }: Ri
       { scale: 1, duration: 0.25, ease: "back.out(3)" },
       0,
     );
+    // The caption is the play in focus's: its words come in as the shot lands.
+    if (dot.hasAttribute("data-focused")) {
+      timeline.fromTo(
+        captions(root),
+        { opacity: 0, y: 6 },
+        { opacity: 1, y: 0, duration: 0.3 },
+        travel + 0.1,
+      );
+    }
   }
 
   if (kind === "save") {
@@ -140,14 +154,17 @@ function shot(root: SVGSVGElement, { kind, playId, end, from, to, distance }: Ri
         { attr: { r: 1 }, opacity: 0.9, strokeWidth: 1 },
         { attr: { r: 9 }, opacity: 0, strokeWidth: 0.2, duration: 0.6, immediateRender: false },
         travel,
-      )
-      .call(() => crease?.setAttribute("data-lit", ""), undefined, travel)
-      .fromTo(
-        crease,
-        { strokeWidth: 1.2 },
-        { strokeWidth: 0.7, duration: 0.6, immediateRender: false },
-        travel,
       );
+    if (crease) {
+      timeline
+        .call(() => crease.setAttribute("data-lit", ""), undefined, travel)
+        .fromTo(
+          crease,
+          { strokeWidth: 1.2 },
+          { strokeWidth: 0.7, duration: 0.6, immediateRender: false },
+          travel,
+        );
+    }
   } else if (kind === "miss") {
     timeline
       .to(puck, { opacity: 0, duration: 0.2 }, travel)

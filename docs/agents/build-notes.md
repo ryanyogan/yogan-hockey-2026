@@ -2,6 +2,20 @@
 
 What earlier tickets learned that the code does not show. Read before building; add a line when you learn something the next subagent would otherwise rediscover. Keep each note to what cannot be found by reading the code.
 
+## Measuring against the performance budgets (#126)
+
+The numbers, the misses and their proposed fixes are `docs/performance/baseline.md`. One command repeats them: `PORT=<port> scripts/performance-baseline.sh local` (a fixture build) or `... deployed`; about 50 minutes each, or two minutes for one route with `--only='<route>' --runs=1 --out=node_modules/.tmp/try`.
+
+- **`vite preview` compresses nothing**, and production sends Brotli: 790 kB of script against about 250. Any time measured on a throttled network against the bare preview is wrong by seconds (largest paint 2.3 s where 1.6 s is true). `scripts/performance/compressing-proxy.ts` stands in front of it and gzips; the baseline script starts both, the preview on `PORT+10000`. `vite preview` listens on `localhost` as IPv6: a proxy that dials `127.0.0.1` gets refused.
+- **Throttling by the DevTools protocol does not delay the document's first byte in Navigation Timing** (`responseStart` reads 15 ms under 562 ms of latency; the delay lands on the body). Subresources are delayed as expected. Do not report a first byte from a throttled run.
+- **A page is not interactive until `window.__NEXT_HYDRATED`** (vinext sets it, with `__NEXT_HYDRATED_AT` in ms), 4 to 7 seconds in on the throttled phone. A script that taps a link sooner gets a whole document load, not a navigation, and anything it left in `window` is gone. Wait for the flag; a time that must outlive the document goes in `sessionStorage`.
+- **An archived finished game's page has no `h1` or `h2` in `<main>`**, so "a heading is drawn" is not a test of readiness on every route. The measuring script waits for text in `<main>` and no `[aria-busy=true]`.
+- **`?uncached=<n>` renders a cacheable page without the cache** (`x-page-cache: bypass`): any parameter the page does not read. It is how cached and rendered are told apart on one build, and on the deployed site without changing anything.
+- **The preview's local D1 can be migrated**: `cf d1 migrations apply <production d1 id> --local --persist-to .cloudflare/state --dir ../../packages/db/migrations` in `apps/web` (the build keys the simulated database by production's id; `--local` keeps it off Cloudflare). With it `/skeleton/picks` seeds on a build and the recorded finished game archives and is kept by the page cache (`hit`), which the notes below say was never seen locally.
+- **Pushing a slate from a script**: `page.routeWebSocket` with `connectToServer()`, as `e2e/live.spec.ts` does, works under throttling and against the deployed site; the fake state reaches only the script's own page.
+- **A bash script that is running must not be edited**: bash reads it as it goes, and an insertion above the running line makes it run a fragment when that line returns.
+- **`scripts/performance/` is typechecked and tested** (`pnpm exec vitest run --project scripts`); the other files in `scripts/` are still neither.
+
 ## Original design restoration (#121)
 
 - **Current visual direction is the original ledger, not the later prototypes.** See `docs/design/original-restored.md`. Restore presentation from `f07b4bb` selectively; it predates the #107 shared game/player layouts, stable Home ordering and intentional Family/fictional-player retirement. A wholesale checkout would lose those changes.

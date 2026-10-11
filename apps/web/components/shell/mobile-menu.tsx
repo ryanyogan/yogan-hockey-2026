@@ -30,10 +30,10 @@ function Menu() {
         {open ? "close" : "menu"}
       </Dialog.Trigger>
       <Dialog.Portal>
-        <Dialog.Backdrop className="fixed inset-0 top-11 z-20 bg-black/40 md:hidden" />
+        <Dialog.Backdrop className="fixed inset-0 top-[calc(2.75rem+var(--safe-top))] z-20 bg-black/40 md:hidden" />
         <Dialog.Popup
           aria-label="Menu"
-          className="fixed inset-x-0 top-11 z-20 border-rule border-b bg-background p-2 md:hidden"
+          className="fixed inset-x-0 top-[calc(2.75rem+var(--safe-top))] z-20 border-rule border-b bg-background p-2 pr-[calc(0.5rem+var(--safe-right))] pl-[calc(0.5rem+var(--safe-left))] md:hidden"
         >
           <nav aria-label="Site" className="flex flex-col">
             {/* Following the link to the page already shown is no navigation, so it closes here. */}

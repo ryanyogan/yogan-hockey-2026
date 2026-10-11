@@ -1,0 +1,512 @@
+{
+  "base": "http://localhost:5303",
+  "checkedAt": "2026-10-11T18:34:51.843Z",
+  "chromium": "153.0.8010.12",
+  "simulatedInsets": {
+    "top": 47,
+    "right": 0,
+    "bottom": 34,
+    "left": 0
+  },
+  "installability": {
+    "controlWithoutManifest": [
+      {
+        "errorId": "no-manifest",
+        "errorArguments": []
+      }
+    ],
+    "manifestUrl": "http://localhost:5303/manifest.webmanifest",
+    "manifestErrors": [],
+    "installabilityErrors": [],
+    "manifest": {
+      "id": "/",
+      "name": "Yogan Hockey",
+      "short_name": "Hockey",
+      "description": "NHL scores, standings, teams and players.",
+      "start_url": "/",
+      "scope": "/",
+      "display": "standalone",
+      "background_color": "#fbfaf7",
+      "theme_color": "#fbfaf7",
+      "icons": [
+        {
+          "src": "/icons/pwa-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png",
+          "purpose": "any"
+        },
+        {
+          "src": "/icons/maskable-icon-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png",
+          "purpose": "maskable"
+        },
+        {
+          "src": "/icons/pwa-512x512.png",
+          "sizes": "512x512",
+          "type": "image/png",
+          "purpose": "any"
+        },
+        {
+          "src": "/icons/maskable-icon-512x512.png",
+          "sizes": "512x512",
+          "type": "image/png",
+          "purpose": "maskable"
+        }
+      ]
+    },
+    "head": {
+      "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+      "application-name": "Yogan Hockey",
+      "mobile-web-app-capable": "yes",
+      "apple-mobile-web-app-title": "Hockey",
+      "apple-mobile-web-app-status-bar-style": "default",
+      "apple-mobile-web-app-capable": "yes"
+    },
+    "files": [
+      {
+        "rel": "manifest",
+        "href": "/manifest.webmanifest",
+        "status": 200,
+        "contentType": "application/manifest+json",
+        "cacheControl": "public, max-age=0, must-revalidate",
+        "pageCache": null,
+        "bytes": 812
+      },
+      {
+        "rel": "manifest icon any",
+        "href": "/icons/pwa-192x192.png",
+        "status": 200,
+        "contentType": "image/png",
+        "cacheControl": "public, max-age=0, must-revalidate",
+        "pageCache": null,
+        "bytes": 2184
+      },
+      {
+        "rel": "manifest icon maskable",
+        "href": "/icons/maskable-icon-192x192.png",
+        "status": 200,
+        "contentType": "image/png",
+        "cacheControl": "public, max-age=0, must-revalidate",
+        "pageCache": null,
+        "bytes": 1866
+      },
+      {
+        "rel": "manifest icon any",
+        "href": "/icons/pwa-512x512.png",
+        "status": 200,
+        "contentType": "image/png",
+        "cacheControl": "public, max-age=0, must-revalidate",
+        "pageCache": null,
+        "bytes": 4304
+      },
+      {
+        "rel": "manifest icon maskable",
+        "href": "/icons/maskable-icon-512x512.png",
+        "status": 200,
+        "contentType": "image/png",
+        "cacheControl": "public, max-age=0, must-revalidate",
+        "pageCache": null,
+        "bytes": 3963
+      },
+      {
+        "rel": "icon",
+        "href": "/favicon.ico",
+        "status": 200,
+        "contentType": "image/vnd.microsoft.icon",
+        "cacheControl": "public, max-age=0, must-revalidate",
+        "pageCache": null,
+        "bytes": 3774
+      },
+      {
+        "rel": "icon",
+        "href": "/icons/pwa-64x64.png",
+        "status": 200,
+        "contentType": "image/png",
+        "cacheControl": "public, max-age=0, must-revalidate",
+        "pageCache": null,
+        "bytes": 1023
+      },
+      {
+        "rel": "apple-touch-icon",
+        "href": "/icons/apple-touch-icon-180x180.png",
+        "status": 200,
+        "contentType": "image/png",
+        "cacheControl": "public, max-age=0, must-revalidate",
+        "pageCache": null,
+        "bytes": 1998
+      },
+      {
+        "rel": "apple-touch-startup-image",
+        "href": "/icons/apple-splash-portrait-light-1320x2868.png",
+        "status": 200,
+        "contentType": "image/png",
+        "cacheControl": "public, max-age=0, must-revalidate",
+        "pageCache": null,
+        "bytes": 7774
+      },
+      {
+        "rel": "apple-touch-startup-image",
+        "href": "/icons/apple-splash-portrait-dark-1320x2868.png",
+        "status": 200,
+        "contentType": "image/png",
+        "cacheControl": "public, max-age=0, must-revalidate",
+        "pageCache": null,
+        "bytes": 7207
+      },
+      {
+        "rel": "apple-touch-startup-image",
+        "href": "/icons/apple-splash-portrait-light-1206x2622.png",
+        "status": 200,
+        "contentType": "image/png",
+        "cacheControl": "public, max-age=0, must-revalidate",
+        "pageCache": null,
+        "bytes": 6853
+      },
+      {
+        "rel": "apple-touch-startup-image",
+        "href": "/icons/apple-splash-portrait-dark-1206x2622.png",
+        "status": 200,
+        "contentType": "image/png",
+        "cacheControl": "public, max-age=0, must-revalidate",
+        "pageCache": null,
+        "bytes": 6251
+      },
+      {
+        "rel": "apple-touch-startup-image",
+        "href": "/icons/apple-splash-portrait-light-1260x2736.png",
+        "status": 200,
+        "contentType": "image/png",
+        "cacheControl": "public, max-age=0, must-revalidate",
+        "pageCache": null,
+        "bytes": 7243
+      },
+      {
+        "rel": "apple-touch-startup-image",
+        "href": "/icons/apple-splash-portrait-dark-1260x2736.png",
+        "status": 200,
+        "contentType": "image/png",
+        "cacheControl": "public, max-age=0, must-revalidate",
+        "pageCache": null,
+        "bytes": 6703
+      },
+      {
+        "rel": "apple-touch-startup-image",
+        "href": "/icons/apple-splash-portrait-light-1290x2796.png",
+        "status": 200,
+        "contentType": "image/png",
+        "cacheControl": "public, max-age=0, must-revalidate",
+        "pageCache": null,
+        "bytes": 7533
+      },
+      {
+        "rel": "apple-touch-startup-image",
+        "href": "/icons/apple-splash-portrait-dark-1290x2796.png",
+        "status": 200,
+        "contentType": "image/png",
+        "cacheControl": "public, max-age=0, must-revalidate",
+        "pageCache": null,
+        "bytes": 6885
+      },
+      {
+        "rel": "apple-touch-startup-image",
+        "href": "/icons/apple-splash-portrait-light-1179x2556.png",
+        "status": 200,
+        "contentType": "image/png",
+        "cacheControl": "public, max-age=0, must-revalidate",
+        "pageCache": null,
+        "bytes": 6711
+      },
+      {
+        "rel": "apple-touch-startup-image",
+        "href": "/icons/apple-splash-portrait-dark-1179x2556.png",
+        "status": 200,
+        "contentType": "image/png",
+        "cacheControl": "public, max-age=0, must-revalidate",
+        "pageCache": null,
+        "bytes": 6141
+      },
+      {
+        "rel": "apple-touch-startup-image",
+        "href": "/icons/apple-splash-portrait-light-1170x2532.png",
+        "status": 200,
+        "contentType": "image/png",
+        "cacheControl": "public, max-age=0, must-revalidate",
+        "pageCache": null,
+        "bytes": 6648
+      },
+      {
+        "rel": "apple-touch-startup-image",
+        "href": "/icons/apple-splash-portrait-dark-1170x2532.png",
+        "status": 200,
+        "contentType": "image/png",
+        "cacheControl": "public, max-age=0, must-revalidate",
+        "pageCache": null,
+        "bytes": 6023
+      },
+      {
+        "rel": "apple-touch-startup-image",
+        "href": "/icons/apple-splash-portrait-light-1284x2778.png",
+        "status": 200,
+        "contentType": "image/png",
+        "cacheControl": "public, max-age=0, must-revalidate",
+        "pageCache": null,
+        "bytes": 7463
+      },
+      {
+        "rel": "apple-touch-startup-image",
+        "href": "/icons/apple-splash-portrait-dark-1284x2778.png",
+        "status": 200,
+        "contentType": "image/png",
+        "cacheControl": "public, max-age=0, must-revalidate",
+        "pageCache": null,
+        "bytes": 6783
+      },
+      {
+        "rel": "apple-touch-startup-image",
+        "href": "/icons/apple-splash-portrait-light-1125x2436.png",
+        "status": 200,
+        "contentType": "image/png",
+        "cacheControl": "public, max-age=0, must-revalidate",
+        "pageCache": null,
+        "bytes": 6322
+      },
+      {
+        "rel": "apple-touch-startup-image",
+        "href": "/icons/apple-splash-portrait-dark-1125x2436.png",
+        "status": 200,
+        "contentType": "image/png",
+        "cacheControl": "public, max-age=0, must-revalidate",
+        "pageCache": null,
+        "bytes": 5736
+      },
+      {
+        "rel": "apple-touch-startup-image",
+        "href": "/icons/apple-splash-portrait-light-1242x2688.png",
+        "status": 200,
+        "contentType": "image/png",
+        "cacheControl": "public, max-age=0, must-revalidate",
+        "pageCache": null,
+        "bytes": 7137
+      },
+      {
+        "rel": "apple-touch-startup-image",
+        "href": "/icons/apple-splash-portrait-dark-1242x2688.png",
+        "status": 200,
+        "contentType": "image/png",
+        "cacheControl": "public, max-age=0, must-revalidate",
+        "pageCache": null,
+        "bytes": 6515
+      },
+      {
+        "rel": "apple-touch-startup-image",
+        "href": "/icons/apple-splash-portrait-light-828x1792.png",
+        "status": 200,
+        "contentType": "image/png",
+        "cacheControl": "public, max-age=0, must-revalidate",
+        "pageCache": null,
+        "bytes": 4363
+      },
+      {
+        "rel": "apple-touch-startup-image",
+        "href": "/icons/apple-splash-portrait-dark-828x1792.png",
+        "status": 200,
+        "contentType": "image/png",
+        "cacheControl": "public, max-age=0, must-revalidate",
+        "pageCache": null,
+        "bytes": 3996
+      },
+      {
+        "rel": "apple-touch-startup-image",
+        "href": "/icons/apple-splash-portrait-light-1242x2208.png",
+        "status": 200,
+        "contentType": "image/png",
+        "cacheControl": "public, max-age=0, must-revalidate",
+        "pageCache": null,
+        "bytes": 6559
+      },
+      {
+        "rel": "apple-touch-startup-image",
+        "href": "/icons/apple-splash-portrait-dark-1242x2208.png",
+        "status": 200,
+        "contentType": "image/png",
+        "cacheControl": "public, max-age=0, must-revalidate",
+        "pageCache": null,
+        "bytes": 5977
+      },
+      {
+        "rel": "apple-touch-startup-image",
+        "href": "/icons/apple-splash-portrait-light-750x1334.png",
+        "status": 200,
+        "contentType": "image/png",
+        "cacheControl": "public, max-age=0, must-revalidate",
+        "pageCache": null,
+        "bytes": 3693
+      },
+      {
+        "rel": "apple-touch-startup-image",
+        "href": "/icons/apple-splash-portrait-dark-750x1334.png",
+        "status": 200,
+        "contentType": "image/png",
+        "cacheControl": "public, max-age=0, must-revalidate",
+        "pageCache": null,
+        "bytes": 3385
+      }
+    ]
+  },
+  "standalone": {
+    "light": {
+      "operatingSystem": "dark",
+      "top": {
+        "osPrefersDark": true,
+        "insetTop": "47px",
+        "headerBox": {
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 91,
+          "top": 0,
+          "right": 390,
+          "bottom": 91,
+          "left": 0
+        },
+        "headerContent": [
+          {
+            "top": 59.5,
+            "bottom": 77.5
+          },
+          {
+            "top": 58.8,
+            "bottom": 78.3
+          },
+          {
+            "top": 59.8,
+            "bottom": 76.8
+          }
+        ],
+        "footerContent": {
+          "top": 1471.5,
+          "bottom": 1499.5
+        },
+        "viewportHeight": 844,
+        "sideways": false,
+        "themeColor": ["#fbfaf7", "#fbfaf7"],
+        "background": "rgb(251, 250, 247)"
+      },
+      "menuTop": 91,
+      "bottom": {
+        "osPrefersDark": true,
+        "insetTop": "47px",
+        "headerBox": {
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 91,
+          "top": 0,
+          "right": 390,
+          "bottom": 91,
+          "left": 0
+        },
+        "headerContent": [
+          {
+            "top": 59.5,
+            "bottom": 77.5
+          },
+          {
+            "top": 58.8,
+            "bottom": 78.3
+          },
+          {
+            "top": 59.8,
+            "bottom": 76.8
+          }
+        ],
+        "footerContent": {
+          "top": 764.5,
+          "bottom": 792.5
+        },
+        "viewportHeight": 844,
+        "sideways": false,
+        "themeColor": ["#fbfaf7", "#fbfaf7"],
+        "background": "rgb(251, 250, 247)"
+      }
+    },
+    "dark": {
+      "operatingSystem": "light",
+      "top": {
+        "osPrefersDark": false,
+        "insetTop": "47px",
+        "headerBox": {
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 91,
+          "top": 0,
+          "right": 390,
+          "bottom": 91,
+          "left": 0
+        },
+        "headerContent": [
+          {
+            "top": 59.5,
+            "bottom": 77.5
+          },
+          {
+            "top": 58.8,
+            "bottom": 78.3
+          },
+          {
+            "top": 59.8,
+            "bottom": 76.8
+          }
+        ],
+        "footerContent": {
+          "top": 1471.5,
+          "bottom": 1499.5
+        },
+        "viewportHeight": 844,
+        "sideways": false,
+        "themeColor": ["#0f172a", "#0f172a"],
+        "background": "rgb(15, 23, 42)"
+      },
+      "menuTop": 91,
+      "bottom": {
+        "osPrefersDark": false,
+        "insetTop": "47px",
+        "headerBox": {
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 91,
+          "top": 0,
+          "right": 390,
+          "bottom": 91,
+          "left": 0
+        },
+        "headerContent": [
+          {
+            "top": 59.5,
+            "bottom": 77.5
+          },
+          {
+            "top": 58.8,
+            "bottom": 78.3
+          },
+          {
+            "top": 59.8,
+            "bottom": 76.8
+          }
+        ],
+        "footerContent": {
+          "top": 764.5,
+          "bottom": 792.5
+        },
+        "viewportHeight": 844,
+        "sideways": false,
+        "themeColor": ["#0f172a", "#0f172a"],
+        "background": "rgb(15, 23, 42)"
+      }
+    }
+  },
+  "failures": []
+}

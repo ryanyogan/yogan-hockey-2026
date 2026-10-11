@@ -9,26 +9,34 @@ function Section({ className, ...props }: ComponentProps<"section">) {
 /**
  * The line above a ledger: the subject in bold capitals, then a count or a view in quiet text
  * ("TONIGHT 6 games, 2 live", "STANDINGS league"). Children sit at the right end of the line.
+ *
+ * `lead` is for the header that names what the whole page is about (a team): its title is drawn
+ * in the score's size, on the same line height, so the header is no taller for it.
  */
 function SectionHeader({
   className,
   title,
   count,
+  lead = false,
   children,
   ...props
-}: Omit<ComponentProps<"div">, "title"> & { title: ReactNode; count?: ReactNode }) {
+}: Omit<ComponentProps<"div">, "title"> & {
+  title: ReactNode;
+  count?: ReactNode;
+  lead?: boolean;
+}) {
   return (
     <div
       data-slot="section-header"
       className={cn("mb-2 flex flex-wrap items-baseline justify-between gap-x-4", className)}
       {...props}
     >
-      <h2 className="font-strong uppercase">
+      <h2 className={cn("font-strong uppercase", lead && "text-score")}>
         {title}
         {count != null && (
           <>
             {" "}
-            <span data-slot="section-count" className="font-quiet text-label normal-case">
+            <span data-slot="section-count" className="font-quiet text-body text-label normal-case">
               {count}
             </span>
           </>

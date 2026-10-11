@@ -36,6 +36,8 @@ export function TeamHeader({
       <SectionHeader
         // The heart stays at the end of the first line when a phone wraps the rest.
         className="flex-nowrap"
+        // The page is about this team: its name is the largest thing on it, as a player's is.
+        lead
         title={team.name}
         // A phone breaks the line between two of these, never inside one.
         count={where.flatMap((part, index) => [

@@ -1,7 +1,7 @@
 {
   "prototype": "http://localhost:5324",
   "site": "http://localhost:5323",
-  "measuredAt": "2026-10-11T21:29:57.845Z",
+  "measuredAt": "2026-10-11T21:48:48.467Z",
   "rows": [
     {
       "page": "home",
@@ -7327,7 +7327,7 @@
         "x": 0,
         "y": 100,
         "width": 390,
-        "height": 5963.171875,
+        "height": 6041.171875,
         "fontFamily": "\"Geist Mono\", \"Geist Mono Fallback\", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
         "fontSize": "15px",
         "fontWeight": "500",
@@ -7376,7 +7376,7 @@
       },
       "site": {
         "x": 0,
-        "y": 6063.171875,
+        "y": 6141.171875,
         "width": 390,
         "height": 73,
         "fontFamily": "\"Geist Mono\", \"Geist Mono Fallback\", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
@@ -7478,7 +7478,7 @@
       },
       "site": {
         "x": 17,
-        "y": 547.171875,
+        "y": 625.171875,
         "width": 104.65625,
         "height": 44,
         "fontFamily": "\"Geist Mono\", \"Geist Mono Fallback\", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
@@ -7835,7 +7835,7 @@
       },
       "site": {
         "x": 16,
-        "y": 332.171875,
+        "y": 410.171875,
         "width": 358,
         "height": 48,
         "fontFamily": "\"Geist Mono\", \"Geist Mono Fallback\", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
@@ -7886,7 +7886,7 @@
       },
       "site": {
         "x": 16,
-        "y": 655.171875,
+        "y": 733.171875,
         "width": 358,
         "height": 45,
         "fontFamily": "\"Geist Mono\", \"Geist Mono Fallback\", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
@@ -7937,7 +7937,7 @@
       },
       "site": {
         "x": 24,
-        "y": 666.171875,
+        "y": 744.171875,
         "width": 81,
         "height": 22,
         "fontFamily": "\"Geist Mono\", \"Geist Mono Fallback\", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
@@ -8143,7 +8143,7 @@
         "x": 0,
         "y": 100,
         "width": 390,
-        "height": 5963.171875,
+        "height": 6041.171875,
         "fontFamily": "\"Geist Mono\", \"Geist Mono Fallback\", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
         "fontSize": "15px",
         "fontWeight": "500",
@@ -8192,7 +8192,7 @@
       },
       "site": {
         "x": 0,
-        "y": 6063.171875,
+        "y": 6141.171875,
         "width": 390,
         "height": 73,
         "fontFamily": "\"Geist Mono\", \"Geist Mono Fallback\", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
@@ -8294,7 +8294,7 @@
       },
       "site": {
         "x": 17,
-        "y": 547.171875,
+        "y": 625.171875,
         "width": 104.65625,
         "height": 44,
         "fontFamily": "\"Geist Mono\", \"Geist Mono Fallback\", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
@@ -8651,7 +8651,7 @@
       },
       "site": {
         "x": 16,
-        "y": 332.171875,
+        "y": 410.171875,
         "width": 358,
         "height": 48,
         "fontFamily": "\"Geist Mono\", \"Geist Mono Fallback\", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
@@ -8702,7 +8702,7 @@
       },
       "site": {
         "x": 16,
-        "y": 655.171875,
+        "y": 733.171875,
         "width": 358,
         "height": 45,
         "fontFamily": "\"Geist Mono\", \"Geist Mono Fallback\", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
@@ -8753,7 +8753,7 @@
       },
       "site": {
         "x": 24,
-        "y": 666.171875,
+        "y": 744.171875,
         "width": 81,
         "height": 22,
         "fontFamily": "\"Geist Mono\", \"Geist Mono Fallback\", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
@@ -8959,7 +8959,7 @@
         "x": 193,
         "y": 36,
         "width": 1247,
-        "height": 2069.078125,
+        "height": 2147.078125,
         "fontFamily": "\"Geist Mono\", \"Geist Mono Fallback\", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
         "fontSize": "13px",
         "fontWeight": "500",
@@ -9008,7 +9008,7 @@
       },
       "site": {
         "x": 193,
-        "y": 2105.078125,
+        "y": 2183.078125,
         "width": 1247,
         "height": 41,
         "fontFamily": "\"Geist Mono\", \"Geist Mono Fallback\", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
@@ -9212,7 +9212,7 @@
       },
       "site": {
         "x": 217,
-        "y": 715.078125,
+        "y": 793.078125,
         "width": 56,
         "height": 28,
         "fontFamily": "\"Geist Mono\", \"Geist Mono Fallback\", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
@@ -9263,7 +9263,7 @@
       },
       "site": {
         "x": 217,
-        "y": 599.078125,
+        "y": 677.078125,
         "width": 1199,
         "height": 48,
         "fontFamily": "\"Geist Mono\", \"Geist Mono Fallback\", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
@@ -9314,7 +9314,7 @@
       },
       "site": {
         "x": 217,
-        "y": 752.078125,
+        "y": 830.078125,
         "width": 583.5,
         "height": 33,
         "fontFamily": "\"Geist Mono\", \"Geist Mono Fallback\", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
@@ -9365,7 +9365,7 @@
       },
       "site": {
         "x": 225,
-        "y": 758.078125,
+        "y": 836.078125,
         "width": 72,
         "height": 20,
         "fontFamily": "\"Geist Mono\", \"Geist Mono Fallback\", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
@@ -9571,7 +9571,7 @@
         "x": 193,
         "y": 36,
         "width": 1247,
-        "height": 2069.078125,
+        "height": 2147.078125,
         "fontFamily": "\"Geist Mono\", \"Geist Mono Fallback\", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
         "fontSize": "13px",
         "fontWeight": "500",
@@ -9620,7 +9620,7 @@
       },
       "site": {
         "x": 193,
-        "y": 2105.078125,
+        "y": 2183.078125,
         "width": 1247,
         "height": 41,
         "fontFamily": "\"Geist Mono\", \"Geist Mono Fallback\", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
@@ -9824,7 +9824,7 @@
       },
       "site": {
         "x": 217,
-        "y": 715.078125,
+        "y": 793.078125,
         "width": 56,
         "height": 28,
         "fontFamily": "\"Geist Mono\", \"Geist Mono Fallback\", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
@@ -9875,7 +9875,7 @@
       },
       "site": {
         "x": 217,
-        "y": 599.078125,
+        "y": 677.078125,
         "width": 1199,
         "height": 48,
         "fontFamily": "\"Geist Mono\", \"Geist Mono Fallback\", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
@@ -9926,7 +9926,7 @@
       },
       "site": {
         "x": 217,
-        "y": 752.078125,
+        "y": 830.078125,
         "width": 583.5,
         "height": 33,
         "fontFamily": "\"Geist Mono\", \"Geist Mono Fallback\", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
@@ -9977,7 +9977,7 @@
       },
       "site": {
         "x": 225,
-        "y": 758.078125,
+        "y": 836.078125,
         "width": 72,
         "height": 20,
         "fontFamily": "\"Geist Mono\", \"Geist Mono Fallback\", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",

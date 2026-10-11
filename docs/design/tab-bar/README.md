@@ -19,7 +19,7 @@ Shots at 390px (2x), light and dark, in a viewport as tall as the page so the ba
 
 ## The desk is unchanged
 
-`desktop-unchanged.json`, from `node scripts/look-same.mjs <before> <after> 1440`: all 36 shots at 1440px (18 routes, light and dark) taken on `main` before the change and on this branch after it, compared pixel by pixel. **34 are identical to the pixel.** The other two are Scores in each theme, which differ only inside a box 56 by 9px at (1360, 65): the "updated" stamp, which is the time the shot was taken. `desktop/` holds Home before and after in both themes.
+`desktop-unchanged.json`, from `node scripts/look-same.mjs <before> <after> 1440`: all 36 shots at 1440px (18 routes, light and dark) taken on `main` before the change and on this branch after it, compared pixel by pixel. **34 are identical to the pixel.** The other two are Scores in each theme, which differ only inside a box 56 by 9px at (1360, 65): the "updated" stamp, which is the time the shot was taken. `desktop/` holds Home before and after in both themes. The comparison was made before `main` was merged into the branch; after it the game pages differ from that "before" by what #143 added to them, and by nothing else.
 
 ## Standalone, the home bar and a phone on its side
 

@@ -188,7 +188,15 @@ function applyTheme() {
     theme === "dark" ? "#101719" : "#f0f0e9";
 }
 function bench() {
-  return `<aside class="bench"><div class="bench-heading"><span aria-hidden="true">✳</span><h2>Your bench.</h2></div><p class="bench-copy">YOUR TEAMS. ALWAYS WITHIN REACH.</p>${["TOR", "NSH"].map((code) => `<div class="bench-team">${mark(code)}<div><strong>${teams[code].name}</strong><small>${code === "TOR" ? "HOME ICE" : "ON THE ROAD"} · DEMO</small></div>${star(code)}</div>`).join("")}<a class="bench-end" href="#teams">Manage your teams <span class="arrow">↗</span></a></aside>`;
+  const chosen = [...favorites].filter((code) => teams[code]);
+  const visible = chosen.slice(0, 3);
+  const rows = visible
+    .map(
+      (code) =>
+        `<div class="bench-team">${mark(code)}<div><strong>${teams[code].name}</strong><small>${teams[code].city.toUpperCase()} · FAVORITE</small></div>${star(code)}</div>`,
+    )
+    .join("");
+  return `<aside class="bench"><div class="bench-heading"><span aria-hidden="true">✳</span><h2>Your bench.</h2></div><p class="bench-copy">${chosen.length > 3 ? `3 OF ${chosen.length} FAVORITE TEAMS` : "YOUR TEAMS. ALWAYS WITHIN REACH."}</p>${rows || '<p class="empty">Your bench is empty.<br>Pick a team to make it yours.</p>'}<a class="bench-end" href="#teams">${chosen.length ? "Manage your teams" : "Pick your teams"} <span class="arrow">↗</span></a></aside>`;
 }
 function feature() {
   return `<section class="feature"><div class="feature-top"><span class="live-label"><span class="live-dot"></span>LIVE GAME DEMO</span><span>3RD PERIOD · 08:42</span></div><div class="feature-kicker">HOME ICE / TOR</div><div class="feature-score"><div class="feature-team">${mark("NSH", "team-large")}<div><div class="abbr">NSH</div><div class="city">NASHVILLE</div></div></div><div class="feature-numbers"><strong>2</strong><span class="score-divider">/</span><strong>3</strong></div><div class="feature-team">${mark("TOR", "team-large")}<div><div class="abbr">TOR</div><div class="city">TORONTO</div></div></div></div><div class="feature-footer"><div class="pick"><span class="eyebrow">AI PICK<br>SAMPLE</span><strong>TOR 58%</strong></div><a class="cta" href="#game">ENTER THE GAME <span class="arrow" aria-hidden="true">↗</span></a></div></section>`;
@@ -247,7 +255,7 @@ function scoreboard() {
   return `<div class="scoreboard"><div class="score-team">${mark("NSH")}<div><div class="place">NASHVILLE</div><div class="name">PREDATORS</div><div class="shots"><span id="away-shots">${event.shots[0]}</span> SHOTS ON GOAL</div></div></div><div class="score-middle"><span class="eyebrow" id="game-mode">${selected === 5 ? "LATEST DEMO" : "REPLAY / DEMO"}</span><div class="numbers"><span id="away-score">${event.score[0]}</span><span>:</span><span id="home-score">${event.score[1]}</span></div><span class="clock" id="game-clock">P3 / ${event.time}</span></div><div class="score-team">${mark("TOR")}<div><div class="place">TORONTO</div><div class="name">MAPLE LEAFS</div><div class="shots"><span id="home-shots">${event.shots[1]}</span> SHOTS ON GOAL</div></div></div></div>`;
 }
 function renderGame() {
-  main.innerHTML = `<div class="crumb"><a href="#home">← HOME ICE</a><span>/</span><span>NSH AT TOR · DEMO</span></div><div class="match-heading"><h1>INSIDE THE GAME<span class="orange">.</span></h1><span class="eyebrow">SCOTIABANK ARENA<br>ILLUSTRATIVE GAME SEQUENCE</span></div>${scoreboard()}<div class="game-tabs" aria-label="Game sections">${["plays", "matchup", "pick"].map((value) => `<button type="button" data-tab="${value}" aria-pressed="${tab === value}">${value === "plays" ? "Game tracker" : value === "matchup" ? "Matchup" : "AI pick / 58%"}</button>`).join("")}</div><div id="game-content">${tab === "plays" ? `<div class="game-layout"><section class="rink-panel" aria-label="Rink and replay"><div class="panel-title"><h2>ON THE ICE.</h2><span class="eyebrow">ONE PLAY. A CLEAR PICTURE.</span></div><div class="rink-wrap" id="rink-wrap">${rinkMarkup(events[selected])}</div><div class="selected-play" id="selected-play">${selectedMarkup()}</div><div class="replay"><div class="transport"><button type="button" data-action="prev" aria-label="Previous play" ${selected === 0 ? "disabled" : ""}>|←</button><button type="button" class="play" data-action="play">${timer ? "Ⅱ PAUSE" : "▶ REPLAY"}</button><button type="button" data-action="next" aria-label="Next play" ${selected === 5 ? "disabled" : ""}>→|</button><button type="button" class="latest-demo" data-action="latest" aria-label="Return to latest demo play">LATEST</button><div class="replay-label"><strong id="replay-count">PLAY ${selected + 1} / 6</strong>DEMO REPLAY</div></div><input id="replay-range" class="replay-range" type="range" min="0" max="5" value="${selected}" aria-label="Select replay play" aria-valuetext="Play ${selected + 1} of 6"><div class="timeline-labels"><span>P3 / 10:10</span><span>6 SAMPLE PLAYS</span><span>08:42</span></div></div></section><aside class="feed" aria-label="Play-by-play">${feedMarkup()}</aside></div>` : tab === "matchup" ? matchupMarkup() : predictionMarkup()}</div><div class="game-bottom"><span>DEMO DATA · Play positions, sequence and statistics are illustrative.</span><span>Shot lines connect sample endpoints. They are not continuous puck tracking.</span></div>`;
+  main.innerHTML = `<div class="crumb"><a href="#home">← HOME ICE</a><span>/</span><span>NSH AT TOR · DEMO</span></div><div class="match-heading"><h1>INSIDE THE GAME<span class="orange">.</span></h1><span class="eyebrow">SCOTIABANK ARENA <span aria-hidden="true"> / </span><br>ILLUSTRATIVE GAME SEQUENCE</span></div>${scoreboard()}<div class="game-tabs" aria-label="Game sections">${["plays", "matchup", "pick"].map((value) => `<button type="button" data-tab="${value}" aria-pressed="${tab === value}">${value === "plays" ? "Game tracker" : value === "matchup" ? "Matchup" : "AI pick / 58%"}</button>`).join("")}</div><div id="game-content">${tab === "plays" ? `<div class="game-layout"><section class="rink-panel" aria-label="Rink and replay"><div class="panel-title"><h2>ON THE ICE.</h2><span class="eyebrow">ONE PLAY. A CLEAR PICTURE.</span></div><div class="rink-wrap" id="rink-wrap">${rinkMarkup(events[selected])}</div><div class="selected-play" id="selected-play">${selectedMarkup()}</div><div class="replay"><div class="transport"><button type="button" data-action="prev" aria-label="Previous play" ${selected === 0 ? "disabled" : ""}>|←</button><button type="button" class="play" data-action="play">${timer ? "Ⅱ PAUSE" : "▶ REPLAY"}</button><button type="button" data-action="next" aria-label="Next play" ${selected === 5 ? "disabled" : ""}>→|</button><button type="button" class="latest-demo" data-action="latest" aria-label="Return to latest demo play">LATEST</button><div class="replay-label"><strong id="replay-count">PLAY ${selected + 1} / 6</strong>DEMO REPLAY</div></div><input id="replay-range" class="replay-range" type="range" min="0" max="5" value="${selected}" aria-label="Select replay play" aria-valuetext="Play ${selected + 1} of 6"><div class="timeline-labels"><span>P3 / 10:10</span><span>6 SAMPLE PLAYS</span><span>08:42</span></div></div></section><aside class="feed" aria-label="Play-by-play">${feedMarkup()}</aside></div>` : tab === "matchup" ? matchupMarkup() : predictionMarkup()}</div><div class="game-bottom"><span>DEMO DATA · Play positions, sequence and statistics are illustrative.</span><span>Shot lines connect sample endpoints. They are not continuous puck tracking.</span></div>`;
 }
 function matchupMarkup() {
   return `<section class="stats-panel"><h2>THE GAME IN NUMBERS.</h2><p class="muted">NSH <span class="orange">/</span> TOR · Latest sample snapshot</p>${[
@@ -342,6 +350,12 @@ function route(focus = false) {
   }
 }
 document.addEventListener("click", (event) => {
+  if (event.target.closest(".skip")) {
+    event.preventDefault();
+    main.focus({ preventScroll: true });
+    main.scrollIntoView();
+    return;
+  }
   const button = event.target.closest("button");
   if (!button) return;
   if (button.id === "theme-toggle") {
@@ -359,6 +373,11 @@ document.addEventListener("click", (event) => {
       item.setAttribute("aria-pressed", String(favorites.has(code)));
       item.textContent = favorites.has(code) ? "★" : "☆";
     });
+    const benchElement = document.querySelector(".bench");
+    if (benchElement) {
+      benchElement.outerHTML = bench();
+      document.querySelector(".bench-end").focus({ preventScroll: true });
+    }
     if (document.querySelector("#slate")) document.querySelector("#slate").innerHTML = slate();
     announce(`${teams[code].name} ${favorites.has(code) ? "added to" : "removed from"} favorites`);
     return;

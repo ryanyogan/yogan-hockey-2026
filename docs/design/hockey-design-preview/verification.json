@@ -1,6 +1,6 @@
 {
   "origin": "http://localhost:5194",
-  "checkedAt": "2026-10-11T16:44:10.078Z",
+  "checkedAt": "2026-10-11T16:48:58.328Z",
   "pages": [
     {
       "route": "home",
@@ -261,7 +261,35 @@
     "Favorites filter shows selected teams",
     "Favorite removal persists after reload",
     "Empty favorites gives an actionable empty state",
-    "Filtering restores original game order"
+    "Filtering restores original game order",
+    "Home/slate link opens complete game",
+    "Reduced motion disables reveal and shot animation",
+    "Replay starts paused",
+    "Touch event selection updates rink, score and clock",
+    "Goal filter has one linked selected play",
+    "Replay navigation restores all event rows",
+    "Keyboard scrub selects first play",
+    "Keyboard scrub advances one play",
+    "AI tab shows existing seeded 58% and honest labeling",
+    "Matchup tab exposes sample statistics",
+    "Tab navigation preserves selected event",
+    "User-started replay advances a discrete event",
+    "Pause holds the selected event",
+    "Latest returns to final demo snapshot",
+    "Theme preference persists",
+    "Keyboard primary navigation works",
+    "Route change places keyboard at main content",
+    "scores 320: no horizontal overflow",
+    "teams 320: no horizontal overflow",
+    "match/bos-nyr 320: no horizontal overflow",
+    "game: skip link preserves route and focuses main",
+    "game: skip link preserves content",
+    "teams: skip link preserves route and focuses main",
+    "teams: skip link preserves content",
+    "Home bench reflects BOS-only favorites",
+    "Removing last bench favorite shows empty state and keeps manage action",
+    "Removing bench row moves focus to remaining action",
+    "No browser exceptions"
   ],
   "errors": []
 }

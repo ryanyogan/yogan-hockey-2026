@@ -88,6 +88,25 @@ test("/nhl/live lists the slate in sections, links each game, and follows the so
   expect(sideways).toBe(0);
   await page.keyboard.press("Escape");
   await expect(wholeSlate).toBeHidden();
+  // The restored note moves below status on tablets too; a fixed-width note must not hide a pick.
+  for (const width of [320, 390, 640, 768, 1024, 1280, 1440]) {
+    await page.setViewportSize({ width, height: 844 });
+    const visiblePick = row.getByText("TOR 58%", { exact: true }).filter({ visible: true });
+    await expect(visiblePick).toBeVisible();
+    expect(
+      await visiblePick.evaluate((node) => {
+        const cell = node.closest("td");
+        return (
+          cell != null && node.getBoundingClientRect().right <= cell.getBoundingClientRect().right
+        );
+      }),
+    ).toBe(true);
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      ),
+    ).toBe(0);
+  }
   if (desktop != null) await page.setViewportSize(desktop);
 
   // The Scoreboard pushes a change: the game is on, and the page follows without a refresh.

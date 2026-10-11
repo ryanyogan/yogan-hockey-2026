@@ -44,6 +44,21 @@ export function clockTime(at: string, timeZone?: string): string {
   return `${part(parts, "hour")}:${part(parts, "minute")}:${part(parts, "second")}`;
 }
 
+/** The three ways a moment is shown, by the name `LocalTime` takes for each. */
+export const TIME_FORMATS = { day: gameDay, time: gameTime, clock: clockTime };
+
+/** What the server's Eastern time is marked with. A day needs no mark. */
+const EASTERN_MARK = { day: "", time: " ET", clock: " ET" };
+
+/**
+ * "7:00 PM ET": a moment as the server writes it, in Eastern time and marked so. The mark makes a
+ * time or a clock longer than the same moment in any visitor's zone, so the room this takes holds
+ * whichever of the two is drawn.
+ */
+export function easternTime(at: string, show: keyof typeof TIME_FORMATS): string {
+  return `${TIME_FORMATS[show](at, NHL_TIME_ZONE)}${EASTERN_MARK[show]}`;
+}
+
 /** "Tue Oct 6": a slate's date (`YYYY-MM-DD`), a calendar day with no time zone of its own. */
 export function slateDay(date: string): string {
   return gameDay(`${date}T00:00:00Z`, "UTC");

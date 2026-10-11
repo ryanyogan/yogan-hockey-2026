@@ -1,0 +1,1022 @@
+{
+  "origin": "http://localhost:5302",
+  "capturedAt": "2026-10-11T18:40:17.866Z",
+  "pages": [
+    {
+      "file": "home-390-light.png",
+      "overflow": 0,
+      "font": "\"Geist Mono\"",
+      "fontLoaded": true,
+      "bodySize": "15px",
+      "smallSize": "12px",
+      "row": {
+        "width": 358,
+        "height": 55
+      },
+      "tab": {
+        "width": 78,
+        "height": 56
+      },
+      "themeToggle": {
+        "width": 97,
+        "height": 44
+      },
+      "lampLit": false,
+      "errors": []
+    },
+    {
+      "file": "home-390-dark.png",
+      "overflow": 0,
+      "font": "\"Geist Mono\"",
+      "fontLoaded": true,
+      "bodySize": "15px",
+      "smallSize": "12px",
+      "row": {
+        "width": 358,
+        "height": 55
+      },
+      "tab": {
+        "width": 78,
+        "height": 56
+      },
+      "themeToggle": {
+        "width": 106,
+        "height": 44
+      },
+      "lampLit": false,
+      "errors": []
+    },
+    {
+      "file": "home-1440-light.png",
+      "overflow": 0,
+      "font": "\"Geist Mono\"",
+      "fontLoaded": true,
+      "bodySize": "13px",
+      "smallSize": "11px",
+      "row": {
+        "width": 1199,
+        "height": 33
+      },
+      "tab": null,
+      "themeToggle": null,
+      "lampLit": false,
+      "errors": []
+    },
+    {
+      "file": "home-1440-dark.png",
+      "overflow": 0,
+      "font": "\"Geist Mono\"",
+      "fontLoaded": true,
+      "bodySize": "13px",
+      "smallSize": "11px",
+      "row": {
+        "width": 1199,
+        "height": 33
+      },
+      "tab": null,
+      "themeToggle": null,
+      "lampLit": false,
+      "errors": []
+    },
+    {
+      "file": "game-390-light.png",
+      "overflow": 0,
+      "font": "\"Geist Mono\"",
+      "fontLoaded": true,
+      "bodySize": "15px",
+      "smallSize": "12px",
+      "row": {
+        "width": 358,
+        "height": 111
+      },
+      "tab": {
+        "width": 78,
+        "height": 56
+      },
+      "themeToggle": {
+        "width": 97,
+        "height": 44
+      },
+      "lampLit": false,
+      "errors": []
+    },
+    {
+      "file": "game-390-dark.png",
+      "overflow": 0,
+      "font": "\"Geist Mono\"",
+      "fontLoaded": true,
+      "bodySize": "15px",
+      "smallSize": "12px",
+      "row": {
+        "width": 358,
+        "height": 111
+      },
+      "tab": {
+        "width": 78,
+        "height": 56
+      },
+      "themeToggle": {
+        "width": 106,
+        "height": 44
+      },
+      "lampLit": false,
+      "errors": []
+    },
+    {
+      "file": "game-1440-light.png",
+      "overflow": 0,
+      "font": "\"Geist Mono\"",
+      "fontLoaded": true,
+      "bodySize": "13px",
+      "smallSize": "11px",
+      "row": {
+        "width": 583.5,
+        "height": 53
+      },
+      "tab": null,
+      "themeToggle": null,
+      "lampLit": false,
+      "errors": []
+    },
+    {
+      "file": "game-1440-dark.png",
+      "overflow": 0,
+      "font": "\"Geist Mono\"",
+      "fontLoaded": true,
+      "bodySize": "13px",
+      "smallSize": "11px",
+      "row": {
+        "width": 583.5,
+        "height": 53
+      },
+      "tab": null,
+      "themeToggle": null,
+      "lampLit": false,
+      "errors": []
+    },
+    {
+      "file": "standings-390-light.png",
+      "overflow": 0,
+      "font": "\"Geist Mono\"",
+      "fontLoaded": true,
+      "bodySize": "15px",
+      "smallSize": "12px",
+      "row": {
+        "width": 358,
+        "height": 45
+      },
+      "tab": {
+        "width": 78,
+        "height": 56
+      },
+      "themeToggle": {
+        "width": 97,
+        "height": 44
+      },
+      "lampLit": false,
+      "errors": []
+    },
+    {
+      "file": "standings-390-dark.png",
+      "overflow": 0,
+      "font": "\"Geist Mono\"",
+      "fontLoaded": true,
+      "bodySize": "15px",
+      "smallSize": "12px",
+      "row": {
+        "width": 358,
+        "height": 45
+      },
+      "tab": {
+        "width": 78,
+        "height": 56
+      },
+      "themeToggle": {
+        "width": 106,
+        "height": 44
+      },
+      "lampLit": false,
+      "errors": []
+    },
+    {
+      "file": "standings-1440-light.png",
+      "overflow": 0,
+      "font": "\"Geist Mono\"",
+      "fontLoaded": true,
+      "bodySize": "13px",
+      "smallSize": "11px",
+      "row": {
+        "width": 583.5,
+        "height": 33
+      },
+      "tab": null,
+      "themeToggle": null,
+      "lampLit": false,
+      "errors": []
+    },
+    {
+      "file": "standings-1440-dark.png",
+      "overflow": 0,
+      "font": "\"Geist Mono\"",
+      "fontLoaded": true,
+      "bodySize": "13px",
+      "smallSize": "11px",
+      "row": {
+        "width": 583.5,
+        "height": 33
+      },
+      "tab": null,
+      "themeToggle": null,
+      "lampLit": false,
+      "errors": []
+    },
+    {
+      "file": "rink-goal-390-light.png",
+      "overflow": 0,
+      "font": "\"Geist Mono\"",
+      "fontLoaded": true,
+      "bodySize": "15px",
+      "smallSize": "12px",
+      "row": {
+        "width": 358,
+        "height": 111
+      },
+      "tab": {
+        "width": 78,
+        "height": 56
+      },
+      "themeToggle": {
+        "width": 97,
+        "height": 44
+      },
+      "lampLit": true,
+      "errors": []
+    },
+    {
+      "file": "rink-goal-390-dark.png",
+      "overflow": 0,
+      "font": "\"Geist Mono\"",
+      "fontLoaded": true,
+      "bodySize": "15px",
+      "smallSize": "12px",
+      "row": {
+        "width": 358,
+        "height": 111
+      },
+      "tab": {
+        "width": 78,
+        "height": 56
+      },
+      "themeToggle": {
+        "width": 106,
+        "height": 44
+      },
+      "lampLit": true,
+      "errors": []
+    },
+    {
+      "file": "rink-goal-1440-light.png",
+      "overflow": 0,
+      "font": "\"Geist Mono\"",
+      "fontLoaded": true,
+      "bodySize": "13px",
+      "smallSize": "11px",
+      "row": {
+        "width": 583.5,
+        "height": 53
+      },
+      "tab": null,
+      "themeToggle": null,
+      "lampLit": true,
+      "errors": []
+    },
+    {
+      "file": "rink-goal-1440-dark.png",
+      "overflow": 0,
+      "font": "\"Geist Mono\"",
+      "fontLoaded": true,
+      "bodySize": "13px",
+      "smallSize": "11px",
+      "row": {
+        "width": 583.5,
+        "height": 53
+      },
+      "tab": null,
+      "themeToggle": null,
+      "lampLit": true,
+      "errors": []
+    },
+    {
+      "file": "rink-goal-home-390-light.png",
+      "overflow": 0,
+      "font": "\"Geist Mono\"",
+      "fontLoaded": true,
+      "bodySize": "15px",
+      "smallSize": "12px",
+      "row": {
+        "width": 358,
+        "height": 111
+      },
+      "tab": {
+        "width": 78,
+        "height": 56
+      },
+      "themeToggle": {
+        "width": 97,
+        "height": 44
+      },
+      "lampLit": true,
+      "errors": []
+    },
+    {
+      "file": "rink-goal-home-390-dark.png",
+      "overflow": 0,
+      "font": "\"Geist Mono\"",
+      "fontLoaded": true,
+      "bodySize": "15px",
+      "smallSize": "12px",
+      "row": {
+        "width": 358,
+        "height": 111
+      },
+      "tab": {
+        "width": 78,
+        "height": 56
+      },
+      "themeToggle": {
+        "width": 106,
+        "height": 44
+      },
+      "lampLit": true,
+      "errors": []
+    },
+    {
+      "file": "rink-goal-home-1440-light.png",
+      "overflow": 0,
+      "font": "\"Geist Mono\"",
+      "fontLoaded": true,
+      "bodySize": "13px",
+      "smallSize": "11px",
+      "row": {
+        "width": 583.5,
+        "height": 53
+      },
+      "tab": null,
+      "themeToggle": null,
+      "lampLit": true,
+      "errors": []
+    },
+    {
+      "file": "rink-goal-home-1440-dark.png",
+      "overflow": 0,
+      "font": "\"Geist Mono\"",
+      "fontLoaded": true,
+      "bodySize": "13px",
+      "smallSize": "11px",
+      "row": {
+        "width": 583.5,
+        "height": 53
+      },
+      "tab": null,
+      "themeToggle": null,
+      "lampLit": true,
+      "errors": []
+    },
+    {
+      "file": "rink-shot-390-light.png",
+      "overflow": 0,
+      "font": "\"Geist Mono\"",
+      "fontLoaded": true,
+      "bodySize": "15px",
+      "smallSize": "12px",
+      "row": {
+        "width": 358,
+        "height": 111
+      },
+      "tab": {
+        "width": 78,
+        "height": 56
+      },
+      "themeToggle": {
+        "width": 97,
+        "height": 44
+      },
+      "lampLit": false,
+      "errors": []
+    },
+    {
+      "file": "rink-shot-390-dark.png",
+      "overflow": 0,
+      "font": "\"Geist Mono\"",
+      "fontLoaded": true,
+      "bodySize": "15px",
+      "smallSize": "12px",
+      "row": {
+        "width": 358,
+        "height": 111
+      },
+      "tab": {
+        "width": 78,
+        "height": 56
+      },
+      "themeToggle": {
+        "width": 106,
+        "height": 44
+      },
+      "lampLit": false,
+      "errors": []
+    },
+    {
+      "file": "rink-shot-1440-light.png",
+      "overflow": 0,
+      "font": "\"Geist Mono\"",
+      "fontLoaded": true,
+      "bodySize": "13px",
+      "smallSize": "11px",
+      "row": {
+        "width": 583.5,
+        "height": 53
+      },
+      "tab": null,
+      "themeToggle": null,
+      "lampLit": false,
+      "errors": []
+    },
+    {
+      "file": "rink-shot-1440-dark.png",
+      "overflow": 0,
+      "font": "\"Geist Mono\"",
+      "fontLoaded": true,
+      "bodySize": "13px",
+      "smallSize": "11px",
+      "row": {
+        "width": 583.5,
+        "height": 53
+      },
+      "tab": null,
+      "themeToggle": null,
+      "lampLit": false,
+      "errors": []
+    },
+    {
+      "file": "rink-save-390-light.png",
+      "overflow": 0,
+      "font": "\"Geist Mono\"",
+      "fontLoaded": true,
+      "bodySize": "15px",
+      "smallSize": "12px",
+      "row": {
+        "width": 358,
+        "height": 111
+      },
+      "tab": {
+        "width": 78,
+        "height": 56
+      },
+      "themeToggle": {
+        "width": 97,
+        "height": 44
+      },
+      "lampLit": false,
+      "errors": []
+    },
+    {
+      "file": "rink-save-390-dark.png",
+      "overflow": 0,
+      "font": "\"Geist Mono\"",
+      "fontLoaded": true,
+      "bodySize": "15px",
+      "smallSize": "12px",
+      "row": {
+        "width": 358,
+        "height": 111
+      },
+      "tab": {
+        "width": 78,
+        "height": 56
+      },
+      "themeToggle": {
+        "width": 106,
+        "height": 44
+      },
+      "lampLit": false,
+      "errors": []
+    },
+    {
+      "file": "rink-save-1440-light.png",
+      "overflow": 0,
+      "font": "\"Geist Mono\"",
+      "fontLoaded": true,
+      "bodySize": "13px",
+      "smallSize": "11px",
+      "row": {
+        "width": 583.5,
+        "height": 53
+      },
+      "tab": null,
+      "themeToggle": null,
+      "lampLit": false,
+      "errors": []
+    },
+    {
+      "file": "rink-save-1440-dark.png",
+      "overflow": 0,
+      "font": "\"Geist Mono\"",
+      "fontLoaded": true,
+      "bodySize": "13px",
+      "smallSize": "11px",
+      "row": {
+        "width": 583.5,
+        "height": 53
+      },
+      "tab": null,
+      "themeToggle": null,
+      "lampLit": false,
+      "errors": []
+    },
+    {
+      "file": "type-geist-regular-390-light.png",
+      "overflow": 0,
+      "font": "\"Geist Mono\"",
+      "fontLoaded": true,
+      "bodySize": "15px",
+      "smallSize": "12px",
+      "row": {
+        "width": 358,
+        "height": 55
+      },
+      "tab": {
+        "width": 78,
+        "height": 56
+      },
+      "themeToggle": {
+        "width": 97,
+        "height": 44
+      },
+      "lampLit": false,
+      "errors": []
+    },
+    {
+      "file": "type-geist-regular-390-dark.png",
+      "overflow": 0,
+      "font": "\"Geist Mono\"",
+      "fontLoaded": true,
+      "bodySize": "15px",
+      "smallSize": "12px",
+      "row": {
+        "width": 358,
+        "height": 55
+      },
+      "tab": {
+        "width": 78,
+        "height": 56
+      },
+      "themeToggle": {
+        "width": 106,
+        "height": 44
+      },
+      "lampLit": false,
+      "errors": []
+    },
+    {
+      "file": "type-geist-medium-390-light.png",
+      "overflow": 0,
+      "font": "\"Geist Mono\"",
+      "fontLoaded": true,
+      "bodySize": "15px",
+      "smallSize": "12px",
+      "row": {
+        "width": 358,
+        "height": 55
+      },
+      "tab": {
+        "width": 78,
+        "height": 56
+      },
+      "themeToggle": {
+        "width": 97,
+        "height": 44
+      },
+      "lampLit": false,
+      "errors": []
+    },
+    {
+      "file": "type-geist-medium-390-dark.png",
+      "overflow": 0,
+      "font": "\"Geist Mono\"",
+      "fontLoaded": true,
+      "bodySize": "15px",
+      "smallSize": "12px",
+      "row": {
+        "width": 358,
+        "height": 55
+      },
+      "tab": {
+        "width": 78,
+        "height": 56
+      },
+      "themeToggle": {
+        "width": 106,
+        "height": 44
+      },
+      "lampLit": false,
+      "errors": []
+    },
+    {
+      "file": "type-geist-heavy-390-light.png",
+      "overflow": 0,
+      "font": "\"Geist Mono\"",
+      "fontLoaded": true,
+      "bodySize": "15px",
+      "smallSize": "12px",
+      "row": {
+        "width": 358,
+        "height": 55
+      },
+      "tab": {
+        "width": 78,
+        "height": 56
+      },
+      "themeToggle": {
+        "width": 97,
+        "height": 44
+      },
+      "lampLit": false,
+      "errors": []
+    },
+    {
+      "file": "type-geist-heavy-390-dark.png",
+      "overflow": 0,
+      "font": "\"Geist Mono\"",
+      "fontLoaded": true,
+      "bodySize": "15px",
+      "smallSize": "12px",
+      "row": {
+        "width": 358,
+        "height": 55
+      },
+      "tab": {
+        "width": 78,
+        "height": 56
+      },
+      "themeToggle": {
+        "width": 106,
+        "height": 44
+      },
+      "lampLit": false,
+      "errors": []
+    },
+    {
+      "file": "type-jetbrains-regular-390-light.png",
+      "overflow": 0,
+      "font": "\"JetBrains Mono\"",
+      "fontLoaded": true,
+      "bodySize": "15px",
+      "smallSize": "12px",
+      "row": {
+        "width": 358,
+        "height": 55
+      },
+      "tab": {
+        "width": 78,
+        "height": 56
+      },
+      "themeToggle": {
+        "width": 97,
+        "height": 44
+      },
+      "lampLit": false,
+      "errors": []
+    },
+    {
+      "file": "type-jetbrains-regular-390-dark.png",
+      "overflow": 0,
+      "font": "\"JetBrains Mono\"",
+      "fontLoaded": true,
+      "bodySize": "15px",
+      "smallSize": "12px",
+      "row": {
+        "width": 358,
+        "height": 55
+      },
+      "tab": {
+        "width": 78,
+        "height": 56
+      },
+      "themeToggle": {
+        "width": 106,
+        "height": 44
+      },
+      "lampLit": false,
+      "errors": []
+    },
+    {
+      "file": "type-jetbrains-medium-390-light.png",
+      "overflow": 0,
+      "font": "\"JetBrains Mono\"",
+      "fontLoaded": true,
+      "bodySize": "15px",
+      "smallSize": "12px",
+      "row": {
+        "width": 358,
+        "height": 55
+      },
+      "tab": {
+        "width": 78,
+        "height": 56
+      },
+      "themeToggle": {
+        "width": 97,
+        "height": 44
+      },
+      "lampLit": false,
+      "errors": []
+    },
+    {
+      "file": "type-jetbrains-medium-390-dark.png",
+      "overflow": 0,
+      "font": "\"JetBrains Mono\"",
+      "fontLoaded": true,
+      "bodySize": "15px",
+      "smallSize": "12px",
+      "row": {
+        "width": 358,
+        "height": 55
+      },
+      "tab": {
+        "width": 78,
+        "height": 56
+      },
+      "themeToggle": {
+        "width": 106,
+        "height": 44
+      },
+      "lampLit": false,
+      "errors": []
+    },
+    {
+      "file": "type-jetbrains-heavy-390-light.png",
+      "overflow": 0,
+      "font": "\"JetBrains Mono\"",
+      "fontLoaded": true,
+      "bodySize": "15px",
+      "smallSize": "12px",
+      "row": {
+        "width": 358,
+        "height": 55
+      },
+      "tab": {
+        "width": 78,
+        "height": 56
+      },
+      "themeToggle": {
+        "width": 97,
+        "height": 44
+      },
+      "lampLit": false,
+      "errors": []
+    },
+    {
+      "file": "type-jetbrains-heavy-390-dark.png",
+      "overflow": 0,
+      "font": "\"JetBrains Mono\"",
+      "fontLoaded": true,
+      "bodySize": "15px",
+      "smallSize": "12px",
+      "row": {
+        "width": 358,
+        "height": 55
+      },
+      "tab": {
+        "width": 78,
+        "height": 56
+      },
+      "themeToggle": {
+        "width": 106,
+        "height": 44
+      },
+      "lampLit": false,
+      "errors": []
+    },
+    {
+      "file": "type-plex-regular-390-light.png",
+      "overflow": 0,
+      "font": "\"IBM Plex Mono\"",
+      "fontLoaded": true,
+      "bodySize": "15px",
+      "smallSize": "12px",
+      "row": {
+        "width": 358,
+        "height": 55
+      },
+      "tab": {
+        "width": 78,
+        "height": 56
+      },
+      "themeToggle": {
+        "width": 97,
+        "height": 44
+      },
+      "lampLit": false,
+      "errors": []
+    },
+    {
+      "file": "type-plex-regular-390-dark.png",
+      "overflow": 0,
+      "font": "\"IBM Plex Mono\"",
+      "fontLoaded": true,
+      "bodySize": "15px",
+      "smallSize": "12px",
+      "row": {
+        "width": 358,
+        "height": 55
+      },
+      "tab": {
+        "width": 78,
+        "height": 56
+      },
+      "themeToggle": {
+        "width": 106,
+        "height": 44
+      },
+      "lampLit": false,
+      "errors": []
+    },
+    {
+      "file": "type-plex-medium-390-light.png",
+      "overflow": 0,
+      "font": "\"IBM Plex Mono\"",
+      "fontLoaded": true,
+      "bodySize": "15px",
+      "smallSize": "12px",
+      "row": {
+        "width": 358,
+        "height": 55
+      },
+      "tab": {
+        "width": 78,
+        "height": 56
+      },
+      "themeToggle": {
+        "width": 97,
+        "height": 44
+      },
+      "lampLit": false,
+      "errors": []
+    },
+    {
+      "file": "type-plex-medium-390-dark.png",
+      "overflow": 0,
+      "font": "\"IBM Plex Mono\"",
+      "fontLoaded": true,
+      "bodySize": "15px",
+      "smallSize": "12px",
+      "row": {
+        "width": 358,
+        "height": 55
+      },
+      "tab": {
+        "width": 78,
+        "height": 56
+      },
+      "themeToggle": {
+        "width": 106,
+        "height": 44
+      },
+      "lampLit": false,
+      "errors": []
+    },
+    {
+      "file": "type-plex-heavy-390-light.png",
+      "overflow": 0,
+      "font": "\"IBM Plex Mono\"",
+      "fontLoaded": true,
+      "bodySize": "15px",
+      "smallSize": "12px",
+      "row": {
+        "width": 358,
+        "height": 55
+      },
+      "tab": {
+        "width": 78,
+        "height": 56
+      },
+      "themeToggle": {
+        "width": 97,
+        "height": 44
+      },
+      "lampLit": false,
+      "errors": []
+    },
+    {
+      "file": "type-plex-heavy-390-dark.png",
+      "overflow": 0,
+      "font": "\"IBM Plex Mono\"",
+      "fontLoaded": true,
+      "bodySize": "15px",
+      "smallSize": "12px",
+      "row": {
+        "width": 358,
+        "height": 55
+      },
+      "tab": {
+        "width": 78,
+        "height": 56
+      },
+      "themeToggle": {
+        "width": 106,
+        "height": 44
+      },
+      "lampLit": false,
+      "errors": []
+    },
+    {
+      "file": "today-colours-390-light.png",
+      "overflow": 0,
+      "font": "\"Geist Mono\"",
+      "fontLoaded": true,
+      "bodySize": "15px",
+      "smallSize": "12px",
+      "row": {
+        "width": 358,
+        "height": 55
+      },
+      "tab": {
+        "width": 78,
+        "height": 56
+      },
+      "themeToggle": {
+        "width": 97,
+        "height": 44
+      },
+      "lampLit": false,
+      "errors": []
+    },
+    {
+      "file": "today-colours-390-dark.png",
+      "overflow": 0,
+      "font": "\"Geist Mono\"",
+      "fontLoaded": true,
+      "bodySize": "15px",
+      "smallSize": "12px",
+      "row": {
+        "width": 358,
+        "height": 55
+      },
+      "tab": {
+        "width": 78,
+        "height": 56
+      },
+      "themeToggle": {
+        "width": 106,
+        "height": 44
+      },
+      "lampLit": false,
+      "errors": []
+    },
+    {
+      "file": "switcher-390-light.png",
+      "overflow": 0,
+      "font": "\"Geist Mono\"",
+      "fontLoaded": true,
+      "bodySize": "15px",
+      "smallSize": "12px",
+      "row": {
+        "width": 358,
+        "height": 55
+      },
+      "tab": {
+        "width": 78,
+        "height": 56
+      },
+      "themeToggle": {
+        "width": 97,
+        "height": 44
+      },
+      "lampLit": false,
+      "errors": []
+    },
+    {
+      "file": "switcher-390-dark.png",
+      "overflow": 0,
+      "font": "\"Geist Mono\"",
+      "fontLoaded": true,
+      "bodySize": "15px",
+      "smallSize": "12px",
+      "row": {
+        "width": 358,
+        "height": 55
+      },
+      "tab": {
+        "width": 78,
+        "height": 56
+      },
+      "themeToggle": {
+        "width": 106,
+        "height": 44
+      },
+      "lampLit": false,
+      "errors": []
+    }
+  ]
+}

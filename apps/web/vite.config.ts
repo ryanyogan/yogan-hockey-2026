@@ -1,7 +1,22 @@
+import { readFileSync } from "node:fs";
+import { createRequire } from "node:module";
 import { cloudflare } from "@cloudflare/vite-plugin";
 import { kvDataAdapter } from "@vinext/cloudflare/cache/kv-data-adapter";
 import vinext from "vinext";
 import { defineConfig } from "vite";
+
+/**
+ * GSAP's notice, which its licence says stays with the code. The minifier drops every comment,
+ * so the notice is read from the package and written back at the head of the one chunk GSAP is
+ * in (`components/game/rink-player.ts`, imported lazily and so a chunk of its own).
+ */
+function gsapNotice(): string {
+  const packaged = createRequire(import.meta.url).resolve("gsap/dist/gsap.min.js");
+  const notice = /^\/\*![\s\S]*?\*\//.exec(readFileSync(packaged, "utf8"))?.[0];
+  if (!notice?.includes("@license")) throw new Error("GSAP's licence notice was not found");
+  return notice;
+}
+const GSAP_CHUNK = "rink-player";
 
 export default defineConfig(({ command }) => ({
   // Pinned: left alone, the dev server moves from 5173 to 3000 when it restarts on a config change.
@@ -18,6 +33,15 @@ export default defineConfig(({ command }) => ({
     ),
   },
   server: { port: Number(process.env.PORT ?? 5173), strictPort: true },
+  environments: {
+    client: {
+      build: {
+        rolldownOptions: {
+          output: { postBanner: (chunk) => (chunk.name === GSAP_CHUNK ? gsapNotice() : "") },
+        },
+      },
+    },
+  },
   plugins: [
     vinext({
       cache: { data: kvDataAdapter() },

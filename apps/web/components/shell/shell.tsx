@@ -24,7 +24,7 @@ export function Shell({ children }: { children: ReactNode }) {
       <a href="#main-content" className="skip-link">
         Skip to content
       </a>
-      <aside className="sticky top-0 hidden h-screen w-48 shrink-0 flex-col gap-1 border-rule border-r p-4 md:flex">
+      <aside className="sticky top-0 hidden h-screen w-[calc(12rem+var(--safe-left))] shrink-0 flex-col gap-1 border-rule border-r p-4 pt-[calc(1rem+var(--safe-top))] pb-[calc(1rem+var(--safe-bottom))] pl-[calc(1rem+var(--safe-left))] md:flex">
         <Wordmark className="mb-4" />
         <nav aria-label="Site" className="flex flex-col gap-1">
           {/* Reading the query string suspends during a static render. */}
@@ -35,7 +35,7 @@ export function Shell({ children }: { children: ReactNode }) {
         <ThemeToggle className="mt-auto self-start px-2" />
       </aside>
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex h-11 shrink-0 items-center justify-between border-rule border-b bg-background px-4 md:hidden">
+        <header className="sticky top-0 z-30 flex h-(--top-bar) shrink-0 items-center justify-between border-rule border-b bg-background pt-(--safe-top) pr-[calc(1rem+var(--safe-right))] pl-[calc(1rem+var(--safe-left))] md:hidden">
           <Wordmark />
           <div className="flex items-center gap-4">
             <ThemeToggle />
@@ -44,7 +44,11 @@ export function Shell({ children }: { children: ReactNode }) {
         </header>
         <ScoreTickerSlot />
         {/* A page's top-level sections are spaced by the shell. */}
-        <main id="main-content" tabIndex={-1} className="flex-1 space-y-8 p-4 md:p-6">
+        <main
+          id="main-content"
+          tabIndex={-1}
+          className="flex-1 space-y-8 p-4 pr-[calc(1rem+var(--safe-right))] pl-[calc(1rem+var(--safe-left))] md:p-6 md:pr-[calc(1.5rem+var(--safe-right))]"
+        >
           {children}
         </main>
         <SiteFooter />

@@ -1,23 +1,11 @@
 "use client";
 
-import { useCallback, useMemo, useSyncExternalStore } from "react";
+import { useCallback, useMemo } from "react";
 import useLocalStorageState from "use-local-storage-state";
 import { FAVORITE_KEYS, type FavoriteKind, readFavoriteIds, toggleFavorite } from "./favorites";
+import { useHydrated } from "./use-hydrated";
 
 const NONE: readonly string[] = [];
-const subscribeToNothing = () => () => {};
-
-/**
- * False on the server and while the page hydrates, true from then on. Until it is true the
- * browser's favorites have not been read, so "no favorites" is not yet known to be so.
- */
-function useHydrated(): boolean {
-  return useSyncExternalStore(
-    subscribeToNothing,
-    () => true,
-    () => false,
-  );
-}
 
 export type Favorites = {
   /** The favorite ids, oldest first. Empty on the server and until the page has hydrated. */

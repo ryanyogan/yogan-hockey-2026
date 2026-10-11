@@ -85,15 +85,50 @@ From `results/local.md`. A miss is bold with a cross.
 
 **In short**: interaction passes everywhere (slowest tap 104 ms against 200). A rendered page's largest paint passes everywhere but the dashboard. A cached page's largest paint misses on every route by 12 to 128 ms. Navigation misses on every route: 0.66 to 1.65 s with nothing shown and no view transition. Layout shift misses on six routes on load and on `/nhl/live` as scores arrive.
 
-One number has no budget and explains most of the misses: **a page hydrates 4.3 to 7.0 s after the navigation starts** ("Taps work from ms" in `results/local.md`: 4.3 s on a game, 6.0 s on `/nhl`, 7.0 s on `/`). Until then a button does nothing and a tap on a link loads a whole document. Every load shift in the table happens at that moment.
+One number has no budget and explains most of the misses: **a page hydrates seconds after it paints**: 4.3 to 7.0 s here ("Taps work from ms" in `results/local.md`), 3.4 to 3.9 s on the deployed site, which is the truer figure (see below: the local preview is HTTP/1.1). Until then a button does nothing and a tap on a link loads a whole document. Every load shift in the table happens at that moment.
 
 ## Deployed site
 
-DEPLOYED_SECTION
+`https://hockey.yogan.dev` on real data, measured 2026-10-11 19:48 to 20:24 UTC from Ryan's machine (Chicago; the edge answered from ORD), with the same throttling laid over the real network. Full tables: `results/deployed.md`.
+
+**It was not the baseline commit.** `main` moved during the day: the deployed Worker already carried #147 (install to a home screen), and #148 (the animated rink) was merged at 20:11 UTC, inside the run. Its script is 10.6 kB larger than the local build's on every route (254.6 to 262.7 kB gzipped). So the local table is the before-and-after reference; this one shows what the real edge changes: HTTP/2, Brotli, and a real cached-against-rendered difference.
+
+| Route | Page | Largest paint ms (budget) | Shift on load | Shift as scores arrive | Slowest tap ms | Next shell ms | Hydrated ms |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `/` | rendered | 1712 (2500) | **0.0209** ✗ | **0.0030** ✗ | 72 | **759** ✗ | 3911 |
+| `/nhl` | cached | **1720** ✗ (1500) | 0.0000 | **0.0030** ✗ | 80 | **1582** ✗ | 3781 |
+| `/nhl` | rendered | 1628 (2500) | 0.0000 | **0.0030** ✗ | 120 | **1543** ✗ | 3725 |
+| `/nhl?tab=teams` | cached | **1644** ✗ (1500) | 0.0000 | **0.0030** ✗ | 64 | **1594** ✗ | 3684 |
+| `/nhl/live` | rendered | 1740 (2500) | 0.0000 | **0.0490** ✗ | 96 | **748** ✗ | 3492 |
+| `/nhl/teams/21` | cached | **1744** ✗ (1500) | **0.0048** ✗ | **0.0030** ✗ | 104 | **758** ✗ | 3800 |
+| `/nhl/teams/21` | rendered | 1688 (2500) | **0.0048** ✗ | **0.0030** ✗ | **200** ✗ | **803** ✗ | 3755 |
+| `/nhl/teams/21/roster` | cached | **1708** ✗ (1500) | 0.0000 | **0.0030** ✗ | 72 | **716** ✗ | 3472 |
+| `/nhl/teams/21/stats` | cached | **1632** ✗ (1500) | 0.0000 | **0.0030** ✗ | 72 | **760** ✗ | 3483 |
+| `/nhl/games/401803652` | cached | **1724** ✗ (1500) | 0.0000 | **0.0030** ✗ | 80 | **744** ✗ | 3628 |
+| `/nhl/games/401803652/scoring` | cached | **2008** ✗ (1500) | 0.0000 | **0.0030** ✗ | 72 | **757** ✗ | 3532 |
+| `/nhl/games/401803652/pick` | cached | **1740** ✗ (1500) | 0.0000 | **0.0030** ✗ | 80 | **734** ✗ | 3410 |
+| `/nhl/games/401892482` (scheduled) | rendered | 1992 (2500) | **0.0015** ✗ | **0.0030** ✗ | 64 | **1509** ✗ | 3459 |
+| `/players` | cached | **1688** ✗ (1500) | 0.0000 | **0.0030** ✗ | 64 | **692** ✗ | 3410 |
+| `/players?q=mar` | rendered | 1712 (2500) | 0.0000 | **0.0030** ✗ | 72 | **758** ✗ | 3736 |
+| `/players/4024123` | cached | **1720** ✗ (1500) | 0.0000 | **0.0030** ✗ | 72 | **1545** ✗ | 3496 |
+| `/players/4024123/games` | cached | **1756** ✗ (1500) | 0.0000 | **0.0030** ✗ | 72 | **789** ✗ | 3363 |
+| `/players/3067313` (goalie) | cached | **1796** ✗ (1500) | 0.0000 | **0.0030** ✗ | 88 | **1624** ✗ | 3453 |
+
+The rendered rows left out here are within 60 ms of their cached rows and are in `results/deployed.md`. No blank frame and no view transition on any row.
+
+What differs from the local table, and why:
+
+- **Hydration is 3.4 to 3.9 s, not 4.3 to 7.0 s.** The local preview speaks HTTP/1.1, six requests at a time, so 30 to 39 script files queue behind 562 ms of latency each; the edge sends them on one HTTP/2 connection. The deployed number is the true one; the local one is only comparable with itself.
+- **Largest paint is 130 to 300 ms over the cached budget** (1.63 to 1.80 s; 2.0 s on the scoring tab, whose largest element is painted late), a little worse than local: a real round trip under the throttle's.
+- **The ticker moves by 0.0030 on every route as scores arrive**: the one game still to come (CAR at PHI) took the lead when it went live. Local missed it only by chance of order (item 6).
+- **The dashboard's largest paint passes (1.7 s) but its shift is 0.0209**: with real data the favorites ledger arriving at hydration pushes the standings down further. The largest element differs with the data; the mechanism is item 3's.
+- **One tap of 108 reached the budget**: the theme toggle on the rendered team page, 200 ms, against 104 ms on the cached pass of the same page. Noise most likely (other work was running); it is the heaviest restyle on the site (190 rows) and the one to watch.
+
+**First byte, no throttling** (`results/deployed-first-byte.md`, ms after the TLS handshake, median of 7): a cached answer 59 to 87 ms; rendered 87 to 267 ms (`/players` 87, a team 132 to 200, a finished game 221 to 267, `/` 236 to 306, `/nhl/live` 94 to 151). So on the deployed site the cache is worth 30 to 200 ms, which on this profile is hidden behind 1.1 s of round trips.
 
 ## Script size: the measurement, and the budget it sets
 
-The budget is the gzipped script a route sent in this baseline, rounded up to a whole kB (`scriptBudgetKb`). A route that sends more has missed until the budget is changed on purpose. The numbers are of the local build, which is the same code the deployed site runs; the deployed column in `results/deployed.md` differs only by its build.
+The budget is the gzipped script a route sent in this baseline, rounded up to a whole kB (`scriptBudgetKb`). A route that sends more has missed until the budget is changed on purpose. The numbers are of the local build at the baseline commit. The deployed site had already grown by 10.6 kB (#147, #148) when it was measured; those tickets' own additions are theirs to account for against this table.
 
 | Route | Script files | Script kB | Script gzip kB | **Budget, gzip kB** | Document kB | Document gzip kB |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -174,13 +209,13 @@ Ordered by what a visitor feels most. "Run" is the command that shows it alone.
 - **Fix**: (a) draw the next route's outline in the browser at the tap, without a request: the outlines exist (`components/route-skeletons.tsx`, `team-skeletons.tsx`); a small client "pending route" holder in the shell, set on press by `Link` and cleared when the route commits, keyed by the href's pattern; (b) wrap that swap and the commit in `document.startViewTransition` (vinext 1.0.1 has no view-transition support of its own: nothing in its `dist/` calls it); (c) on a touch pointer ask for the default prefetch (the `loading.tsx` shell, which vinext answers before the page) rather than the full page, so a streamed answer can paint its outline first; (d) cut the team page's document (item 7). Budget to meet: shell under 200 ms, which only (a) can do on this network.
 - **Run**: `--only='/players/:id (skater)'`, table "Every navigation".
 
-### 2. Pages hydrate at 4.3 to 7.0 s (every route; no budget, but the cause of items 3 to 5)
+### 2. Pages hydrate at 3.4 to 3.9 s deployed, 4.3 to 7.0 s locally (every route; no budget, but the cause of items 3 to 5)
 
-- **Cause**: 244 to 253 kB of gzipped script in 29 to 39 files on a 1.47 Mbps line (about 1.4 s of bandwidth, shared with the stylesheet and the font), then React hydrating the whole document on a slowed CPU: `/nhl` (169 kB of markup, every row's link a client component) takes 6.0 s where a game takes 4.3 s.
+- **Cause**: 244 to 253 kB of gzipped script in 29 to 39 files on a 1.47 Mbps line (about 1.4 s of bandwidth, shared with the stylesheet and the font; locally also six requests at a time), then React hydrating the whole document on a slowed CPU: `/nhl` (169 kB of markup, every row's link a client component) takes 6.0 s where a game takes 4.3 s.
 - **Fix**: cut the script (the table above: zod off every route but the game by importing `StandingsViewSchema`'s values from a file with no zod and giving `packages/schemas` `"sideEffects": false` and per-file exports; replace `useAgent` in the Scoreboard provider with a bare `PartySocket`/`WebSocket` that reads two message types; replace the base-ui dialog with a native `<dialog>`; `button.tsx` and `badge.tsx` as plain elements). That is about 70 kB of 244. Then fewer client boundaries in long tables (a plain `<a>` for ledger rows with one delegated listener on the table for intent prefetch). **Propose a budget for #127: hydrated under 3 s on this profile.**
 - **Run**: any route; "Taps work from ms" in "Paint and hydration".
 
-### 3. Dashboard: largest paint 8.3 s (budget 2.5 s) and a shift of 0.0038
+### 3. Dashboard: largest paint 8.3 s locally (budget 2.5 s), and a shift of 0.0038 locally, 0.0209 deployed
 
 - **Measured**: first paint 1.56 s; the largest paint is the favorite player's row (`div[ledger-detail] "3 GP · 1 G · ..."`), drawn at 8.3 s. The standings below it move by 0.0008 as it arrives.
 - **Cause**: favorites are in localStorage. `DashboardFavorites` waits for hydration (7.0 s), then a Server Action (`resolveFavoritePlayers`, one more round trip), then draws a ledger taller than what held its place.
@@ -208,7 +243,7 @@ Ordered by what a visitor feels most. "Run" is the command that shows it alone.
 - **Measured**: when one game goes live and another final, the "Upcoming" section, its rows and the footer all move.
 - **Cause**: the page groups the slate into In progress, Upcoming and Final (`slateSections`), so a change of status takes a row out of one section and adds it, and perhaps a whole section with its header, to another.
 - **Fix**: this is the page's design, so it is Ryan's call (noted on the pull request). Recommended: one ledger in the stable order the home page took in #111 (start time, then id), the status changing in its own cell, with the sections' counts as a line above. If the grouping stays, move rows with a transform (a view transition on the list) so nothing jumps under a finger; the browser does not count a transform as a shift.
-- **Also seen once in a trial run, not in the three recorded**: the ticker's entries moving by 0.0034 as a game goes live (`tickerGames` puts live games first). The same fix: a stable order.
+- **The ticker, on every route of the deployed site (0.0030)**: an entry moves when its game goes live, because `tickerGames` puts live games first. The same fix: a stable order, the status changing in place.
 
 ### 7. Not misses, but in the way
 

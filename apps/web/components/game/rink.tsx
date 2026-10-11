@@ -1,4 +1,5 @@
 import type { Play } from "@yogan-hockey/schemas";
+import type { Ref } from "react";
 import { type MarkKind, markKind, playTime } from "../../lib/game/plays";
 import { RINK, rinkPoint } from "../../lib/game/rink";
 
@@ -11,6 +12,9 @@ const {
   circleX,
   circleY,
   circleRadius,
+  creaseRadius,
+  netDepth,
+  netHalfWidth,
   margin,
 } = RINK;
 
@@ -33,6 +37,16 @@ const MARK_FILL: Record<MarkKind, string> = {
   hit: "fill-violet-500 dark:fill-violet-400",
   other: "fill-slate-400 dark:fill-slate-500",
 };
+
+/**
+ * The colour of what an animation draws (`RinkAnimation`'s kinds), read from `data-kind` on the
+ * layer it is drawn in: a goal's and a save's as their dots, a miss's as a shot's.
+ */
+const FX_STROKE = [
+  "group-data-[kind=goal]/fx:stroke-red-600 dark:group-data-[kind=goal]/fx:stroke-red-500",
+  "group-data-[kind=save]/fx:stroke-sky-500 dark:group-data-[kind=save]/fx:stroke-sky-400",
+  "group-data-[kind=miss]/fx:stroke-slate-500 dark:group-data-[kind=miss]/fx:stroke-slate-400",
+].join(" ");
 
 /** Radii in feet: a goal is larger than any other play, and the play in focus larger again. */
 const RADIUS = { focus: 5, goal: 3.2, play: 2 } as const;
@@ -58,6 +72,54 @@ function Mark({ play, focused }: { play: Play; focused: boolean }) {
   );
 }
 
+/** A crease and the net behind it, which a shot's line is drawn to. `side` is -1 at the left end. */
+function Goal({ side }: { side: 1 | -1 }) {
+  const x = side * goalLine;
+  return (
+    <g data-slot="rink-goal" data-end={side > 0 ? "right" : "left"}>
+      <path
+        data-slot="rink-crease"
+        d={`M ${x} ${-creaseRadius} A ${creaseRadius} ${creaseRadius} 0 0 ${side > 0 ? 0 : 1} ${x} ${creaseRadius}`}
+        strokeWidth={0.4}
+        className="fill-sky-400/20 stroke-red-600/60 data-lit:stroke-sky-500 dark:fill-sky-400/15 dark:stroke-red-500/60 dark:data-lit:stroke-sky-400"
+      />
+      <rect
+        data-slot="rink-net"
+        x={side > 0 ? x : x - netDepth}
+        y={-netHalfWidth}
+        width={netDepth}
+        height={2 * netHalfWidth}
+        fill="none"
+        strokeWidth={0.5}
+        className="stroke-foreground/50"
+      />
+    </g>
+  );
+}
+
+/**
+ * What an animation draws with (`rink-player.ts`): a shot's line, the puck on it, the bar and the
+ * ring of a save. Drawn once, hidden, with nothing here that changes, so React never touches it
+ * again and the player owns its attributes.
+ */
+function Effects() {
+  return (
+    <g data-slot="rink-fx" opacity={0} className="group/fx">
+      <line data-fx="trail" x2={0} y2={0} strokeWidth={0.9} className={FX_STROKE} />
+      <line data-fx="stop" strokeWidth={1.2} className={FX_STROKE} />
+      <circle data-fx="pulse" cx={0} cy={0} r={1} fill="none" className={FX_STROKE} />
+      <circle
+        data-fx="puck"
+        cx={0}
+        cy={0}
+        r={1.3}
+        strokeWidth={0.4}
+        className="fill-foreground stroke-background"
+      />
+    </g>
+  );
+}
+
 /**
  * The ice, drawn in feet with centre ice at the origin, and a dot for each play that has a
  * coordinate. The play in focus is drawn last, larger and ringed, whether or not it is in `plays`.
@@ -65,7 +127,10 @@ function Mark({ play, focused }: { play: Play; focused: boolean }) {
 export function Rink({
   plays,
   focus = null,
+  ref,
 }: {
+  /** The drawing itself, for whatever animates it. */
+  ref?: Ref<SVGSVGElement>;
   /** The plays to draw, in the game's order. Those without a coordinate are skipped. */
   plays: readonly Play[];
   /** The play to highlight. */
@@ -76,6 +141,7 @@ export function Rink({
   const ordered = [...others.filter((p) => !p.scoring), ...others.filter((p) => p.scoring)];
   return (
     <svg
+      ref={ref}
       data-slot="rink"
       viewBox={VIEW_BOX}
       role="img"
@@ -132,10 +198,14 @@ export function Rink({
         ))}
         <circle data-circle="centre" r={circleRadius} strokeOpacity={0.4} />
       </g>
+      <Goal side={-1} />
+      <Goal side={1} />
       {ordered.map((play) => (
         <Mark key={play.id} play={play} focused={false} />
       ))}
-      {focus != null && <Mark play={focus} focused />}
+      {/* Keyed, so each focus is a dot of its own: an animation may be part-way through the last. */}
+      {focus != null && <Mark key={focus.id} play={focus} focused />}
+      <Effects />
     </svg>
   );
 }

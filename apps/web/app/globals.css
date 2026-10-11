@@ -1,12 +1,28 @@
 @import "tailwindcss";
 @import "@yogan-hockey/ui/theme.css";
 
+/*
+ * How far the notch, the rounded corners and the home bar reach into the page. All zero in a
+ * browser tab; in a site opened from the home screen the page covers the whole screen
+ * (`viewport-fit=cover` in the layout) and the shell adds these to its own padding, so its
+ * rules and backgrounds reach the edges and nothing to read or press sits under the hardware.
+ */
+:root {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  /* The phone's top bar: its 44px and the status bar it reaches up behind. */
+  --top-bar: calc(2.75rem + var(--safe-top));
+}
+
 .skip-link {
   position: fixed;
   z-index: 50;
-  top: 8px;
-  left: 12px;
-  transform: translateY(-200%);
+  top: calc(8px + var(--safe-top));
+  left: calc(12px + var(--safe-left));
+  /* Off the top edge, however far down the status bar has pushed it. */
+  transform: translateY(calc(-100% - 16px - var(--safe-top)));
   padding: 12px;
   background: var(--background);
   border: 1px solid var(--rule);

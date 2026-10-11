@@ -106,10 +106,10 @@ export function HeaderLine({
   return (
     <header data-slot="player-header">
       <div className="mb-1 flex items-baseline justify-between gap-x-4">
-        <h1 className="font-bold text-base uppercase">
+        <h1 className="font-strong text-score uppercase">
           {name}
           {detail ? (
-            <span className="font-normal text-[13px] text-foreground/50 normal-case max-sm:block">
+            <span className="font-quiet text-body text-label normal-case max-sm:block">
               {" "}
               {detail}
             </span>
@@ -118,12 +118,10 @@ export function HeaderLine({
         {action}
       </div>
       {facts.length > 0 && (
-        <dl className="flex flex-wrap gap-x-6 gap-y-1 border-foreground/20 border-t px-2 py-1">
+        <dl className="flex flex-wrap gap-x-6 gap-y-1 border-rule-head border-t px-2 py-1">
           {facts.map((fact) => (
             <div key={fact.label}>
-              <dt className="text-[10px] text-foreground/50 uppercase tracking-wider">
-                {fact.label}
-              </dt>
+              <dt className="text-small text-label uppercase tracking-label">{fact.label}</dt>
               <dd>{fact.value}</dd>
             </div>
           ))}
@@ -198,7 +196,7 @@ export function CareerSection({ career }: { career: CareerView }) {
       >
         {career.headline.map((stat) => `${stat.value} ${stat.label}`).join(" · ")}
       </SectionHeader>
-      <Ledger density="compact">
+      <Ledger>
         <LedgerHead>
           <LedgerColumn>season</LedgerColumn>
           <LedgerColumn>team</LedgerColumn>
@@ -227,7 +225,7 @@ export function CareerSection({ career }: { career: CareerView }) {
           {career.totals && (
             // The rule above the totals is drawn on the cells: a row's own top rule loses to the
             // rule under the row before it.
-            <LedgerRow className="font-bold [&>td]:border-foreground/20 [&>td]:border-t">
+            <LedgerRow className="font-strong [&>td]:border-rule-head [&>td]:border-t">
               <LedgerCell colSpan={2}>career</LedgerCell>
               <StatCells columns={career.columns} values={career.totals} />
             </LedgerRow>
@@ -276,7 +274,7 @@ export function GameLogSection({
           </>
         )}
       </SectionHeader>
-      <Ledger density="compact">
+      <Ledger>
         <LedgerHead>
           <LedgerColumn>date</LedgerColumn>
           <LedgerColumn>opp</LedgerColumn>

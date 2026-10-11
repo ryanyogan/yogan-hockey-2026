@@ -9,13 +9,13 @@ const navItemVariants = cva(
   {
     variants: {
       current: {
-        true: "bg-primary text-primary-foreground",
-        false: "text-foreground/60 hover:text-foreground",
+        true: "bg-primary font-label text-primary-foreground",
+        false: "text-note hover:text-foreground",
       },
       size: {
-        default: "py-0.5",
-        /** A row tall enough for a thumb, for the phone menu. */
-        touch: "py-2.5",
+        default: "py-1",
+        /** A row tall enough for a thumb, for the phone menu: 44px. */
+        touch: "py-row",
       },
     },
     defaultVariants: { current: false, size: "default" },

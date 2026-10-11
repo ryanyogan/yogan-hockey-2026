@@ -1,6 +1,18 @@
-import { cn } from "cn";
 import type { ElementType, ReactNode } from "react";
+import { cn } from "../cn";
 import { navItemVariants } from "./nav-item";
+
+/**
+ * On a phone the tabs are one ruled strip of cells, each 44px tall and sharing the width; a set
+ * too long for the screen scrolls sideways inside its own strip.
+ *
+ * Exported for a set of choices that is not links (the game page's radios) and looks the same:
+ * `tabStrip` on what holds them, `tabCell` beside `navItemVariants` on each.
+ */
+const tabStrip =
+  "flex flex-wrap max-md:w-full max-md:flex-nowrap max-md:overflow-x-auto max-md:border max-md:border-rule";
+const tabCell =
+  "max-md:flex max-md:min-h-11 max-md:flex-auto max-md:items-center max-md:justify-center max-md:whitespace-nowrap max-md:border-rule max-md:border-l max-md:py-0 max-md:text-[13px] max-md:first:border-l-0";
 
 type UrlTab = { value: string; label: ReactNode; href: string };
 
@@ -29,13 +41,13 @@ function UrlTabs({
   className?: string;
 }) {
   return (
-    <nav data-slot="url-tabs" aria-label={label} className={cn("flex flex-wrap gap-1", className)}>
+    <nav data-slot="url-tabs" aria-label={label} className={cn(tabStrip, className)}>
       {tabs.map((tab) => (
         <Link
           key={tab.value}
           href={tab.href}
           aria-current={tab.value === current ? "page" : undefined}
-          className={navItemVariants({ current: tab.value === current })}
+          className={cn(navItemVariants({ current: tab.value === current }), tabCell)}
         >
           {tab.label}
         </Link>
@@ -44,4 +56,4 @@ function UrlTabs({
   );
 }
 
-export { type UrlTab, UrlTabs };
+export { tabCell, tabStrip, type UrlTab, UrlTabs };

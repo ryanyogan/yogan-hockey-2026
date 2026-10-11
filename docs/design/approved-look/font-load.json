@@ -1,0 +1,306 @@
+{
+  "baseURL": "http://localhost:5312",
+  "measuredAt": "2026-10-11T20:03:44.360Z",
+  "results": [
+    {
+      "path": "/",
+      "width": 390,
+      "fontHeldBackMs": 0,
+      "cls": 0.00125,
+      "fontFiles": [
+        "/_next/static/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2"
+      ],
+      "preloaded": [
+        "/_next/static/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2"
+      ],
+      "fontDisplay": ["auto", "swap"],
+      "movedAtSwapPx": null,
+      "failed": []
+    },
+    {
+      "path": "/",
+      "width": 390,
+      "fontHeldBackMs": 2000,
+      "cls": 0.00125,
+      "fontFiles": [
+        "/_next/static/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2"
+      ],
+      "preloaded": [
+        "/_next/static/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2"
+      ],
+      "fontDisplay": ["auto", "swap"],
+      "movedAtSwapPx": 0,
+      "failed": []
+    },
+    {
+      "path": "/",
+      "width": 1440,
+      "fontHeldBackMs": 0,
+      "cls": 0.0234,
+      "fontFiles": [
+        "/_next/static/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2"
+      ],
+      "preloaded": [
+        "/_next/static/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2"
+      ],
+      "fontDisplay": ["auto", "swap"],
+      "movedAtSwapPx": null,
+      "failed": []
+    },
+    {
+      "path": "/",
+      "width": 1440,
+      "fontHeldBackMs": 2000,
+      "cls": 0.0234,
+      "fontFiles": [
+        "/_next/static/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2"
+      ],
+      "preloaded": [
+        "/_next/static/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2"
+      ],
+      "fontDisplay": ["auto", "swap"],
+      "movedAtSwapPx": 0,
+      "failed": []
+    },
+    {
+      "path": "/nhl",
+      "width": 390,
+      "fontHeldBackMs": 0,
+      "cls": 0,
+      "fontFiles": [
+        "/_next/static/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2"
+      ],
+      "preloaded": [
+        "/_next/static/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2"
+      ],
+      "fontDisplay": ["auto", "swap"],
+      "movedAtSwapPx": null,
+      "failed": []
+    },
+    {
+      "path": "/nhl",
+      "width": 390,
+      "fontHeldBackMs": 2000,
+      "cls": 0,
+      "fontFiles": [
+        "/_next/static/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2"
+      ],
+      "preloaded": [
+        "/_next/static/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2"
+      ],
+      "fontDisplay": ["auto", "swap"],
+      "movedAtSwapPx": 0,
+      "failed": []
+    },
+    {
+      "path": "/nhl",
+      "width": 1440,
+      "fontHeldBackMs": 0,
+      "cls": 0,
+      "fontFiles": [
+        "/_next/static/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2"
+      ],
+      "preloaded": [
+        "/_next/static/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2"
+      ],
+      "fontDisplay": ["auto", "swap"],
+      "movedAtSwapPx": null,
+      "failed": []
+    },
+    {
+      "path": "/nhl",
+      "width": 1440,
+      "fontHeldBackMs": 2000,
+      "cls": 0,
+      "fontFiles": [
+        "/_next/static/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2"
+      ],
+      "preloaded": [
+        "/_next/static/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2"
+      ],
+      "fontDisplay": ["auto", "swap"],
+      "movedAtSwapPx": 0,
+      "failed": []
+    },
+    {
+      "path": "/nhl/teams/21",
+      "width": 390,
+      "fontHeldBackMs": 0,
+      "cls": 0.00471,
+      "fontFiles": [
+        "/_next/static/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2"
+      ],
+      "preloaded": [
+        "/_next/static/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2"
+      ],
+      "fontDisplay": ["auto", "swap"],
+      "movedAtSwapPx": null,
+      "failed": []
+    },
+    {
+      "path": "/nhl/teams/21",
+      "width": 390,
+      "fontHeldBackMs": 2000,
+      "cls": 0.00471,
+      "fontFiles": [
+        "/_next/static/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2"
+      ],
+      "preloaded": [
+        "/_next/static/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2"
+      ],
+      "fontDisplay": ["auto", "swap"],
+      "movedAtSwapPx": 0,
+      "failed": []
+    },
+    {
+      "path": "/nhl/teams/21",
+      "width": 1440,
+      "fontHeldBackMs": 0,
+      "cls": 0.00099,
+      "fontFiles": [
+        "/_next/static/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2"
+      ],
+      "preloaded": [
+        "/_next/static/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2"
+      ],
+      "fontDisplay": ["auto", "swap"],
+      "movedAtSwapPx": null,
+      "failed": []
+    },
+    {
+      "path": "/nhl/teams/21",
+      "width": 1440,
+      "fontHeldBackMs": 2000,
+      "cls": 0.00099,
+      "fontFiles": [
+        "/_next/static/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2"
+      ],
+      "preloaded": [
+        "/_next/static/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2"
+      ],
+      "fontDisplay": ["auto", "swap"],
+      "movedAtSwapPx": 0,
+      "failed": []
+    },
+    {
+      "path": "/players/4024123",
+      "width": 390,
+      "fontHeldBackMs": 0,
+      "cls": 0,
+      "fontFiles": [
+        "/_next/static/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2"
+      ],
+      "preloaded": [
+        "/_next/static/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2"
+      ],
+      "fontDisplay": ["auto", "swap"],
+      "movedAtSwapPx": null,
+      "failed": []
+    },
+    {
+      "path": "/players/4024123",
+      "width": 390,
+      "fontHeldBackMs": 2000,
+      "cls": 0,
+      "fontFiles": [
+        "/_next/static/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2"
+      ],
+      "preloaded": [
+        "/_next/static/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2"
+      ],
+      "fontDisplay": ["auto", "swap"],
+      "movedAtSwapPx": 0,
+      "failed": []
+    },
+    {
+      "path": "/players/4024123",
+      "width": 1440,
+      "fontHeldBackMs": 0,
+      "cls": 0,
+      "fontFiles": [
+        "/_next/static/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2"
+      ],
+      "preloaded": [
+        "/_next/static/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2"
+      ],
+      "fontDisplay": ["auto", "swap"],
+      "movedAtSwapPx": null,
+      "failed": []
+    },
+    {
+      "path": "/players/4024123",
+      "width": 1440,
+      "fontHeldBackMs": 2000,
+      "cls": 0,
+      "fontFiles": [
+        "/_next/static/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2"
+      ],
+      "preloaded": [
+        "/_next/static/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2"
+      ],
+      "fontDisplay": ["auto", "swap"],
+      "movedAtSwapPx": 0,
+      "failed": []
+    },
+    {
+      "path": "/nhl/games/401803652",
+      "width": 390,
+      "fontHeldBackMs": 0,
+      "cls": 0,
+      "fontFiles": [
+        "/_next/static/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2"
+      ],
+      "preloaded": [
+        "/_next/static/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2"
+      ],
+      "fontDisplay": ["auto", "swap"],
+      "movedAtSwapPx": null,
+      "failed": []
+    },
+    {
+      "path": "/nhl/games/401803652",
+      "width": 390,
+      "fontHeldBackMs": 2000,
+      "cls": 0,
+      "fontFiles": [
+        "/_next/static/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2"
+      ],
+      "preloaded": [
+        "/_next/static/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2"
+      ],
+      "fontDisplay": ["auto", "swap"],
+      "movedAtSwapPx": 0,
+      "failed": []
+    },
+    {
+      "path": "/nhl/games/401803652",
+      "width": 1440,
+      "fontHeldBackMs": 0,
+      "cls": 0,
+      "fontFiles": [
+        "/_next/static/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2"
+      ],
+      "preloaded": [
+        "/_next/static/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2"
+      ],
+      "fontDisplay": ["auto", "swap"],
+      "movedAtSwapPx": null,
+      "failed": []
+    },
+    {
+      "path": "/nhl/games/401803652",
+      "width": 1440,
+      "fontHeldBackMs": 2000,
+      "cls": 0,
+      "fontFiles": [
+        "/_next/static/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2"
+      ],
+      "preloaded": [
+        "/_next/static/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2"
+      ],
+      "fontDisplay": ["auto", "swap"],
+      "movedAtSwapPx": 0,
+      "failed": []
+    }
+  ]
+}

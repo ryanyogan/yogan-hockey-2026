@@ -1,5 +1,4 @@
 import { type StandingsView, standingsView } from "@yogan-hockey/schemas";
-import { SectionHeader } from "@yogan-hockey/ui/components/section";
 import { UrlTabs } from "@yogan-hockey/ui/components/url-tabs";
 import type { Metadata } from "next";
 import { Link } from "../../components/link";
@@ -32,7 +31,9 @@ export default async function NhlPage({ searchParams }: Props) {
   return (
     <>
       <div className="space-y-2">
-        <SectionHeader title="NHL" className="mb-0">
+        {/* On a phone the tabs are a strip the page's width, under the title. */}
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+          <h1 className="font-strong uppercase">NHL</h1>
           <UrlTabs
             label="NHL"
             link={Link}
@@ -43,7 +44,7 @@ export default async function NhlPage({ searchParams }: Props) {
               href: nhlHref({ ...page, tab }),
             }))}
           />
-        </SectionHeader>
+        </div>
         {page.tab === "standings" && (
           <UrlTabs
             label="Standings view"
@@ -71,9 +72,9 @@ async function Standings({ view }: { view: StandingsView }) {
   return (
     // One column per conference from `xl` up. The league table, alone, keeps to the first column:
     // a row twice as wide puts a team too far from its figures to read across.
-    <div className="grid gap-4 xl:grid-cols-2">
+    <div className="grid grid-cols-1 gap-8 xl:grid-cols-2">
       {columns.map((tables) => (
-        <div key={tables[0]?.conference} className="space-y-4">
+        <div key={tables[0]?.conference} className="space-y-6">
           {tables.map((table) => (
             <StandingsLedger key={table.title} table={table} />
           ))}

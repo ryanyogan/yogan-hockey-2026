@@ -5,36 +5,30 @@ import { TEAM_MARKS } from "./team-marks.generated";
 const marks = { 21: { v: "0a1b2c3d", dark: true }, 6: { v: "deadbeef", dark: false } };
 
 describe("teamMarkImages", () => {
-  it("gives a row's mark at twice its 14px, and three times for a phone that wants it", () => {
-    expect(teamMarkImages("6", "row", marks)).toEqual({
+  it("gives a mark's file for each pixel density, the smallest as the plain src", () => {
+    expect(teamMarkImages("6", marks)).toEqual({
       light: {
         src: "/team-marks/6-28.deadbeef.webp",
-        srcSet: "/team-marks/6-28.deadbeef.webp 2x, /team-marks/6-42.deadbeef.webp 3x",
+        srcSet:
+          "/team-marks/6-28.deadbeef.webp 1x, /team-marks/6-42.deadbeef.webp 2x, /team-marks/6-84.deadbeef.webp 3x",
       },
       dark: null,
     });
   });
 
-  it("gives a header's 20px mark a file for each density", () => {
-    expect(teamMarkImages("6", "header", marks)?.light).toEqual({
-      src: "/team-marks/6-28.deadbeef.webp",
-      srcSet:
-        "/team-marks/6-28.deadbeef.webp 1x, /team-marks/6-42.deadbeef.webp 2x, /team-marks/6-84.deadbeef.webp 3x",
-    });
-  });
-
   it("gives the dark logo only for a team whose dark logo differs", () => {
-    expect(teamMarkImages("21", "row", marks)?.dark).toEqual({
+    expect(teamMarkImages("21", marks)?.dark).toEqual({
       src: "/team-marks/21-dark-28.0a1b2c3d.webp",
-      srcSet: "/team-marks/21-dark-28.0a1b2c3d.webp 2x, /team-marks/21-dark-42.0a1b2c3d.webp 3x",
+      srcSet:
+        "/team-marks/21-dark-28.0a1b2c3d.webp 1x, /team-marks/21-dark-42.0a1b2c3d.webp 2x, /team-marks/21-dark-84.0a1b2c3d.webp 3x",
     });
-    expect(teamMarkImages("6", "header", marks)?.dark).toBeNull();
+    expect(teamMarkImages("6", marks)?.dark).toBeNull();
   });
 
   it("gives nothing for a team with no mark: an all-star side, a new club", () => {
-    expect(teamMarkImages("99999", "row", marks)).toBeNull();
+    expect(teamMarkImages("99999", marks)).toBeNull();
     // An id is looked up as a key and nothing more: a name every object has is not a team.
-    expect(teamMarkImages("constructor", "row", marks)).toBeNull();
+    expect(teamMarkImages("constructor", marks)).toBeNull();
   });
 });
 

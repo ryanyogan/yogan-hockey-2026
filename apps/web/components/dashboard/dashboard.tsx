@@ -13,9 +13,16 @@ import { TonightGames } from "./tonight-games";
 
 const FULL_STANDINGS = nhlHref({ tab: "standings", view: "conference" });
 
-function StandingsHeader({ of }: { of?: string }) {
+/** `of` names the table; a phone has room for `short` only beside the link. */
+function StandingsHeader({ of, short = of }: { of?: string; short?: string }) {
+  const count = of != null && (
+    <>
+      <span className="max-md:hidden">{of}</span>
+      <span className="md:hidden">{short}</span>
+    </>
+  );
   return (
-    <SectionHeader title="Standings" count={of}>
+    <SectionHeader title="Standings" count={count || undefined}>
       <Link href={FULL_STANDINGS} className={headerLink}>
         full standings
       </Link>
@@ -50,7 +57,12 @@ async function Standings() {
       key={table.title}
       compact
       table={table}
-      header={<StandingsHeader of={table.title.toLowerCase()} />}
+      header={
+        <StandingsHeader
+          of={table.title.toLowerCase()}
+          short={table.rows[0]?.conference.abbreviation.toLowerCase()}
+        />
+      }
     />
   ));
 }

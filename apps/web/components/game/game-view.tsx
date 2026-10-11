@@ -105,7 +105,7 @@ export function GameView({
         status={status}
         notice={notice}
       />
-      <div className="mt-6">
+      <div className="mt-4">
         <PeriodTimeline
           game={header}
           plays={game}
@@ -116,7 +116,7 @@ export function GameView({
           onSelect={toggle}
         />
         {transport ?? (
-          <p data-slot="timeline-hint" className="mt-1 text-foreground/50">
+          <p data-slot="timeline-hint" className="mt-1 text-label">
             Click a tick to see that play on the ice.{" "}
             {picked ? (
               <>
@@ -195,7 +195,7 @@ function GameTabs({
   );
   return (
     <>
-      <div className="mt-6 flex flex-wrap items-center justify-between gap-2">
+      <div className="mt-8 flex flex-wrap items-center justify-between gap-2">
         <UrlTabs label="Game" link={Link} current={tab} tabs={gameTabLinks(pathname, hasPick)} />
         {/* On every tab: it decides the dots and the ticks as well as the list. */}
         <KeyPlaysToggle

@@ -19,7 +19,7 @@ export function TeamsLedger({ teams }: { teams: Team[] }) {
   return (
     <Section>
       <SectionHeader title="Teams" count={`${teams.length} teams`} />
-      <Ledger density="compact">
+      <Ledger>
         <LedgerHead>
           <LedgerColumn>abbr</LedgerColumn>
           <LedgerColumn className="w-full">team</LedgerColumn>

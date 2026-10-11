@@ -15,27 +15,22 @@ export const MARK_SIZES = [28, 42, 84] as const;
 type MarkFileSize = (typeof MARK_SIZES)[number];
 
 /**
- * How large a mark is drawn. `row` is 14px, beside 13px type in a ledger row or the ticker;
- * `header` is 20px, beside a page's title; `line` is 1.2 times the type it stands in, for a line
- * that is not 13px (the 10px to 14px lines over the ice).
+ * How large a mark is drawn. `row` and `line` are 1.2 times the type they stand in: 15.6px beside
+ * 13px type in a ledger row or the ticker, 18px beside a phone's 15px. `header` is 20px, beside a
+ * page's title.
  */
 export type TeamMarkSize = "row" | "line" | "header";
 
-/** For a mark of about 14px: 28px is already twice that, so one file serves 1x and 2x. */
-const SMALL: readonly [MarkFileSize, string][] = [
-  [28, "2x"],
-  [42, "3x"],
+/**
+ * Which file serves which pixel density, the first being the plain `src`. One list for every
+ * size: a mark is between 13 and 20px, so 28px covers it once, 42px twice (a phone's 18px mark
+ * wants 36) and 84px three times.
+ */
+const DENSITIES: readonly [MarkFileSize, string][] = [
+  [28, "1x"],
+  [42, "2x"],
+  [84, "3x"],
 ];
-/** Which file serves which pixel density, the first being the plain `src`. */
-const DENSITIES: Record<TeamMarkSize, readonly [MarkFileSize, string][]> = {
-  row: SMALL,
-  line: SMALL,
-  header: [
-    [28, "1x"],
-    [42, "2x"],
-    [84, "3x"],
-  ],
-};
 
 export interface TeamMarkImage {
   src: string;
@@ -52,13 +47,8 @@ export function teamMarkFile(
   return `${teamId}${dark ? "-dark" : ""}-${size}.${entry.v}.webp`;
 }
 
-function image(
-  teamId: string,
-  entry: TeamMarkEntry,
-  dark: boolean,
-  size: TeamMarkSize,
-): TeamMarkImage {
-  const files = DENSITIES[size].map(
+function image(teamId: string, entry: TeamMarkEntry, dark: boolean): TeamMarkImage {
+  const files = DENSITIES.map(
     ([width, density]) =>
       [`/team-marks/${teamMarkFile(teamId, entry, dark, width)}`, density] as const,
   );
@@ -74,14 +64,13 @@ function image(
  */
 export function teamMarkImages(
   teamId: string,
-  size: TeamMarkSize,
   marks: Record<string, TeamMarkEntry>,
 ): { light: TeamMarkImage; dark: TeamMarkImage | null } | null {
   if (!Object.hasOwn(marks, teamId)) return null;
   const entry = marks[teamId];
   if (entry == null) return null;
   return {
-    light: image(teamId, entry, false, size),
-    dark: entry.dark ? image(teamId, entry, true, size) : null,
+    light: image(teamId, entry, false),
+    dark: entry.dark ? image(teamId, entry, true) : null,
   };
 }

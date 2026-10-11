@@ -39,18 +39,18 @@ export default function ErrorPage({ reset }: { error: Error; reset?: () => void 
     <Section data-slot="error-page">
       <title>Not answering · Yogan Hockey</title>
       <SectionHeader title={title} count="not read" />
-      <p className="border-foreground/20 border-t px-2 py-1.5">
+      <p className="border-rule-head border-t px-2 py-row">
         ESPN is not answering just now, so {subject} could not be read.{" "}
         <button
           type="button"
           onClick={retry}
           disabled={retrying}
-          className="cursor-pointer font-bold underline disabled:cursor-default disabled:text-muted-foreground"
+          className="cursor-pointer font-strong underline disabled:cursor-default disabled:text-muted-foreground"
         >
           {retrying ? "Trying again" : "Try again"}
         </button>{" "}
         or go to{" "}
-        <Link href={back.href} className="font-bold underline">
+        <Link href={back.href} className="font-strong underline">
           {back.label}
         </Link>
         .

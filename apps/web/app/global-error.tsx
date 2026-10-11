@@ -17,22 +17,22 @@ export default function GlobalError() {
       <body>
         <title>Not answering · Yogan Hockey</title>
         <main data-slot="global-error" className="space-y-4 p-4 md:p-6">
-          <a href="/" className="block font-bold text-sm">
+          <a href="/" className="block font-strong text-sm">
             YOGAN/HOCKEY
           </a>
           <Section>
             <SectionHeader title="Page" count="not read" />
-            <p className="border-foreground/20 border-t px-2 py-1.5">
+            <p className="border-rule-head border-t px-2 py-row">
               The site could not draw this page just now.{" "}
               <button
                 type="button"
                 onClick={() => window.location.reload()}
-                className="cursor-pointer font-bold underline"
+                className="cursor-pointer font-strong underline"
               >
                 Try again
               </button>{" "}
               or go to{" "}
-              <a href="/" className="font-bold underline">
+              <a href="/" className="font-strong underline">
                 tonight
               </a>
               .

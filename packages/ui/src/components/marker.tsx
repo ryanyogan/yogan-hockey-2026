@@ -1,5 +1,5 @@
-import { cn } from "cn";
 import type { ComponentProps } from "react";
+import { cn } from "../cn";
 
 /**
  * "● live": a game in progress. Give it children to say more ("2nd 12:34"), and `strong` where it
@@ -14,13 +14,13 @@ function LiveMarker({
   return (
     <span
       data-slot="live-marker"
-      className={cn("whitespace-nowrap text-live", strong && "font-bold", className)}
+      className={cn("whitespace-nowrap text-live", strong && "font-strong", className)}
       {...props}
     >
       {/* Drawn, not typed: Geist Mono has no "●", and each fallback font draws its own size. */}
       <span
         aria-hidden="true"
-        className="mr-[0.8em] inline-block size-[0.4em] rounded-full bg-current align-[0.2em]"
+        className="mr-[0.6em] inline-block size-[0.45em] rounded-full bg-live align-[0.15em]"
       />
       {/* The dot says "live" to the eye only, so the word is always there to be read out. */}
       {children == null ? "live" : <span className="sr-only">live, </span>}

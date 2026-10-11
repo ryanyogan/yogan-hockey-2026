@@ -123,11 +123,12 @@ export function heardAtFrom(data: unknown): string | null {
 }
 
 /**
- * How high the ticker's strip is, as Tailwind classes: three short lines on a phone (52px), one
- * line from `md` up (31.5px). The rule under it is the slot's, one pixel more. It is the same for
+ * How high the ticker's strip is, as Tailwind classes: three short lines on a phone (55px), one
+ * line from `md` up (35px). The rule under it is the slot's, one pixel more: 56 and 36px, the
+ * approved prototype's strip. It is the same for
  * any slate, so whatever stands in for the ticker while it loads takes these and nothing moves.
  */
-export const TICKER_STRIP_HEIGHT = "h-13 md:h-[31.5px]";
+export const TICKER_STRIP_HEIGHT = "h-[55px] md:h-[35px]";
 
 /** A box that scrolls sideways, as the DOM measures it. */
 type ScrollStrip = Pick<Element, "scrollLeft" | "scrollWidth" | "clientWidth">;

@@ -102,6 +102,40 @@ describe("against ESPN", () => {
     );
   });
 
+  test("a read that ESPN has not answered in 10 seconds fails as no response", async () => {
+    vi.useFakeTimers();
+    try {
+      // A fetch that never answers, and gives up when it is told to.
+      fetchMock.mockImplementation(
+        (_url, init) =>
+          new Promise((_resolve, reject) => {
+            init?.signal?.addEventListener("abort", () => reject(init.signal?.reason));
+          }),
+      );
+
+      const read = getStandings();
+      const failure = expect(read).rejects.toMatchObject({ name: "EspnFetchError", status: null });
+      await vi.advanceTimersByTimeAsync(10_000);
+
+      await failure;
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  test("a read that ESPN has answered leaves no timer running", async () => {
+    vi.useFakeTimers();
+    try {
+      fetchMock.mockResolvedValue(Response.json({ events: [] }));
+
+      await getScoreboard("2026-07-15");
+
+      expect(vi.getTimerCount()).toBe(0);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   test("the scoreboard for a date asks ESPN for that date", async () => {
     fetchMock.mockResolvedValue(Response.json({ events: [] }));
 

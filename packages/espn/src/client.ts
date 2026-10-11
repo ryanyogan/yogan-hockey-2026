@@ -28,28 +28,41 @@ const TIMEOUT_MS = 10_000;
 /**
  * One request to ESPN, answered as parsed JSON. `fetcher` is the `fetch` to use: the daily live
  * check passes its own, the site's reads use the global one.
+ *
+ * The 10-second limit is a timer of this function's own, stopped as soon as the answer is read.
+ * `AbortSignal.timeout` cannot be stopped, and a timer still running holds a Durable Object
+ * awake, and billed, until it fires: every poll of an Agent then cost 10 seconds (#54).
  */
 export async function fetchJson(
   endpoint: Endpoint,
   fetcher: typeof fetch = fetch,
 ): Promise<unknown> {
-  let response: Response;
-  try {
-    response = await fetcher(endpoint.url, {
-      headers: { accept: "application/json" },
-      signal: AbortSignal.timeout(TIMEOUT_MS),
-    });
-  } catch (cause) {
-    throw new EspnFetchError(endpoint.name, null, "no response", { cause });
-  }
-  if (!response.ok) {
-    throw new EspnFetchError(endpoint.name, response.status, `HTTP ${response.status}`);
-  }
+  const gaveUp = new AbortController();
+  const limit = setTimeout(
+    () => gaveUp.abort(new DOMException("ESPN took too long", "TimeoutError")),
+    TIMEOUT_MS,
+  );
   let body: string;
   try {
-    body = await response.text();
-  } catch (cause) {
-    throw new EspnFetchError(endpoint.name, response.status, "the response broke off", { cause });
+    let response: Response;
+    try {
+      response = await fetcher(endpoint.url, {
+        headers: { accept: "application/json" },
+        signal: gaveUp.signal,
+      });
+    } catch (cause) {
+      throw new EspnFetchError(endpoint.name, null, "no response", { cause });
+    }
+    if (!response.ok) {
+      throw new EspnFetchError(endpoint.name, response.status, `HTTP ${response.status}`);
+    }
+    try {
+      body = await response.text();
+    } catch (cause) {
+      throw new EspnFetchError(endpoint.name, response.status, "the response broke off", { cause });
+    }
+  } finally {
+    clearTimeout(limit);
   }
   try {
     return JSON.parse(body);

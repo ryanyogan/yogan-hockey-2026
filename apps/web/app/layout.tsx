@@ -4,6 +4,7 @@ import { Geist_Mono } from "next/font/google";
 import { headers } from "next/headers";
 import { ThemeProvider } from "next-themes";
 import type { ReactNode } from "react";
+import { PendingRouteProvider } from "../components/pending/pending-route";
 import { ScoreboardProvider } from "../components/scoreboard/scoreboard-provider";
 import { Shell } from "../components/shell/shell";
 import { ThemeColor } from "../components/shell/theme-color";
@@ -93,7 +94,9 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           <ThemeColor />
           {/* The one Scoreboard socket: the ticker and every page read scores from it. */}
           <ScoreboardProvider initial={scoreboard}>
-            <Shell>{children}</Shell>
+            <PendingRouteProvider>
+              <Shell>{children}</Shell>
+            </PendingRouteProvider>
           </ScoreboardProvider>
         </ThemeProvider>
       </body>

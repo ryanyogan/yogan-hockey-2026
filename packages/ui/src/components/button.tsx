@@ -1,7 +1,5 @@
-"use client";
-
-import { Button as ButtonPrimitive } from "@base-ui/react/button";
 import { cva, type VariantProps } from "class-variance-authority";
+import type { ComponentProps } from "react";
 import { cn } from "../cn";
 
 const buttonVariants = cva(
@@ -30,15 +28,21 @@ const buttonVariants = cva(
   },
 );
 
+/**
+ * The browser's own button in the ledger's dress. It presses and does not submit unless given
+ * `type="submit"`. Not a client component: it has no state of its own.
+ */
 function Button({
   className,
   variant = "default",
   size = "default",
+  type = "button",
   ...props
-}: ButtonPrimitive.Props & VariantProps<typeof buttonVariants>) {
+}: ComponentProps<"button"> & VariantProps<typeof buttonVariants>) {
   return (
-    <ButtonPrimitive
+    <button
       data-slot="button"
+      type={type}
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     />

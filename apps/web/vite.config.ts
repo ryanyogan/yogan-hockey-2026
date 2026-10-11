@@ -1,9 +1,48 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { cloudflare } from "@cloudflare/vite-plugin";
 import { kvDataAdapter } from "@vinext/cloudflare/cache/kv-data-adapter";
 import vinext from "vinext";
-import { defineConfig } from "vite";
+import { defineConfig, type Plugin } from "vite";
+
+/**
+ * `experimental.inlineCss` for a Worker (#127). vinext 1.0.1 rewrites a document's stylesheet
+ * links as `<style>` from `globalThis.__VINEXT_INLINE_CSS__`, a map of href to CSS, but only its
+ * Node server fills that map (`vinext/dist/server/prod-server.js`). This writes the same line at
+ * the head of the Worker's server entry once the client build has written the stylesheets, so
+ * the first paint does not wait a second round trip for 9 kB. A navigation still links the file.
+ * The build log says "inlined ..." when it has; check that it still does after a vinext bump.
+ */
+const WORKER_OUTPUT = ".cloudflare/output/v0/workers/default";
+const INLINE_CSS_MARKER = "globalThis.__VINEXT_INLINE_CSS__ = ";
+function inlineStylesheets(): Plugin {
+  return {
+    name: "yogan-hockey:inline-stylesheets",
+    apply: "build",
+    closeBundle: {
+      order: "post",
+      sequential: true,
+      handler() {
+        const styles = `${WORKER_OUTPUT}/assets/_next/static/css`;
+        const entry = `${WORKER_OUTPUT}/bundle/ssr/index.js`;
+        if (!existsSync(styles) || !existsSync(entry)) return;
+        const code = readFileSync(entry, "utf8");
+        if (code.includes(INLINE_CSS_MARKER)) return;
+        const manifest = Object.fromEntries(
+          readdirSync(styles)
+            .filter((name) => name.endsWith(".css"))
+            .map((name) => [
+              `/_next/static/css/${name}`,
+              readFileSync(`${styles}/${name}`, "utf8"),
+            ]),
+        );
+        if (Object.keys(manifest).length === 0) return;
+        writeFileSync(entry, `${INLINE_CSS_MARKER}${JSON.stringify(manifest)};\n${code}`);
+        console.log(`inlined ${Object.keys(manifest).join(", ")} into the Worker's documents`);
+      },
+    },
+  };
+}
 
 /**
  * GSAP's notice, which its licence says stays with the code. The minifier drops every comment,
@@ -46,6 +85,7 @@ export default defineConfig(({ command }) => ({
     vinext({
       cache: { data: kvDataAdapter() },
     }),
+    inlineStylesheets(),
     cloudflare({
       viteEnvironment: { name: "rsc", childEnvironments: ["ssr"] },
       // The AI binding is the one binding with nothing local behind it, and the plugin opens a

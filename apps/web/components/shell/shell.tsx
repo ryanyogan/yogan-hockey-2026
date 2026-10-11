@@ -1,5 +1,6 @@
 import { type ReactNode, Suspense } from "react";
 import { Link } from "../link";
+import { PendingOutlet } from "../pending/pending-route";
 import { MobileMenu } from "./mobile-menu";
 import { NavLinks } from "./nav-links";
 import { ScoreTickerSlot } from "./score-ticker-slot";
@@ -52,9 +53,11 @@ export function Shell({ children }: { children: ReactNode }) {
         <main
           id="main-content"
           tabIndex={-1}
-          className="flex-1 space-y-8 p-4 pr-[calc(1rem+var(--safe-right))] pb-8 pl-[calc(1rem+var(--safe-left))] md:p-6 md:pr-[calc(1.5rem+var(--safe-right))] md:pb-8"
+          className="flex-1 p-4 pr-[calc(1rem+var(--safe-right))] pb-8 pl-[calc(1rem+var(--safe-left))] md:p-6 md:pr-[calc(1.5rem+var(--safe-right))] md:pb-8"
         >
-          {children}
+          <PendingOutlet scope="page" className="space-y-8">
+            {children}
+          </PendingOutlet>
         </main>
         <SiteFooter />
       </div>

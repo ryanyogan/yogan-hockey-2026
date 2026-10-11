@@ -1,8 +1,5 @@
-"use client";
-
-import { mergeProps } from "@base-ui/react/merge-props";
-import { useRender } from "@base-ui/react/use-render";
 import { cva, type VariantProps } from "class-variance-authority";
+import type { ComponentProps } from "react";
 import { cn } from "../cn";
 
 /** A small label in the ledger's language: square, capitals, the size of a column header. */
@@ -26,23 +23,16 @@ const badgeVariants = cva(
 function Badge({
   className,
   variant = "default",
-  render,
   ...props
-}: useRender.ComponentProps<"span"> & VariantProps<typeof badgeVariants>) {
-  return useRender({
-    defaultTagName: "span",
-    props: mergeProps<"span">(
-      {
-        className: cn(badgeVariants({ variant }), className),
-      },
-      props,
-    ),
-    render,
-    state: {
-      slot: "badge",
-      variant,
-    },
-  });
+}: ComponentProps<"span"> & VariantProps<typeof badgeVariants>) {
+  return (
+    <span
+      data-slot="badge"
+      data-variant={variant}
+      className={cn(badgeVariants({ variant }), className)}
+      {...props}
+    />
+  );
 }
 
 export { Badge, badgeVariants };

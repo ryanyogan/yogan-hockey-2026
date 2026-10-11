@@ -1,8 +1,24 @@
 "use client";
 
-import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
-import type { CSSProperties } from "react";
-import "./globals.css";
+/**
+ * The page's whole look, as `lib/render-failure.ts` writes its page of last resort: the site's
+ * type and colours, the theme the operating system asks for. It is written here and not taken
+ * from `globals.css`: a stylesheet imported by this file is built a second time under another
+ * name, and every document of the site then links both copies.
+ */
+const STYLES = `
+:root { color-scheme: light dark; --background: #fbfaf7; --foreground: #171717; }
+@media (prefers-color-scheme: dark) { :root { --background: #0f172a; --foreground: #f1f5f9; } }
+body { margin: 0; padding: 16px; background: var(--background); color: var(--foreground);
+  font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+a, button { color: inherit; font: inherit; font-weight: bold; }
+button { padding: 0; border: 0; background: none; text-decoration: underline; cursor: pointer; }
+.wordmark { display: block; margin-bottom: 32px; font-size: 14px; text-decoration: none; }
+h1 { margin: 0 0 4px; font-size: inherit; text-transform: uppercase; }
+h1 span { font-weight: normal; text-transform: none; opacity: 0.5; }
+p { margin: 0; padding: 6px 8px;
+  border-top: 1px solid color-mix(in srgb, currentColor 20%, transparent); }
+`;
 
 /**
  * The shell itself failed in the browser, so there is nothing to draw inside: `app/error.tsx`
@@ -12,32 +28,24 @@ import "./globals.css";
  */
 export default function GlobalError() {
   return (
-    // The layout's font variable went with the layout; without one the theme's stack is void.
-    <html lang="en" style={{ "--font-geist-mono": "ui-monospace" } as CSSProperties}>
+    <html lang="en">
       <body>
         <title>Not answering · Yogan Hockey</title>
-        <main data-slot="global-error" className="space-y-4 p-4 md:p-6">
-          <a href="/" className="block font-strong text-wordmark">
+        <style>{STYLES}</style>
+        <main data-slot="global-error">
+          <a href="/" className="wordmark">
             YOGAN/HOCKEY
           </a>
-          <Section>
-            <SectionHeader title="Page" count="not read" />
-            <p className="border-rule-head border-t px-2 py-row">
-              The site could not draw this page just now.{" "}
-              <button
-                type="button"
-                onClick={() => window.location.reload()}
-                className="cursor-pointer font-strong underline"
-              >
-                Try again
-              </button>{" "}
-              or go to{" "}
-              <a href="/" className="font-strong underline">
-                tonight
-              </a>
-              .
-            </p>
-          </Section>
+          <h1>
+            Page <span>not read</span>
+          </h1>
+          <p>
+            The site could not draw this page just now.{" "}
+            <button type="button" onClick={() => window.location.reload()}>
+              Try again
+            </button>{" "}
+            or go to <a href="/">tonight</a>.
+          </p>
         </main>
       </body>
     </html>

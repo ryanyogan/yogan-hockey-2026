@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { FavoriteHeart } from "../../../../components/favorites/favorite-heart";
 import { Link } from "../../../../components/link";
+import { PendingOutlet } from "../../../../components/pending/pending-route";
 import { ScoreboardGate } from "../../../../components/scoreboard/scoreboard-provider";
 import { TeamHeader } from "../../../../components/team/team-header";
 import { TeamNow } from "../../../../components/team/team-now";
@@ -77,7 +78,9 @@ export default async function TeamLayout({ params, children }: Props) {
       </div>
       <div className="space-y-2">
         <TeamTabs teamId={id} />
-        {children}
+        <PendingOutlet scope="tab" className="space-y-2">
+          {children}
+        </PendingOutlet>
       </div>
       {/* The foot of the page on every tab, as the player page has "back to players". */}
       <p className="px-2">

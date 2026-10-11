@@ -3,12 +3,12 @@
 import type { GameHeader, Play } from "@yogan-hockey/schemas";
 import { Button } from "@yogan-hockey/ui/components/button";
 import { UrlTabs } from "@yogan-hockey/ui/components/url-tabs";
-import { usePathname } from "next/navigation";
 import { type ReactNode, useState } from "react";
 import type { GameClock } from "../../lib/game/penalties";
 import { focusedPlay, toggleSelection, visiblePlays } from "../../lib/game/plays";
 import { type GameTab, gameTabLinks, gameTabOfPath, shownGameTab } from "../../lib/game/tabs";
 import { Link } from "../link";
+import { useShownPathname } from "../pending/pending-route";
 import { GameRink } from "./game-rink";
 import { PeriodTimeline } from "./period-timeline";
 import { KeyPlaysToggle, PlaysList, ScoringSummary } from "./plays-list";
@@ -194,7 +194,7 @@ function GameTabs({
   keyCount: number;
   totalCount: number;
 }) {
-  const path = usePathname();
+  const path = useShownPathname();
   const hasPick = pick != null;
   const tab = shownGameTab(
     path.startsWith(`${pathname}/`) || path === pathname ? gameTabOfPath(path) : fallbackTab,

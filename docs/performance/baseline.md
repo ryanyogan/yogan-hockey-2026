@@ -4,6 +4,8 @@ Every route measured against the budgets of PRD #123, before any of that PRD's w
 
 Measured 2026-10-11 at commit `9298c0f` (main), vinext 1.0.1.
 
+**Since then**: #127 acted on it. The same routes measured again, beside these numbers, with the misses that stand and the script budgets as they now are, are in `after.md`. The script budgets below are the baseline's (`BASELINE_SCRIPT_BUDGETS_KB`); today's are lower.
+
 ## Repeat it
 
 ```sh

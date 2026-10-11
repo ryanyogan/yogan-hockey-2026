@@ -1,0 +1,514 @@
+[
+  {
+    "width": 390,
+    "theme": "light",
+    "page": "home",
+    "use": "Body text, scores",
+    "colour": "#171717",
+    "ratio": 17.18
+  },
+  {
+    "width": 390,
+    "theme": "light",
+    "page": "home",
+    "use": "Column headers, counts",
+    "colour": "#57534e",
+    "ratio": 7.31
+  },
+  {
+    "width": 390,
+    "theme": "light",
+    "page": "home",
+    "use": "Asides: records, ranks, footer",
+    "colour": "#6b6660",
+    "ratio": 5.45
+  },
+  {
+    "width": 390,
+    "theme": "light",
+    "page": "home",
+    "use": "Rule under a row",
+    "colour": "#c9c5bc",
+    "ratio": 1.65
+  },
+  {
+    "width": 390,
+    "theme": "light",
+    "page": "home",
+    "use": "Rule under a column header",
+    "colour": "#8a857c",
+    "ratio": 3.51
+  },
+  {
+    "width": 390,
+    "theme": "light",
+    "page": "home",
+    "use": "Rules framing the shell",
+    "colour": "#8a857c",
+    "ratio": 3.51
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "page": "home",
+    "use": "Body text, scores",
+    "colour": "#f1f5f9",
+    "ratio": 16.3
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "page": "home",
+    "use": "Column headers, counts",
+    "colour": "#a9b6c8",
+    "ratio": 8.68
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "page": "home",
+    "use": "Asides: records, ranks, footer",
+    "colour": "#94a3b8",
+    "ratio": 6.96
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "page": "home",
+    "use": "Rule under a row",
+    "colour": "#3b4a61",
+    "ratio": 1.99
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "page": "home",
+    "use": "Rule under a column header",
+    "colour": "#64748b",
+    "ratio": 3.75
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "page": "home",
+    "use": "Rules framing the shell",
+    "colour": "#64748b",
+    "ratio": 3.75
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "page": "home",
+    "use": "Body text, scores",
+    "colour": "#171717",
+    "ratio": 17.18
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "page": "home",
+    "use": "Notes, idle links, second lines",
+    "colour": "#44403c",
+    "ratio": 9.84
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "page": "home",
+    "use": "Column headers, counts",
+    "colour": "#57534e",
+    "ratio": 7.31
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "page": "home",
+    "use": "Asides: records, ranks, footer",
+    "colour": "#6b6660",
+    "ratio": 5.45
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "page": "home",
+    "use": "Rule under a row",
+    "colour": "#c9c5bc",
+    "ratio": 1.65
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "page": "home",
+    "use": "Rule under a column header",
+    "colour": "#8a857c",
+    "ratio": 3.51
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "page": "home",
+    "use": "Rules framing the shell",
+    "colour": "#8a857c",
+    "ratio": 3.51
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "page": "home",
+    "use": "Body text, scores",
+    "colour": "#f1f5f9",
+    "ratio": 16.3
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "page": "home",
+    "use": "Notes, idle links, second lines",
+    "colour": "#cbd5e1",
+    "ratio": 12.02
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "page": "home",
+    "use": "Column headers, counts",
+    "colour": "#a9b6c8",
+    "ratio": 8.68
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "page": "home",
+    "use": "Asides: records, ranks, footer",
+    "colour": "#94a3b8",
+    "ratio": 6.96
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "page": "home",
+    "use": "Rule under a row",
+    "colour": "#3b4a61",
+    "ratio": 1.99
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "page": "home",
+    "use": "Rule under a column header",
+    "colour": "#64748b",
+    "ratio": 3.75
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "page": "home",
+    "use": "Rules framing the shell",
+    "colour": "#64748b",
+    "ratio": 3.75
+  },
+  {
+    "width": 390,
+    "theme": "light",
+    "page": "sample-live",
+    "use": "Body text, scores",
+    "colour": "#171717",
+    "ratio": 17.18
+  },
+  {
+    "width": 390,
+    "theme": "light",
+    "page": "sample-live",
+    "use": "Column headers, counts",
+    "colour": "#57534e",
+    "ratio": 7.31
+  },
+  {
+    "width": 390,
+    "theme": "light",
+    "page": "sample-live",
+    "use": "Asides: records, ranks, footer",
+    "colour": "#6b6660",
+    "ratio": 5.45
+  },
+  {
+    "width": 390,
+    "theme": "light",
+    "page": "sample-live",
+    "use": "Live marker",
+    "colour": "#c81e1e",
+    "ratio": 5.5
+  },
+  {
+    "width": 390,
+    "theme": "light",
+    "page": "sample-live",
+    "use": "Rule under a row",
+    "colour": "#c9c5bc",
+    "ratio": 1.65
+  },
+  {
+    "width": 390,
+    "theme": "light",
+    "page": "sample-live",
+    "use": "Rule under a column header",
+    "colour": "#8a857c",
+    "ratio": 3.51
+  },
+  {
+    "width": 390,
+    "theme": "light",
+    "page": "sample-live",
+    "use": "Rules framing the shell",
+    "colour": "#8a857c",
+    "ratio": 3.51
+  },
+  {
+    "width": 390,
+    "theme": "light",
+    "page": "sample-live",
+    "use": "Body text on a live row",
+    "colour": "#171717",
+    "ratio": 15.69
+  },
+  {
+    "width": 390,
+    "theme": "light",
+    "page": "sample-live",
+    "use": "Asides on a live row",
+    "colour": "#6b6660",
+    "ratio": 4.97
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "page": "sample-live",
+    "use": "Body text, scores",
+    "colour": "#f1f5f9",
+    "ratio": 16.3
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "page": "sample-live",
+    "use": "Column headers, counts",
+    "colour": "#a9b6c8",
+    "ratio": 8.68
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "page": "sample-live",
+    "use": "Asides: records, ranks, footer",
+    "colour": "#94a3b8",
+    "ratio": 6.96
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "page": "sample-live",
+    "use": "Live marker",
+    "colour": "#f87171",
+    "ratio": 6.45
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "page": "sample-live",
+    "use": "Rule under a row",
+    "colour": "#3b4a61",
+    "ratio": 1.99
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "page": "sample-live",
+    "use": "Rule under a column header",
+    "colour": "#64748b",
+    "ratio": 3.75
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "page": "sample-live",
+    "use": "Rules framing the shell",
+    "colour": "#64748b",
+    "ratio": 3.75
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "page": "sample-live",
+    "use": "Body text on a live row",
+    "colour": "#f1f5f9",
+    "ratio": 13.77
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "page": "sample-live",
+    "use": "Asides on a live row",
+    "colour": "#94a3b8",
+    "ratio": 5.88
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "page": "sample-live",
+    "use": "Body text, scores",
+    "colour": "#171717",
+    "ratio": 17.18
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "page": "sample-live",
+    "use": "Notes, idle links, second lines",
+    "colour": "#44403c",
+    "ratio": 9.84
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "page": "sample-live",
+    "use": "Column headers, counts",
+    "colour": "#57534e",
+    "ratio": 7.31
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "page": "sample-live",
+    "use": "Asides: records, ranks, footer",
+    "colour": "#6b6660",
+    "ratio": 5.45
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "page": "sample-live",
+    "use": "Live marker",
+    "colour": "#c81e1e",
+    "ratio": 5.5
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "page": "sample-live",
+    "use": "Rule under a row",
+    "colour": "#c9c5bc",
+    "ratio": 1.65
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "page": "sample-live",
+    "use": "Rule under a column header",
+    "colour": "#8a857c",
+    "ratio": 3.51
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "page": "sample-live",
+    "use": "Rules framing the shell",
+    "colour": "#8a857c",
+    "ratio": 3.51
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "page": "sample-live",
+    "use": "Body text on a live row",
+    "colour": "#171717",
+    "ratio": 15.69
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "page": "sample-live",
+    "use": "Asides on a live row",
+    "colour": "#6b6660",
+    "ratio": 4.97
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "page": "sample-live",
+    "use": "Body text, scores",
+    "colour": "#f1f5f9",
+    "ratio": 16.3
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "page": "sample-live",
+    "use": "Notes, idle links, second lines",
+    "colour": "#cbd5e1",
+    "ratio": 12.02
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "page": "sample-live",
+    "use": "Column headers, counts",
+    "colour": "#a9b6c8",
+    "ratio": 8.68
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "page": "sample-live",
+    "use": "Asides: records, ranks, footer",
+    "colour": "#94a3b8",
+    "ratio": 6.96
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "page": "sample-live",
+    "use": "Live marker",
+    "colour": "#f87171",
+    "ratio": 6.45
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "page": "sample-live",
+    "use": "Rule under a row",
+    "colour": "#3b4a61",
+    "ratio": 1.99
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "page": "sample-live",
+    "use": "Rule under a column header",
+    "colour": "#64748b",
+    "ratio": 3.75
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "page": "sample-live",
+    "use": "Rules framing the shell",
+    "colour": "#64748b",
+    "ratio": 3.75
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "page": "sample-live",
+    "use": "Body text on a live row",
+    "colour": "#f1f5f9",
+    "ratio": 13.77
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "page": "sample-live",
+    "use": "Asides on a live row",
+    "colour": "#94a3b8",
+    "ratio": 5.88
+  }
+]

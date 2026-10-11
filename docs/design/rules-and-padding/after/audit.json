@@ -1,0 +1,4196 @@
+{
+  "baseURL": "http://localhost:5325",
+  "pages": [
+    {
+      "page": "home",
+      "path": "/",
+      "width": 390,
+      "theme": "light",
+      "overflow": 0,
+      "rulesMeasured": 42,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0.0043,
+        "shifts": [
+          {
+            "value": 0.0031363404420501075,
+            "at": 3077,
+            "moved": [
+              {
+                "what": "li[score-ticker] \"★ favorite team, NSH@atTOR6:00 PM\"",
+                "from": [
+                  160,
+                  44,
+                  55
+                ],
+                "to": [
+                  71,
+                  44,
+                  55
+                ]
+              }
+            ]
+          },
+          {
+            "value": 0.0011455340291732106,
+            "at": 3262,
+            "moved": [
+              {
+                "what": "div \"Standings eastern conferenceeastfull sta\"",
+                "from": [
+                  16,
+                  827,
+                  17
+                ],
+                "to": [
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "what": "::after[section-aside] \"\"",
+                "from": [
+                  244,
+                  815,
+                  29
+                ],
+                "to": [
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0.0006,
+        "shifts": [
+          {
+            "value": 0.0006146767961417227,
+            "at": 3352,
+            "moved": [
+              {
+                "what": "div \"Standings eastern conferenceeastfull sta\"",
+                "from": [
+                  16,
+                  827,
+                  17
+                ],
+                "to": [
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "what": "::after[section-aside] \"\"",
+                "from": [
+                  244,
+                  815,
+                  29
+                ],
+                "to": [
+                  244,
+                  837,
+                  7
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "page": "home",
+      "path": "/",
+      "width": 390,
+      "theme": "dark",
+      "overflow": 0,
+      "rulesMeasured": 42,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0.0043,
+        "shifts": [
+          {
+            "value": 0.0031363404420501075,
+            "at": 3818,
+            "moved": [
+              {
+                "what": "li[score-ticker] \"★ favorite team, NSH@atTOR6:00 PM\"",
+                "from": [
+                  160,
+                  44,
+                  55
+                ],
+                "to": [
+                  71,
+                  44,
+                  55
+                ]
+              }
+            ]
+          },
+          {
+            "value": 0.0011455340291732106,
+            "at": 4158,
+            "moved": [
+              {
+                "what": "div \"Standings eastern conferenceeastfull sta\"",
+                "from": [
+                  16,
+                  827,
+                  17
+                ],
+                "to": [
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "what": "::after[section-aside] \"\"",
+                "from": [
+                  244,
+                  815,
+                  29
+                ],
+                "to": [
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0.0006,
+        "shifts": [
+          {
+            "value": 0.0006146767961417227,
+            "at": 3615,
+            "moved": [
+              {
+                "what": "div \"Standings eastern conferenceeastfull sta\"",
+                "from": [
+                  16,
+                  827,
+                  17
+                ],
+                "to": [
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "what": "::after[section-aside] \"\"",
+                "from": [
+                  244,
+                  815,
+                  29
+                ],
+                "to": [
+                  244,
+                  837,
+                  7
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "page": "home",
+      "path": "/",
+      "width": 1440,
+      "theme": "light",
+      "overflow": 0,
+      "rulesMeasured": 44,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0.0109,
+        "shifts": [
+          {
+            "value": 0.0004992584019204389,
+            "at": 3630,
+            "moved": [
+              {
+                "what": "span[ledger-cell] \"Scotiabank Arena · ESPN+, Scripps Sports\"",
+                "from": [
+                  1013.109375,
+                  153,
+                  17
+                ],
+                "to": [
+                  1013.109375,
+                  153,
+                  17
+                ]
+              }
+            ]
+          },
+          {
+            "value": 0.0046027028276105966,
+            "at": 3706,
+            "moved": [
+              {
+                "what": "li[score-ticker] \"★ favorite team, NSH@atTOR6:00 PM\"",
+                "from": [
+                  517.875,
+                  0,
+                  35
+                ],
+                "to": [
+                  290,
+                  0,
+                  35
+                ]
+              },
+              {
+                "what": "li[score-ticker] \"UTA@atNJ6:00 PM\"",
+                "from": [
+                  973.625,
+                  0,
+                  35
+                ],
+                "to": [
+                  917.625,
+                  0,
+                  35
+                ]
+              },
+              {
+                "what": "li[score-ticker] \"MIN@atBUF6:00 PM\"",
+                "from": [
+                  1193.5,
+                  0,
+                  35
+                ],
+                "to": [
+                  1113.5,
+                  0,
+                  35
+                ]
+              }
+            ]
+          },
+          {
+            "value": 0.005760379158093279,
+            "at": 3902,
+            "moved": [
+              {
+                "what": "div \"Standings eastern conferenceeastfull sta\"",
+                "from": [
+                  217,
+                  535,
+                  317
+                ],
+                "to": [
+                  217,
+                  560,
+                  317
+                ]
+              },
+              {
+                "what": "footer \"Scores and stats from ESPN. Yogan Hockey\"",
+                "from": [
+                  193,
+                  884,
+                  16
+                ],
+                "to": [
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0.0061,
+        "shifts": [
+          {
+            "value": 0.004544056498628257,
+            "at": 3119,
+            "moved": [
+              {
+                "what": "div \"Standings eastern conferenceeastfull sta\"",
+                "from": [
+                  217,
+                  535,
+                  317
+                ],
+                "to": [
+                  217,
+                  555,
+                  317
+                ]
+              },
+              {
+                "what": "footer \"Scores and stats from ESPN. Yogan Hockey\"",
+                "from": [
+                  193,
+                  884,
+                  16
+                ],
+                "to": [
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          },
+          {
+            "value": 0.0015861625514403293,
+            "at": 3243,
+            "moved": [
+              {
+                "what": "li[score-ticker] \"UTA@atNJ6:00 PM\"",
+                "from": [
+                  973.625,
+                  0,
+                  35
+                ],
+                "to": [
+                  901.625,
+                  0,
+                  35
+                ]
+              },
+              {
+                "what": "li[score-ticker] \"MIN@atBUF6:00 PM\"",
+                "from": [
+                  1193.5,
+                  0,
+                  35
+                ],
+                "to": [
+                  1097.5,
+                  0,
+                  35
+                ]
+              },
+              {
+                "what": "li[score-ticker] \"OTT@atDET6:00 PM\"",
+                "from": [
+                  745.75,
+                  0,
+                  35
+                ],
+                "to": [
+                  697.75,
+                  0,
+                  35
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "page": "home",
+      "path": "/",
+      "width": 1440,
+      "theme": "dark",
+      "overflow": 0,
+      "rulesMeasured": 44,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0.0112,
+        "shifts": [
+          {
+            "value": 0.005439235977151922,
+            "at": 3458,
+            "moved": [
+              {
+                "what": "li[score-ticker] \"★ favorite team, NSH@atTOR6:00 PM\"",
+                "from": [
+                  517.875,
+                  0,
+                  35
+                ],
+                "to": [
+                  290,
+                  0,
+                  35
+                ]
+              },
+              {
+                "what": "li[score-ticker] \"UTA@atNJ6:00 PM\"",
+                "from": [
+                  973.625,
+                  0,
+                  35
+                ],
+                "to": [
+                  917.625,
+                  0,
+                  35
+                ]
+              },
+              {
+                "what": "li[score-ticker] \"MIN@atBUF6:00 PM\"",
+                "from": [
+                  1193.5,
+                  0,
+                  35
+                ],
+                "to": [
+                  1113.5,
+                  0,
+                  35
+                ]
+              }
+            ]
+          },
+          {
+            "value": 0.005760379158093279,
+            "at": 3792,
+            "moved": [
+              {
+                "what": "div \"Standings eastern conferenceeastfull sta\"",
+                "from": [
+                  217,
+                  535,
+                  317
+                ],
+                "to": [
+                  217,
+                  560,
+                  317
+                ]
+              },
+              {
+                "what": "footer \"Scores and stats from ESPN. Yogan Hockey\"",
+                "from": [
+                  193,
+                  884,
+                  16
+                ],
+                "to": [
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0.0234,
+        "shifts": [
+          {
+            "value": 0.02339763374485597,
+            "at": 3159,
+            "moved": [
+              {
+                "what": "div \"Standings eastern conferenceeastfull sta\"",
+                "from": [
+                  217,
+                  535,
+                  317
+                ],
+                "to": [
+                  217,
+                  555,
+                  317
+                ]
+              },
+              {
+                "what": "footer \"Scores and stats from ESPN. Yogan Hockey\"",
+                "from": [
+                  193,
+                  884,
+                  16
+                ],
+                "to": [
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "what": "li[score-ticker] \"UTA@atNJ6:00 PM\"",
+                "from": [
+                  973.625,
+                  0,
+                  35
+                ],
+                "to": [
+                  901.625,
+                  0,
+                  35
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "page": "scores",
+      "path": "/nhl/live",
+      "width": 390,
+      "theme": "light",
+      "overflow": 0,
+      "rulesMeasured": 22,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0.0161,
+        "shifts": [
+          {
+            "value": 0.00030743918600211135,
+            "at": 2732,
+            "moved": [
+              {
+                "what": "footer \"Scores and stats from ESPN. Yogan Hockey\"",
+                "from": [
+                  0,
+                  771,
+                  73
+                ],
+                "to": [
+                  0,
+                  774,
+                  70
+                ]
+              }
+            ]
+          },
+          {
+            "value": 0.015752181770746044,
+            "at": 3420,
+            "moved": [
+              {
+                "what": "tr[ledger-row] \"NSH at TOR, 6:00 PMTOR 58%NSH 1-1-0TOR ★\"",
+                "from": [
+                  16,
+                  301.5,
+                  55
+                ],
+                "to": [
+                  16,
+                  246.5,
+                  55
+                ]
+              },
+              {
+                "what": "li[score-ticker] \"★ favorite team, NSH@atTOR6:00 PM\"",
+                "from": [
+                  160,
+                  44,
+                  55
+                ],
+                "to": [
+                  71,
+                  44,
+                  55
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0.0003,
+        "shifts": [
+          {
+            "value": 0.00030743918600211135,
+            "at": 2257,
+            "moved": [
+              {
+                "what": "footer \"Scores and stats from ESPN. Yogan Hockey\"",
+                "from": [
+                  0,
+                  771,
+                  73
+                ],
+                "to": [
+                  0,
+                  774,
+                  70
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "page": "scores",
+      "path": "/nhl/live",
+      "width": 390,
+      "theme": "dark",
+      "overflow": 0,
+      "rulesMeasured": 22,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0.0161,
+        "shifts": [
+          {
+            "value": 0.00030743918600211135,
+            "at": 2294,
+            "moved": [
+              {
+                "what": "footer \"Scores and stats from ESPN. Yogan Hockey\"",
+                "from": [
+                  0,
+                  771,
+                  73
+                ],
+                "to": [
+                  0,
+                  774,
+                  70
+                ]
+              }
+            ]
+          },
+          {
+            "value": 0.015752181770746044,
+            "at": 2619,
+            "moved": [
+              {
+                "what": "tr[ledger-row] \"NSH at TOR, 6:00 PMTOR 58%NSH 1-1-0TOR ★\"",
+                "from": [
+                  16,
+                  301.5,
+                  55
+                ],
+                "to": [
+                  16,
+                  246.5,
+                  55
+                ]
+              },
+              {
+                "what": "li[score-ticker] \"★ favorite team, NSH@atTOR6:00 PM\"",
+                "from": [
+                  160,
+                  44,
+                  55
+                ],
+                "to": [
+                  71,
+                  44,
+                  55
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0,
+        "shifts": []
+      }
+    },
+    {
+      "page": "scores",
+      "path": "/nhl/live",
+      "width": 1440,
+      "theme": "light",
+      "overflow": 0,
+      "rulesMeasured": 24,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0.0146,
+        "shifts": [
+          {
+            "value": 0.014636460677619171,
+            "at": 2225,
+            "moved": [
+              {
+                "what": "tr[ledger-row] \"NSH at TOR, 6:00 PMTOR 58%NSH 1-1-0TOR ★\"",
+                "from": [
+                  217,
+                  197.5,
+                  33
+                ],
+                "to": [
+                  217,
+                  164.5,
+                  33
+                ]
+              },
+              {
+                "what": "li[score-ticker] \"★ favorite team, NSH@atTOR6:00 PM\"",
+                "from": [
+                  517.875,
+                  0,
+                  35
+                ],
+                "to": [
+                  290,
+                  0,
+                  35
+                ]
+              },
+              {
+                "what": "li[score-ticker] \"UTA@atNJ6:00 PM\"",
+                "from": [
+                  973.625,
+                  0,
+                  35
+                ],
+                "to": [
+                  917.625,
+                  0,
+                  35
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0.0017,
+        "shifts": [
+          {
+            "value": 0.0017425411522633747,
+            "at": 2255,
+            "moved": [
+              {
+                "what": "li[score-ticker] \"UTA@atNJ6:00 PM\"",
+                "from": [
+                  973.625,
+                  0,
+                  35
+                ],
+                "to": [
+                  901.625,
+                  0,
+                  35
+                ]
+              },
+              {
+                "what": "li[score-ticker] \"MIN@atBUF6:00 PM\"",
+                "from": [
+                  1193.5,
+                  0,
+                  35
+                ],
+                "to": [
+                  1097.5,
+                  0,
+                  35
+                ]
+              },
+              {
+                "what": "li[score-ticker] \"OTT@atDET6:00 PM\"",
+                "from": [
+                  745.75,
+                  0,
+                  35
+                ],
+                "to": [
+                  697.75,
+                  0,
+                  35
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "page": "scores",
+      "path": "/nhl/live",
+      "width": 1440,
+      "theme": "dark",
+      "overflow": 0,
+      "rulesMeasured": 24,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0.0146,
+        "shifts": [
+          {
+            "value": 0.014636460677619171,
+            "at": 2296,
+            "moved": [
+              {
+                "what": "tr[ledger-row] \"NSH at TOR, 6:00 PMTOR 58%NSH 1-1-0TOR ★\"",
+                "from": [
+                  217,
+                  197.5,
+                  33
+                ],
+                "to": [
+                  217,
+                  164.5,
+                  33
+                ]
+              },
+              {
+                "what": "li[score-ticker] \"★ favorite team, NSH@atTOR6:00 PM\"",
+                "from": [
+                  517.875,
+                  0,
+                  35
+                ],
+                "to": [
+                  290,
+                  0,
+                  35
+                ]
+              },
+              {
+                "what": "li[score-ticker] \"UTA@atNJ6:00 PM\"",
+                "from": [
+                  973.625,
+                  0,
+                  35
+                ],
+                "to": [
+                  917.625,
+                  0,
+                  35
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0.0017,
+        "shifts": [
+          {
+            "value": 0.0017425411522633747,
+            "at": 2222,
+            "moved": [
+              {
+                "what": "li[score-ticker] \"UTA@atNJ6:00 PM\"",
+                "from": [
+                  973.625,
+                  0,
+                  35
+                ],
+                "to": [
+                  901.625,
+                  0,
+                  35
+                ]
+              },
+              {
+                "what": "li[score-ticker] \"MIN@atBUF6:00 PM\"",
+                "from": [
+                  1193.5,
+                  0,
+                  35
+                ],
+                "to": [
+                  1097.5,
+                  0,
+                  35
+                ]
+              },
+              {
+                "what": "li[score-ticker] \"OTT@atDET6:00 PM\"",
+                "from": [
+                  745.75,
+                  0,
+                  35
+                ],
+                "to": [
+                  697.75,
+                  0,
+                  35
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "page": "standings",
+      "path": "/nhl",
+      "width": 390,
+      "theme": "light",
+      "overflow": 0,
+      "rulesMeasured": 60,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0.0013,
+        "shifts": [
+          {
+            "value": 0.0013085441096941286,
+            "at": 1472,
+            "moved": [
+              {
+                "what": "div \"dark modelight modemenu\"",
+                "from": [
+                  283,
+                  0,
+                  43.5
+                ],
+                "to": [
+                  229,
+                  0,
+                  43.5
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0,
+        "shifts": []
+      }
+    },
+    {
+      "page": "standings",
+      "path": "/nhl",
+      "width": 390,
+      "theme": "dark",
+      "overflow": 0,
+      "rulesMeasured": 60,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0,
+        "shifts": []
+      },
+      "shiftNoFavorites": {
+        "total": 0,
+        "shifts": []
+      }
+    },
+    {
+      "page": "standings",
+      "path": "/nhl",
+      "width": 1440,
+      "theme": "light",
+      "overflow": 0,
+      "rulesMeasured": 50,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0,
+        "shifts": []
+      },
+      "shiftNoFavorites": {
+        "total": 0,
+        "shifts": []
+      }
+    },
+    {
+      "page": "standings",
+      "path": "/nhl",
+      "width": 1440,
+      "theme": "dark",
+      "overflow": 0,
+      "rulesMeasured": 50,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0,
+        "shifts": []
+      },
+      "shiftNoFavorites": {
+        "total": 0,
+        "shifts": []
+      }
+    },
+    {
+      "page": "teams",
+      "path": "/nhl?tab=teams",
+      "width": 390,
+      "theme": "light",
+      "overflow": 0,
+      "rulesMeasured": 50,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0,
+        "shifts": []
+      },
+      "shiftNoFavorites": {
+        "total": 0.0013,
+        "shifts": [
+          {
+            "value": 0.0013085441096941286,
+            "at": 1332,
+            "moved": [
+              {
+                "what": "div \"dark modelight modemenu\"",
+                "from": [
+                  283,
+                  0,
+                  43.5
+                ],
+                "to": [
+                  229,
+                  0,
+                  43.5
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "page": "teams",
+      "path": "/nhl?tab=teams",
+      "width": 390,
+      "theme": "dark",
+      "overflow": 0,
+      "rulesMeasured": 50,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0.0014,
+        "shifts": [
+          {
+            "value": 0.0013855172926173127,
+            "at": 1369,
+            "moved": [
+              {
+                "what": "div \"dark modelight modemenu\"",
+                "from": [
+                  274,
+                  0,
+                  43.5
+                ],
+                "to": [
+                  220,
+                  0,
+                  43.5
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0.0014,
+        "shifts": [
+          {
+            "value": 0.0013855172926173127,
+            "at": 1597,
+            "moved": [
+              {
+                "what": "div \"dark modelight modemenu\"",
+                "from": [
+                  274,
+                  0,
+                  43.5
+                ],
+                "to": [
+                  220,
+                  0,
+                  43.5
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "page": "teams",
+      "path": "/nhl?tab=teams",
+      "width": 1440,
+      "theme": "light",
+      "overflow": 0,
+      "rulesMeasured": 47,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0,
+        "shifts": []
+      },
+      "shiftNoFavorites": {
+        "total": 0,
+        "shifts": []
+      }
+    },
+    {
+      "page": "teams",
+      "path": "/nhl?tab=teams",
+      "width": 1440,
+      "theme": "dark",
+      "overflow": 0,
+      "rulesMeasured": 47,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0,
+        "shifts": []
+      },
+      "shiftNoFavorites": {
+        "total": 0,
+        "shifts": []
+      }
+    },
+    {
+      "page": "team",
+      "path": "/nhl/teams/21",
+      "width": 390,
+      "theme": "light",
+      "overflow": 0,
+      "rulesMeasured": 108,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0.0047,
+        "shifts": [
+          {
+            "value": 0.0046792956824178045,
+            "at": 3044,
+            "moved": [
+              {
+                "what": "td[ledger-cell] \"6:00 PM\"",
+                "from": [
+                  259,
+                  734.5,
+                  45
+                ],
+                "to": [
+                  286,
+                  734.5,
+                  45
+                ]
+              },
+              {
+                "what": "td[ledger-cell] \"6:00 PM\"",
+                "from": [
+                  259,
+                  554.5,
+                  45
+                ],
+                "to": [
+                  286,
+                  554.5,
+                  45
+                ]
+              },
+              {
+                "what": "td[ledger-cell] \"9:00 PM\"",
+                "from": [
+                  259,
+                  599.5,
+                  45
+                ],
+                "to": [
+                  286,
+                  599.5,
+                  45
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0.0047,
+        "shifts": [
+          {
+            "value": 0.0046792956824178045,
+            "at": 2986,
+            "moved": [
+              {
+                "what": "td[ledger-cell] \"6:00 PM\"",
+                "from": [
+                  259,
+                  734.5,
+                  45
+                ],
+                "to": [
+                  286,
+                  734.5,
+                  45
+                ]
+              },
+              {
+                "what": "td[ledger-cell] \"6:00 PM\"",
+                "from": [
+                  259,
+                  554.5,
+                  45
+                ],
+                "to": [
+                  286,
+                  554.5,
+                  45
+                ]
+              },
+              {
+                "what": "td[ledger-cell] \"9:00 PM\"",
+                "from": [
+                  259,
+                  599.5,
+                  45
+                ],
+                "to": [
+                  286,
+                  599.5,
+                  45
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "page": "team",
+      "path": "/nhl/teams/21",
+      "width": 390,
+      "theme": "dark",
+      "overflow": 0,
+      "rulesMeasured": 108,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0.0047,
+        "shifts": [
+          {
+            "value": 0.0046792956824178045,
+            "at": 3172,
+            "moved": [
+              {
+                "what": "td[ledger-cell] \"6:00 PM\"",
+                "from": [
+                  259,
+                  734.5,
+                  45
+                ],
+                "to": [
+                  286,
+                  734.5,
+                  45
+                ]
+              },
+              {
+                "what": "td[ledger-cell] \"6:00 PM\"",
+                "from": [
+                  259,
+                  554.5,
+                  45
+                ],
+                "to": [
+                  286,
+                  554.5,
+                  45
+                ]
+              },
+              {
+                "what": "td[ledger-cell] \"9:00 PM\"",
+                "from": [
+                  259,
+                  599.5,
+                  45
+                ],
+                "to": [
+                  286,
+                  599.5,
+                  45
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0.0047,
+        "shifts": [
+          {
+            "value": 0.0046792956824178045,
+            "at": 3412,
+            "moved": [
+              {
+                "what": "td[ledger-cell] \"6:00 PM\"",
+                "from": [
+                  259,
+                  734.5,
+                  45
+                ],
+                "to": [
+                  286,
+                  734.5,
+                  45
+                ]
+              },
+              {
+                "what": "td[ledger-cell] \"6:00 PM\"",
+                "from": [
+                  259,
+                  554.5,
+                  45
+                ],
+                "to": [
+                  286,
+                  554.5,
+                  45
+                ]
+              },
+              {
+                "what": "td[ledger-cell] \"9:00 PM\"",
+                "from": [
+                  259,
+                  599.5,
+                  45
+                ],
+                "to": [
+                  286,
+                  599.5,
+                  45
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "page": "team",
+      "path": "/nhl/teams/21",
+      "width": 1440,
+      "theme": "light",
+      "overflow": 0,
+      "rulesMeasured": 104,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0.0015,
+        "shifts": [
+          {
+            "value": 0.000987928669410151,
+            "at": 3310,
+            "moved": [
+              {
+                "what": "td[ledger-cell] \"6:00 PM\"",
+                "from": [
+                  696.5,
+                  502.5,
+                  33
+                ],
+                "to": [
+                  720.5,
+                  502.5,
+                  33
+                ]
+              },
+              {
+                "what": "td[ledger-cell] \"6:00 PM\"",
+                "from": [
+                  696.5,
+                  370.5,
+                  33
+                ],
+                "to": [
+                  720.5,
+                  370.5,
+                  33
+                ]
+              },
+              {
+                "what": "td[ledger-cell] \"9:00 PM\"",
+                "from": [
+                  696.5,
+                  403.5,
+                  33
+                ],
+                "to": [
+                  720.5,
+                  403.5,
+                  33
+                ]
+              }
+            ]
+          },
+          {
+            "value": 0.0005417438271604939,
+            "at": 3506,
+            "moved": [
+              {
+                "what": "td[ledger-cell] \"TOR 58%Scotiabank Arena\"",
+                "from": [
+                  590.4375,
+                  224,
+                  17
+                ],
+                "to": [
+                  590.4375,
+                  224,
+                  17
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0.0015,
+        "shifts": [
+          {
+            "value": 0.000987928669410151,
+            "at": 3688,
+            "moved": [
+              {
+                "what": "td[ledger-cell] \"6:00 PM\"",
+                "from": [
+                  696.5,
+                  502.5,
+                  33
+                ],
+                "to": [
+                  720.5,
+                  502.5,
+                  33
+                ]
+              },
+              {
+                "what": "td[ledger-cell] \"6:00 PM\"",
+                "from": [
+                  696.5,
+                  370.5,
+                  33
+                ],
+                "to": [
+                  720.5,
+                  370.5,
+                  33
+                ]
+              },
+              {
+                "what": "td[ledger-cell] \"9:00 PM\"",
+                "from": [
+                  696.5,
+                  403.5,
+                  33
+                ],
+                "to": [
+                  720.5,
+                  403.5,
+                  33
+                ]
+              }
+            ]
+          },
+          {
+            "value": 0.0005417438271604939,
+            "at": 3982,
+            "moved": [
+              {
+                "what": "td[ledger-cell] \"TOR 58%Scotiabank Arena\"",
+                "from": [
+                  590.4375,
+                  224,
+                  17
+                ],
+                "to": [
+                  590.4375,
+                  224,
+                  17
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "page": "team",
+      "path": "/nhl/teams/21",
+      "width": 1440,
+      "theme": "dark",
+      "overflow": 0,
+      "rulesMeasured": 104,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0.0015,
+        "shifts": [
+          {
+            "value": 0.000987928669410151,
+            "at": 3312,
+            "moved": [
+              {
+                "what": "td[ledger-cell] \"6:00 PM\"",
+                "from": [
+                  696.5,
+                  502.5,
+                  33
+                ],
+                "to": [
+                  720.5,
+                  502.5,
+                  33
+                ]
+              },
+              {
+                "what": "td[ledger-cell] \"6:00 PM\"",
+                "from": [
+                  696.5,
+                  370.5,
+                  33
+                ],
+                "to": [
+                  720.5,
+                  370.5,
+                  33
+                ]
+              },
+              {
+                "what": "td[ledger-cell] \"9:00 PM\"",
+                "from": [
+                  696.5,
+                  403.5,
+                  33
+                ],
+                "to": [
+                  720.5,
+                  403.5,
+                  33
+                ]
+              }
+            ]
+          },
+          {
+            "value": 0.0005417438271604939,
+            "at": 3619,
+            "moved": [
+              {
+                "what": "td[ledger-cell] \"TOR 58%Scotiabank Arena\"",
+                "from": [
+                  590.4375,
+                  224,
+                  17
+                ],
+                "to": [
+                  590.4375,
+                  224,
+                  17
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0.0015,
+        "shifts": [
+          {
+            "value": 0.000987928669410151,
+            "at": 2879,
+            "moved": [
+              {
+                "what": "td[ledger-cell] \"6:00 PM\"",
+                "from": [
+                  696.5,
+                  502.5,
+                  33
+                ],
+                "to": [
+                  720.5,
+                  502.5,
+                  33
+                ]
+              },
+              {
+                "what": "td[ledger-cell] \"6:00 PM\"",
+                "from": [
+                  696.5,
+                  370.5,
+                  33
+                ],
+                "to": [
+                  720.5,
+                  370.5,
+                  33
+                ]
+              },
+              {
+                "what": "td[ledger-cell] \"9:00 PM\"",
+                "from": [
+                  696.5,
+                  403.5,
+                  33
+                ],
+                "to": [
+                  720.5,
+                  403.5,
+                  33
+                ]
+              }
+            ]
+          },
+          {
+            "value": 0.0005417438271604939,
+            "at": 3255,
+            "moved": [
+              {
+                "what": "td[ledger-cell] \"TOR 58%Scotiabank Arena\"",
+                "from": [
+                  590.4375,
+                  224,
+                  17
+                ],
+                "to": [
+                  590.4375,
+                  224,
+                  17
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "page": "roster",
+      "path": "/nhl/teams/21/roster",
+      "width": 390,
+      "theme": "light",
+      "overflow": 0,
+      "rulesMeasured": 47,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0,
+        "shifts": []
+      },
+      "shiftNoFavorites": {
+        "total": 0,
+        "shifts": []
+      }
+    },
+    {
+      "page": "roster",
+      "path": "/nhl/teams/21/roster",
+      "width": 390,
+      "theme": "dark",
+      "overflow": 0,
+      "rulesMeasured": 47,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0,
+        "shifts": []
+      },
+      "shiftNoFavorites": {
+        "total": 0,
+        "shifts": []
+      }
+    },
+    {
+      "page": "roster",
+      "path": "/nhl/teams/21/roster",
+      "width": 1440,
+      "theme": "light",
+      "overflow": 0,
+      "rulesMeasured": 43,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0.0005,
+        "shifts": [
+          {
+            "value": 0.0005417438271604939,
+            "at": 2737,
+            "moved": [
+              {
+                "what": "td[ledger-cell] \"TOR 58%Scotiabank Arena\"",
+                "from": [
+                  590.4375,
+                  224,
+                  17
+                ],
+                "to": [
+                  590.4375,
+                  224,
+                  17
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0.0005,
+        "shifts": [
+          {
+            "value": 0.0005417438271604939,
+            "at": 3296,
+            "moved": [
+              {
+                "what": "td[ledger-cell] \"TOR 58%Scotiabank Arena\"",
+                "from": [
+                  590.4375,
+                  224,
+                  17
+                ],
+                "to": [
+                  590.4375,
+                  224,
+                  17
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "page": "roster",
+      "path": "/nhl/teams/21/roster",
+      "width": 1440,
+      "theme": "dark",
+      "overflow": 0,
+      "rulesMeasured": 43,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0.0005,
+        "shifts": [
+          {
+            "value": 0.0005417438271604939,
+            "at": 3782,
+            "moved": [
+              {
+                "what": "td[ledger-cell] \"TOR 58%Scotiabank Arena\"",
+                "from": [
+                  590.4375,
+                  224,
+                  17
+                ],
+                "to": [
+                  590.4375,
+                  224,
+                  17
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0.0005,
+        "shifts": [
+          {
+            "value": 0.0005417438271604939,
+            "at": 4038,
+            "moved": [
+              {
+                "what": "td[ledger-cell] \"TOR 58%Scotiabank Arena\"",
+                "from": [
+                  590.4375,
+                  224,
+                  17
+                ],
+                "to": [
+                  590.4375,
+                  224,
+                  17
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "page": "stats",
+      "path": "/nhl/teams/21/stats",
+      "width": 390,
+      "theme": "light",
+      "overflow": 0,
+      "rulesMeasured": 24,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0.0013,
+        "shifts": [
+          {
+            "value": 0.0013085441096941286,
+            "at": 2041,
+            "moved": [
+              {
+                "what": "div \"dark modelight modemenu\"",
+                "from": [
+                  283,
+                  0,
+                  43.5
+                ],
+                "to": [
+                  229,
+                  0,
+                  43.5
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0,
+        "shifts": []
+      }
+    },
+    {
+      "page": "stats",
+      "path": "/nhl/teams/21/stats",
+      "width": 390,
+      "theme": "dark",
+      "overflow": 0,
+      "rulesMeasured": 24,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0,
+        "shifts": []
+      },
+      "shiftNoFavorites": {
+        "total": 0,
+        "shifts": []
+      }
+    },
+    {
+      "page": "stats",
+      "path": "/nhl/teams/21/stats",
+      "width": 1440,
+      "theme": "light",
+      "overflow": 0,
+      "rulesMeasured": 20,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0.0005,
+        "shifts": [
+          {
+            "value": 0.0005417438271604939,
+            "at": 3294,
+            "moved": [
+              {
+                "what": "td[ledger-cell] \"TOR 58%Scotiabank Arena\"",
+                "from": [
+                  590.4375,
+                  224,
+                  17
+                ],
+                "to": [
+                  590.4375,
+                  224,
+                  17
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0.0005,
+        "shifts": [
+          {
+            "value": 0.0005417438271604939,
+            "at": 2835,
+            "moved": [
+              {
+                "what": "td[ledger-cell] \"TOR 58%Scotiabank Arena\"",
+                "from": [
+                  590.4375,
+                  224,
+                  17
+                ],
+                "to": [
+                  590.4375,
+                  224,
+                  17
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "page": "stats",
+      "path": "/nhl/teams/21/stats",
+      "width": 1440,
+      "theme": "dark",
+      "overflow": 0,
+      "rulesMeasured": 20,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0.0005,
+        "shifts": [
+          {
+            "value": 0.0005417438271604939,
+            "at": 2544,
+            "moved": [
+              {
+                "what": "td[ledger-cell] \"TOR 58%Scotiabank Arena\"",
+                "from": [
+                  590.4375,
+                  224,
+                  17
+                ],
+                "to": [
+                  590.4375,
+                  224,
+                  17
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0.0005,
+        "shifts": [
+          {
+            "value": 0.0005417438271604939,
+            "at": 2418,
+            "moved": [
+              {
+                "what": "td[ledger-cell] \"TOR 58%Scotiabank Arena\"",
+                "from": [
+                  590.4375,
+                  224,
+                  17
+                ],
+                "to": [
+                  590.4375,
+                  224,
+                  17
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "page": "players",
+      "path": "/players",
+      "width": 390,
+      "theme": "light",
+      "overflow": 0,
+      "rulesMeasured": 18,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0,
+        "shifts": []
+      },
+      "shiftNoFavorites": {
+        "total": 0,
+        "shifts": []
+      }
+    },
+    {
+      "page": "players",
+      "path": "/players",
+      "width": 390,
+      "theme": "dark",
+      "overflow": 0,
+      "rulesMeasured": 18,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0,
+        "shifts": []
+      },
+      "shiftNoFavorites": {
+        "total": 0,
+        "shifts": []
+      }
+    },
+    {
+      "page": "players",
+      "path": "/players",
+      "width": 1440,
+      "theme": "light",
+      "overflow": 0,
+      "rulesMeasured": 20,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0,
+        "shifts": []
+      },
+      "shiftNoFavorites": {
+        "total": 0,
+        "shifts": []
+      }
+    },
+    {
+      "page": "players",
+      "path": "/players",
+      "width": 1440,
+      "theme": "dark",
+      "overflow": 0,
+      "rulesMeasured": 20,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0,
+        "shifts": []
+      },
+      "shiftNoFavorites": {
+        "total": 0,
+        "shifts": []
+      }
+    },
+    {
+      "page": "player",
+      "path": "/players/4024123",
+      "width": 390,
+      "theme": "light",
+      "overflow": 0,
+      "rulesMeasured": 36,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0,
+        "shifts": []
+      },
+      "shiftNoFavorites": {
+        "total": 0,
+        "shifts": []
+      }
+    },
+    {
+      "page": "player",
+      "path": "/players/4024123",
+      "width": 390,
+      "theme": "dark",
+      "overflow": 0,
+      "rulesMeasured": 36,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0,
+        "shifts": []
+      },
+      "shiftNoFavorites": {
+        "total": 0,
+        "shifts": []
+      }
+    },
+    {
+      "page": "player",
+      "path": "/players/4024123",
+      "width": 1440,
+      "theme": "light",
+      "overflow": 0,
+      "rulesMeasured": 38,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0,
+        "shifts": []
+      },
+      "shiftNoFavorites": {
+        "total": 0,
+        "shifts": []
+      }
+    },
+    {
+      "page": "player",
+      "path": "/players/4024123",
+      "width": 1440,
+      "theme": "dark",
+      "overflow": 0,
+      "rulesMeasured": 38,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0,
+        "shifts": []
+      },
+      "shiftNoFavorites": {
+        "total": 0,
+        "shifts": []
+      }
+    },
+    {
+      "page": "player-games",
+      "path": "/players/4024123/games",
+      "width": 390,
+      "theme": "light",
+      "overflow": 0,
+      "rulesMeasured": 36,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0.0013,
+        "shifts": [
+          {
+            "value": 0.0013085441096941286,
+            "at": 2232,
+            "moved": [
+              {
+                "what": "div \"dark modelight modemenu\"",
+                "from": [
+                  283,
+                  0,
+                  43.5
+                ],
+                "to": [
+                  229,
+                  0,
+                  43.5
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0,
+        "shifts": []
+      }
+    },
+    {
+      "page": "player-games",
+      "path": "/players/4024123/games",
+      "width": 390,
+      "theme": "dark",
+      "overflow": 0,
+      "rulesMeasured": 36,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0.0014,
+        "shifts": [
+          {
+            "value": 0.0013855172926173127,
+            "at": 2525,
+            "moved": [
+              {
+                "what": "div \"dark modelight modemenu\"",
+                "from": [
+                  274,
+                  0,
+                  43.5
+                ],
+                "to": [
+                  220,
+                  0,
+                  43.5
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0,
+        "shifts": []
+      }
+    },
+    {
+      "page": "player-games",
+      "path": "/players/4024123/games",
+      "width": 1440,
+      "theme": "light",
+      "overflow": 0,
+      "rulesMeasured": 38,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0,
+        "shifts": []
+      },
+      "shiftNoFavorites": {
+        "total": 0,
+        "shifts": []
+      }
+    },
+    {
+      "page": "player-games",
+      "path": "/players/4024123/games",
+      "width": 1440,
+      "theme": "dark",
+      "overflow": 0,
+      "rulesMeasured": 38,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0,
+        "shifts": []
+      },
+      "shiftNoFavorites": {
+        "total": 0,
+        "shifts": []
+      }
+    },
+    {
+      "page": "game",
+      "path": "/nhl/games/401803652",
+      "width": 390,
+      "theme": "light",
+      "overflow": 0,
+      "rulesMeasured": 110,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0.0581,
+        "shifts": [
+          {
+            "value": 0.058056872037914695,
+            "at": 3454,
+            "moved": [
+              {
+                "what": "footer \"Scores and stats from ESPN. Yogan Hockey\"",
+                "from": [
+                  0,
+                  795.171875,
+                  48.828125
+                ],
+                "to": [
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0.0581,
+        "shifts": [
+          {
+            "value": 0.058056872037914695,
+            "at": 3159,
+            "moved": [
+              {
+                "what": "footer \"Scores and stats from ESPN. Yogan Hockey\"",
+                "from": [
+                  0,
+                  795.171875,
+                  48.828125
+                ],
+                "to": [
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "page": "game",
+      "path": "/nhl/games/401803652",
+      "width": 390,
+      "theme": "dark",
+      "overflow": 0,
+      "rulesMeasured": 110,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0.0581,
+        "shifts": [
+          {
+            "value": 0.058056872037914695,
+            "at": 2764,
+            "moved": [
+              {
+                "what": "footer \"Scores and stats from ESPN. Yogan Hockey\"",
+                "from": [
+                  0,
+                  795.171875,
+                  48.828125
+                ],
+                "to": [
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0.0581,
+        "shifts": [
+          {
+            "value": 0.058056872037914695,
+            "at": 1852,
+            "moved": [
+              {
+                "what": "footer \"Scores and stats from ESPN. Yogan Hockey\"",
+                "from": [
+                  0,
+                  795.171875,
+                  48.828125
+                ],
+                "to": [
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "page": "game",
+      "path": "/nhl/games/401803652",
+      "width": 1440,
+      "theme": "light",
+      "overflow": 0,
+      "rulesMeasured": 101,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0,
+        "shifts": []
+      },
+      "shiftNoFavorites": {
+        "total": 0,
+        "shifts": []
+      }
+    },
+    {
+      "page": "game",
+      "path": "/nhl/games/401803652",
+      "width": 1440,
+      "theme": "dark",
+      "overflow": 0,
+      "rulesMeasured": 101,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0,
+        "shifts": []
+      },
+      "shiftNoFavorites": {
+        "total": 0,
+        "shifts": []
+      }
+    },
+    {
+      "page": "game-scoring",
+      "path": "/nhl/games/401803652/scoring",
+      "width": 390,
+      "theme": "light",
+      "overflow": 0,
+      "rulesMeasured": 48,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0,
+        "shifts": []
+      },
+      "shiftNoFavorites": {
+        "total": 0,
+        "shifts": []
+      }
+    },
+    {
+      "page": "game-scoring",
+      "path": "/nhl/games/401803652/scoring",
+      "width": 390,
+      "theme": "dark",
+      "overflow": 0,
+      "rulesMeasured": 48,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0.0581,
+        "shifts": [
+          {
+            "value": 0.058056872037914695,
+            "at": 2194,
+            "moved": [
+              {
+                "what": "footer \"Scores and stats from ESPN. Yogan Hockey\"",
+                "from": [
+                  0,
+                  795.171875,
+                  48.828125
+                ],
+                "to": [
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0,
+        "shifts": []
+      }
+    },
+    {
+      "page": "game-scoring",
+      "path": "/nhl/games/401803652/scoring",
+      "width": 1440,
+      "theme": "light",
+      "overflow": 0,
+      "rulesMeasured": 39,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0,
+        "shifts": []
+      },
+      "shiftNoFavorites": {
+        "total": 0,
+        "shifts": []
+      }
+    },
+    {
+      "page": "game-scoring",
+      "path": "/nhl/games/401803652/scoring",
+      "width": 1440,
+      "theme": "dark",
+      "overflow": 0,
+      "rulesMeasured": 39,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0,
+        "shifts": []
+      },
+      "shiftNoFavorites": {
+        "total": 0,
+        "shifts": []
+      }
+    },
+    {
+      "page": "game-pick",
+      "path": "/nhl/games/401803652/pick",
+      "width": 390,
+      "theme": "light",
+      "overflow": 0,
+      "rulesMeasured": 35,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0,
+        "shifts": []
+      },
+      "shiftNoFavorites": {
+        "total": 0.0116,
+        "shifts": [
+          {
+            "value": 0.01162513196019856,
+            "at": 1652,
+            "moved": [
+              {
+                "what": "footer \"Scores and stats from ESPN. Yogan Hockey\"",
+                "from": [
+                  0,
+                  795.171875,
+                  48.828125
+                ],
+                "to": [
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "page": "game-pick",
+      "path": "/nhl/games/401803652/pick",
+      "width": 390,
+      "theme": "dark",
+      "overflow": 0,
+      "rulesMeasured": 35,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0,
+        "shifts": []
+      },
+      "shiftNoFavorites": {
+        "total": 0.0116,
+        "shifts": [
+          {
+            "value": 0.01162513196019856,
+            "at": 1816,
+            "moved": [
+              {
+                "what": "footer \"Scores and stats from ESPN. Yogan Hockey\"",
+                "from": [
+                  0,
+                  795.171875,
+                  48.828125
+                ],
+                "to": [
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "page": "game-pick",
+      "path": "/nhl/games/401803652/pick",
+      "width": 1440,
+      "theme": "light",
+      "overflow": 0,
+      "rulesMeasured": 26,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0,
+        "shifts": []
+      },
+      "shiftNoFavorites": {
+        "total": 0,
+        "shifts": []
+      }
+    },
+    {
+      "page": "game-pick",
+      "path": "/nhl/games/401803652/pick",
+      "width": 1440,
+      "theme": "dark",
+      "overflow": 0,
+      "rulesMeasured": 26,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0,
+        "shifts": []
+      },
+      "shiftNoFavorites": {
+        "total": 0,
+        "shifts": []
+      }
+    },
+    {
+      "page": "game-scheduled",
+      "path": "/nhl/games/401892449",
+      "width": 390,
+      "theme": "light",
+      "overflow": 0,
+      "rulesMeasured": 42,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0.0598,
+        "shifts": [
+          {
+            "value": 0.058056872037914695,
+            "at": 2289,
+            "moved": [
+              {
+                "what": "footer \"Scores and stats from ESPN. Yogan Hockey\"",
+                "from": [
+                  0,
+                  795.171875,
+                  48.828125
+                ],
+                "to": [
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          },
+          {
+            "value": 0.001753083678747972,
+            "at": 3031,
+            "moved": [
+              {
+                "what": "p[pick-made] \"made Tue Oct 6, 11:02 AM · generated by \"",
+                "from": [
+                  16,
+                  713.171875,
+                  41
+                ],
+                "to": [
+                  16,
+                  713.171875,
+                  41
+                ]
+              },
+              {
+                "what": "time[rink-status] \"6:00 PM\"",
+                "from": [
+                  179.5,
+                  134,
+                  16
+                ],
+                "to": [
+                  179.5,
+                  134,
+                  16
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0.0598,
+        "shifts": [
+          {
+            "value": 0.058056872037914695,
+            "at": 2520,
+            "moved": [
+              {
+                "what": "footer \"Scores and stats from ESPN. Yogan Hockey\"",
+                "from": [
+                  0,
+                  795.171875,
+                  48.828125
+                ],
+                "to": [
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          },
+          {
+            "value": 0.001753083678747972,
+            "at": 3374,
+            "moved": [
+              {
+                "what": "p[pick-made] \"made Tue Oct 6, 11:02 AM · generated by \"",
+                "from": [
+                  16,
+                  713.171875,
+                  41
+                ],
+                "to": [
+                  16,
+                  713.171875,
+                  41
+                ]
+              },
+              {
+                "what": "time[rink-status] \"6:00 PM\"",
+                "from": [
+                  179.5,
+                  134,
+                  16
+                ],
+                "to": [
+                  179.5,
+                  134,
+                  16
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "page": "game-scheduled",
+      "path": "/nhl/games/401892449",
+      "width": 390,
+      "theme": "dark",
+      "overflow": 0,
+      "rulesMeasured": 42,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0.0598,
+        "shifts": [
+          {
+            "value": 0.058056872037914695,
+            "at": 2345,
+            "moved": [
+              {
+                "what": "footer \"Scores and stats from ESPN. Yogan Hockey\"",
+                "from": [
+                  0,
+                  795.171875,
+                  48.828125
+                ],
+                "to": [
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          },
+          {
+            "value": 0.001753083678747972,
+            "at": 3109,
+            "moved": [
+              {
+                "what": "p[pick-made] \"made Tue Oct 6, 11:02 AM · generated by \"",
+                "from": [
+                  16,
+                  713.171875,
+                  41
+                ],
+                "to": [
+                  16,
+                  713.171875,
+                  41
+                ]
+              },
+              {
+                "what": "time[rink-status] \"6:00 PM\"",
+                "from": [
+                  179.5,
+                  134,
+                  16
+                ],
+                "to": [
+                  179.5,
+                  134,
+                  16
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0.0018,
+        "shifts": [
+          {
+            "value": 0.001753083678747972,
+            "at": 2993,
+            "moved": [
+              {
+                "what": "p[pick-made] \"made Tue Oct 6, 11:02 AM · generated by \"",
+                "from": [
+                  16,
+                  713.171875,
+                  41
+                ],
+                "to": [
+                  16,
+                  713.171875,
+                  41
+                ]
+              },
+              {
+                "what": "time[rink-status] \"6:00 PM\"",
+                "from": [
+                  179.5,
+                  134,
+                  16
+                ],
+                "to": [
+                  179.5,
+                  134,
+                  16
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "page": "game-scheduled",
+      "path": "/nhl/games/401892449",
+      "width": 1440,
+      "theme": "light",
+      "overflow": 0,
+      "rulesMeasured": 44,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0.0001,
+        "shifts": [
+          {
+            "value": 0.00011368312757201646,
+            "at": 3736,
+            "moved": [
+              {
+                "what": "p[pick-made] \"made Tue Oct 6, 11:02 AM · generated by \"",
+                "from": [
+                  217,
+                  876.078125,
+                  17
+                ],
+                "to": [
+                  217,
+                  876.078125,
+                  17
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0.0001,
+        "shifts": [
+          {
+            "value": 0.00011368312757201646,
+            "at": 3041,
+            "moved": [
+              {
+                "what": "p[pick-made] \"made Tue Oct 6, 11:02 AM · generated by \"",
+                "from": [
+                  217,
+                  876.078125,
+                  17
+                ],
+                "to": [
+                  217,
+                  876.078125,
+                  17
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "page": "game-scheduled",
+      "path": "/nhl/games/401892449",
+      "width": 1440,
+      "theme": "dark",
+      "overflow": 0,
+      "rulesMeasured": 44,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0.0001,
+        "shifts": [
+          {
+            "value": 0.00011368312757201646,
+            "at": 3421,
+            "moved": [
+              {
+                "what": "p[pick-made] \"made Tue Oct 6, 11:02 AM · generated by \"",
+                "from": [
+                  217,
+                  876.078125,
+                  17
+                ],
+                "to": [
+                  217,
+                  876.078125,
+                  17
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0.0001,
+        "shifts": [
+          {
+            "value": 0.00011368312757201646,
+            "at": 3132,
+            "moved": [
+              {
+                "what": "p[pick-made] \"made Tue Oct 6, 11:02 AM · generated by \"",
+                "from": [
+                  217,
+                  876.078125,
+                  17
+                ],
+                "to": [
+                  217,
+                  876.078125,
+                  17
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "page": "not-found",
+      "path": "/no-such-page",
+      "width": 390,
+      "theme": "light",
+      "overflow": 0,
+      "rulesMeasured": 13,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0.0031,
+        "shifts": [
+          {
+            "value": 0.0031363404420501075,
+            "at": 2021,
+            "moved": [
+              {
+                "what": "li[score-ticker] \"★ favorite team, NSH@atTOR6:00 PM\"",
+                "from": [
+                  160,
+                  44,
+                  55
+                ],
+                "to": [
+                  71,
+                  44,
+                  55
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0,
+        "shifts": []
+      }
+    },
+    {
+      "page": "not-found",
+      "path": "/no-such-page",
+      "width": 390,
+      "theme": "dark",
+      "overflow": 0,
+      "rulesMeasured": 13,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0.0031,
+        "shifts": [
+          {
+            "value": 0.0031363404420501075,
+            "at": 2131,
+            "moved": [
+              {
+                "what": "li[score-ticker] \"★ favorite team, NSH@atTOR6:00 PM\"",
+                "from": [
+                  160,
+                  44,
+                  55
+                ],
+                "to": [
+                  71,
+                  44,
+                  55
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0,
+        "shifts": []
+      }
+    },
+    {
+      "page": "not-found",
+      "path": "/no-such-page",
+      "width": 1440,
+      "theme": "light",
+      "overflow": 0,
+      "rulesMeasured": 15,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0.0046,
+        "shifts": [
+          {
+            "value": 0.0046027028276105966,
+            "at": 1765,
+            "moved": [
+              {
+                "what": "li[score-ticker] \"★ favorite team, NSH@atTOR6:00 PM\"",
+                "from": [
+                  517.875,
+                  0,
+                  35
+                ],
+                "to": [
+                  290,
+                  0,
+                  35
+                ]
+              },
+              {
+                "what": "li[score-ticker] \"UTA@atNJ6:00 PM\"",
+                "from": [
+                  973.625,
+                  0,
+                  35
+                ],
+                "to": [
+                  917.625,
+                  0,
+                  35
+                ]
+              },
+              {
+                "what": "li[score-ticker] \"MIN@atBUF6:00 PM\"",
+                "from": [
+                  1193.5,
+                  0,
+                  35
+                ],
+                "to": [
+                  1113.5,
+                  0,
+                  35
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0.0016,
+        "shifts": [
+          {
+            "value": 0.0015861625514403293,
+            "at": 2173,
+            "moved": [
+              {
+                "what": "li[score-ticker] \"UTA@atNJ6:00 PM\"",
+                "from": [
+                  973.625,
+                  0,
+                  35
+                ],
+                "to": [
+                  901.625,
+                  0,
+                  35
+                ]
+              },
+              {
+                "what": "li[score-ticker] \"MIN@atBUF6:00 PM\"",
+                "from": [
+                  1193.5,
+                  0,
+                  35
+                ],
+                "to": [
+                  1097.5,
+                  0,
+                  35
+                ]
+              },
+              {
+                "what": "li[score-ticker] \"OTT@atDET6:00 PM\"",
+                "from": [
+                  745.75,
+                  0,
+                  35
+                ],
+                "to": [
+                  697.75,
+                  0,
+                  35
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "page": "not-found",
+      "path": "/no-such-page",
+      "width": 1440,
+      "theme": "dark",
+      "overflow": 0,
+      "rulesMeasured": 15,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0.0046,
+        "shifts": [
+          {
+            "value": 0.0046027028276105966,
+            "at": 1713,
+            "moved": [
+              {
+                "what": "li[score-ticker] \"★ favorite team, NSH@atTOR6:00 PM\"",
+                "from": [
+                  517.875,
+                  0,
+                  35
+                ],
+                "to": [
+                  290,
+                  0,
+                  35
+                ]
+              },
+              {
+                "what": "li[score-ticker] \"UTA@atNJ6:00 PM\"",
+                "from": [
+                  973.625,
+                  0,
+                  35
+                ],
+                "to": [
+                  917.625,
+                  0,
+                  35
+                ]
+              },
+              {
+                "what": "li[score-ticker] \"MIN@atBUF6:00 PM\"",
+                "from": [
+                  1193.5,
+                  0,
+                  35
+                ],
+                "to": [
+                  1113.5,
+                  0,
+                  35
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0.0016,
+        "shifts": [
+          {
+            "value": 0.0015861625514403293,
+            "at": 2578,
+            "moved": [
+              {
+                "what": "li[score-ticker] \"UTA@atNJ6:00 PM\"",
+                "from": [
+                  973.625,
+                  0,
+                  35
+                ],
+                "to": [
+                  901.625,
+                  0,
+                  35
+                ]
+              },
+              {
+                "what": "li[score-ticker] \"MIN@atBUF6:00 PM\"",
+                "from": [
+                  1193.5,
+                  0,
+                  35
+                ],
+                "to": [
+                  1097.5,
+                  0,
+                  35
+                ]
+              },
+              {
+                "what": "li[score-ticker] \"OTT@atDET6:00 PM\"",
+                "from": [
+                  745.75,
+                  0,
+                  35
+                ],
+                "to": [
+                  697.75,
+                  0,
+                  35
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "page": "error",
+      "path": "/nhl/teams/1",
+      "width": 390,
+      "theme": "light",
+      "overflow": 0,
+      "rulesMeasured": 13,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0.0278,
+        "shifts": [
+          {
+            "value": 0.027772006468857396,
+            "at": 3503,
+            "moved": [
+              {
+                "what": "footer \"Scores and stats from ESPN. Yogan Hockey\"",
+                "from": [
+                  0,
+                  0,
+                  0
+                ],
+                "to": [
+                  0,
+                  771,
+                  73
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0.0291,
+        "shifts": [
+          {
+            "value": 0.0013085441096941286,
+            "at": 1942,
+            "moved": [
+              {
+                "what": "div \"dark modelight modemenu\"",
+                "from": [
+                  283,
+                  0,
+                  43.5
+                ],
+                "to": [
+                  229,
+                  0,
+                  43.5
+                ]
+              }
+            ]
+          },
+          {
+            "value": 0.027772006468857396,
+            "at": 2599,
+            "moved": [
+              {
+                "what": "footer \"Scores and stats from ESPN. Yogan Hockey\"",
+                "from": [
+                  0,
+                  0,
+                  0
+                ],
+                "to": [
+                  0,
+                  771,
+                  73
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "page": "error",
+      "path": "/nhl/teams/1",
+      "width": 390,
+      "theme": "dark",
+      "overflow": 0,
+      "rulesMeasured": 13,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0.0278,
+        "shifts": [
+          {
+            "value": 0.027772006468857396,
+            "at": 2344,
+            "moved": [
+              {
+                "what": "footer \"Scores and stats from ESPN. Yogan Hockey\"",
+                "from": [
+                  0,
+                  0,
+                  0
+                ],
+                "to": [
+                  0,
+                  771,
+                  73
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0.0278,
+        "shifts": [
+          {
+            "value": 0.027772006468857396,
+            "at": 2960,
+            "moved": [
+              {
+                "what": "footer \"Scores and stats from ESPN. Yogan Hockey\"",
+                "from": [
+                  0,
+                  0,
+                  0
+                ],
+                "to": [
+                  0,
+                  771,
+                  73
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "page": "error",
+      "path": "/nhl/teams/1",
+      "width": 1440,
+      "theme": "light",
+      "overflow": 0,
+      "rulesMeasured": 15,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0,
+        "shifts": []
+      },
+      "shiftNoFavorites": {
+        "total": 0,
+        "shifts": []
+      }
+    },
+    {
+      "page": "error",
+      "path": "/nhl/teams/1",
+      "width": 1440,
+      "theme": "dark",
+      "overflow": 0,
+      "rulesMeasured": 15,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0,
+        "shifts": []
+      },
+      "shiftNoFavorites": {
+        "total": 0,
+        "shifts": []
+      }
+    },
+    {
+      "page": "sample-live",
+      "path": "/skeleton/live",
+      "width": 390,
+      "theme": "light",
+      "overflow": 0,
+      "rulesMeasured": 37,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0.0336,
+        "shifts": [
+          {
+            "value": 0.030447170134059467,
+            "at": 3510,
+            "moved": [
+              {
+                "what": "tr[ledger-row] \"TOR at MTL, live, 2nd 12:34No pickTOR ★ \"",
+                "from": [
+                  16,
+                  445.5,
+                  55
+                ],
+                "to": [
+                  16,
+                  335.5,
+                  55
+                ]
+              },
+              {
+                "what": "li[sample-score-ticker] \"★ favorite team, TOR 2@atMTL 1live, 2nd \"",
+                "from": [
+                  266,
+                  117,
+                  55
+                ],
+                "to": [
+                  88,
+                  117,
+                  55
+                ]
+              }
+            ]
+          },
+          {
+            "value": 0.0031363404420501075,
+            "at": 3582,
+            "moved": [
+              {
+                "what": "li[score-ticker] \"★ favorite team, NSH@atTOR6:00 PM\"",
+                "from": [
+                  160,
+                  44,
+                  55
+                ],
+                "to": [
+                  71,
+                  44,
+                  55
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0,
+        "shifts": []
+      }
+    },
+    {
+      "page": "sample-live",
+      "path": "/skeleton/live",
+      "width": 390,
+      "theme": "dark",
+      "overflow": 0,
+      "rulesMeasured": 37,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0.0367,
+        "shifts": [
+          {
+            "value": 0.03671985101815968,
+            "at": 3565,
+            "moved": [
+              {
+                "what": "tr[ledger-row] \"TOR at MTL, live, 2nd 12:34No pickTOR ★ \"",
+                "from": [
+                  16,
+                  445.5,
+                  55
+                ],
+                "to": [
+                  16,
+                  335.5,
+                  55
+                ]
+              },
+              {
+                "what": "li[score-ticker] \"★ favorite team, NSH@atTOR6:00 PM\"",
+                "from": [
+                  160,
+                  44,
+                  55
+                ],
+                "to": [
+                  71,
+                  44,
+                  55
+                ]
+              },
+              {
+                "what": "li[sample-score-ticker] \"★ favorite team, TOR 2@atMTL 1live, 2nd \"",
+                "from": [
+                  266,
+                  117,
+                  55
+                ],
+                "to": [
+                  88,
+                  117,
+                  55
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0,
+        "shifts": []
+      }
+    },
+    {
+      "page": "sample-live",
+      "path": "/skeleton/live",
+      "width": 1440,
+      "theme": "light",
+      "overflow": 0,
+      "rulesMeasured": 41,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0.0302,
+        "shifts": [
+          {
+            "value": 0.025644022874871397,
+            "at": 3632,
+            "moved": [
+              {
+                "what": "tr[ledger-row] \"TOR at MTL, live, 2nd 12:34No pickTOR ★ \"",
+                "from": [
+                  217,
+                  299.5,
+                  33
+                ],
+                "to": [
+                  217,
+                  233.5,
+                  33
+                ]
+              },
+              {
+                "what": "li[sample-score-ticker] \"★ favorite team, TOR 2@atMTL 1live, 2nd \"",
+                "from": [
+                  738.75,
+                  61,
+                  35
+                ],
+                "to": [
+                  315,
+                  61,
+                  35
+                ]
+              },
+              {
+                "what": "span[ledger-cell] \"Bell Centre · ESPN+, TNT\"",
+                "from": [
+                  889,
+                  241,
+                  17
+                ],
+                "to": [
+                  889,
+                  241,
+                  17
+                ]
+              }
+            ]
+          },
+          {
+            "value": 0.0046027028276105966,
+            "at": 3676,
+            "moved": [
+              {
+                "what": "li[score-ticker] \"★ favorite team, NSH@atTOR6:00 PM\"",
+                "from": [
+                  517.875,
+                  0,
+                  35
+                ],
+                "to": [
+                  290,
+                  0,
+                  35
+                ]
+              },
+              {
+                "what": "li[score-ticker] \"UTA@atNJ6:00 PM\"",
+                "from": [
+                  973.625,
+                  0,
+                  35
+                ],
+                "to": [
+                  917.625,
+                  0,
+                  35
+                ]
+              },
+              {
+                "what": "li[score-ticker] \"MIN@atBUF6:00 PM\"",
+                "from": [
+                  1193.5,
+                  0,
+                  35
+                ],
+                "to": [
+                  1113.5,
+                  0,
+                  35
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0.0016,
+        "shifts": [
+          {
+            "value": 0.00003909465020576132,
+            "at": 3586,
+            "moved": [
+              {
+                "what": "p \"updated 19:14:07\"",
+                "from": [
+                  1264,
+                  129,
+                  20
+                ],
+                "to": [
+                  1288,
+                  129,
+                  20
+                ]
+              }
+            ]
+          },
+          {
+            "value": 0.0015861625514403293,
+            "at": 3651,
+            "moved": [
+              {
+                "what": "li[score-ticker] \"UTA@atNJ6:00 PM\"",
+                "from": [
+                  973.625,
+                  0,
+                  35
+                ],
+                "to": [
+                  901.625,
+                  0,
+                  35
+                ]
+              },
+              {
+                "what": "li[score-ticker] \"MIN@atBUF6:00 PM\"",
+                "from": [
+                  1193.5,
+                  0,
+                  35
+                ],
+                "to": [
+                  1097.5,
+                  0,
+                  35
+                ]
+              },
+              {
+                "what": "li[score-ticker] \"OTT@atDET6:00 PM\"",
+                "from": [
+                  745.75,
+                  0,
+                  35
+                ],
+                "to": [
+                  697.75,
+                  0,
+                  35
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "page": "sample-live",
+      "path": "/skeleton/live",
+      "width": 1440,
+      "theme": "dark",
+      "overflow": 0,
+      "rulesMeasured": 41,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0.0342,
+        "shifts": [
+          {
+            "value": 0.034203080793467074,
+            "at": 2975,
+            "moved": [
+              {
+                "what": "tr[ledger-row] \"TOR at MTL, live, 2nd 12:34No pickTOR ★ \"",
+                "from": [
+                  217,
+                  299.5,
+                  33
+                ],
+                "to": [
+                  217,
+                  233.5,
+                  33
+                ]
+              },
+              {
+                "what": "li[sample-score-ticker] \"★ favorite team, TOR 2@atMTL 1live, 2nd \"",
+                "from": [
+                  738.75,
+                  61,
+                  35
+                ],
+                "to": [
+                  315,
+                  61,
+                  35
+                ]
+              },
+              {
+                "what": "li[score-ticker] \"★ favorite team, NSH@atTOR6:00 PM\"",
+                "from": [
+                  517.875,
+                  0,
+                  35
+                ],
+                "to": [
+                  290,
+                  0,
+                  35
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0.0017,
+        "shifts": [
+          {
+            "value": 0.0017425411522633747,
+            "at": 2682,
+            "moved": [
+              {
+                "what": "li[score-ticker] \"UTA@atNJ6:00 PM\"",
+                "from": [
+                  973.625,
+                  0,
+                  35
+                ],
+                "to": [
+                  901.625,
+                  0,
+                  35
+                ]
+              },
+              {
+                "what": "li[score-ticker] \"MIN@atBUF6:00 PM\"",
+                "from": [
+                  1193.5,
+                  0,
+                  35
+                ],
+                "to": [
+                  1097.5,
+                  0,
+                  35
+                ]
+              },
+              {
+                "what": "li[score-ticker] \"OTT@atDET6:00 PM\"",
+                "from": [
+                  745.75,
+                  0,
+                  35
+                ],
+                "to": [
+                  697.75,
+                  0,
+                  35
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "page": "sample-loading",
+      "path": "/skeleton/loading",
+      "width": 390,
+      "theme": "light",
+      "overflow": 0,
+      "rulesMeasured": 63,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0.0031,
+        "shifts": [
+          {
+            "value": 0.0031363404420501075,
+            "at": 2449,
+            "moved": [
+              {
+                "what": "li[score-ticker] \"★ favorite team, NSH@atTOR6:00 PM\"",
+                "from": [
+                  160,
+                  44,
+                  55
+                ],
+                "to": [
+                  71,
+                  44,
+                  55
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0,
+        "shifts": []
+      }
+    },
+    {
+      "page": "sample-loading",
+      "path": "/skeleton/loading",
+      "width": 390,
+      "theme": "dark",
+      "overflow": 0,
+      "rulesMeasured": 63,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0.0031,
+        "shifts": [
+          {
+            "value": 0.0031363404420501075,
+            "at": 2467,
+            "moved": [
+              {
+                "what": "li[score-ticker] \"★ favorite team, NSH@atTOR6:00 PM\"",
+                "from": [
+                  160,
+                  44,
+                  55
+                ],
+                "to": [
+                  71,
+                  44,
+                  55
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0,
+        "shifts": []
+      }
+    },
+    {
+      "page": "sample-loading",
+      "path": "/skeleton/loading",
+      "width": 1440,
+      "theme": "light",
+      "overflow": 0,
+      "rulesMeasured": 65,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0.0046,
+        "shifts": [
+          {
+            "value": 0.0046027028276105966,
+            "at": 2997,
+            "moved": [
+              {
+                "what": "li[score-ticker] \"★ favorite team, NSH@atTOR6:00 PM\"",
+                "from": [
+                  517.875,
+                  0,
+                  35
+                ],
+                "to": [
+                  290,
+                  0,
+                  35
+                ]
+              },
+              {
+                "what": "li[score-ticker] \"UTA@atNJ6:00 PM\"",
+                "from": [
+                  973.625,
+                  0,
+                  35
+                ],
+                "to": [
+                  917.625,
+                  0,
+                  35
+                ]
+              },
+              {
+                "what": "li[score-ticker] \"MIN@atBUF6:00 PM\"",
+                "from": [
+                  1193.5,
+                  0,
+                  35
+                ],
+                "to": [
+                  1113.5,
+                  0,
+                  35
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0.0016,
+        "shifts": [
+          {
+            "value": 0.0015861625514403293,
+            "at": 2916,
+            "moved": [
+              {
+                "what": "li[score-ticker] \"UTA@atNJ6:00 PM\"",
+                "from": [
+                  973.625,
+                  0,
+                  35
+                ],
+                "to": [
+                  901.625,
+                  0,
+                  35
+                ]
+              },
+              {
+                "what": "li[score-ticker] \"MIN@atBUF6:00 PM\"",
+                "from": [
+                  1193.5,
+                  0,
+                  35
+                ],
+                "to": [
+                  1097.5,
+                  0,
+                  35
+                ]
+              },
+              {
+                "what": "li[score-ticker] \"OTT@atDET6:00 PM\"",
+                "from": [
+                  745.75,
+                  0,
+                  35
+                ],
+                "to": [
+                  697.75,
+                  0,
+                  35
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "page": "sample-loading",
+      "path": "/skeleton/loading",
+      "width": 1440,
+      "theme": "dark",
+      "overflow": 0,
+      "rulesMeasured": 65,
+      "rules": [],
+      "unmeasured": [],
+      "spacing": [],
+      "shift": {
+        "total": 0.0046,
+        "shifts": [
+          {
+            "value": 0.0046027028276105966,
+            "at": 2989,
+            "moved": [
+              {
+                "what": "li[score-ticker] \"★ favorite team, NSH@atTOR6:00 PM\"",
+                "from": [
+                  517.875,
+                  0,
+                  35
+                ],
+                "to": [
+                  290,
+                  0,
+                  35
+                ]
+              },
+              {
+                "what": "li[score-ticker] \"UTA@atNJ6:00 PM\"",
+                "from": [
+                  973.625,
+                  0,
+                  35
+                ],
+                "to": [
+                  917.625,
+                  0,
+                  35
+                ]
+              },
+              {
+                "what": "li[score-ticker] \"MIN@atBUF6:00 PM\"",
+                "from": [
+                  1193.5,
+                  0,
+                  35
+                ],
+                "to": [
+                  1113.5,
+                  0,
+                  35
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "shiftNoFavorites": {
+        "total": 0.0016,
+        "shifts": [
+          {
+            "value": 0.0015861625514403293,
+            "at": 3516,
+            "moved": [
+              {
+                "what": "li[score-ticker] \"UTA@atNJ6:00 PM\"",
+                "from": [
+                  973.625,
+                  0,
+                  35
+                ],
+                "to": [
+                  901.625,
+                  0,
+                  35
+                ]
+              },
+              {
+                "what": "li[score-ticker] \"MIN@atBUF6:00 PM\"",
+                "from": [
+                  1193.5,
+                  0,
+                  35
+                ],
+                "to": [
+                  1097.5,
+                  0,
+                  35
+                ]
+              },
+              {
+                "what": "li[score-ticker] \"OTT@atDET6:00 PM\"",
+                "from": [
+                  745.75,
+                  0,
+                  35
+                ],
+                "to": [
+                  697.75,
+                  0,
+                  35
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

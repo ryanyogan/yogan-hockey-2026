@@ -3,15 +3,16 @@
 import type { GameHeader, GameHeaderSide, Play } from "@yogan-hockey/schemas";
 import { LiveMarker } from "@yogan-hockey/ui/components/marker";
 import { type ReactNode, useRef } from "react";
-import { type GameClock, penaltyState } from "../../lib/game/penalties";
+import { type GameClock, NO_PENALTIES, penaltyState } from "../../lib/game/penalties";
 import { gameStatus, markKind, playTime } from "../../lib/game/plays";
 import { attackedEnd, type RinkEnd } from "../../lib/game/rink";
 import { periodLabel } from "../../lib/game/timeline";
 import { LocalTime } from "../local-time";
 import { TeamMark } from "../team-mark";
-import { PenaltyBox, PenaltyBoxSpace, teamColour } from "./penalty-box";
+import { PenaltyBox, PenaltyBoxSpace } from "./penalty-box";
 import { Rink } from "./rink";
 import { RinkAnimations } from "./rink-animations";
+import { teamColour } from "./team-colour";
 
 /*
  * Where the overlay sits, as fractions of the rink's width (`cqw`), so it keeps its place at any
@@ -228,14 +229,22 @@ export function GameRink({
 
   // The box and the advantage are the game's as it stands (a Replay's at its playhead), not the
   // picked play's: like the score, they do not move when a tick is clicked.
-  const penalties = penaltyState(
-    played,
-    { homeTeamId: header.home.id, awayTeamId: header.away.id, seasonType: header.seasonType },
-    clock,
-  );
+  // A finished game laid out whole has nobody left in it, whether or not its last play says so.
+  const over = header.status === "final" && played.length === plays.length;
+  const penalties = over
+    ? NO_PENALTIES
+    : penaltyState(
+        played,
+        { homeTeamId: header.home.id, awayTeamId: header.away.id, seasonType: header.seasonType },
+        clock,
+      );
   const ahead = [header.away, header.home].find((s) => s.id === penalties.advantage?.teamId);
-  const now = clock?.period ?? played.at(-1)?.period ?? 1;
-  const attacked = ahead && attackedEnd(plays, header.home.id, ahead.id, now);
+  // The zone is ruled only while the ice shows the ends of the period being played: with a play
+  // of another period picked, the ends are that period's, and the box alone says who is ahead.
+  const attacked =
+    ahead && period === penalties.period
+      ? attackedEnd(plays, header.home.id, ahead.id, period)
+      : null;
   const powerPlay = ahead && attacked ? { end: attacked, style: teamColour(ahead) } : null;
   return (
     <div data-slot="game-rink" className="@container">

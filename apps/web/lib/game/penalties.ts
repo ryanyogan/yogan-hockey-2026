@@ -17,12 +17,18 @@ import { SHOOTOUT } from "./timeline";
  * - Penalties of the same length given to both teams at the same stoppage are coincidental: the
  *   players sit, nobody is a skater short for them, and no goal ends them. The exception is the
  *   rule book's own: one minor each with both teams at full strength is played four on four.
+ *   Not followed: the rule book also cancels a minor against half of a double minor. Here each is
+ *   served, which is four on four and then the same two minutes of advantage, later.
  * - A team is never more than two skaters short. A third penalty waits for the first to end.
- * - A player given two at once serves them one after the other, a misconduct last.
+ * - A player given two at once serves them one after the other, a misconduct last; but one that
+ *   leaves his team short does not wait behind a coincidental one, since a teammate serves it.
+ * - 10 minutes or more is read as a misconduct. ESPN's wording of a game misconduct, and whether
+ *   it ever records a minor and a misconduct as one play of 12, are not in any recording.
  * - A penalty runs on the game clock, across an intermission into the next period.
  * - Overtime outside the playoffs is three on three, and a penalty there adds a skater to the
  *   other team instead of taking one away: 4 on 3, then 5 on 3. Playoff overtime is as regulation.
- * - A shootout has no penalties running, and neither has a game that is over.
+ * - A shootout has no penalties running, and neither has a game that is over. Overtime outside
+ *   the playoffs is followed by a shootout, so its end is the end of every penalty.
  * - A penalty with no minutes recorded (a penalty shot is 0; a game stored before the site kept
  *   the minutes has none) puts nobody in the box.
  */
@@ -67,6 +73,8 @@ export type PenaltyState = {
   skaters: Skaters;
   /** The team with more skaters, and the seconds until the first penalty giving it that is up. */
   advantage: { teamId: string; remaining: number } | null;
+  /** The period the state is of: the last play's, or a later clock's. */
+  period: number;
 };
 
 /** The game a penalty state is of. */
@@ -162,10 +170,13 @@ function endOf(served: Served): number {
   return served.cut ?? startOf(served) + served.length;
 }
 
-/** Being served at `at`. `through` counts the second it ends as well, which is when a goal ends it. */
-function running(served: Served, at: number, through = false): boolean {
-  const end = endOf(served);
-  return startOf(served) <= at && (through ? at <= end : at < end);
+/**
+ * Being served at `at`. `forGoal` asks it of a goal scored then: the second a penalty ends
+ * counts, which is when a goal ends it, and the second it is called does not.
+ */
+function running(served: Served, at: number, forGoal = false): boolean {
+  const [start, end] = [startOf(served), endOf(served)];
+  return forGoal ? start < at && at <= end : start <= at && at < end;
 }
 
 /**
@@ -176,8 +187,8 @@ function served(plays: readonly Play[], game: PenaltyGame): Served[] {
   const { seasonType } = game;
   const all: Served[] = [];
   const stoppages = new Map<string, Served[]>();
-  const short = (teamId: string, at: number, through = false) =>
-    all.filter((one) => one.teamId === teamId && one.shortHanded && running(one, at, through));
+  const short = (teamId: string, at: number, forGoal = false) =>
+    all.filter((one) => one.teamId === teamId && one.shortHanded && running(one, at, forGoal));
 
   for (const play of plays) {
     if (isShootout(play.period, seasonType) || play.periodText === SHOOTOUT) break;
@@ -269,7 +280,8 @@ function settle(
       const own = side
         .slice(0, index)
         .findLast((other) => player != null && penalized(other) === player);
-      if (own) {
+      // Not behind a coincidental one: a teammate serves the one that leaves the team short.
+      if (own && !(one.shortHanded && !own.shortHanded)) {
         one.after = own;
         continue;
       }
@@ -294,11 +306,15 @@ function skatersAt(down: Skaters, overtime: boolean): Skaters {
   };
 }
 
-const NOBODY: PenaltyState = {
+const nobody = (period: number): PenaltyState => ({
   box: [],
   skaters: { home: FULL_STRENGTH, away: FULL_STRENGTH },
   advantage: null,
-};
+  period,
+});
+
+/** A game that is over, or not begun. */
+export const NO_PENALTIES = nobody(1);
 
 /**
  * Who is in the box and who has the advantage once `plays` have happened.
@@ -313,19 +329,25 @@ export function penaltyState(
   clock: GameClock | null = null,
 ): PenaltyState {
   const last = plays.at(-1);
-  if (last == null) return NOBODY;
+  if (last == null) return NO_PENALTIES;
   const { seasonType } = game;
   const lastAt = { period: last.period, elapsed: clockSeconds(last.clock) };
   const now =
     clock != null && gameSeconds(clock, seasonType) > gameSeconds(lastAt, seasonType)
       ? clock
       : lastAt;
+  // Overtime outside the playoffs ends in a shootout, so a penalty running at its end is over.
+  const overtimeOver =
+    seasonType !== PLAYOFFS &&
+    now.period === REGULATION_PERIODS + 1 &&
+    now.elapsed >= SHORT_OVERTIME;
   if (
+    overtimeOver ||
     isShootout(now.period, seasonType) ||
     last.periodText === SHOOTOUT ||
     plays.some((play) => play.type === "end-of-game")
   ) {
-    return NOBODY;
+    return nobody(now.period);
   }
 
   const at = gameSeconds(now, seasonType);
@@ -358,6 +380,7 @@ export function penaltyState(
       };
     }),
     skaters,
+    period: now.period,
     advantage: ahead && {
       teamId: ahead.teamId,
       remaining: Math.min(...ahead.given.map((one) => endOf(one) - at)),

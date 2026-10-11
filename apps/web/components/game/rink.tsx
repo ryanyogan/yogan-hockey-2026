@@ -2,6 +2,7 @@ import type { Play } from "@yogan-hockey/schemas";
 import { type CSSProperties, type Ref, useId } from "react";
 import { type MarkKind, markKind, playTime } from "../../lib/game/plays";
 import { RINK, type RinkEnd, rinkPoint } from "../../lib/game/rink";
+import { TEAM_STROKE } from "./team-colour";
 
 const {
   halfLength,
@@ -148,11 +149,7 @@ function PowerPlayZones({ powerPlay }: { powerPlay: RinkPowerPlay | null }) {
           patternUnits="userSpaceOnUse"
           patternTransform="rotate(45)"
         >
-          <line
-            y2={HATCH}
-            strokeWidth={1.1}
-            className="stroke-(--team) dark:stroke-[color-mix(in_oklab,var(--team),white_30%)]"
-          />
+          <line y2={HATCH} strokeWidth={1.1} className={TEAM_STROKE} />
         </pattern>
         <clipPath id={boards}>
           <rect

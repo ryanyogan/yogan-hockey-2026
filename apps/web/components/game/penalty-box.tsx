@@ -1,22 +1,11 @@
 import type { GameHeader, GameHeaderSide } from "@yogan-hockey/schemas";
-import type { CSSProperties } from "react";
 import {
   type BoxedPenalty,
   clockText,
   type PenaltyState,
   strengthLine,
 } from "../../lib/game/penalties";
-
-/**
- * A team's colour for a mark on the page, as `--team`. Navy on slate would not show (Buffalo's),
- * so the dark theme lifts every colour towards white; a team ESPN sends no colour for gets the
- * text's.
- */
-export function teamColour(side: Pick<GameHeaderSide, "color">): CSSProperties {
-  return { "--team": side.color == null ? "currentColor" : `#${side.color}` } as CSSProperties;
-}
-/** `--team` as a background, lifted in the dark theme. */
-export const TEAM_BG = "bg-(--team) dark:bg-[color-mix(in_oklab,var(--team),white_30%)]";
+import { TEAM_BG, teamColour } from "./team-colour";
 
 /*
  * The box's size is the same whoever is in it: a heading and two rows, so a penalty arriving or

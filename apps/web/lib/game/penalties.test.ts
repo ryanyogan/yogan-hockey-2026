@@ -98,7 +98,7 @@ describe("the recorded game, stepped through as a Replay does", () => {
       box: ["DAL M. Bourque Hooking 0:02"],
       strength: "3 on 4 BUF 0:02",
     },
-    { index: 294, when: "the end of overtime", box: [], strength: "3 on 3" },
+    { index: 294, when: "the end of overtime", box: [], strength: "5 on 5" },
     { index: 296, when: "the shootout", box: [], strength: "5 on 5" },
     { index: 306, when: "the whole game laid out", box: [], strength: "5 on 5" },
   ])("play $index, $when", ({ index, box, strength: expected }) => {
@@ -123,6 +123,13 @@ describe("the recorded game, stepped through as a Replay does", () => {
       expect(`${goal.clock} ${recorded}`).toBe(`${goal.clock} ${goal.strength}`);
     }
   });
+});
+
+test("a state says which period it is of, the clock's when that is later than the last play", () => {
+  const plays = [penalty(DALLAS, "19:30", 2, "Benn")];
+  expect(penaltyState(plays, REGULAR_SEASON).period).toBe(1);
+  expect(penaltyState(plays, REGULAR_SEASON, { period: 2, elapsed: 10 }).period).toBe(2);
+  expect(penaltyState(plays, REGULAR_SEASON, { period: 1, elapsed: 10 }).period).toBe(1);
 });
 
 describe("strengthLine", () => {
@@ -312,6 +319,36 @@ describe("the rules", () => {
       plays: [penalty(DALLAS, "5:00", 5, "Benn"), benn, faceoff("6:00")],
       box: ["DAL Benn Roughing 4:00", "DAL Benn Roughing 2:00 waiting"],
       strength: "4 on 5 BUF 4:00",
+    },
+    {
+      name: "two to one player and one to the other team: his second is served at once",
+      plays: [
+        benn,
+        penalty(DALLAS, "5:00", 2, "Benn"),
+        penalty(BUFFALO, "5:00", 2, "Tuch"),
+        faceoff("5:30"),
+      ],
+      box: [
+        "DAL Benn Roughing 1:30 no skater short",
+        "DAL Benn Roughing 1:30",
+        "BUF Tuch Roughing 1:30 no skater short",
+      ],
+      strength: "4 on 5 BUF 1:30",
+    },
+    {
+      name: "a goal in the second a penalty is called does not end it",
+      plays: [benn, goal(BUFFALO, "5:00"), faceoff("5:10")],
+      box: ["DAL Benn Roughing 1:50"],
+      strength: "4 on 5 BUF 1:50",
+    },
+    {
+      name: "a penalty running when overtime ends is over: the shootout has none",
+      plays: [
+        penalty(DALLAS, "4:30", 2, "Benn", OVERTIME),
+        faceoff("5:00", { ...OVERTIME, type: "period-end" }),
+      ],
+      box: [],
+      strength: "5 on 5",
     },
     {
       name: "a third penalty to a team two short waits for the first to end",

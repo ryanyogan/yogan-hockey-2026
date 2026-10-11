@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Link } from "../link";
 import { NavLinks } from "./nav-links";
 import { ScoreTickerSlot } from "./score-ticker-slot";
+import { Sidebar } from "./sidebar";
 import { SiteFooter } from "./site-footer";
 import { ThemeToggle } from "./theme-toggle";
 
@@ -24,13 +25,7 @@ export function Shell({ children }: { children: ReactNode }) {
       <a href="#main-content" className="skip-link">
         Skip to content
       </a>
-      <aside className="sticky top-0 hidden h-screen w-[calc(12rem+var(--safe-left))] shrink-0 flex-col gap-1 p-4 pt-[calc(1rem+var(--safe-top))] pb-[calc(1rem+var(--safe-bottom))] pl-[calc(1rem+var(--safe-left))] md:flex">
-        <Wordmark className="mb-4" />
-        <nav aria-label="Site" className="flex flex-col">
-          <NavLinks />
-        </nav>
-        <ThemeToggle className="mt-auto self-start px-2 py-1" />
-      </aside>
+      <Sidebar />
       {/*
         The rule beside the sidebar is the column's: the sidebar is one screen tall, and a rule of
         its own would stop a screen down a long page.

@@ -93,6 +93,19 @@ export function slateSections(games: ScoreboardGame[]): SlateSections {
   return sections;
 }
 
+/** How many of a slate's games stand where: the sidebar's rows. */
+export type SlateCounts = Record<keyof SlateSections, number>;
+
+export function slateCounts(games: ScoreboardGame[]): SlateCounts {
+  const { live, upcoming, final, postponed } = slateSections(games);
+  return {
+    live: live.length,
+    upcoming: upcoming.length,
+    final: final.length,
+    postponed: postponed.length,
+  };
+}
+
 /** The ticker's order: what is on, then what is to come, then what is over. */
 export function tickerGames(games: ScoreboardGame[]): ScoreboardGame[] {
   const { live, upcoming, final, postponed } = slateSections(games);

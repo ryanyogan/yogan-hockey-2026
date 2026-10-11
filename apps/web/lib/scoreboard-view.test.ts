@@ -7,6 +7,7 @@ import {
   hasScore,
   heardAtFrom,
   laterOf,
+  slateCounts,
   slateSections,
   stripReach,
   tickerGames,
@@ -114,6 +115,11 @@ test("a slate is split into games in progress, to come, finished and postponed",
   expect(ids(sections.upcoming)).toEqual(["early", "early-too", "late"]);
   expect(ids(sections.final)).toEqual(["done-early", "done-late"]);
   expect(ids(sections.postponed)).toEqual(["off"]);
+});
+
+test("a slate is counted by where each game stands", () => {
+  expect(slateCounts(SLATE)).toEqual({ live: 2, upcoming: 3, final: 2, postponed: 1 });
+  expect(slateCounts([])).toEqual({ live: 0, upcoming: 0, final: 0, postponed: 0 });
 });
 
 test("the ticker leads with what is on, then what is to come, then what is over", () => {

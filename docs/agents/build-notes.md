@@ -33,7 +33,7 @@ What was measured and the decisions taken: `docs/design/approved-look.md`.
 - **Home's layout shift is not the font's.** 0.02 at 1440px, with the font or without it: the strip's times are rewritten in the visitor's zone and the Favorites block's empty line wraps to two when the browser holds no favorites. It is the same on the site before #138 and is #140's.
 - **After many hot reloads the dev server answers a failed read with 200 where it should say 503** (`e2e/team.spec.ts`'s error test, and the `error` shot). Restart the dev server before believing it: a fresh one says 503.
 - **The dev server's error overlay is `#__vinext_dev_error_overlay_root`**, a shadow root on `<body>`; a script removes it to shoot the error page under it.
-- **Left for later tickets**: the words on the rink and the caption under it keep their old sizes and box (#141 to #143 redraw them), the phone still has its menu (#139), and the audit of every rule's ends and Home's layout shift are #140's.
+- **Left for later tickets**: the words on the rink took the small size token (11px, 12px on a phone) where the prototype has 12px, and the caption under it keeps its filled box (#141 to #143 redraw them), the phone still has its menu (#139), and the audit of every rule's ends and Home's layout shift are #140's.
 
 ## Tuned ledger prototype (#128, approved in #129)
 
@@ -305,7 +305,7 @@ The Worker `yogan-hockey` has been live on `hockey.yogan.dev` since 2026-10-06, 
 ## The look: `packages/ui` and the shell (#38)
 
 - **The dashboard is the living sample** of the Reference UI's layout (`apps/web/components/dashboard/`), and `/skeleton/dashboard` draws it from the invented slate. `/skeleton/ledger`, the shell's sample of invented rows, went with #47.
-- **Every table is a `Ledger`** (`@yogan-hockey/ui/components/ledger`): `Ledger` > `LedgerHead` > `LedgerColumn`, then `LedgerBody` > `LedgerRow` > `LedgerCell`. `numeric` right-aligns a column or cell; `tone` is `strong`, `score`, `note` or `aside`; `LedgerRow live` tints a game in progress; `Ledger density="compact"` is for long tables such as standings. `LedgerAside` is the quiet text beside a value (a record), `LedgerDetail` a second line under it. None of it is a client component.
+- **Every table is a `Ledger`** (`@yogan-hockey/ui/components/ledger`): `Ledger` > `LedgerHead` > `LedgerColumn`, then `LedgerBody` > `LedgerRow` > `LedgerCell`. `numeric` right-aligns a column or cell; `tone` is `strong`, `score`, `note` or `aside`; `LedgerRow live` tints a game in progress. `LedgerAside` is the quiet text beside a value (a record), `LedgerDetail` a second line under it. None of it is a client component.
 - **A row that links somewhere**: set `interactive` on the `LedgerRow` and put the `ledgerRowLink` class string on the `next/link` in its first cell. The link stretches over the row, so the row stays a real table row.
 - **A page returns `Section`s in a fragment.** The shell's `<main>` pads the page and spaces its direct children by 32px; a page adds no wrapper, padding or max width of its own. Two ledgers side by side: `<div className="grid grid-cols-1 gap-8 xl:grid-cols-2">` (see the dashboard's notes for why `grid-cols-1`).
 - **Tabs held in the URL** are `UrlTabs` with `link={Link}` (the site's `Link`, `components/link.tsx`, never `next/link`; and see "Performance" for tabs that are pages): the page reads `searchParams`, passes `current`, and each tab is a link. No client component, no Base UI Tabs.

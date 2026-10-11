@@ -162,7 +162,8 @@ for (const route of ROUTES) {
       const failed = [];
       if (measured.theme !== theme) failed.push(`theme is ${measured.theme}`);
       if (measured.overflow > 0) failed.push(`overflows by ${measured.overflow}px`);
-      if (!measured.fontLoaded) failed.push("font not loaded");
+      if (!measured.fontLoaded || !measured.font.includes("Geist Mono"))
+        failed.push("font not loaded");
       if (errors.length > 0 && !route.overlay) failed.push("browser errors");
       if (!route.overlay && response?.status() !== (route.status ?? 200))
         failed.push(`status ${response?.status()}`);
@@ -234,5 +235,6 @@ if (!only) {
 }
 const bad = manifest.pages.filter((page) => page.failed.length > 0);
 console.log(`${manifest.pages.length} shots, ${bad.length} failed`);
+if (manifest.pages.length === 0) console.log(`no route's name starts with "${only}"`);
 for (const page of bad) console.log(page.file, page.failed.join("; "), page.errors.join(" | "));
-process.exit(bad.length > 0 ? 1 : 0);
+process.exit(bad.length > 0 || manifest.pages.length === 0 ? 1 : 0);

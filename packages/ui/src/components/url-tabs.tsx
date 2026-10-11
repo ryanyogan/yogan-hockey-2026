@@ -7,12 +7,13 @@ import { navItemVariants } from "./nav-item";
  * too long for the screen scrolls sideways inside its own strip.
  *
  * Exported for a set of choices that is not links (the game page's radios) and looks the same:
- * `tabStrip` on what holds them, `tabCell` beside `navItemVariants` on each.
+ * `tabStrip` on what holds them, `tabCell` beside `navItemVariants` on each. The first cell is
+ * the first of its element, not the first child: a fieldset's first child is its legend.
  */
 const tabStrip =
   "flex flex-wrap max-md:w-full max-md:flex-nowrap max-md:overflow-x-auto max-md:border max-md:border-rule";
 const tabCell =
-  "max-md:flex max-md:min-h-11 max-md:flex-auto max-md:items-center max-md:justify-center max-md:whitespace-nowrap max-md:border-rule max-md:border-l max-md:py-0 max-md:text-[13px] max-md:first:border-l-0";
+  "max-md:flex max-md:min-h-11 max-md:flex-auto max-md:items-center max-md:justify-center max-md:whitespace-nowrap max-md:border-rule max-md:border-l max-md:py-0 max-md:text-[13px] max-md:first-of-type:border-l-0";
 
 type UrlTab = { value: string; label: ReactNode; href: string };
 

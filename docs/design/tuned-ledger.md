@@ -1,4 +1,6 @@
-# The tuned ledger: prototype for approval (#128, #129)
+# The tuned ledger: the approved prototype (#128, #129)
+
+> **Approved by Ryan in #129 on 2026-10-11.** He named no typeface, so the recommendation below stands: Geist Mono at Medium (500 body, 700 bold). This prototype and its screenshots are the visual target for the production UI. Its colours, type and spacing are in production since #138 ([approved-look.md](approved-look.md)); the tab bar is #139, rules and padding #140, the rink #141 to #143. The rest of this page is as it was written for the approval.
 
 This is a tuning of the ledger design that is in production today ([original-restored.md](original-restored.md)), not a new direction. It stays monospace throughout, with ruled tables, square corners, the paper and slate themes and the desktop sidebar. It is a prototype only: production is unchanged until Ryan approves it in #129, and its screenshots then become the visual target for the production UI tickets.
 

@@ -97,6 +97,13 @@ for (const path of PATHS) {
       if (!fonts.every((url) => head.preload.some((href) => url.endsWith(href))))
         failed.push("font not preloaded");
       if (before?.loaded) failed.push("the held-back font had already loaded");
+      // A ledger that had not been drawn when the font was still held back measured nothing.
+      if (
+        before != null &&
+        (before.cells.length === 0 || before.cells.length !== after.cells.length)
+      ) {
+        failed.push("no ledger row to measure before the swap");
+      }
       results.push({
         path,
         width: Number(width),

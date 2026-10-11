@@ -24,7 +24,7 @@ function Menu() {
       onOpenChange={(next) => setOpenedAt(next ? location : null)}
     >
       <Dialog.Trigger
-        className={`${buttonVariants({ variant: "ghost", size: "inline" })} min-h-11 px-2`}
+        className={buttonVariants({ variant: "ghost", size: "touch" })}
         aria-label={open ? "Close menu" : "Open menu"}
       >
         {open ? "close" : "menu"}

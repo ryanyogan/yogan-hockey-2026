@@ -17,7 +17,7 @@ export default function GlobalError() {
       <body>
         <title>Not answering · Yogan Hockey</title>
         <main data-slot="global-error" className="space-y-4 p-4 md:p-6">
-          <a href="/" className="block font-strong text-sm">
+          <a href="/" className="block font-strong text-wordmark">
             YOGAN/HOCKEY
           </a>
           <Section>

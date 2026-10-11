@@ -6,7 +6,7 @@ Ryan approved the tuned ledger prototype in #129 on 2026-10-11. He named no type
 
 - **Colours**: secondary text is three solid colours a theme (`text-note`, `text-label`, `text-aside`) in place of the foreground at an opacity, and the rules are the prototype's three (`border-border` under a row, `border-rule-head` under a column header, `border-rule` framing the shell). The live red, the live tint and the highlight are the prototype's too.
 - **Type**: Geist Mono at 500, with 400 for asides and counts and 700 for titles, winners and scores. 13px on a 20px line, 11px labels and 16px scores at a desk; 15px on 22, 12px labels and 20px scores on a phone (below 768px).
-- **Spacing**: the one scale, 4, 8, 12, 16, 24, 32 and 48px. A ledger row is 33px at a desk and 45px on a phone in every table (the "compact" density is gone), a game row on a phone 55px, the score strip 36 and 56px.
+- **Spacing**: the one scale, 4, 8, 12, 16, 24, 32 and 48px. A one-line ledger row is 33px at a desk and 45px on a phone in every table (the "compact" density is gone), a game row on a phone 55px, the score strip 36 and 56px. A row with a second line under its value is taller by that line: a favorite player's on a phone is 61px, and a team's record row 67px where its standing wraps.
 - **Phone targets that are type and spacing**: every ledger row, every tab (a ruled strip of 44px cells), the top bar's two buttons, a favorite's heart and a header link's reach. The bottom tab bar is #139.
 
 All of it is in `packages/ui/src/theme.css` and the components beside it.
@@ -57,7 +57,7 @@ Placeholders are built from the ledger's own parts, so they changed with it: a s
 
 ## Contrast
 
-Read from the rendered pages (`approved-look/contrast.json`: the computed colour of an element that draws each role, on Home and on the sample slate, at both widths), beside the prototype's recorded values. Every pair is the same colour and the same ratio.
+Read from the rendered pages (`approved-look/contrast.json`: the computed colour of an element that draws each role, on Home and on the sample slate, at whichever of the two widths draws it: the note column is a desk's, and the red marker is on the sample slate, Home's recorded games being still to come), beside the prototype's recorded values. Every pair is the same colour and the same ratio.
 
 | Theme | Use | Prototype | Ratio | Production | Ratio |
 | --- | --- | --- | ---: | --- | ---: |
@@ -98,7 +98,7 @@ Measured by `node scripts/font-load.mjs` on a production build in fixture mode (
 - **The heart keeps its drawn, square-cornered shape** and takes the prototype's size (a score's: 16px, 20px on a phone) and a 44px reach on a phone. The prototype's rounded heart is a different glyph, not a colour, type or spacing change.
 - **A team's mark is 1.2 times its type** (15.6px in a row, 18px on a phone), as the prototype draws it, where it was 14px. Its files are now chosen 28, 42 and 84px for 1x, 2x and 3x screens, so the larger mark is not drawn from too small a file.
 - **The rule beside the sidebar and the rule over the footer** are drawn as the prototype has them, since each is one class. The audit of every rule's ends is still #140.
-- **The words on the rink keep their sizes**, the caption under it its filled box, and the phone keeps its menu: the rink is #141 to #143's and the tab bar #139's. The rink and game-stream components changed only where a class named a colour, size or weight token.
+- **The words on the rink are not brought to the prototype's sizes**, the caption under it keeps its filled box, and the phone keeps its menu: the rink is #141 to #143's and the tab bar #139's. The rink and game-stream components changed only where a class named a colour, size or weight token, which makes the rink's 10px words the small size (11px, 12px on a phone) where the prototype has 12px.
 - **The rank column of a full standings table keeps its 32px minimum**, 8px wider than the prototype's, so the teams of one table start level with the next's when a table reaches rank 10 (the league and wild card views, which the prototype does not draw). Home's shorter tables have the prototype's widths.
 - **Between 768 and 1280px a team's record stays under its abbreviation** in the small size, as production had it; the prototype is not drawn at that width and the record does not fit beside a favorite's star there.
 - **A player's name in his page's header is the score size** (16px, 20px on a phone), where it was 16px beside 13px text.

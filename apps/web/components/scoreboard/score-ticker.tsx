@@ -34,7 +34,7 @@ function Side({
   return (
     <span className={`${side.winner ? "font-strong" : ""} ${className}`}>
       <span className="whitespace-nowrap">
-        {/* The gap is 4px on a phone: a cell's 68px then holds the mark, "WSH" and "10". */}
+        {/* The gap is 4px on a phone: a cell's 72px then holds the mark, "WSH" and "10". */}
         <TeamMark teamId={side.id} eager className="mr-1 md:mr-[0.45em]" />
         <span data-slot="team">{side.abbreviation}</span>
       </span>

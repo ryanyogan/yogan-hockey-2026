@@ -31,6 +31,14 @@ test("the shell renders, switches theme, and its phone menu closes on navigation
   // The theme follows the operating system until the visitor chooses, then keeps the choice.
   const body = page.locator("body");
   await expect(body).toHaveCSS("background-color", DARK_BACKGROUND);
+  // The browser's own bars take the colour of the page shown: the operating system's theme
+  // until the visitor chooses, then the choice, though the operating system still asks for dark.
+  const barColors = page.locator('meta[name="theme-color"]');
+  await expect(barColors).toHaveCount(2);
+  await expect(page.locator('meta[name="theme-color"][media*="dark"]')).toHaveAttribute(
+    "content",
+    "#0f172a",
+  );
   // A press before the page has hydrated does nothing, so press until one lands.
   await expect(async () => {
     await sidebar.getByRole("button", { name: /^(dark|light) mode$/ }).click();
@@ -38,6 +46,29 @@ test("the shell renders, switches theme, and its phone menu closes on navigation
   }).toPass();
   await page.reload();
   await expect(body).toHaveCSS("background-color", LIGHT_BACKGROUND);
+  for (const color of await barColors.all())
+    await expect(color).toHaveAttribute("content", "#fbfaf7");
+
+  // The home screen: a manifest Chrome can read, and every icon it and the page name.
+  await expect(page.locator('meta[name="viewport"]')).toHaveAttribute(
+    "content",
+    /viewport-fit=cover/,
+  );
+  const manifestHref = await page.locator('link[rel="manifest"]').getAttribute("href");
+  const manifest = await page.request.get(manifestHref ?? "");
+  expect(manifest.headers()["content-type"]).toBe("application/manifest+json");
+  const { display, icons } = await manifest.json();
+  expect(display).toBe("standalone");
+  const touchIcon = await page.locator('link[rel="apple-touch-icon"]').getAttribute("href");
+  for (const src of [
+    ...icons.map((icon: { src: string }) => icon.src),
+    touchIcon,
+    "/favicon.ico",
+  ]) {
+    const icon = await page.request.get(src);
+    expect(icon.status(), src).toBe(200);
+    expect(icon.headers()["content-type"], src).toMatch(/^image\//);
+  }
 
   // Phone: the sidebar gives way to a top bar whose menu closes when a link is followed.
   await page.setViewportSize({ width: 390, height: 844 });

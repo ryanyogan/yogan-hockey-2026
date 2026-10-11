@@ -16,6 +16,7 @@
     "test": "vitest run",
     "test:e2e": "playwright test",
     "team-marks": "node scripts/team-marks.ts",
+    "app-icons": "node scripts/app-icons.ts",
     "prototype:look": "node prototypes/tuned-ledger/serve.mjs",
     "record:fixtures": "node packages/espn/scripts/record-fixtures.ts",
     "check:espn": "node packages/espn/scripts/check-live.ts",
@@ -25,6 +26,8 @@
     "@biomejs/biome": "2.5.15",
     "@playwright/test": "1.63.0",
     "@types/node": "26.6.4",
+    "@vite-pwa/assets-generator": "2.0.0",
+    "geist": "1.7.2",
     "sharp": "0.35.5",
     "typescript": "7.0.2",
     "vitest": "4.1.11"

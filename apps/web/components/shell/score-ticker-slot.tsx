@@ -14,7 +14,10 @@ import { ScoreboardGate } from "../scoreboard/scoreboard-provider";
  */
 export function ScoreTickerSlot() {
   return (
-    <div data-slot="score-ticker" className="border-rule border-b empty:hidden">
+    <div
+      data-slot="score-ticker"
+      className="border-rule border-b pr-(--safe-right) pl-(--safe-left) empty:hidden md:pl-0"
+    >
       <ScoreboardGate fallback={<div aria-hidden="true" className={TICKER_STRIP_HEIGHT} />}>
         <ScoreTicker />
       </ScoreboardGate>

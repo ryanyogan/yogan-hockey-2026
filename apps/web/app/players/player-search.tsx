@@ -82,11 +82,15 @@ export function PlayerSearch({ initial }: { initial: Search }) {
 
   return (
     <>
-      <search className="block px-2">
+      {/*
+        The box starts at the column's edge, where the rules of the ledgers under it start, and
+        its label and its text stand 8px in, as a ledger's header and cells do.
+      */}
+      <search className="block">
         <form action="/players" method="get" onSubmit={submit}>
           <label
             htmlFor={inputId}
-            className="block py-1 font-label text-label text-small uppercase tracking-label"
+            className="block px-2 py-1 font-label text-label text-small uppercase tracking-label"
           >
             player name
           </label>

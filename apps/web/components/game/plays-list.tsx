@@ -51,6 +51,12 @@ type ListProps = {
   onSelect: (playId: string) => void;
 };
 
+/**
+ * What holds a list of plays: the heavier rule a ledger has under its column headers, across the
+ * whole column of the page, which each row's own rule then ends level with.
+ */
+const PLAY_ROWS = "border-rule-head border-t";
+
 /** The plays, newest first, in two columns where there is room for them. */
 export function PlaysList({
   header,
@@ -65,7 +71,7 @@ export function PlaysList({
   if (plays.length === 0) return <p className="text-label">No plays yet.</p>;
   return (
     <div data-slot="plays-list" className="@container">
-      <div className="grid gap-x-8 border-rule-head border-t @3xl:grid-cols-2">
+      <div className={`grid gap-x-6 @3xl:grid-cols-2 ${PLAY_ROWS}`}>
         {plays.toReversed().map((play) => (
           <PlayRow
             key={play.id}
@@ -141,22 +147,10 @@ export function ScoringSummary({
   }
   const { home, away } = header;
   return (
-    <div data-slot="scoring-summary" className="max-w-4xl">
-      {goals.map((play) => (
-        <PlayRow
-          key={play.id}
-          header={header}
-          play={play}
-          focused={play.id === focusId}
-          picked={play.id === selectedId}
-          onSelect={onSelect}
-          note={`${away.abbreviation} ${play.awayScore}, ${home.abbreviation} ${play.homeScore}`}
-        />
-      ))}
-      {shootout.length > 0 && (
-        <>
-          <h3 className="mt-4 mb-1 font-strong uppercase">Shootout</h3>
-          {shootout.map((play) => (
+    <div data-slot="scoring-summary">
+      {goals.length > 0 && (
+        <div className={PLAY_ROWS}>
+          {goals.map((play) => (
             <PlayRow
               key={play.id}
               header={header}
@@ -164,8 +158,27 @@ export function ScoringSummary({
               focused={play.id === focusId}
               picked={play.id === selectedId}
               onSelect={onSelect}
+              note={`${away.abbreviation} ${play.awayScore}, ${home.abbreviation} ${play.homeScore}`}
             />
           ))}
+        </div>
+      )}
+      {shootout.length > 0 && (
+        <>
+          {/* A section's title inside a tab: a title's 8px over its rows, 24px under the goals. */}
+          <h3 className="mb-2 font-strong uppercase not-first:mt-6">Shootout</h3>
+          <div className={PLAY_ROWS}>
+            {shootout.map((play) => (
+              <PlayRow
+                key={play.id}
+                header={header}
+                play={play}
+                focused={play.id === focusId}
+                picked={play.id === selectedId}
+                onSelect={onSelect}
+              />
+            ))}
+          </div>
         </>
       )}
     </div>

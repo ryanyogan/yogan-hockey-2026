@@ -59,7 +59,10 @@ export function GameSkeleton() {
     <div data-slot="game-skeleton">
       <div className="@container" aria-hidden="true">
         <Rink plays={[]} focus={null} />
-        <p className="mt-1 min-h-10 bg-secondary px-2 py-0.5 leading-[18px] @2xl:hidden">
+        <p
+          data-slot="rink-caption-placeholder"
+          className="mt-1 min-h-10 bg-secondary px-2 py-0.5 leading-[18px] @2xl:hidden"
+        >
           <SkeletonBar width="lg" />
         </p>
       </div>

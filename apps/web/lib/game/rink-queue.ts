@@ -14,6 +14,9 @@ export type RinkScene = {
   /** The plays so far, in the game's order: all of `game` but in a Replay short of its end. */
   plays: readonly Play[];
   homeTeamId: string;
+  /** Each team's colour as ESPN sends it, which a goal tints its end with. */
+  homeColour?: string | null;
+  awayColour?: string | null;
   /** The play ringed and captioned. */
   focusId: string | null;
   /**
@@ -57,6 +60,23 @@ export function queuePace(queue: RinkQueue): number {
   return 1 + queue.waiting.length;
 }
 
+/** The figure each side's score is held at, or null for a side showing the header's own. */
+export type HeldScores = { home: number | null; away: number | null };
+
+/**
+ * The score a goal holds back while it waits its turn. The header already counts a goal that
+ * arrived behind another cue (a save in the same poll), so until its sequence plays its side
+ * stays on the score before it: the earliest of that side's goals waiting, each of which rolls
+ * the score on when its turn comes.
+ */
+export function heldScores(queue: RinkQueue): HeldScores {
+  const held: HeldScores = { home: null, away: null };
+  for (const cue of queue.waiting) {
+    if (cue.kind === "goal" && cue.score != null) held[cue.side] ??= cue.score.from;
+  }
+  return held;
+}
+
 export type RinkQueueAction =
   /** The page rendered: what it shows now. */
   | { type: "scene"; scene: RinkScene }
@@ -71,12 +91,13 @@ export type RinkQueueAction =
  * - A picked play (a Replay's playhead, a clicked tick) is played at once in place of whatever
  *   was on the ice, whether it is later or earlier in the game than the last.
  * - A picked play with nothing to draw clears the ice, and so does letting go of a picked play.
- *   Following a game, the last shot stays on the ice as it ended until the next one arrives.
+ *   Following a game, the last shot stays on the ice as it ended until the next one arrives; a
+ *   goal stays only until the game has gone on to another play.
  * - A play taken back or revised by ESPN leaves nothing stale.
  */
 export function rinkQueueReducer(queue: RinkQueue, action: RinkQueueAction): RinkQueue {
   if (action.type === "finished") {
-    return queue.playing && queue.current === action.cue ? advance(queue) : queue;
+    return queue.playing && queue.current === action.cue ? movedOn(advance(queue)) : queue;
   }
   const before = queue.scene;
   const after = action.scene;
@@ -98,7 +119,23 @@ export function rinkQueueReducer(queue: RinkQueue, action: RinkQueueAction): Rin
     const cue = cueFor(after, play.id);
     if (cue) cues.push(cue);
   }
-  return enqueue(revised, cues);
+  return movedOn(enqueue(revised, cues));
+}
+
+/**
+ * A goal that has played out is taken off the ice once the game has gone on to another play:
+ * its lamp, its tint and "GOAL" over the clock are news, not a mark to leave through an
+ * intermission. (A shot's line says nothing that goes stale, so the last shot stays.)
+ */
+function movedOn(queue: RinkQueue): RinkQueue {
+  const { current, scene } = queue;
+  const stale =
+    !queue.playing &&
+    current?.kind === "goal" &&
+    scene != null &&
+    !scene.picked &&
+    scene.focusId !== current.playId;
+  return stale ? { ...queue, current: CLEAR } : queue;
 }
 
 function sameScene(a: RinkScene, b: RinkScene): boolean {
@@ -127,7 +164,7 @@ function cueFor(scene: RinkScene, playId: string | null | undefined): RinkAnimat
     play.teamId == null
       ? null
       : attackedEnd(scene.game, scene.homeTeamId, play.teamId, play.period);
-  return describePlay(play, scene.plays[index - 1] ?? null, attacks);
+  return describePlay(play, scene.plays[index - 1] ?? null, attacks, scene);
 }
 
 const sameCue = (a: RinkCue, b: RinkCue) => JSON.stringify(a) === JSON.stringify(b);

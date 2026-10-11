@@ -1,4 +1,5 @@
 import type { Play } from "@yogan-hockey/schemas";
+import { type GoalSequence, type GoalTeams, goalSequence } from "./goal";
 import { RINK, type RinkEnd, type RinkPoint, rinkPoint } from "./rink";
 
 /** A shot's line on the drawing, in the drawing's own feet. */
@@ -19,12 +20,12 @@ type ShotLine = {
  * What the rink plays for one play: a description with no drawing in it, which `playRinkCue`
  * (`components/game/rink-player.ts`) turns into a GSAP timeline.
  *
- * One member per kind of thing seen. The goal sequence (#142) adds what a goal says besides its
- * line to the `goal` member.
+ * One member per kind of thing seen. A goal's says what its sequence needs besides the line
+ * (`GoalSequence`, `lib/game/goal.ts`); a penalty's has no line.
  */
 export type RinkAnimation =
-  /** Into the net. */
-  | ({ kind: "goal" } & ShotLine)
+  /** Into the net, and then the lamp, the tint, the score and the scorer. */
+  | ({ kind: "goal" } & ShotLine & GoalSequence)
   /** Stopped at the edge of the crease. */
   | ({ kind: "save" } & ShotLine)
   /** Wide of the post, to the end boards. */
@@ -52,13 +53,16 @@ const MISS = { short: 3, wide: 7 } as const;
  *
  * `attacks` is the end the play's team shoots at in its period (`attackedEnd`), which sends a
  * shot from a team's own half to the right net; without it the shot is at the nearer net.
- * `previous` is the play before this one in the game: nothing a shot's line needs, and what the
- * goal sequence (#142) reads the score before the goal from.
+ * `previous` is the play before this one in the game: nothing a shot's line needs, and what a
+ * goal's sequence reads the score before the goal from. `teams` says which side is at home and
+ * each side's colour, which only a goal needs; the queue always gives it, and without it a goal
+ * is taken for the away side's and has no tint.
  */
 export function describePlay(
   play: Play,
-  _previous: Play | null,
+  previous: Play | null,
   attacks: RinkEnd | null = null,
+  teams: GoalTeams = NO_TEAMS,
 ): RinkAnimation | null {
   if (play.coordinate == null) return null;
   if (play.penalty) return { kind: "penalty", playId: play.id, at: rinkPoint(play.coordinate) };
@@ -75,8 +79,12 @@ export function describePlay(
   const end: RinkEnd = attacks ?? (from.x >= 0 ? "right" : "left");
   const side = end === "right" ? 1 : -1;
   const distance = Math.hypot(from.x - side * RINK.goalLine, from.y);
-  return { kind, playId: play.id, end, from, to: stopsAt(kind, from, side, distance), distance };
+  const line = { playId: play.id, end, from, to: stopsAt(kind, from, side, distance), distance };
+  if (kind === "goal") return { kind, ...line, ...goalSequence(play, previous, teams) };
+  return { kind, ...line };
 }
+
+const NO_TEAMS: GoalTeams = { homeTeamId: "" };
 
 function stopsAt(kind: ShotKind, from: RinkPoint, side: 1 | -1, distance: number): RinkPoint {
   const netX = side * RINK.goalLine;

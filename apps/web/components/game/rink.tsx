@@ -16,6 +16,7 @@ const {
   creaseRadius,
   netDepth,
   netHalfWidth,
+  lampRadius,
   margin,
 } = RINK;
 
@@ -93,9 +94,64 @@ function Goal({ side }: { side: 1 | -1 }) {
         height={2 * netHalfWidth}
         fill="none"
         strokeWidth={0.5}
-        className="stroke-aside"
+        className="stroke-aside data-lit:stroke-live data-lit:[stroke-width:1]"
       />
     </g>
+  );
+}
+
+/**
+ * The goal lamp on the boards behind a net, and the ring it throws when it comes on. Dark until a
+ * goal's sequence lights it (`data-lit`, set by `rink-player.ts`), as the net is.
+ */
+function GoalLamp({ side }: { side: 1 | -1 }) {
+  const end = side > 0 ? "right" : "left";
+  return (
+    <>
+      <circle
+        data-slot="rink-lamp-glow"
+        data-end={end}
+        cx={side * halfLength}
+        cy={0}
+        r={lampRadius}
+        fill="none"
+        opacity={0}
+        className="stroke-live"
+      />
+      <circle
+        data-slot="rink-lamp"
+        data-end={end}
+        cx={side * halfLength}
+        cy={0}
+        r={lampRadius}
+        strokeWidth={0.4}
+        className="fill-background stroke-aside data-lit:fill-live data-lit:stroke-live"
+      />
+    </>
+  );
+}
+
+/**
+ * An end zone, from its blue line to the boards, which a goal floods with the scoring team's
+ * colour. The player gives it the colour as `--tint` and `--tint-dark`, so the theme picks; a
+ * team with no colour gets the goal's red. Drawn before `PowerPlayZones`, whose rules read it.
+ */
+function EndTint({ side }: { side: 1 | -1 }) {
+  const [line, boards, turn] = [side * blueLine, side * halfLength, side * (halfLength - corner)];
+  const sweep = side > 0 ? 1 : 0;
+  return (
+    <path
+      data-slot="rink-tint"
+      data-end={side > 0 ? "right" : "left"}
+      d={[
+        `M ${line} ${-halfWidth} H ${turn}`,
+        `A ${corner} ${corner} 0 0 ${sweep} ${boards} ${corner - halfWidth}`,
+        `V ${halfWidth - corner}`,
+        `A ${corner} ${corner} 0 0 ${sweep} ${turn} ${halfWidth} H ${line} Z`,
+      ].join(" ")}
+      opacity={0}
+      className="[fill:var(--tint,var(--live))] dark:[fill:var(--tint-dark,var(--live))]"
+    />
   );
 }
 
@@ -127,6 +183,16 @@ export type RinkPowerPlay = { end: RinkEnd; style: CSSProperties };
 
 /** Ruled lines this far apart, in feet, at 45 degrees. */
 const HATCH = 5;
+
+/**
+ * A goal's tint has an end to itself: while one is on (`data-lit` on that end's `EndTint`, set by
+ * the player), the ruling of the same end stands aside, and comes back when the goal is cleared
+ * if the advantage is still on (a major, or the second of two minors).
+ */
+const UNDER_A_GOAL = {
+  left: "[[data-slot=rink-tint][data-end=left][data-lit]~g_&]:opacity-0",
+  right: "[[data-slot=rink-tint][data-end=right][data-lit]~g_&]:opacity-0",
+} as const;
 
 /**
  * The power play on the ice: the zone the team with the advantage attacks, ruled in its colour
@@ -173,7 +239,7 @@ function PowerPlayZones({ powerPlay }: { powerPlay: RinkPowerPlay | null }) {
           height={2 * halfWidth}
           fill={`url(#${hatch})`}
           clipPath={`url(#${boards})`}
-          className="opacity-0 transition-opacity duration-500 data-on:opacity-45 motion-reduce:transition-none dark:data-on:opacity-60"
+          className={`opacity-0 transition-opacity duration-500 data-on:opacity-45 motion-reduce:transition-none dark:data-on:opacity-60 ${UNDER_A_GOAL[end]}`}
         />
       ))}
     </g>
@@ -219,6 +285,8 @@ export function Rink({
         rx={corner}
         className="fill-white stroke-sky-900/35 dark:fill-sky-200/[0.04] dark:stroke-sky-200/35"
       />
+      <EndTint side={-1} />
+      <EndTint side={1} />
       <PowerPlayZones powerPlay={powerPlay} />
       <g fill="none" className="stroke-red-600 dark:stroke-red-500">
         <line data-line="centre" y1={-halfWidth} y2={halfWidth} strokeOpacity={0.6} />
@@ -269,6 +337,9 @@ export function Rink({
       ))}
       {/* Keyed, so each focus is a dot of its own: an animation may be part-way through the last. */}
       {focus != null && <Mark key={focus.id} play={focus} focused />}
+      {/* Over the dots: a play against the end boards must not hide the lamp. */}
+      <GoalLamp side={-1} />
+      <GoalLamp side={1} />
       <Effects />
     </svg>
   );

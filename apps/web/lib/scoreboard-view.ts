@@ -99,6 +99,20 @@ export function tickerGames(games: ScoreboardGame[]): ScoreboardGame[] {
   return [...live, ...upcoming, ...final, ...postponed];
 }
 
+/**
+ * Games in the order they were last drawn in: `held` is that order's ids, `games` the slate as it
+ * now is, in the order it would take drawn afresh. A game keeps its place though it has gone live
+ * or become a favorite's, so nothing moves under a visitor who is reading; a game new to the slate
+ * goes after the rest and one gone from it is dropped. With nothing held it is `games` as given.
+ */
+export function heldOrder<T extends { id: string }>(held: readonly string[], games: readonly T[]) {
+  const place = new Map(held.map((id, index) => [id, index]));
+  // The sort is stable, so the games with no place keep the order they came in, after the rest.
+  return games.toSorted(
+    (a, b) => (place.get(a.id) ?? held.length) - (place.get(b.id) ?? held.length),
+  );
+}
+
 /** The later of two times (ISO, UTC), either of which may be missing. */
 export function laterOf(a: string | null, b: string | null): string | null {
   if (a == null || b == null) return a ?? b;

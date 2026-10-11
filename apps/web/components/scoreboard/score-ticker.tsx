@@ -9,6 +9,7 @@ import {
   gameHref,
   gameStatusLine,
   hasScore,
+  heldOrder,
   type StripReach,
   stripReach,
   TICKER_STRIP_HEIGHT,
@@ -124,6 +125,23 @@ function scrollSidewaysByWheel(strip: HTMLElement | null) {
   return () => strip.removeEventListener("wheel", onWheel);
 }
 
+/**
+ * The games in the order the ticker first drew them on this page, for as long as the visitor
+ * stays on it (`heldOrder`): a favorite read from the browser after the first paint is marked
+ * where its game stands, and a game that goes live is tinted where it stands. `page` names the
+ * slate and the address; when either changes the order is taken afresh from `fresh`, since going
+ * to another page is the visitor's own act. A page whose slate first comes down the socket draws
+ * nothing until then, so its first order already has the favorites in the lead.
+ */
+function useHeldOrder(page: string, fresh: ScoreboardGame[]): ScoreboardGame[] {
+  const [held, setHeld] = useState<{ page: string; ids: string[] }>({ page, ids: [] });
+  const ordered = heldOrder(held.page === page ? held.ids : [], fresh);
+  const ids = ordered.map((game) => game.id);
+  // Kept while rendering, not in an effect: the order drawn is the order held.
+  if (held.page !== page || held.ids.join() !== ids.join()) setHeld({ page, ids });
+  return ordered;
+}
+
 const NOTHING_HIDDEN: StripReach = { before: false, after: false, hidden: 0 };
 
 /**
@@ -131,8 +149,8 @@ const NOTHING_HIDDEN: StripReach = { before: false, after: false, hidden: 0 };
  * arriving, a window resized) and as its entries change. `order` is the entries, in order.
  *
  * A new order also sends the strip back to its start. A strip that snaps keeps hold of the entry
- * it had snapped to, so when a favorite or a game just begun took the lead it did so out of view,
- * to the left of where the strip stood.
+ * it had snapped to, so when another page's order puts a favorite or a game just begun in the lead
+ * it would do so out of view, to the left of where the strip stood.
  */
 function useStripReach(order: string) {
   const strip = useRef<HTMLUListElement>(null);
@@ -205,8 +223,11 @@ export function ScoreTicker() {
   const pathname = usePathname();
   // Open on the page it was opened on: going anywhere else closes it.
   const [openOn, setOpenOn] = useState<string | null>(null);
-  // Favorite teams' games lead the whole strip, whatever their status.
-  const ordered = favoritesFirst(tickerGames(games), favoriteTeamIds);
+  // Favorite teams' games lead the whole strip, whatever their status, in an order taken once.
+  const ordered = useHeldOrder(
+    `${date} ${pathname}`,
+    favoritesFirst(tickerGames(games), favoriteTeamIds),
+  );
   const { strip, reach } = useStripReach(ordered.map((game) => game.id).join());
   // One function for the strip's life, so the wheel's listener is added once.
   const stripRef = useCallback(

@@ -6,6 +6,7 @@ import {
   gameWhere,
   hasScore,
   heardAtFrom,
+  heldOrder,
   laterOf,
   slateSections,
   stripReach,
@@ -128,6 +129,28 @@ test("the ticker leads with what is on, then what is to come, then what is over"
     "off",
   ]);
   expect(tickerGames([])).toEqual([]);
+});
+
+test("the ticker holds the order it drew: a game stays put, a new one goes last, one gone is dropped", () => {
+  const drawn = [game("a"), game("b"), game("c")];
+  // Nothing held yet: the order given.
+  expect(ids(heldOrder([], drawn))).toEqual(["a", "b", "c"]);
+  // "c" went live and a favorite arrived, so a fresh order would lead with it. It stays.
+  const nowLive = game("c", { status: "live" });
+  const held = heldOrder(["a", "b", "c"], [nowLive, game("a"), game("b")]);
+  expect(ids(held)).toEqual(["a", "b", "c"]);
+  // The games are the ones given, as they now are.
+  expect(held[2]).toBe(nowLive);
+  // A game new to the slate is appended, in the order given.
+  expect(ids(heldOrder(["a", "b"], [game("e"), game("a"), game("d"), game("b")]))).toEqual([
+    "a",
+    "b",
+    "e",
+    "d",
+  ]);
+  // A game gone from the slate is dropped.
+  expect(ids(heldOrder(["a", "b", "c"], [game("c"), game("a")]))).toEqual(["a", "c"]);
+  expect(heldOrder(["a"], [])).toEqual([]);
 });
 
 test("a page was last heard from at the later of the state's change and the last quiet poll", () => {

@@ -3,5 +3,11 @@
   "compilerOptions": {
     "types": ["node"]
   },
-  "include": ["*.config.ts", "e2e"]
+  "include": [
+    "*.config.ts",
+    "e2e",
+    "scripts/vitest.config.ts",
+    "scripts/performance",
+    "scripts/measure-performance.ts"
+  ]
 }

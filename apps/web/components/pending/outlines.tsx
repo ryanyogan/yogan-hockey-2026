@@ -1,4 +1,6 @@
-import { SectionSkeleton } from "@yogan-hockey/ui/components/skeleton";
+import { navItemVariants } from "@yogan-hockey/ui/components/nav-item";
+import { SectionSkeleton, SkeletonBar } from "@yogan-hockey/ui/components/skeleton";
+import { tabCell, tabStrip } from "@yogan-hockey/ui/components/url-tabs";
 import type { ReactNode } from "react";
 import { RINK } from "../../lib/game/rink";
 import type { Outline } from "../../lib/pending-route";
@@ -36,6 +38,26 @@ const RINK_BOX = {
   aspectRatio: `${RINK.halfLength + RINK.margin} / ${RINK.halfWidth + RINK.margin}`,
 };
 
+/**
+ * The room a tab bar takes: `UrlTabs`' own strip and cells with a bar where each label would be,
+ * so it is a tab bar's height at every width and what is under it starts where it will.
+ */
+function TabsRoom({ cells }: { cells: number }) {
+  return (
+    <div aria-hidden="true" className={tabStrip}>
+      {Array.from({ length: cells }, (_, cell) => (
+        // biome-ignore lint/suspicious/noArrayIndexKey: placeholders with no identity or order
+        <span key={cell} className={`${navItemVariants({ current: false })} ${tabCell}`}>
+          <SkeletonBar width="md" />
+        </span>
+      ))}
+    </div>
+  );
+}
+
+/** The penalty box's room under the rink: a heading and two rows, 74px (`game/penalty-box.tsx`). */
+const PENALTY_BOX_ROOM = "mt-1 h-[74px]";
+
 /** The line a layout draws first: who the team, game or player is. */
 function Identity({ label }: { label: string }) {
   return (
@@ -50,7 +72,10 @@ function Team({ children }: { children: ReactNode }) {
         <Identity label="Team" />
         <NextGameSkeleton />
       </div>
-      {children}
+      <div className="space-y-2">
+        <TabsRoom cells={3} />
+        {children}
+      </div>
     </>
   );
 }
@@ -75,7 +100,18 @@ const PAGES: Record<Outline, () => ReactNode> = {
       <SectionSkeleton title="Standings" rows={8} columns={FIGURES} />
     </>
   ),
-  standings: () => <SectionSkeleton title="NHL" rows={16} columns={FIGURES} />,
+  standings: () => (
+    <>
+      <div className="space-y-2">
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+          <h1 className="font-strong uppercase">NHL</h1>
+          <TabsRoom cells={2} />
+        </div>
+        <TabsRoom cells={4} />
+      </div>
+      <SectionSkeleton label="Standings" rows={16} columns={FIGURES} />
+    </>
+  ),
   live: () => <LiveSkeleton />,
   players: () => <SectionSkeleton title="Players" rows={3} columns={FIGURES} />,
   player: () => (
@@ -86,16 +122,32 @@ const PAGES: Record<Outline, () => ReactNode> = {
     </>
   ),
   "player-games": () => PAGES.player(),
+  // `GameSkeleton`'s blocks in its order, with a box where it draws the rink: the matchup is
+  // written on the rink, so nothing stands above it. Then the penalty box's room, the caption
+  // a narrow page has, the timeline's band and its hint, and the plays.
   game: () => (
-    <>
-      <Identity label="Game" />
-      <div aria-hidden="true" className="bg-secondary" style={RINK_BOX} />
-      <SectionSkeleton
-        label="The game"
-        rows={6}
-        columns={[{ width: "sm" }, { width: "sm" }, { width: "xl", className: "w-full" }]}
-      />
-    </>
+    <div>
+      <div className="@container" aria-hidden="true">
+        <div className="bg-secondary" style={RINK_BOX} />
+        <div className={PENALTY_BOX_ROOM} />
+        <p className="mt-1 min-h-10 bg-secondary px-2 py-0.5 leading-[18px] @2xl:hidden">
+          <SkeletonBar width="lg" />
+        </p>
+      </div>
+      <div className="mt-4" aria-hidden="true">
+        <div className="h-12 border border-rule" />
+        <p className="mt-1">
+          <SkeletonBar width="xl" />
+        </p>
+      </div>
+      <div className="mt-8">
+        <SectionSkeleton
+          label="The game"
+          rows={6}
+          columns={[{ width: "sm" }, { width: "sm" }, { width: "xl", className: "w-full" }]}
+        />
+      </div>
+    </div>
   ),
   "game-tab": () => PAGES.game(),
   "team-schedule": () => (

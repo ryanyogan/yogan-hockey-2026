@@ -7,7 +7,8 @@
       "!packages/db/migrations",
       "!packages/espn/fixtures",
       "!prototypes/tuned-ledger/vendor",
-      "!prototypes/tuned-ledger/data.js"
+      "!prototypes/tuned-ledger/data.js",
+      "!docs/design/approved-look/*.json"
     ]
   },
   "formatter": { "indentStyle": "space", "indentWidth": 2, "lineWidth": 100 },

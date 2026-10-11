@@ -17,13 +17,20 @@ test("the shell renders, switches theme, and its phone menu closes on navigation
   // Desktop: the sidebar, with the wordmark leading home and the places in order.
   const sidebar = page.getByRole("complementary");
   await expect(sidebar.getByRole("link", { name: "YOGAN/HOCKEY" })).toHaveAttribute("href", "/");
-  await expect(sidebar.getByRole("navigation", { name: "Site" }).getByRole("link")).toHaveText([
-    "Home",
-    "Scores",
-    "Standings",
-    "Teams",
-    "Players",
-  ]);
+  // Each place is numbered for the eye; its name is the place alone.
+  const places = sidebar.getByRole("navigation", { name: "Site" }).getByRole("link");
+  await expect(places).toHaveCount(5);
+  for (const [index, name] of ["Home", "Scores", "Standings", "Teams", "Players"].entries())
+    await expect(places.nth(index)).toHaveAccessibleName(name);
+  // Today's slate at a glance, from the page's one Scoreboard socket, leading to the scores.
+  await expect(sidebar.getByRole("link", { name: /^Scores: 9 games, 9 to come$/ })).toHaveAttribute(
+    "href",
+    "/nhl/live",
+  );
+  // The sidebar's first rule is the score strip's, carried across.
+  const ruleUnder = (slot: string) =>
+    page.locator(`[data-slot="${slot}"]`).evaluate((node) => node.getBoundingClientRect().bottom);
+  expect(await ruleUnder("sidebar-head")).toBe(await ruleUnder("score-ticker"));
   await expect(page.getByRole("contentinfo")).toContainText("ESPN");
   await expect(page.locator('[data-slot="score-ticker"]')).toBeAttached();
   await expect(page.getByRole("button", { name: "Open menu" })).toBeHidden();
@@ -41,9 +48,20 @@ test("the shell renders, switches theme, and its phone menu closes on navigation
   );
   // A press before the page has hydrated does nothing, so press until one lands.
   await expect(async () => {
-    await sidebar.getByRole("button", { name: /^(dark|light) mode$/ }).click();
+    await sidebar
+      .getByRole("group", { name: "Theme" })
+      .getByRole("button", { name: "light" })
+      .click();
     await expect(body).toHaveCSS("background-color", LIGHT_BACKGROUND, { timeout: 1000 });
   }).toPass();
+  await expect(sidebar.getByRole("button", { name: "light" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  await expect(sidebar.getByRole("button", { name: "dark" })).toHaveAttribute(
+    "aria-pressed",
+    "false",
+  );
   await page.reload();
   await expect(body).toHaveCSS("background-color", LIGHT_BACKGROUND);
   for (const color of await barColors.all())

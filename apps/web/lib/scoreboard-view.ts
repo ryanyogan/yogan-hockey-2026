@@ -93,6 +93,38 @@ export function slateSections(games: ScoreboardGame[]): SlateSections {
   return sections;
 }
 
+/** How many of a slate's games stand where: the sidebar's rows. `games` is all of them. */
+export type SlateCounts = Record<keyof SlateSections | "games", number>;
+
+export function slateCounts(games: ScoreboardGame[]): SlateCounts {
+  const { live, upcoming, final, postponed } = slateSections(games);
+  return {
+    games: games.length,
+    live: live.length,
+    upcoming: upcoming.length,
+    final: final.length,
+    postponed: postponed.length,
+  };
+}
+
+/**
+ * A slate's counts as a line to be read out: "9 games, 2 live, 5 to come, 2 final". A kind with
+ * no games is left out, and a day with none says so.
+ */
+export function slateCountsLine(counts: SlateCounts): string {
+  if (counts.games === 0) return "no games today";
+  const kinds = [
+    [counts.live, "live"],
+    [counts.upcoming, "to come"],
+    [counts.final, "final"],
+    [counts.postponed, "postponed"],
+  ] as const;
+  return [
+    `${counts.games} ${counts.games === 1 ? "game" : "games"}`,
+    ...kinds.filter(([count]) => count > 0).map(([count, kind]) => `${count} ${kind}`),
+  ].join(", ");
+}
+
 /** The ticker's order: what is on, then what is to come, then what is over. */
 export function tickerGames(games: ScoreboardGame[]): ScoreboardGame[] {
   const { live, upcoming, final, postponed } = slateSections(games);

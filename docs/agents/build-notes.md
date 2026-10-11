@@ -2,6 +2,18 @@
 
 What earlier tickets learned that the code does not show. Read before building; add a line when you learn something the next subagent would otherwise rediscover. Keep each note to what cannot be found by reading the code.
 
+## The desktop sidebar (#153)
+
+What it is and why: `docs/design/sidebar/README.md`.
+
+- **The sidebar is `components/shell/sidebar.tsx`** (server) with its three client parts in one file, `sidebar-client.tsx`: the places, today's slate and the theme. One file because a client file of its own costs about as much script again as these hold (four files were 2.6 kB gzipped on every page, one is 1.7). The phone's `NavLinks` and `ThemeToggle` are separate and untouched.
+- **Its lines are the page's by arithmetic, not by a shared constant**: the wordmark cell is `h-9` (the strip's 35px and its rule), the first heading is `mt-6` under it (`<main>`'s `md:p-6`), then a 20px title, 8px, a 24px column header and 33px rows, which is `SectionHeader` over a `Ledger`. Change the strip's height, `<main>`'s top padding or a ledger row and the sidebar has to follow; `scripts/sidebar-shots.mjs` exits 1 when the two top rules part, and the shell's smoke test holds them equal.
+- **A constant a server component needs cannot live in a `"use client"` file**: imported from one it is a reference to the client module, not the value (`TONIGHT_COLUMNS` is in `sidebar-parts.tsx` for that reason). A component can cross; an array or a string cannot.
+- **A class built at run time is not in the stylesheet**: `"dark:" + classes` draws nothing, because Tailwind reads the source as text. The theme cells' `dark:` classes are written out.
+- **A focus ring on something that fills a scrolling box must be `ring-inset`**: the sidebar is `overflow-y-auto` (a short window scrolls it), which also clips sideways. On the solid block the ring takes the page's colour, since `--ring` on `--primary` barely shows.
+- **Playing a slate into the real shell**: `node scripts/sidebar-shots.mjs <site> <dir> <prefix> --slate=live|quiet|empty` swaps the Agent's state on the page's socket for a sample slate from `/skeleton/live`, so the strip, Home and the sidebar all draw it. Node runs the `.ts` sample directly. `--height=420` is the short window.
+- **A link's text and its name differ here**: the places' numbers are `aria-hidden`, so `toHaveText("Home")` fails ("1Home") and `toHaveAccessibleName("Home")` is the assertion.
+
 ## The goal sequence (#142)
 
 - **Where it is.** `lib/game/goal.ts` (pure: `goalSequence` is what the `goal` member of `RinkAnimation` carries besides its line, `goalCall` the caption's words, `goalTint` the team colour lifted for slate), the `goal` function in `rink-player.ts` (the steps after the shot lands), and in `rink.tsx` the lamps (`GoalLamp`) and the end zones (`EndTint`). Shots: `node scripts/rink-shots.ts <url> docs/design/rink-animations goal` runs only this part and prints what each step left on the page.

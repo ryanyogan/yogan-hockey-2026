@@ -1,10 +1,8 @@
 "use client";
 
 import { useTheme } from "next-themes";
-import { useSyncExternalStore } from "react";
 import { type ShownTheme, shownThemeColors } from "../../lib/install";
-
-const never = () => () => {};
+import { useHydrated } from "../../lib/use-hydrated";
 
 /**
  * The colour of the browser's own bars (Android's status bar and task switcher, Safari's tab
@@ -19,11 +17,7 @@ const never = () => () => {};
 export function ThemeColor() {
   const { resolvedTheme } = useTheme();
   // The browser's first render must repeat the server's, which had no theme.
-  const hydrated = useSyncExternalStore(
-    never,
-    () => true,
-    () => false,
-  );
+  const hydrated = useHydrated();
   const shown: ShownTheme | undefined = !hydrated
     ? undefined
     : resolvedTheme === "dark"

@@ -17,11 +17,14 @@ import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { chromium } from "@playwright/test";
+import { THEME_COLORS } from "../apps/web/lib/install.ts";
 
 const [base = "http://localhost:5173", out = "docs/design/install"] = process.argv.slice(2);
 const INSETS = { top: 47, right: 0, bottom: 34, left: 0 };
 const PHONE = { width: 390, height: 844 };
-const PAGE_COLOR = { light: "#fbfaf7", dark: "#0f172a" };
+// The same phone on its side: the notch at one end, and wide enough for the sidebar.
+const SIDEWAYS = { width: 844, height: 390 };
+const SIDEWAYS_INSETS = { top: 0, right: 47, bottom: 21, left: 47 };
 
 await mkdir(out, { recursive: true });
 const browser = await chromium.launch();
@@ -71,6 +74,8 @@ async function installability() {
   const files = [];
   for (const { rel, href } of [
     { rel: "manifest", href: new URL(manifest.url).pathname },
+    // An old link's query, which the Worker redirects on a page: the manifest must not move.
+    { rel: "manifest", href: `${new URL(manifest.url).pathname}?tab=scoring` },
     ...(parsed.icons ?? []).map((icon) => ({
       rel: `manifest icon ${icon.purpose}`,
       href: icon.src,
@@ -137,7 +142,7 @@ async function standalone(theme) {
   await page.waitForFunction(
     (color) =>
       [...document.querySelectorAll('meta[name="theme-color"]')].every((m) => m.content === color),
-    PAGE_COLOR[theme],
+    THEME_COLORS[theme],
   );
 
   // Where the hardware is, hatched over the page: nothing to read or press may be under it.
@@ -195,7 +200,7 @@ async function standalone(theme) {
   check(`${theme}: the page does not scroll sideways`, !top.sideways, top);
   check(
     `${theme}: the bars' colour is the page shown, not the operating system's`,
-    top.themeColor.length === 2 && top.themeColor.every((color) => color === PAGE_COLOR[theme]),
+    top.themeColor.length === 2 && top.themeColor.every((color) => color === THEME_COLORS[theme]),
     top.themeColor,
   );
 
@@ -219,6 +224,68 @@ async function standalone(theme) {
   return { operatingSystem: os, top, menuTop, bottom };
 }
 
+/** The shell with the phone on its side: the sidebar beside the notch, the page beside the other end. */
+async function sideways() {
+  const context = await browser.newContext({ viewport: SIDEWAYS, colorScheme: "light" });
+  const page = await context.newPage();
+  const cdp = await context.newCDPSession(page);
+  await cdp.send("Emulation.setSafeAreaInsetsOverride", { insets: SIDEWAYS_INSETS });
+  await page.goto(base, { waitUntil: "networkidle" });
+  await page.evaluate(() => document.fonts.ready);
+  await page.evaluate(({ left, right, bottom }) => {
+    for (const [edge, size] of [
+      ["left", left],
+      ["right", right],
+      ["bottom", bottom],
+    ]) {
+      const bar = document.createElement("div");
+      const across = edge === "bottom" ? "left:0;right:0;height" : "top:0;bottom:0;width";
+      bar.style.cssText = `position:fixed;${edge}:0;${across}:${size}px;z-index:9999;pointer-events:none;background:repeating-linear-gradient(45deg,rgba(220,38,38,.28) 0 6px,transparent 6px 12px);outline:1px dashed rgba(220,38,38,.8)`;
+      document.body.append(bar);
+    }
+  }, SIDEWAYS_INSETS);
+  const measured = await page.evaluate(() => {
+    const text = (node) => {
+      const range = document.createRange();
+      range.selectNodeContents(node);
+      const { left, right, bottom } = range.getBoundingClientRect();
+      return { left, right, bottom };
+    };
+    const aside = document.querySelector("aside");
+    const column = [...document.querySelectorAll("main > *, [data-slot=score-ticker] > *")];
+    return {
+      sidebarShown: getComputedStyle(aside).display !== "none",
+      sidebarLeft: Math.min(...[...aside.querySelectorAll("a, button")].map((n) => text(n).left)),
+      sidebarBottom: Math.max(
+        ...[...aside.querySelectorAll("a, button")].map((n) => text(n).bottom),
+      ),
+      // The boxes inside the padded column, and the footer by its text: its own box is the padding.
+      columnRight: Math.max(
+        text(document.querySelector("footer")).right,
+        ...column.map((node) => node.getBoundingClientRect().right),
+      ),
+      sidewaysScroll: document.documentElement.scrollWidth > innerWidth,
+    };
+  });
+  const { left, right, bottom } = SIDEWAYS_INSETS;
+  check("sideways: the sidebar is shown", measured.sidebarShown, measured);
+  check("sideways: the sidebar's links clear the notch", measured.sidebarLeft >= left, measured);
+  check(
+    "sideways: the sidebar's theme switch clears the home bar",
+    measured.sidebarBottom <= SIDEWAYS.height - bottom,
+    measured,
+  );
+  check(
+    "sideways: the ticker, the page and the footer clear the far end",
+    measured.columnRight <= SIDEWAYS.width - right,
+    measured,
+  );
+  check("sideways: the page does not scroll sideways", !measured.sidewaysScroll, measured);
+  await page.screenshot({ path: `${out}/sideways-light-844.png` });
+  await context.close();
+  return { simulatedInsets: SIDEWAYS_INSETS, ...measured };
+}
+
 const report = {
   base,
   checkedAt: new Date().toISOString(),
@@ -226,6 +293,7 @@ const report = {
   simulatedInsets: INSETS,
   installability: await installability(),
   standalone: { light: await standalone("light"), dark: await standalone("dark") },
+  sideways: await sideways(),
   failures,
 };
 await browser.close();

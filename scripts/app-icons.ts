@@ -161,9 +161,12 @@ await writeFile(
 export const APPLE_SPLASH_IMAGES: readonly { url: string; media: string }[] = ${JSON.stringify(splash, null, 2)};
 `,
 );
-spawnSync("pnpm", ["exec", "biome", "format", "--write", fileURLToPath(SPLASH_LIST)], {
-  stdio: "inherit",
-});
+const formatted = spawnSync(
+  "pnpm",
+  ["exec", "biome", "format", "--write", fileURLToPath(SPLASH_LIST)],
+  { stdio: "inherit" },
+);
+if (formatted.status !== 0) throw new Error("Biome could not format the splash list");
 
 const bytes = files.reduce((sum, file) => sum + file.body.length, 0);
 console.log(

@@ -2,7 +2,7 @@
 
 What was checked by machine, what it showed, and what only a real phone can confirm. The
 numbers are in `report.json` beside this file; `node scripts/install-check.mjs <baseURL> <outDir>`
-writes it and the six shots again.
+writes it and the seven shots again (see the build notes for the `TMPDIR` it needs).
 
 ## What a phone is given
 
@@ -41,9 +41,11 @@ Worker's own entry, with the page cache on), Chromium 153.0.8010.12.
 | Footer with a 34px home bar | its last line ends 34px or more above the bottom edge |
 | Sideways scroll at 390px | none |
 | Bars' colour with the visitor's theme opposite to the operating system's | both tags carry the shown theme's colour, in light and in dark |
+| Phone on its side (844 by 390, 47px at each end, 21px home bar): the sidebar layout | the sidebar's links start at 63px, its theme switch ends 39px above the bottom edge, and the ticker, page and footer end at 797px, the edge of the 47px band |
 
-Shots (390 by 844, the hatched bands are where the simulated status bar and home bar are):
-`standalone-light-390-top.png`, `-menu.png`, `-bottom.png`, and the same three for dark.
+Shots (390 by 844, the hatched bands are where the simulated status bar, home bar and notch are):
+`standalone-light-390-top.png`, `-menu.png`, `-bottom.png`, the same three for dark, and
+`sideways-light-844.png`.
 
 ## What the machine checks are, and are not
 
@@ -62,6 +64,8 @@ Shots (390 by 844, the hatched bands are where the simulated status bar and home
   standalone` was not emulated: Chromium ignored it as a media feature, and nothing in the site
   reads it. The 47px top inset is the worst case; with status bar style `default` iOS keeps the
   page below the status bar and reports a top inset of 0.
+- **Only the sidebar takes the top inset at 768px and wider.** The ticker and the page beside it
+  do not: a phone on its side and an iPad with status bar style `default` both report 0 there.
 - **No splash was seen.** The images exist at each screen's exact size and the tags name them;
   whether iOS shows them is for a phone to say.
 

@@ -35,7 +35,7 @@ export function Shell({ children }: { children: ReactNode }) {
         <ThemeToggle className="mt-auto self-start px-2" />
       </aside>
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex h-[calc(2.75rem+var(--safe-top))] shrink-0 items-center justify-between border-rule border-b bg-background pt-(--safe-top) pr-[calc(1rem+var(--safe-right))] pl-[calc(1rem+var(--safe-left))] md:hidden">
+        <header className="sticky top-0 z-30 flex h-(--top-bar) shrink-0 items-center justify-between border-rule border-b bg-background pt-(--safe-top) pr-[calc(1rem+var(--safe-right))] pl-[calc(1rem+var(--safe-left))] md:hidden">
           <Wordmark />
           <div className="flex items-center gap-4">
             <ThemeToggle />

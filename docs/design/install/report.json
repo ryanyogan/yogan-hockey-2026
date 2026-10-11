@@ -1,6 +1,6 @@
 {
   "base": "http://localhost:5303",
-  "checkedAt": "2026-10-11T18:34:51.843Z",
+  "checkedAt": "2026-10-11T18:42:42.886Z",
   "chromium": "153.0.8010.12",
   "simulatedInsets": {
     "top": 47,
@@ -67,6 +67,15 @@
       {
         "rel": "manifest",
         "href": "/manifest.webmanifest",
+        "status": 200,
+        "contentType": "application/manifest+json",
+        "cacheControl": "public, max-age=0, must-revalidate",
+        "pageCache": null,
+        "bytes": 812
+      },
+      {
+        "rel": "manifest",
+        "href": "/manifest.webmanifest?tab=scoring",
         "status": 200,
         "contentType": "application/manifest+json",
         "cacheControl": "public, max-age=0, must-revalidate",
@@ -507,6 +516,19 @@
         "background": "rgb(15, 23, 42)"
       }
     }
+  },
+  "sideways": {
+    "simulatedInsets": {
+      "top": 0,
+      "right": 47,
+      "bottom": 21,
+      "left": 47
+    },
+    "sidebarShown": true,
+    "sidebarLeft": 63,
+    "sidebarBottom": 350.75,
+    "columnRight": 797,
+    "sidewaysScroll": false
   },
   "failures": []
 }

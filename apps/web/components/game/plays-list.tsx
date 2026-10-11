@@ -71,7 +71,7 @@ export function PlaysList({
   if (plays.length === 0) return <p className="text-label">No plays yet.</p>;
   return (
     <div data-slot="plays-list" className="@container">
-      <div className={`grid gap-x-6 @3xl:grid-cols-2 ${PLAY_ROWS}`}>
+      <div className={`grid gap-x-8 @3xl:grid-cols-2 ${PLAY_ROWS}`}>
         {plays.toReversed().map((play) => (
           <PlayRow
             key={play.id}

@@ -2,6 +2,18 @@
 
 What earlier tickets learned that the code does not show. Read before building; add a line when you learn something the next subagent would otherwise rediscover. Keep each note to what cannot be found by reading the code.
 
+## Rules that meet and one spacing scale (#140)
+
+What was measured, found and decided: `docs/design/rules-and-padding.md`.
+
+- **`node scripts/look-audit.mjs <site> <outDir> [name-prefix]` is the check**, against a dev server in fixture mode: on every route at 390 and 1440px, light and dark, it fails on sideways overflow, on a rule whose end is not on a rule it meets, the page's edge or its column's edge, on a padding, margin or gap that is not on the scale or in its `ALLOWED` list, and on a layout shift. Run it with a prefix (`game`, `team`) while working: a route is about 20 seconds, the whole run 15 minutes, and `look-shots.mjs` another 12. With a prefix it prints the report and writes nothing.
+- **A new off-scale value needs a line in `ALLOWED` with its reason, or it fails.** What is there: `py-row`, the em-sized space after a team's mark or the live dot, a badge's 1px, a 1px lap of one rule over another. The rink and its caption are not audited (#141 to #143).
+- **A rule that runs across ends at its column's edge**: `<main>`'s content box, a cell of a grid or of a row of boxes. So a list narrower than its column (a `max-w-*` on rows with rules) fails, as the scoring list did; put the measure on the text, not on what draws the rule. A rule that runs down must end on a rule or the page's edge: there is no column edge for it.
+- **Layout shift in dev is not the truth, only a lead.** A dev server compiles a route on first request and sometimes paints the shell with an empty `<main>` first (the footer jumps: 0.058 on a game's page, 0.028 on the error page), which a build never does. The audit records what moved for each shift (`audit.json`, `shift.shifts[].moved`); judge by the cause, and take the number from `scripts/performance-baseline.sh`.
+- **Computed style lies about `auto` margins** (it gives the used pixels). `element.computedStyleMap()` gives the computed value, `auto` or a percentage, which is how the audit tells a centred box from a 37px margin.
+- **A rule on a `<tr>` of a collapsed table measures as the row's box**, and the cells of a header row each draw a length of one rule: the audit joins lengths that touch, in one colour at one height, before it looks at ends.
+- **Before and after are only comparable from one script.** To retake "before" after changing the audit: commit, `git checkout <start> -- apps packages`, run, `git checkout HEAD -- apps packages`.
+
 ## Measuring against the performance budgets (#126)
 
 The numbers, the misses and their proposed fixes are `docs/performance/baseline.md`. One command repeats them: `PORT=<port> scripts/performance-baseline.sh local` (a fixture build) or `... deployed`; about 50 minutes each, or two minutes for one route with `--only='<route>' --runs=1 --out=node_modules/.tmp/try`.

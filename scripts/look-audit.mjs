@@ -48,7 +48,7 @@ const ALLOWED = [
   {
     properties: ["margin-right"],
     value: "em",
-    selector: '[data-slot="team-mark"], [data-slot="live-marker"]',
+    selector: '[data-slot="team-mark"], [data-slot="live-marker"], [data-slot="live-marker"] *',
     why: "A team's mark and the live dot stand in a line of text, so the space after each is the prototype's part of that text's size (0.45em and 0.6em), as a word space is.",
   },
   {

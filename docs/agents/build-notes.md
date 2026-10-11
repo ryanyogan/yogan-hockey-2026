@@ -2,6 +2,11 @@
 
 What earlier tickets learned that the code does not show. Read before building; add a line when you learn something the next subagent would otherwise rediscover. Keep each note to what cannot be found by reading the code.
 
+## Native/API planning (#110)
+
+- **The proposal is [the native app plan](../plans/native-app.md), not implemented behavior.** It records current official auth/Expo findings and the shared-reader/socket boundaries. Username sign-in alone does not mean email-free account creation: Better Auth's documented signup still requires email; the pilot recommendation is parent-provisioned Clerk usernames with application-owned relationships.
+- **Push with nobody watching requires a polling decision.** `ViewerPolledAgent` cancels the loop at zero sockets, as ADR 0007 requires. The plan proposes bounded notification leases on the same Agents, pending Ryan's decision on #55; a separate push sender must not become another ESPN poller. `EspnAlert.announce()` is operational alerting, not goal/final events.
+
 ## Stable home slate (#111)
 
 - **Home order differs intentionally from Scores and the ticker.** Ryan wants home games to stay put during live updates and favorite hydration: scheduled start, then game id for ties. Do not reuse `tickerGames` or `favoritesFirst` for the home ledger; their status/favorite promotion caused rows to jump. Favorite markers and live details still update in place.

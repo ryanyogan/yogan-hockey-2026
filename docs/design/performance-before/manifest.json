@@ -1,0 +1,178 @@
+[
+  {
+    "file": "game-390-light.png",
+    "path": "/nhl/games/401803652",
+    "width": 390,
+    "theme": "light",
+    "themeAssertedBeforeCapture": true,
+    "recordedSlateGames": 9,
+    "fixtureGamePlays": 307,
+    "responsePlayRows": 74,
+    "countSource": "fixture state and document sampled in the same baseline capture run; per-shot DOM counts were not recorded"
+  },
+  {
+    "file": "game-390-dark.png",
+    "path": "/nhl/games/401803652",
+    "width": 390,
+    "theme": "dark",
+    "themeAssertedBeforeCapture": true,
+    "recordedSlateGames": 9,
+    "fixtureGamePlays": 307,
+    "responsePlayRows": 74,
+    "countSource": "fixture state and document sampled in the same baseline capture run; per-shot DOM counts were not recorded"
+  },
+  {
+    "file": "game-1440-light.png",
+    "path": "/nhl/games/401803652",
+    "width": 1440,
+    "theme": "light",
+    "themeAssertedBeforeCapture": true,
+    "recordedSlateGames": 9,
+    "fixtureGamePlays": 307,
+    "responsePlayRows": 74,
+    "countSource": "fixture state and document sampled in the same baseline capture run; per-shot DOM counts were not recorded"
+  },
+  {
+    "file": "game-1440-dark.png",
+    "path": "/nhl/games/401803652",
+    "width": 1440,
+    "theme": "dark",
+    "themeAssertedBeforeCapture": true,
+    "recordedSlateGames": 9,
+    "fixtureGamePlays": 307,
+    "responsePlayRows": 74,
+    "countSource": "fixture state and document sampled in the same baseline capture run; per-shot DOM counts were not recorded"
+  },
+  {
+    "file": "player-390-light.png",
+    "path": "/players/4024123",
+    "width": 390,
+    "theme": "light",
+    "themeAssertedBeforeCapture": true,
+    "recordedSlateGames": 9,
+    "fixtureGamePlays": null,
+    "responsePlayRows": 0,
+    "countSource": "fixture state and document sampled in the same baseline capture run; per-shot DOM counts were not recorded"
+  },
+  {
+    "file": "player-390-dark.png",
+    "path": "/players/4024123",
+    "width": 390,
+    "theme": "dark",
+    "themeAssertedBeforeCapture": true,
+    "recordedSlateGames": 9,
+    "fixtureGamePlays": null,
+    "responsePlayRows": 0,
+    "countSource": "fixture state and document sampled in the same baseline capture run; per-shot DOM counts were not recorded"
+  },
+  {
+    "file": "player-1440-light.png",
+    "path": "/players/4024123",
+    "width": 1440,
+    "theme": "light",
+    "themeAssertedBeforeCapture": true,
+    "recordedSlateGames": 9,
+    "fixtureGamePlays": null,
+    "responsePlayRows": 0,
+    "countSource": "fixture state and document sampled in the same baseline capture run; per-shot DOM counts were not recorded"
+  },
+  {
+    "file": "player-1440-dark.png",
+    "path": "/players/4024123",
+    "width": 1440,
+    "theme": "dark",
+    "themeAssertedBeforeCapture": true,
+    "recordedSlateGames": 9,
+    "fixtureGamePlays": null,
+    "responsePlayRows": 0,
+    "countSource": "fixture state and document sampled in the same baseline capture run; per-shot DOM counts were not recorded"
+  },
+  {
+    "file": "team-390-light.png",
+    "path": "/nhl/teams/21",
+    "width": 390,
+    "theme": "light",
+    "themeAssertedBeforeCapture": true,
+    "recordedSlateGames": 9,
+    "fixtureGamePlays": null,
+    "responsePlayRows": 0,
+    "countSource": "fixture state and document sampled in the same baseline capture run; per-shot DOM counts were not recorded"
+  },
+  {
+    "file": "team-390-dark.png",
+    "path": "/nhl/teams/21",
+    "width": 390,
+    "theme": "dark",
+    "themeAssertedBeforeCapture": true,
+    "recordedSlateGames": 9,
+    "fixtureGamePlays": null,
+    "responsePlayRows": 0,
+    "countSource": "fixture state and document sampled in the same baseline capture run; per-shot DOM counts were not recorded"
+  },
+  {
+    "file": "team-1440-light.png",
+    "path": "/nhl/teams/21",
+    "width": 1440,
+    "theme": "light",
+    "themeAssertedBeforeCapture": true,
+    "recordedSlateGames": 9,
+    "fixtureGamePlays": null,
+    "responsePlayRows": 0,
+    "countSource": "fixture state and document sampled in the same baseline capture run; per-shot DOM counts were not recorded"
+  },
+  {
+    "file": "team-1440-dark.png",
+    "path": "/nhl/teams/21",
+    "width": 1440,
+    "theme": "dark",
+    "themeAssertedBeforeCapture": true,
+    "recordedSlateGames": 9,
+    "fixtureGamePlays": null,
+    "responsePlayRows": 0,
+    "countSource": "fixture state and document sampled in the same baseline capture run; per-shot DOM counts were not recorded"
+  },
+  {
+    "file": "dashboard-390-light.png",
+    "path": "/",
+    "width": 390,
+    "theme": "light",
+    "themeAssertedBeforeCapture": true,
+    "recordedSlateGames": 9,
+    "fixtureGamePlays": null,
+    "responsePlayRows": 0,
+    "countSource": "fixture state and document sampled in the same baseline capture run; per-shot DOM counts were not recorded"
+  },
+  {
+    "file": "dashboard-390-dark.png",
+    "path": "/",
+    "width": 390,
+    "theme": "dark",
+    "themeAssertedBeforeCapture": true,
+    "recordedSlateGames": 9,
+    "fixtureGamePlays": null,
+    "responsePlayRows": 0,
+    "countSource": "fixture state and document sampled in the same baseline capture run; per-shot DOM counts were not recorded"
+  },
+  {
+    "file": "dashboard-1440-light.png",
+    "path": "/",
+    "width": 1440,
+    "theme": "light",
+    "themeAssertedBeforeCapture": true,
+    "recordedSlateGames": 9,
+    "fixtureGamePlays": null,
+    "responsePlayRows": 0,
+    "countSource": "fixture state and document sampled in the same baseline capture run; per-shot DOM counts were not recorded"
+  },
+  {
+    "file": "dashboard-1440-dark.png",
+    "path": "/",
+    "width": 1440,
+    "theme": "dark",
+    "themeAssertedBeforeCapture": true,
+    "recordedSlateGames": 9,
+    "fixtureGamePlays": null,
+    "responsePlayRows": 0,
+    "countSource": "fixture state and document sampled in the same baseline capture run; per-shot DOM counts were not recorded"
+  }
+]

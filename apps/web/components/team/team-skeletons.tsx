@@ -1,4 +1,22 @@
-import { SectionSkeleton } from "@yogan-hockey/ui/components/skeleton";
+import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
+import { LedgerSkeleton, SectionSkeleton } from "@yogan-hockey/ui/components/skeleton";
+import type { ReactNode } from "react";
+import { GAME_COLUMNS } from "../route-skeletons";
+
+/** All states occupy the live ledger's geometry, including when there is no next game. */
+export function TeamNowFrame({ children }: { children: ReactNode }) {
+  return (
+    <div data-slot="team-now" className="grid grid-cols-1">
+      <div aria-hidden="true" className="invisible col-start-1 row-start-1 pointer-events-none">
+        <Section>
+          <SectionHeader title="Playing now" />
+          <LedgerSkeleton className="game-ledger" columns={GAME_COLUMNS} rows={1} />
+        </Section>
+      </div>
+      <div className="col-start-1 row-start-1">{children}</div>
+    </div>
+  );
+}
 
 /**
  * The team page's placeholders. Each repeats the columns of the ledger it stands in for (their
@@ -6,8 +24,8 @@ import { SectionSkeleton } from "@yogan-hockey/ui/components/skeleton";
  * change a ledger's columns and change them here.
  */
 
-/** A list whose length is not known until it is read: enough rows to pass the window's foot. */
-const ROWS_PAST_THE_FOLD = 24;
+/** A list whose length is not known until it is read: a short preview rather than duplicating a whole table in the response. */
+const ROWS_PAST_THE_FOLD = 8;
 
 /** `TeamNow`'s Next Game card (`team-now.tsx`): one row, always. */
 export function NextGameSkeleton() {

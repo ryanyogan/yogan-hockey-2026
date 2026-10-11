@@ -90,6 +90,15 @@ test("a team's page shows each tab from a pasted URL, titled with the team's nam
       pushState({ ...recorded, games: recorded.games.filter((game) => game.id !== GAME_ID) });
       await expect(next.getByRole("cell").last()).toHaveText("Scotiabank Arena");
 
+      const tabOffset = async () => {
+        const [tabBox, headerBox] = await Promise.all([
+          tabs(page).boundingBox(),
+          header.boundingBox(),
+        ]);
+        if (!tabBox || !headerBox) throw new Error("Team header and tabs must be visible");
+        return tabBox.y - headerBox.y;
+      };
+      const beforeLive = await tabOffset();
       // The game starts: the banner takes the card's place, its row with the pick like any other.
       pushState({
         ...recorded,
@@ -104,6 +113,20 @@ test("a team's page shows each tab from a pasted URL, titled with the team's nam
         "Scotiabank Arena · ESPN+, Scripps Sports",
       );
       await expect(section(page, /^Next game/)).toHaveCount(0);
+      // The ticker slate changed from eight to nine games above us; isolate the team content.
+      expect(await tabOffset()).toBe(beforeLive);
+      pushState({
+        ...recorded,
+        games: recorded.games.map((game) =>
+          game.id === GAME_ID ? { ...game, status: "final" } : game,
+        ),
+      });
+      await expect(section(page, /^Playing now/)).toHaveCount(0);
+      await expect(section(page, /^Next game/)).toHaveCount(0);
+      expect(await tabOffset()).toBe(beforeLive);
+      pushState(recorded);
+      await expect(section(page, /^Next game/)).toHaveCount(1);
+      expect(await tabOffset()).toBe(beforeLive);
     },
     { timezoneId: "America/Los_Angeles" },
     standBetween,

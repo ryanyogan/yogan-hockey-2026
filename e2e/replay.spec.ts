@@ -84,7 +84,10 @@ test("the Replay opens laid out, plays, pauses, jumps to a tick, and follows the
   // Clicking a play in the list goes back to it, and the scoring tab follows the playhead too.
   await rows.filter({ hasText: "Mavrik Bourque Goal" }).click();
   await expect(score).toHaveText([/DAL.*1/, /BUF.*0/]);
+  await rink.evaluate((node) => node.setAttribute("data-retained", "yes"));
   await page.getByRole("link", { name: "scoring" }).click();
+  await expect(page).toHaveURL(/\/nhl\/games\/401803652\/scoring$/);
+  await expect(rink).toHaveAttribute("data-retained", "yes");
   await expect(page.locator('[data-slot="play-row"]')).toHaveCount(1);
   await expect(score).toHaveText([/DAL.*1/, /BUF.*0/]);
 

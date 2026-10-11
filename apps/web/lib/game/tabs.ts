@@ -24,6 +24,11 @@ export function shownGameTab(tab: GameTab, hasPick: boolean): GameTab {
 export function gameTabLinks(pathname: string, hasPick = true) {
   return GAME_TABS.filter((tab) => hasPick || tab.value !== "pick").map((tab) => ({
     ...tab,
-    href: tab.value === "plays" ? pathname : `${pathname}?tab=${tab.value}`,
+    href: tab.value === "plays" ? pathname : `${pathname}/${tab.value}`,
   }));
+}
+
+/** The nested route changes only the tab; the shared layout retains the game and replay. */
+export function gameTabOfPath(pathname: string): GameTab {
+  return gameTabFrom(pathname.split("/").filter(Boolean)[3]);
 }

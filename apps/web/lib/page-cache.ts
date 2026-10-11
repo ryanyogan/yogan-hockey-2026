@@ -124,11 +124,11 @@ export function pagePolicy(pathname: string): PagePolicy | null {
   if (path === "/nhl") return policy([STANDINGS_TAG], ["tab", "view"]);
   const team = /^\/nhl\/teams\/(\d+)(?:\/(?:roster|stats))?$/.exec(path);
   if (team) return policy([`team:${team[1]}`], []);
-  if (/^\/nhl\/games\/\d+$/.test(path)) {
+  if (/^\/nhl\/games\/\d+(?:\/(?:scoring|pick))?$/.test(path)) {
     return { ...policy([], ["tab"]), maxStaleMs: KEEP_SECONDS * 1000 };
   }
   if (path === "/players") return policy([], []);
-  if (/^\/players\/[^/]+$/.test(path)) return policy([STANDINGS_TAG], ["games"]);
+  if (/^\/players\/[^/]+(?:\/games)?$/.test(path)) return policy([STANDINGS_TAG], ["games"]);
   return null;
 }
 

@@ -1,0 +1,146 @@
+[
+  {
+    "name": "game",
+    "path": "/nhl/games/401803652",
+    "width": 390,
+    "theme": "light",
+    "htmlClass": "__variable_geist_013ydlh __variable_geist_mono_0bm7fsx light",
+    "slateCount": 9,
+    "playRows": 74
+  },
+  {
+    "name": "game",
+    "path": "/nhl/games/401803652",
+    "width": 390,
+    "theme": "dark",
+    "htmlClass": "__variable_geist_013ydlh __variable_geist_mono_0bm7fsx dark",
+    "slateCount": 9,
+    "playRows": 74
+  },
+  {
+    "name": "game",
+    "path": "/nhl/games/401803652",
+    "width": 1440,
+    "theme": "light",
+    "htmlClass": "__variable_geist_013ydlh __variable_geist_mono_0bm7fsx light",
+    "slateCount": 9,
+    "playRows": 74
+  },
+  {
+    "name": "game",
+    "path": "/nhl/games/401803652",
+    "width": 1440,
+    "theme": "dark",
+    "htmlClass": "__variable_geist_013ydlh __variable_geist_mono_0bm7fsx dark",
+    "slateCount": 9,
+    "playRows": 74
+  },
+  {
+    "name": "player",
+    "path": "/players/4024123",
+    "width": 390,
+    "theme": "light",
+    "htmlClass": "__variable_geist_013ydlh __variable_geist_mono_0bm7fsx light",
+    "slateCount": 9,
+    "playRows": 0
+  },
+  {
+    "name": "player",
+    "path": "/players/4024123",
+    "width": 390,
+    "theme": "dark",
+    "htmlClass": "__variable_geist_013ydlh __variable_geist_mono_0bm7fsx dark",
+    "slateCount": 9,
+    "playRows": 0
+  },
+  {
+    "name": "player",
+    "path": "/players/4024123",
+    "width": 1440,
+    "theme": "light",
+    "htmlClass": "__variable_geist_013ydlh __variable_geist_mono_0bm7fsx light",
+    "slateCount": 9,
+    "playRows": 0
+  },
+  {
+    "name": "player",
+    "path": "/players/4024123",
+    "width": 1440,
+    "theme": "dark",
+    "htmlClass": "__variable_geist_013ydlh __variable_geist_mono_0bm7fsx dark",
+    "slateCount": 9,
+    "playRows": 0
+  },
+  {
+    "name": "team",
+    "path": "/nhl/teams/21",
+    "width": 390,
+    "theme": "light",
+    "htmlClass": "__variable_geist_013ydlh __variable_geist_mono_0bm7fsx light",
+    "slateCount": 9,
+    "playRows": 0
+  },
+  {
+    "name": "team",
+    "path": "/nhl/teams/21",
+    "width": 390,
+    "theme": "dark",
+    "htmlClass": "__variable_geist_013ydlh __variable_geist_mono_0bm7fsx dark",
+    "slateCount": 9,
+    "playRows": 0
+  },
+  {
+    "name": "team",
+    "path": "/nhl/teams/21",
+    "width": 1440,
+    "theme": "light",
+    "htmlClass": "__variable_geist_013ydlh __variable_geist_mono_0bm7fsx light",
+    "slateCount": 9,
+    "playRows": 0
+  },
+  {
+    "name": "team",
+    "path": "/nhl/teams/21",
+    "width": 1440,
+    "theme": "dark",
+    "htmlClass": "__variable_geist_013ydlh __variable_geist_mono_0bm7fsx dark",
+    "slateCount": 9,
+    "playRows": 0
+  },
+  {
+    "name": "dashboard",
+    "path": "/",
+    "width": 390,
+    "theme": "light",
+    "htmlClass": "__variable_geist_013ydlh __variable_geist_mono_0bm7fsx light",
+    "slateCount": 9,
+    "playRows": 0
+  },
+  {
+    "name": "dashboard",
+    "path": "/",
+    "width": 390,
+    "theme": "dark",
+    "htmlClass": "__variable_geist_013ydlh __variable_geist_mono_0bm7fsx dark",
+    "slateCount": 9,
+    "playRows": 0
+  },
+  {
+    "name": "dashboard",
+    "path": "/",
+    "width": 1440,
+    "theme": "light",
+    "htmlClass": "__variable_geist_013ydlh __variable_geist_mono_0bm7fsx light",
+    "slateCount": 9,
+    "playRows": 0
+  },
+  {
+    "name": "dashboard",
+    "path": "/",
+    "width": 1440,
+    "theme": "dark",
+    "htmlClass": "__variable_geist_013ydlh __variable_geist_mono_0bm7fsx dark",
+    "slateCount": 9,
+    "playRows": 0
+  }
+]

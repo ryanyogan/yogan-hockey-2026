@@ -16,7 +16,7 @@ import { GAME_LEDGER_COLUMNS } from "./scoreboard/game-ledger";
 const SLATE_ROWS = 8;
 
 /** The same five columns as GameLedger, including its visible AI pick on phones. */
-const GAME_COLUMNS = [
+export const GAME_COLUMNS = [
   { width: "sm" as const, className: GAME_LEDGER_COLUMNS.status },
   {
     width: "sm" as const,
@@ -71,7 +71,7 @@ export function GameSkeleton() {
       <div className="mt-6">
         <SectionSkeleton
           label="The game"
-          rows={12}
+          rows={6}
           density="compact"
           columns={[{ width: "sm" }, { width: "sm" }, { width: "xl", className: "w-full" }]}
         />

@@ -5,7 +5,7 @@ import { Link } from "../../../../components/link";
 import { ScoreboardGate } from "../../../../components/scoreboard/scoreboard-provider";
 import { TeamHeader } from "../../../../components/team/team-header";
 import { TeamNow } from "../../../../components/team/team-now";
-import { NextGameSkeleton } from "../../../../components/team/team-skeletons";
+import { NextGameSkeleton, TeamNowFrame } from "../../../../components/team/team-skeletons";
 import { TeamTabs } from "../../../../components/team/team-tabs";
 import { cachedStandings } from "../../../../lib/espn";
 import { loadTeam } from "../../../../lib/find-team";
@@ -54,7 +54,7 @@ export default async function TeamLayout({ params, children }: Props) {
 
   return (
     <>
-      <div className="grid gap-4 xl:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4">
         <TeamHeader
           detail={detail}
           standing={standing}
@@ -68,9 +68,12 @@ export default async function TeamLayout({ params, children }: Props) {
             />
           }
         />
-        <ScoreboardGate fallback={<NextGameSkeleton />}>
-          <TeamNow teamId={id} listed={detail.nextGame} />
-        </ScoreboardGate>
+        {/* Keep the same full-width, live-ledger-sized slot before and after the socket speaks. */}
+        <TeamNowFrame>
+          <ScoreboardGate fallback={<NextGameSkeleton />}>
+            <TeamNow teamId={id} listed={detail.nextGame} />
+          </ScoreboardGate>
+        </TeamNowFrame>
       </div>
       <div className="space-y-2">
         <TeamTabs teamId={id} />

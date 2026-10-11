@@ -1,4 +1,5 @@
 import { SectionSkeleton, SkeletonBar } from "@yogan-hockey/ui/components/skeleton";
+import { PenaltyBoxSpace } from "./game/penalty-box";
 import { Rink } from "./game/rink";
 import { FIXED_GAME_COLUMNS, GAME_SCORE_CELL, GAME_TEXT_CELL } from "./scoreboard/game-ledger";
 
@@ -59,6 +60,7 @@ export function GameSkeleton() {
     <div data-slot="game-skeleton">
       <div className="@container" aria-hidden="true">
         <Rink plays={[]} focus={null} />
+        <PenaltyBoxSpace />
         <p className="mt-1 min-h-10 bg-secondary px-2 py-0.5 leading-[18px] @2xl:hidden">
           <SkeletonBar width="lg" />
         </p>

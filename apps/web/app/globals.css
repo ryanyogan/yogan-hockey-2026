@@ -30,3 +30,11 @@
 .skip-link:focus {
   transform: none;
 }
+
+/* A player arriving in the penalty box (`components/game/penalty-box.tsx`). */
+@keyframes boxed-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}

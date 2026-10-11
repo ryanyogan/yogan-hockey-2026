@@ -1,6 +1,7 @@
 import { applyD1Migrations } from "cloudflare:test";
 import { env } from "cloudflare:workers";
-import { createDb, gameHasPlays } from "@yogan-hockey/db";
+import { createDb, gameHasPlays, getGameWithPlays, replaceGamePlays } from "@yogan-hockey/db";
+import type { Play } from "@yogan-hockey/schemas";
 import { beforeAll, expect, test, vi } from "vitest";
 import type { FoundGame } from "./find-game";
 import { archiveGame, readGame } from "./game";
@@ -63,6 +64,29 @@ test(
     vi.spyOn(console, "error").mockImplementation(() => {});
     const failing = async () => Promise.reject(new Error("D1 is down"));
     expect(await replayGame(stuck, failing)).toBe(stuck);
+  },
+  COLD_START,
+);
+
+test(
+  "a game archived before the site kept a penalty's minutes is read again from ESPN, once",
+  async () => {
+    vi.stubEnv("ESPN_FIXTURES", "1");
+    const db = createDb(env.DB);
+    const final = await replayGame((await readGame(SHOOTOUT)) as FoundGame);
+    const old = final.plays.map(({ penaltyMinutes: _minutes, ...play }) => play);
+    await replaceGamePlays(db, SHOOTOUT, old);
+
+    const healed = await replayGame({ ...final, archived: true, plays: old });
+    const minutes = (plays: readonly Play[]) =>
+      plays.filter((play) => play.penalty).map((play) => play.penaltyMinutes);
+    expect(minutes(healed.plays)).toEqual([2, 2, 2, 2, 2, 2]);
+    expect(minutes((await getGameWithPlays(db, SHOOTOUT))?.plays ?? [])).toEqual([
+      2, 2, 2, 2, 2, 2,
+    ]);
+
+    // With the minutes there, the game is left as it was read.
+    expect(await replayGame(healed)).toBe(healed);
   },
   COLD_START,
 );

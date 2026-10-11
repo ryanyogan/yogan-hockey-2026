@@ -24,7 +24,8 @@ const games = (count: number) => (count === 1 ? "1 game" : `${count} games`);
 /** A link to the other half of the schedule, for a phone, where the two are one long column. */
 function Jump({ to, children }: { to: string; children: string }) {
   return (
-    <a href={`#${to}`} className="underline xl:hidden">
+    // The tabs are 8px above its line, so its reach on a phone starts under them.
+    <a href={`#${to}`} className="tap-target underline [--tap-shift:4px] xl:hidden">
       {children}
     </a>
   );

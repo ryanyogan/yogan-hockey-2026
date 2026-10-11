@@ -31,15 +31,17 @@ Everything starts 16px in. Every rule runs the sidebar's whole width and ends on
 - **Rules run edge to edge** where a page's ledgers are inset. The sidebar is part of the shell, like the strip, and a rule that stopped 16px short of the column's rule would meet nothing.
 - **The places are numbered** as a ledger ranks its rows. The numbers are for the eye (`aria-hidden`): a link's name is still "Home".
 - **"Tonight" shows counts, not games.** The strip already lists the games; the sidebar says how the night stands in a glance and keeps one height whatever the slate, so nothing moves when it arrives. Its rows hold their room, empty, until the Scoreboard has been read.
-- **The slate's day is in the header**, where a section header has its aside; the total is the sum of the rows and is read out in the link's name ("Scores: 9 games, 2 live, 7 to come").
+- **The slate's day is in the header**, where a section header has its aside. The link's name is what it shows, after "Tonight's scores:" for a screen reader.
 - **No live count beside "Scores"**: the Tonight block is directly under it and says the same.
 - **The theme is two cells, not one toggle**: both choices are on show and the one in force is marked as the current place is. `aria-pressed` says which once the browser knows. The phone's top bar keeps its toggle (#139's).
 - **Nothing was built on Favorites**, which are moving to Accounts.
 - **The width did not change**, so no page's layout did.
+- **The titles are not headings** (`<p>`): they come before the page's own first heading in the document. The places are a `nav` named "Site" as before.
+- **The places are drawn in the first HTML**, marked from the path, and again once the query string is known, as the tab bar's are (#139).
 - **A short window scrolls the sidebar inside itself** (`after-home-live-768-h420-*.png`); nothing is clipped or overlaps.
 
 ## Measured
 
 `node scripts/sidebar-shots.mjs http://localhost:<PORT> docs/design/sidebar after` (and with `--slate=live|quiet|empty`, `--height=420`) shoots the set and prints, per shot, the strip's rule and the sidebar's (36px and 36px in all 18), the content column's left edge (193px before and after) and the page's layout shift, which is the same before and after on every route (Home's is the Favorites block's, #140's).
 
-Client script, gzipped, all chunks of a build: 319,748 bytes before, 321,451 after (+1,703). The sidebar's own chunk is 1,486 bytes; the rest is the places' list and the day's formatter becoming chunks of their own, now that two scripts share them.
+Client script, gzipped, all chunks of a build, against `main` with the phone's tab bar (#139) in it: 301,915 bytes before, 303,860 after (+1,945). The sidebar's own chunk is 1,515 bytes; the rest is the places' list and the day's formatter becoming chunks of their own, now that two scripts share them. The script budgets (`scripts/performance/budgets.ts`) were not measured again: the full baseline is 50 minutes.

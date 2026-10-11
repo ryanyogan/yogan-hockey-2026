@@ -5,16 +5,14 @@ import type { ReactNode } from "react";
  * rule runs the sidebar's whole width, to meet the rule the content column draws beside it.
  */
 
-/** A row's height with its rule, in pixels: a ledger row's from `md` up, where the sidebar is. */
-export const SIDEBAR_ROW_PX = 33;
 /** A row: a ledger row's line and padding. */
 export const SIDEBAR_ROW = "flex items-center border-border border-b px-4 py-row";
 /** The keyboard's focus, drawn inside the box: the sidebar's edges would cut a ring around it. */
-const FOCUS = "outline-none focus-visible:ring-2 focus-visible:ring-inset";
+export const SIDEBAR_FOCUS = "outline-none focus-visible:ring-2 focus-visible:ring-inset";
 /** Something idle that can be followed or pressed: the pointer's highlight, as a ledger row's. */
-export const SIDEBAR_ACTION = `${FOCUS} hover:bg-highlight hover:text-foreground focus-visible:ring-ring`;
+export const SIDEBAR_ACTION = `${SIDEBAR_FOCUS} hover:bg-highlight hover:text-foreground focus-visible:ring-ring`;
 /** The solid block: the current place, the theme shown. Its focus ring is the page's colour. */
-export const SIDEBAR_BLOCK = `${FOCUS} bg-primary font-label text-primary-foreground focus-visible:ring-background`;
+export const SIDEBAR_BLOCK = `${SIDEBAR_FOCUS} bg-primary font-label text-primary-foreground focus-visible:ring-background`;
 
 /**
  * The column headers over the slate's rows: the scores' own first column, and what is counted.
@@ -39,7 +37,8 @@ export function SidebarHeading({
   return (
     <>
       <div className="mb-2 flex items-baseline justify-between gap-2 px-4">
-        <h2 className="font-strong uppercase">{title}</h2>
+        {/* Not a heading: it would come before the page's own first heading. */}
+        <p className="font-strong uppercase">{title}</p>
         {children != null && (
           <span className="whitespace-nowrap font-quiet text-label text-small">{children}</span>
         )}

@@ -45,12 +45,12 @@ export default function ErrorPage({ reset }: { error: Error; reset?: () => void 
           type="button"
           onClick={retry}
           disabled={retrying}
-          className="cursor-pointer font-strong underline disabled:cursor-default disabled:text-muted-foreground"
+          className="tap-target cursor-pointer font-strong underline disabled:cursor-default disabled:text-muted-foreground"
         >
           {retrying ? "Trying again" : "Try again"}
         </button>{" "}
         or go to{" "}
-        <Link href={back.href} className="font-strong underline">
+        <Link href={back.href} className="tap-target font-strong underline">
           {back.label}
         </Link>
         .

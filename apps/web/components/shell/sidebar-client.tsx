@@ -3,15 +3,17 @@
 import { LiveMarker } from "@yogan-hockey/ui/components/marker";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useTheme } from "next-themes";
-import { useSyncExternalStore } from "react";
+import { Suspense } from "react";
 import { slateDay } from "../../lib/game-time";
-import { currentNavItem, NAV_ITEMS } from "../../lib/nav";
-import { type SlateCounts, slateCounts, slateCountsLine } from "../../lib/scoreboard-view";
+import { currentNavItem, NAV_ITEMS, type NavItem, navItemByPathAlone } from "../../lib/nav";
+import { type SlateCounts, slateCounts } from "../../lib/scoreboard-view";
+import { useHydrated } from "../../lib/use-hydrated";
 import { Link } from "../link";
 import { useScoreboard } from "../scoreboard/scoreboard-provider";
 import {
   SIDEBAR_ACTION,
   SIDEBAR_BLOCK,
+  SIDEBAR_FOCUS,
   SIDEBAR_ROW,
   SidebarHeading,
   TONIGHT_COLUMNS,
@@ -23,12 +25,7 @@ import {
  * bytes, and a file of its own costs about as much again on every page.
  */
 
-/**
- * The site's places as numbered rows, as a ledger ranks its rows; the current one is a solid
- * block. A client component only to know the path.
- */
-export function SidebarNav() {
-  const current = currentNavItem(usePathname(), useSearchParams().get("tab"));
+function Places({ current }: { current: NavItem | undefined }) {
   return NAV_ITEMS.map((item, index) => {
     const here = item === current;
     return (
@@ -47,7 +44,30 @@ export function SidebarNav() {
   });
 }
 
-const ROW = `${SIDEBAR_ROW} justify-between`;
+function PlacesByQuery() {
+  return <Places current={currentNavItem(usePathname(), useSearchParams().get("tab"))} />;
+}
+
+function PlacesByPath() {
+  return <Places current={navItemByPathAlone(usePathname())} />;
+}
+
+/**
+ * The site's places as numbered rows, as a ledger ranks its rows; the current one is a solid
+ * block. A client component only to know the address.
+ *
+ * As `NavLinks` does for the phone's tab bar, the rows are drawn at once from the path and again
+ * when the query string is known: reading it suspends while the server renders.
+ */
+export function SidebarNav() {
+  return (
+    <Suspense fallback={<PlacesByPath />}>
+      <PlacesByQuery />
+    </Suspense>
+  );
+}
+
+const TONIGHT_ROW = `${SIDEBAR_ROW} justify-between`;
 
 function Count({ value }: { value: number | undefined }) {
   if (value == null) return null;
@@ -63,20 +83,20 @@ export function TonightRows({ counts }: { counts: SlateCounts | null }) {
   const live = counts != null && counts.live > 0;
   return (
     <>
-      <span className={`${ROW} ${live ? "bg-live-tint text-foreground" : ""}`}>
+      <span className={`${TONIGHT_ROW} ${live ? "bg-live-tint text-foreground" : ""}`}>
         {live ? <LiveMarker strong /> : "live"}
         <Count value={counts?.live} />
       </span>
-      <span className={ROW}>
+      <span className={TONIGHT_ROW}>
         to come
         <Count value={counts?.upcoming} />
       </span>
-      <span className={ROW}>
+      <span className={TONIGHT_ROW}>
         final
         <Count value={counts?.final} />
       </span>
       {counts != null && counts.postponed > 0 && (
-        <span className={ROW}>
+        <span className={TONIGHT_ROW}>
           postponed
           <Count value={counts.postponed} />
         </span>
@@ -99,30 +119,23 @@ export function SidebarTonight() {
       <SidebarHeading title="Tonight" columns={TONIGHT_COLUMNS}>
         {date != null && slateDay(date)}
       </SidebarHeading>
-      <Link
-        href="/nhl/live"
-        aria-label={counts == null ? "Scores" : `Scores: ${slateCountsLine(counts)}`}
-        className={`block text-note ${SIDEBAR_ACTION}`}
-      >
+      <Link href="/nhl/live" className={`block text-note ${SIDEBAR_ACTION}`}>
+        <span className="sr-only">Tonight's scores: </span>
         <TonightRows counts={counts} />
       </Link>
     </>
   );
 }
 
-// The theme is the browser's to know: the server and the first render say nothing of it.
-const never = () => () => {};
-
-const CELL =
-  "h-10 flex-1 cursor-pointer border-rule font-label text-small uppercase tracking-label outline-none focus-visible:ring-2 focus-visible:ring-inset";
+const THEME_CELL = `${SIDEBAR_FOCUS} h-10 flex-1 cursor-pointer border-rule font-label text-small uppercase tracking-label`;
 /*
  * The cell of the theme shown is a solid block, as the current place is, and the other is idle.
  * Both are written out for each theme (`SIDEBAR_BLOCK` and `SIDEBAR_ACTION`, under `dark:` for
  * one of them): which is shown is CSS's to say, since the server does not know the theme.
  */
-const LIGHT =
+const LIGHT_CELL =
   "bg-primary text-primary-foreground focus-visible:ring-background dark:bg-transparent dark:text-note dark:hover:bg-highlight dark:hover:text-foreground dark:focus-visible:ring-ring";
-const DARK =
+const DARK_CELL =
   "text-note hover:bg-highlight hover:text-foreground focus-visible:ring-ring dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary dark:hover:text-primary-foreground dark:focus-visible:ring-background";
 
 /**
@@ -132,11 +145,8 @@ const DARK =
  */
 export function SidebarTheme({ className = "" }: { className?: string }) {
   const { resolvedTheme, setTheme } = useTheme();
-  const known = useSyncExternalStore(
-    never,
-    () => true,
-    () => false,
-  );
+  // The theme is the browser's to know: the server and the first render say nothing of it.
+  const known = useHydrated();
   const pressed = (theme: string) => (known ? resolvedTheme === theme : undefined);
   return (
     <div className={className}>
@@ -146,7 +156,7 @@ export function SidebarTheme({ className = "" }: { className?: string }) {
           type="button"
           aria-pressed={pressed("light")}
           onClick={() => setTheme("light")}
-          className={`${CELL} ${LIGHT}`}
+          className={`${THEME_CELL} ${LIGHT_CELL}`}
         >
           light
         </button>
@@ -154,7 +164,7 @@ export function SidebarTheme({ className = "" }: { className?: string }) {
           type="button"
           aria-pressed={pressed("dark")}
           onClick={() => setTheme("dark")}
-          className={`${CELL} border-l ${DARK}`}
+          className={`${THEME_CELL} border-l ${DARK_CELL}`}
         >
           dark
         </button>

@@ -196,6 +196,30 @@
 }
 
 /*
+ * `tap-target`: on a phone, a link or button that is only as large as its words answers a thumb
+ * anywhere within 44px of its middle. Its box, and so the line it sits on, is as it was: the
+ * reach is the `::after`, laid over what is around it. Lifted one level so that the table under
+ * a header's link, which is positioned too, does not take the lower edge of the reach back.
+ * Not for a `ledgerRowLink`, whose `::after` is the row. Where another control is closer than
+ * the reach, `--tap-shift` moves the reach down and away from it.
+ */
+@utility tap-target {
+  @media (max-width: 767.98px) {
+    position: relative;
+    z-index: 1;
+    &::after {
+      content: "";
+      position: absolute;
+      top: calc(50% + var(--tap-shift, 0px));
+      left: 50%;
+      width: max(100%, 2.75rem);
+      height: max(100%, 2.75rem);
+      translate: -50% -50%;
+    }
+  }
+}
+
+/*
  * A placeholder for one value (`SkeletonBar`): an inline box as tall as a line of the text it
  * stands in for, with a quiet bar drawn across its middle. Written here once, not as utility
  * classes, because a page of placeholder rows repeats it several hundred times.

@@ -57,11 +57,11 @@ function GameUnreadable({ pathname }: { pathname: string }) {
       <p className="border-rule-head border-t px-2 py-row">
         This game could not be read just now.{" "}
         {/* A plain link: the page is rendered again from nothing, which is the retry. */}
-        <a href={pathname} className="font-strong underline">
+        <a href={pathname} className="tap-target font-strong underline">
           Try again
         </a>{" "}
         or see the{" "}
-        <Link href="/nhl/live" className="font-strong underline">
+        <Link href="/nhl/live" className="tap-target font-strong underline">
           live scores
         </Link>
         .

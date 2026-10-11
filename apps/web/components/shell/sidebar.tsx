@@ -1,9 +1,7 @@
-import { Suspense } from "react";
-import { NAV_ITEMS } from "../../lib/nav";
 import { Link } from "../link";
 import { ScoreboardGate } from "../scoreboard/scoreboard-provider";
 import { SidebarNav, SidebarTheme, SidebarTonight, TonightRows } from "./sidebar-client";
-import { SIDEBAR_ROW_PX, SidebarHeading, TONIGHT_COLUMNS } from "./sidebar-parts";
+import { SIDEBAR_FOCUS, SidebarHeading, TONIGHT_COLUMNS } from "./sidebar-parts";
 
 /** The places' column headers: the number sits over the rows' own, as a ledger's rank does. */
 const NAV_COLUMNS = [
@@ -26,7 +24,7 @@ export function Sidebar() {
       <div data-slot="sidebar-head" className="flex h-9 shrink-0 border-rule border-b">
         <Link
           href="/"
-          className="flex flex-1 items-center px-4 font-strong text-wordmark outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+          className={`${SIDEBAR_FOCUS} flex flex-1 items-center px-4 font-strong text-wordmark focus-visible:ring-ring`}
         >
           YOGAN/HOCKEY
         </Link>
@@ -34,19 +32,17 @@ export function Sidebar() {
       {/* 24px under the strip's rule, where the page's first section header begins. */}
       <nav aria-label="Site" className="mt-6 shrink-0">
         <SidebarHeading title="Site" columns={NAV_COLUMNS} />
-        {/* Reading the query string suspends during a static render; the rows keep their room. */}
-        <div style={{ minHeight: NAV_ITEMS.length * SIDEBAR_ROW_PX }}>
-          <Suspense>
-            <SidebarNav />
-          </Suspense>
-        </div>
+        <SidebarNav />
       </nav>
       <div className="mt-8 shrink-0">
         <ScoreboardGate
           fallback={
             <>
               <SidebarHeading title="Tonight" columns={TONIGHT_COLUMNS} />
-              <TonightRows counts={null} />
+              {/* In the rows' own colour, which is their link's once there is one. */}
+              <div className="text-note">
+                <TonightRows counts={null} />
+              </div>
             </>
           }
         >

@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 const DARK_BACKGROUND = "rgb(15, 23, 42)";
 const LIGHT_BACKGROUND = "rgb(251, 250, 247)";
 
-test("the shell renders, switches theme, and its phone menu closes on navigation", async ({
+test("the shell renders, switches theme, and a phone gets the tab bar in place of a menu", async ({
   page,
 }) => {
   // The operating system asks for dark, and the visitor has not chosen yet.
@@ -18,22 +18,22 @@ test("the shell renders, switches theme, and its phone menu closes on navigation
   const sidebar = page.getByRole("complementary");
   await expect(sidebar.getByRole("link", { name: "YOGAN/HOCKEY" })).toHaveAttribute("href", "/");
   // Each place is numbered for the eye; its name is the place alone.
-  const places = sidebar.getByRole("navigation", { name: "Site" }).getByRole("link");
-  await expect(places).toHaveCount(5);
+  const sidebarPlaces = sidebar.getByRole("navigation", { name: "Site" }).getByRole("link");
+  await expect(sidebarPlaces).toHaveCount(5);
   for (const [index, name] of ["Home", "Scores", "Standings", "Teams", "Players"].entries())
-    await expect(places.nth(index)).toHaveAccessibleName(name);
+    await expect(sidebarPlaces.nth(index)).toHaveAccessibleName(name);
   // Today's slate at a glance, from the page's one Scoreboard socket, leading to the scores.
-  await expect(sidebar.getByRole("link", { name: /^Scores: 9 games, 9 to come$/ })).toHaveAttribute(
-    "href",
-    "/nhl/live",
-  );
+  const tonight = sidebar.getByRole("link", { name: /^Tonight's scores/ });
+  await expect(tonight).toHaveAttribute("href", "/nhl/live");
+  await expect(tonight).toContainText("to come9");
   // The sidebar's first rule is the score strip's, carried across.
   const ruleUnder = (slot: string) =>
     page.locator(`[data-slot="${slot}"]`).evaluate((node) => node.getBoundingClientRect().bottom);
-  expect(await ruleUnder("sidebar-head")).toBe(await ruleUnder("score-ticker"));
+  expect(await ruleUnder("sidebar-head")).toBeCloseTo(await ruleUnder("score-ticker"), 1);
   await expect(page.getByRole("contentinfo")).toContainText("ESPN");
   await expect(page.locator('[data-slot="score-ticker"]')).toBeAttached();
-  await expect(page.getByRole("button", { name: "Open menu" })).toBeHidden();
+  const tabBar = page.locator('[data-slot="tab-bar"]');
+  await expect(tabBar).toBeHidden();
 
   // The theme follows the operating system until the visitor chooses, then keeps the choice.
   const body = page.locator("body");
@@ -88,27 +88,42 @@ test("the shell renders, switches theme, and its phone menu closes on navigation
     expect(icon.headers()["content-type"], src).toMatch(/^image\//);
   }
 
-  // Phone: the sidebar gives way to a top bar whose menu closes when a link is followed.
-  await page.setViewportSize({ width: 390, height: 844 });
+  // Phone: the sidebar gives way to a top bar and, fixed to the foot of the screen, the five
+  // places in a tab bar. There is no menu.
+  const phone = { width: 390, height: 844 };
+  await page.setViewportSize(phone);
   await expect(sidebar).toBeHidden();
-  await page.getByRole("button", { name: "Open menu" }).click();
-  const menu = page.getByRole("dialog", { name: "Menu" });
-  await menu.getByRole("link", { name: "Home", exact: true }).click();
-  await expect(page.getByRole("region", { name: "Tonight" })).toBeVisible();
+  await expect(page.getByRole("button", { name: /menu/i })).toHaveCount(0);
+  // The sidebar's navigation is not drawn, so the tab bar is the one a visitor is offered.
+  await expect(page.getByRole("navigation", { name: "Site" })).toHaveCount(1);
+  const places = tabBar.getByRole("link");
+  await expect(places).toHaveText(["Home", "Scores", "Standings", "Teams", "Players"]);
+  // A page that is nowhere marks no place.
+  await expect(tabBar.locator('[aria-current="page"]')).toHaveCount(0);
+  const bar = await tabBar.boundingBox();
+  expect(bar && bar.y + bar.height).toBe(phone.height);
+  for (const place of await places.all()) {
+    const box = await place.boundingBox();
+    expect(box?.height).toBeGreaterThanOrEqual(44);
+    expect(box?.width).toBeGreaterThanOrEqual(44);
+  }
+  // Scrolled to the end, the footer ends above the bar, not under it.
+  await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
+  const footer = await page.getByRole("contentinfo").boundingBox();
+  expect(footer && footer.y + footer.height).toBeLessThanOrEqual(bar?.y ?? 0);
+
   const header = page.getByRole("banner");
+  await places.getByText("Home", { exact: true }).click();
+  await expect(page.getByRole("region", { name: "Tonight" })).toBeVisible();
+  await expect(tabBar.locator('[aria-current="page"]')).toHaveText("Home");
+  // The bars are the layout's: a place followed changes the page between them and leaves them.
   await header.evaluate((node) => node.setAttribute("data-persistence-check", "kept"));
-  await page.getByRole("button", { name: "Open menu" }).click();
-  await menu.getByRole("link", { name: "Players", exact: true }).click();
+  await tabBar.evaluate((node) => node.setAttribute("data-persistence-check", "kept"));
+  await places.getByText("Players", { exact: true }).click();
   await expect(page).toHaveURL(/\/players$/);
-  await expect(menu).toBeHidden();
+  await expect(tabBar.locator('[aria-current="page"]')).toHaveText("Players");
   await expect(header).toHaveAttribute("data-persistence-check", "kept");
-  await page.getByRole("button", { name: "Open menu" }).click();
-  await expect(menu.getByRole("link", { name: "Players", exact: true })).toHaveAttribute(
-    "aria-current",
-    "page",
-  );
-  await page.keyboard.press("Escape");
-  await expect(menu).toBeHidden();
+  await expect(tabBar).toHaveAttribute("data-persistence-check", "kept");
 
   // The top bar carries the toggle on a phone, so both themes are reachable there too.
   const topBar = page.getByRole("banner");

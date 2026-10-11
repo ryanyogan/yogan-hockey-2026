@@ -15,15 +15,11 @@ export type MeasuredRoute = {
   interactions: Interaction[];
 };
 
-/** On every route: the shell's own controls. The menu is last, since it covers the page. */
+/** On every route: the shell's own controls. */
 export const SHELL_INTERACTIONS: Interaction[] = [
   { name: "theme toggle", selector: 'button:has-text("mode")' },
   { name: "open the whole slate", selector: 'nav button:has-text("games")' },
 ];
-export const MENU_INTERACTION: Interaction = {
-  name: "open the menu",
-  selector: 'button[aria-label="Open menu"]',
-};
 
 export type Subjects = {
   team: string;

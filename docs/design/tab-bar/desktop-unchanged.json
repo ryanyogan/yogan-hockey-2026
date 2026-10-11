@@ -1,0 +1,223 @@
+{
+  "width": 1440,
+  "shots": [
+    {
+      "file": "error-1440-dark.png",
+      "size": "1440x900",
+      "differing": 0,
+      "same": true
+    },
+    {
+      "file": "error-1440-light.png",
+      "size": "1440x900",
+      "differing": 0,
+      "same": true
+    },
+    {
+      "file": "game-1440-dark.png",
+      "size": "1440x2146",
+      "differing": 0,
+      "same": true
+    },
+    {
+      "file": "game-1440-light.png",
+      "size": "1440x2146",
+      "differing": 0,
+      "same": true
+    },
+    {
+      "file": "game-pick-1440-dark.png",
+      "size": "1440x1020",
+      "differing": 0,
+      "same": true
+    },
+    {
+      "file": "game-pick-1440-light.png",
+      "size": "1440x1020",
+      "differing": 0,
+      "same": true
+    },
+    {
+      "file": "game-scheduled-1440-dark.png",
+      "size": "1440x1685",
+      "differing": 0,
+      "same": true
+    },
+    {
+      "file": "game-scheduled-1440-light.png",
+      "size": "1440x1685",
+      "differing": 0,
+      "same": true
+    },
+    {
+      "file": "game-scoring-1440-dark.png",
+      "size": "1440x1227",
+      "differing": 0,
+      "same": true
+    },
+    {
+      "file": "game-scoring-1440-light.png",
+      "size": "1440x1227",
+      "differing": 0,
+      "same": true
+    },
+    {
+      "file": "home-1440-dark.png",
+      "size": "1440x950",
+      "differing": 0,
+      "same": true
+    },
+    {
+      "file": "home-1440-light.png",
+      "size": "1440x950",
+      "differing": 0,
+      "same": true
+    },
+    {
+      "file": "not-found-1440-dark.png",
+      "size": "1440x900",
+      "differing": 0,
+      "same": true
+    },
+    {
+      "file": "not-found-1440-light.png",
+      "size": "1440x900",
+      "differing": 0,
+      "same": true
+    },
+    {
+      "file": "player-1440-dark.png",
+      "size": "1440x1166",
+      "differing": 0,
+      "same": true
+    },
+    {
+      "file": "player-1440-light.png",
+      "size": "1440x1166",
+      "differing": 0,
+      "same": true
+    },
+    {
+      "file": "player-games-1440-dark.png",
+      "size": "1440x1166",
+      "differing": 0,
+      "same": true
+    },
+    {
+      "file": "player-games-1440-light.png",
+      "size": "1440x1166",
+      "differing": 0,
+      "same": true
+    },
+    {
+      "file": "players-1440-dark.png",
+      "size": "1440x900",
+      "differing": 0,
+      "same": true
+    },
+    {
+      "file": "players-1440-light.png",
+      "size": "1440x900",
+      "differing": 0,
+      "same": true
+    },
+    {
+      "file": "roster-1440-dark.png",
+      "size": "1440x1288",
+      "differing": 0,
+      "same": true
+    },
+    {
+      "file": "roster-1440-light.png",
+      "size": "1440x1288",
+      "differing": 0,
+      "same": true
+    },
+    {
+      "file": "sample-live-1440-dark.png",
+      "size": "1440x991",
+      "differing": 0,
+      "same": true
+    },
+    {
+      "file": "sample-live-1440-light.png",
+      "size": "1440x991",
+      "differing": 0,
+      "same": true
+    },
+    {
+      "file": "sample-loading-1440-dark.png",
+      "size": "1440x2244",
+      "differing": 0,
+      "same": true
+    },
+    {
+      "file": "sample-loading-1440-light.png",
+      "size": "1440x2244",
+      "differing": 0,
+      "same": true
+    },
+    {
+      "file": "scores-1440-dark.png",
+      "size": "1440x900",
+      "differing": 67,
+      "same": false,
+      "why": "67 pixels differ, within 56x9+1360+65"
+    },
+    {
+      "file": "scores-1440-light.png",
+      "size": "1440x900",
+      "differing": 71,
+      "same": false,
+      "why": "71 pixels differ, within 56x9+1360+65"
+    },
+    {
+      "file": "standings-1440-dark.png",
+      "size": "1440x900",
+      "differing": 0,
+      "same": true
+    },
+    {
+      "file": "standings-1440-light.png",
+      "size": "1440x900",
+      "differing": 0,
+      "same": true
+    },
+    {
+      "file": "stats-1440-dark.png",
+      "size": "1440x900",
+      "differing": 0,
+      "same": true
+    },
+    {
+      "file": "stats-1440-light.png",
+      "size": "1440x900",
+      "differing": 0,
+      "same": true
+    },
+    {
+      "file": "team-1440-dark.png",
+      "size": "1440x3169",
+      "differing": 0,
+      "same": true
+    },
+    {
+      "file": "team-1440-light.png",
+      "size": "1440x3169",
+      "differing": 0,
+      "same": true
+    },
+    {
+      "file": "teams-1440-dark.png",
+      "size": "1440x1302",
+      "differing": 0,
+      "same": true
+    },
+    {
+      "file": "teams-1440-light.png",
+      "size": "1440x1302",
+      "differing": 0,
+      "same": true
+    }
+  ]
+}

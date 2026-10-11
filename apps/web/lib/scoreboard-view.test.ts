@@ -8,7 +8,6 @@ import {
   heardAtFrom,
   laterOf,
   slateCounts,
-  slateCountsLine,
   slateSections,
   stripReach,
   tickerGames,
@@ -119,16 +118,8 @@ test("a slate is split into games in progress, to come, finished and postponed",
 });
 
 test("a slate is counted by where each game stands", () => {
-  expect(slateCounts(SLATE)).toEqual({ games: 8, live: 2, upcoming: 3, final: 2, postponed: 1 });
-  expect(slateCounts([])).toEqual({ games: 0, live: 0, upcoming: 0, final: 0, postponed: 0 });
-});
-
-test("a slate's counts read as one line, without the kinds that have none", () => {
-  expect(slateCountsLine(slateCounts(SLATE))).toBe(
-    "8 games, 2 live, 3 to come, 2 final, 1 postponed",
-  );
-  expect(slateCountsLine(slateCounts([game("one", { status: "final" })]))).toBe("1 game, 1 final");
-  expect(slateCountsLine(slateCounts([]))).toBe("no games today");
+  expect(slateCounts(SLATE)).toEqual({ live: 2, upcoming: 3, final: 2, postponed: 1 });
+  expect(slateCounts([])).toEqual({ live: 0, upcoming: 0, final: 0, postponed: 0 });
 });
 
 test("the ticker leads with what is on, then what is to come, then what is over", () => {

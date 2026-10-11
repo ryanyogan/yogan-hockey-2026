@@ -55,7 +55,7 @@ async function Standings() {
   ));
 }
 
-/** Tonight and favorites beside the conference standings, stacked on a phone. */
+/** The original Tonight ledger, followed by real favorites and both conferences. */
 export function Dashboard({
   picks,
   record,
@@ -65,18 +65,12 @@ export function Dashboard({
 }) {
   return (
     <>
-      <div className="page-heading">
-        <h1>Games</h1>
-        <p>NHL</p>
+      <TonightGames picks={picks} record={record} />
+      <div className="grid grid-cols-1 gap-8 xl:grid-cols-2">
+        <DashboardFavorites />
       </div>
-      <div className="dashboard-grid">
-        <div className="dashboard-stack">
-          <TonightGames picks={picks} record={record} />
-          <DashboardFavorites />
-        </div>
-        <div className="dashboard-stack dashboard-standings">
-          <Standings />
-        </div>
+      <div className="grid grid-cols-1 gap-8 xl:grid-cols-2">
+        <Standings />
       </div>
     </>
   );

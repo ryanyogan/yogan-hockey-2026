@@ -116,7 +116,7 @@ export function GameView({
           onSelect={toggle}
         />
         {transport ?? (
-          <p data-slot="timeline-hint" className="mt-1 text-muted-foreground">
+          <p data-slot="timeline-hint" className="mt-1 text-foreground/50">
             Click a tick to see that play on the ice.{" "}
             {picked ? (
               <>

@@ -109,7 +109,7 @@ export function HeaderLine({
         <h1 className="font-bold text-base uppercase">
           {name}
           {detail ? (
-            <span className="font-normal text-[13px] text-muted-foreground normal-case max-sm:block">
+            <span className="font-normal text-[13px] text-foreground/50 normal-case max-sm:block">
               {" "}
               {detail}
             </span>
@@ -121,7 +121,7 @@ export function HeaderLine({
         <dl className="flex flex-wrap gap-x-6 gap-y-1 border-foreground/20 border-t px-2 py-1">
           {facts.map((fact) => (
             <div key={fact.label}>
-              <dt className="text-xs text-muted-foreground uppercase tracking-wider">
+              <dt className="text-[10px] text-foreground/50 uppercase tracking-wider">
                 {fact.label}
               </dt>
               <dd>{fact.value}</dd>

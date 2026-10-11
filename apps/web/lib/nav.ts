@@ -8,7 +8,7 @@ export type NavItem = {
 const under = (pathname: string, root: string) =>
   pathname === root || pathname.startsWith(`${root}/`);
 
-/** The same five destinations stay visible on desktop and phone. */
+/** The same five destinations belong to the desktop sidebar and phone menu. */
 export const NAV_ITEMS: readonly NavItem[] = [
   { label: "Home", href: "/", owns: (pathname) => pathname === "/" },
   {

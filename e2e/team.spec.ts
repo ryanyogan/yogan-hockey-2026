@@ -110,7 +110,7 @@ test("a team's page shows each tab from a pasted URL, titled with the team's nam
       await expect(playing.getByRole("link")).toHaveAttribute("href", `/nhl/games/${GAME_ID}`);
       await expect(playing.locator('[data-slot="game-pick"]')).toHaveText("TOR 58%");
       await expect(playing.getByRole("cell").last()).toHaveText(
-        "Scotiabank Arena · ESPN+, Scripps Sports",
+        "TOR 58%Scotiabank Arena · ESPN+, Scripps Sports",
       );
       await expect(section(page, /^Next game/)).toHaveCount(0);
       // The ticker slate changed from eight to nine games above us; isolate the team content.

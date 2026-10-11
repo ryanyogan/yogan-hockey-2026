@@ -14,7 +14,7 @@ export default async function TeamRosterPage({ params }: { params: Promise<{ id:
   return (
     // Kept to the first of two columns from `xl` up: across the whole page a name is too far
     // from its position to read across.
-    <div className="grid gap-4 xl:grid-cols-2">
+    <div className="grid gap-8 xl:grid-cols-2">
       <RosterLedger
         players={sortRoster(detail.roster)}
         action={(player) => <FavoriteHeart kind="player" id={player.id} name={player.name} />}

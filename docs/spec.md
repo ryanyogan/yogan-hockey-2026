@@ -1,6 +1,6 @@
 # Yogan Hockey 2026: build spec
 
-Current direction: [the approved October 10 UI](design/navigation-direction.md) supersedes earlier visual requirements below. Family and fictional Rylan features are retired; their older descriptions are historical. The server/cache performance rules below remain current.
+Current direction: [the original Tonight ledger restored by #121](design/original-restored.md) supersedes the later navigation redesign and canceled experiments. Family and fictional Rylan features remain retired; their older descriptions are historical. All server/cache and nested-layout performance rules remain current.
 
 
 The whole design, as decided on the [map](https://github.com/ryanyogan/yogan-hockey-2026/issues/1). It is written in the present tense: it describes the site as it will be when built. Vocabulary is from `GLOSSARY.md`; the reasons behind the larger choices are in `docs/adr/`. Where a detail here and a closed ticket disagree, this document wins, because it leaves out what was later superseded.

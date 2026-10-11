@@ -7,12 +7,13 @@
 // Each page is opened in a new browser context (an empty cache) at 390px and 1440px, twice: as
 // the network gives it, and with the font file held back two seconds, which is the slow phone.
 // It records the cumulative layout shift, whether the font is self-hosted and preloaded, and,
-// for the held-back load, how far the first ledger row's cells and the page's height moved when
-// the real face took over from the fallback. A page shifts for reasons that are not the font
-// (a time rewritten in the visitor's zone, favorites read from the browser), so the font is
-// judged by the difference: it exits 1 when holding the font back adds to the layout shift,
-// when anything moved at the swap, or when the font comes from another origin or is not
-// preloaded.
+// for the held-back load, how far the first row's cells (a ledger's, or a play's on a game's
+// page) and the page's height moved when the real face took over from the fallback, and the
+// layout shift in the frames after it arrived. A page shifts for reasons that are not the font
+// (a time rewritten in the visitor's zone, favorites read from the browser) and by an amount
+// that varies with when the page hydrates, so the font is judged at the swap alone: it exits 1
+// when anything moved or shifted there, when there was no row to measure, or when the font
+// comes from another origin or is not preloaded.
 import { writeFile } from "node:fs/promises";
 import { chromium } from "@playwright/test";
 
@@ -21,9 +22,15 @@ const PATHS = ["/", "/nhl", "/nhl/teams/21", "/players/4024123", "/nhl/games/401
 const WIDTHS = { 390: 844, 1440: 900 };
 const HOLD_MS = 2000;
 
-/** Where the first ledger row's cells are, and the size of the page: what a font swap could move. */
+/**
+ * Where the first ledger row's cells and the page's own blocks are, and the size of the page:
+ * what a font swap could move. A page with no ledger (a game's) still has its blocks.
+ */
 const geometry = () => {
-  const cells = [...(document.querySelector('[data-slot="ledger-row"]')?.children ?? [])];
+  const cells = [
+    ...(document.querySelector('[data-slot="ledger-row"]')?.children ?? []),
+    ...document.querySelectorAll("main > *, main > * > *"),
+  ];
   return {
     height: document.documentElement.scrollHeight,
     cells: cells.map((cell) => {
@@ -35,7 +42,7 @@ const geometry = () => {
 
 const browser = await chromium.launch();
 const results = [];
-const unheld = new Map();
+
 for (const path of PATHS) {
   for (const [width, height] of Object.entries(WIDTHS)) {
     for (const held of [false, true]) {
@@ -53,9 +60,19 @@ for (const path of PATHS) {
       }
       await page.addInitScript(() => {
         window.__cls = 0;
+        window.__atSwap = 0;
+        window.__fontAt = null;
+        document.fonts.addEventListener("loadingdone", () => {
+          window.__fontAt ??= performance.now();
+        });
         new PerformanceObserver((list) => {
-          for (const entry of list.getEntries())
-            if (!entry.hadRecentInput) window.__cls += entry.value;
+          for (const entry of list.getEntries()) {
+            if (entry.hadRecentInput) continue;
+            window.__cls += entry.value;
+            // A shift in the frames after the face arrived is the swap's.
+            if (window.__fontAt != null && entry.startTime >= window.__fontAt - 50)
+              window.__atSwap += entry.value;
+          }
         }).observe({ type: "layout-shift", buffered: true });
       });
       await page.goto(`${baseURL}${path}`, { waitUntil: "domcontentloaded" });
@@ -77,6 +94,7 @@ for (const path of PATHS) {
           .map((face) => face.display)
           .filter((value, at, all) => all.indexOf(value) === at),
         cls: Math.round(window.__cls * 100000) / 100000,
+        atSwap: Math.round(window.__atSwap * 100000) / 100000,
       }));
       const moved =
         before == null
@@ -88,9 +106,8 @@ for (const path of PATHS) {
               ),
             );
       const failed = [];
-      if (!held) unheld.set(`${path} ${width}`, head.cls);
-      const added = held ? head.cls - unheld.get(`${path} ${width}`) : 0;
-      if (added > 0.001) failed.push(`the late font added ${added} of layout shift`);
+      if (held && head.atSwap > 0.001) failed.push(`${head.atSwap} of layout shift at the swap`);
+
       if (moved != null && moved > 0.5) failed.push(`moved ${moved}px at the swap`);
       if (fonts.some((url) => !url.startsWith(baseURL))) failed.push("font from another origin");
       if (fonts.length === 0) failed.push("no font requested");
@@ -102,13 +119,14 @@ for (const path of PATHS) {
         before != null &&
         (before.cells.length === 0 || before.cells.length !== after.cells.length)
       ) {
-        failed.push("no ledger row to measure before the swap");
+        failed.push("what was measured before the swap is not what was there after it");
       }
       results.push({
         path,
         width: Number(width),
         fontHeldBackMs: held ? HOLD_MS : 0,
         cls: head.cls,
+        clsAtSwap: held ? head.atSwap : null,
         fontFiles: fonts.map((url) => url.replace(baseURL, "")),
         preloaded: head.preload,
         fontDisplay: head.display,

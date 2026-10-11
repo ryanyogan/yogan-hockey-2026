@@ -309,7 +309,7 @@ export function TeamSection({ team }: { team: Team }) {
       <SectionHeader title="Team" />
       <Ledger>
         <LedgerBody>
-          <LedgerRow interactive className="border-t border-t-foreground/20">
+          <LedgerRow interactive className="border-t border-t-rule-head">
             <LedgerCell>
               <Link href={teamHref(team)} className={ledgerRowLink}>
                 <TeamMark teamId={team.id} />

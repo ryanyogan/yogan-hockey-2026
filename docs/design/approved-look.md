@@ -88,9 +88,10 @@ Geist Mono is one variable file holding every weight, downloaded by vinext at bu
 
 Measured by `node scripts/font-load.mjs` on a production build in fixture mode (`approved-look/font-load.json`): five pages at both widths, each opened cold in a new browser context, once as the network gave it and once with the font file held back two seconds.
 
-- At the swap, the first ledger row's cells and the page's height moved **0px** on every page at both widths. The machine that measured has Liberation Mono; a device with none of the five faces falls back to its own `ui-monospace` or `monospace`, whose width is not promised.
-- Holding the font back added **0** to the cumulative layout shift on every page.
-- Standings, a player and a game shift 0 in all. Home shifts 0.0013 on a phone and 0.0234 at 1440, and a team 0.0047 and 0.0010, with the font or without it: the times in the score strip are rewritten in the visitor's zone, and Home's Favorites block grows a line when the browser turns out to hold none. Both are as on the site before this change (0.0095 on hockey.yogan.dev's Home the same day) and are #140's "zero layout shift" to fix.
+- At the swap, the first ledger row's cells, the page's own blocks and its height moved **0px** on every page at both widths. The machine that measured has Liberation Mono; a device with none of the five faces falls back to its own `ui-monospace` or `monospace`, whose width is not promised.
+- The layout shift in the frames after the font arrived was **0** on all ten held-back loads.
+- Over a whole load, Standings, a player and a game shift 0. Home shifts up to 0.0026 on a phone and 0.0234 at 1440, and a team up to 0.0047, by an amount that varies from one load to the next with when the page hydrates and is the same with the font held back or not: the times in the score strip are rewritten in the visitor's zone, and Home's Favorites block grows a line when the browser turns out to hold none. Both were on the site before this change (0.0095 on hockey.yogan.dev's Home the same day, with a shorter slate) and are #140's "zero layout shift" to fix.
+- The text does change face once on a cold load on a slow connection: `swap` shows the fallback at once and never hides the words. What is ruled out is the words moving, and the invisible text `block` would give.
 
 ## Decisions taken without asking
 

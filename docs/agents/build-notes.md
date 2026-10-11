@@ -2,6 +2,20 @@
 
 What earlier tickets learned that the code does not show. Read before building; add a line when you learn something the next subagent would otherwise rediscover. Keep each note to what cannot be found by reading the code.
 
+## The animated rink (#141)
+
+- **Three parts.** `lib/game/rink-animation.ts` (`describePlay`: a play to a `RinkAnimation`, pure), `lib/game/rink-queue.ts` (a reducer: what the page shows to what the ice plays, pure) and `components/game/rink-player.ts` (GSAP draws one cue). `RinkAnimations` joins them and renders nothing. The goal sequence (#142) adds fields to the `goal` member and steps to its timeline; penalties (#143) add a member, a `case` in `timelineFor` and their own elements in `Effects`.
+- **The rules are the queue's**, the same for a Game Stream and a Replay: a page opening plays nothing; following a game, arrivals queue and play one at a time; a picked play (a Replay's playhead, a clicked tick) replaces whatever is on the ice; the ice shows the play in focus or nothing. One poll of ESPN is a burst (save, stoppage, faceoff arrive together), so a burst is the usual case, not the odd one.
+- **GSAP only touches what React never changes**: the effects layer and the creases, which have constant props, and a dot's `transform`, which React does not set. A tween of a React-owned attribute (a dot's `r`) loses to the next render, or wins against it and leaves the wrong size.
+- **GSAP rounds a style in px**, so `strokeDashoffset` from 1 to 0 on a `pathLength="1"` line jumps instead of drawing (the prototype's line has this fault). Tween the line's `x2`/`y2` with `attr`.
+- **A `set` inside a timeline is not drawn until the next tick**, which is one empty frame between two cues. Set the starting state with `gsap.set` outside the timeline.
+- **Reduced motion still holds each cue**: the timeline is jumped to its end, but the cue is reported finished only after the hold. Finishing at once would let a trailing faceoff's clear wipe a save before anyone saw it.
+- **GSAP is one lazy chunk**, fetched when a game page first has something to play, and `rink-player.ts` is the only file that may import it. Sizes from `ESPN_FIXTURES=1 pnpm build`: `game-page` 23.67 kB (7.96 gzip) before, 28.38 kB (9.55) after; `rink-player` 71.79 kB (28.26), on first cue only; no other chunk changed. Compare the build log's chunk list before and after: the bytes a browser loads for a route vary by a few files from run to run with what gets prefetched.
+- **The minifier drops every comment, licence notices included** (React's too). GSAP's licence wants its notice kept, so `apps/web/vite.config.ts` writes it back on the `rink-player` chunk with `output.postBanner`. Renaming that file means renaming `GSAP_CHUNK` there.
+- **`node scripts/rink-shots.ts <url>`** retakes `docs/design/rink-animations/` and prints what was on the ice after each step of a Replay and a Game Stream, and the layout shift with and without animations (it blocks the chunk for the second). The recorded game has no shot without a coordinate, so the script makes one.
+- **Layout shift cannot be told from a single number here**: stepping a Replay grows and shrinks the plays list, which Chrome counts when the click is scripted. Animated and not, the Replay run measured the same (0.4503 both).
+- **`vite preview` has no plays for the recorded game** unless the fixture D1 is copied over (see #107's notes), so the ticks are missing there; check animations on `pnpm dev`.
+
 ## Home screen install (#130)
 
 What was checked and what a real phone still has to confirm: `docs/design/install/README.md`.

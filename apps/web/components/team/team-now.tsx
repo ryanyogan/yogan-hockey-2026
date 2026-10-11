@@ -43,8 +43,7 @@ export function TeamNow({ teamId, listed }: { teamId: string; listed: Game | nul
   const live = liveGame(teamId, scoreboard.games);
   if (live != null) {
     return (
-      // The game ledger's columns are fixed and need the page's whole width beside a header.
-      <Section className="xl:col-span-2">
+      <Section>
         <SectionHeader title="Playing now" />
         <GameLedger games={[live]} pick={(game) => pickNote(picks[game.id], game.status)} />
       </Section>

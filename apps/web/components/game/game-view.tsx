@@ -3,9 +3,10 @@
 import type { GameHeader, Play } from "@yogan-hockey/schemas";
 import { Button } from "@yogan-hockey/ui/components/button";
 import { UrlTabs } from "@yogan-hockey/ui/components/url-tabs";
+import { usePathname } from "next/navigation";
 import { type ReactNode, useState } from "react";
 import { focusedPlay, toggleSelection, visiblePlays } from "../../lib/game/plays";
-import { type GameTab, gameTabLinks, shownGameTab } from "../../lib/game/tabs";
+import { type GameTab, gameTabLinks, gameTabOfPath, shownGameTab } from "../../lib/game/tabs";
 import { Link } from "../link";
 import { GameRink } from "./game-rink";
 import { PeriodTimeline } from "./period-timeline";
@@ -68,8 +69,6 @@ export function GameView({
   /** What sits under the timeline in place of its hint: the Replay's controls. */
   transport?: ReactNode;
 }) {
-  const hasPick = pick != null;
-  const tab = shownGameTab(askedTab, hasPick);
   const [ownId, setOwnId] = useState<string | null>(null);
   const [ownEveryPlay, setOwnEveryPlay] = useState(false);
   const everyPlay = controlledEveryPlay ?? ownEveryPlay;
@@ -139,14 +138,71 @@ export function GameView({
           </p>
         )}
       </div>
+      <GameTabs
+        pathname={pathname}
+        fallbackTab={askedTab}
+        header={header}
+        plays={plays}
+        listed={listed}
+        focusId={focusId}
+        selectedId={selectedId}
+        toggle={toggle}
+        pick={pick}
+        everyPlay={everyPlay}
+        setEveryPlay={setEveryPlay}
+        keyCount={upcoming.length === 0 ? keyPlays.length : visiblePlays(game, false).length}
+        totalCount={game.length}
+      />
+    </div>
+  );
+}
+
+/** Only the tabs subscribe to the address; the mounted rink and transport keep their render. */
+function GameTabs({
+  pathname,
+  fallbackTab,
+  header,
+  plays,
+  listed,
+  focusId,
+  selectedId,
+  toggle,
+  pick,
+  everyPlay,
+  setEveryPlay,
+  keyCount,
+  totalCount,
+}: {
+  pathname: string;
+  fallbackTab: GameTab;
+  header: GameHeader;
+  plays: readonly Play[];
+  listed: readonly Play[];
+  focusId: string | null;
+  selectedId: string | null;
+  toggle: (id: string) => void;
+  pick: ReactNode;
+  everyPlay: boolean;
+  setEveryPlay: (value: boolean) => void;
+  keyCount: number;
+  totalCount: number;
+}) {
+  const path = usePathname();
+  const hasPick = pick != null;
+  const tab = shownGameTab(
+    path.startsWith(`${pathname}/`) || path === pathname ? gameTabOfPath(path) : fallbackTab,
+    hasPick,
+  );
+  return (
+    <>
       <div className="mt-6 flex flex-wrap items-center justify-between gap-2">
         <UrlTabs label="Game" link={Link} current={tab} tabs={gameTabLinks(pathname, hasPick)} />
         {/* On every tab: it decides the dots and the ticks as well as the list. */}
         <KeyPlaysToggle
           everyPlay={everyPlay}
           onChange={setEveryPlay}
-          keyCount={upcoming.length === 0 ? keyPlays.length : visiblePlays(game, false).length}
-          totalCount={game.length}
+          keyCount={keyCount}
+          totalCount={totalCount}
         />
       </div>
       <div data-slot="game-tab" className="mt-2">
@@ -170,6 +226,6 @@ export function GameView({
         )}
         {tab === "pick" && pick}
       </div>
-    </div>
+    </>
   );
 }

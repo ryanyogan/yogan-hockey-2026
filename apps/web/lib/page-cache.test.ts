@@ -51,6 +51,9 @@ describe("which pages are cached", () => {
     "/nhl/teams/1/roster",
     "/nhl/teams/1/stats.rsc",
     "/players/4024123",
+    "/players/4024123/games",
+    "/nhl/games/401892449/scoring",
+    "/nhl/games/401892449/pick.rsc",
     "/players",
     "/players.rsc",
     // Kept only when the game is over: the page itself says so for any other.

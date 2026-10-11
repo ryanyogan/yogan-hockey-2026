@@ -35,7 +35,12 @@ type Slots = {
  * Scoreboard, which every page already follows, reports it live, the page opens the Game Agent's
  * socket and follows the game from there to its final. Give it `key={gameId}`.
  */
-export function GamePage({ gameId, game, ...slots }: { gameId: string; game: FoundGame } & Slots) {
+export function GamePage({
+  gameId,
+  game,
+  ...slots
+}: { gameId: string; game: FoundGame } & Omit<Slots, "tab">) {
+  const tab: GameTab = "plays";
   // Not waited for: the page is whole from the Game Agent's answer, and the slate only says when
   // a game still to come has started.
   const scoreboard = useScoreboardSoFar().games.find((onSlate) => onSlate.id === gameId);
@@ -45,10 +50,11 @@ export function GamePage({ gameId, game, ...slots }: { gameId: string; game: Fou
   if (!streaming && streamStarts(game.header.status, scoreboard?.status)) setStreaming(true);
 
   if (streaming)
-    return <GameStream gameId={gameId} game={game} scoreboard={scoreboard} {...slots} />;
+    return <GameStream gameId={gameId} game={game} scoreboard={scoreboard} tab={tab} {...slots} />;
   return (
     <GameInPhase
       gameId={gameId}
+      tab={tab}
       header={game.header}
       plays={game.plays}
       delayed={game.delayed}

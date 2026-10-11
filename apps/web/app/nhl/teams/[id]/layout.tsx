@@ -81,7 +81,7 @@ export default async function TeamLayout({ params, children }: Props) {
       </div>
       {/* The foot of the page on every tab, as the player page has "back to players". */}
       <p className="px-2">
-        <Link href="/nhl" className="underline">
+        <Link href="/nhl" className="tap-target underline">
           back to NHL
         </Link>
       </p>

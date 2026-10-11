@@ -57,10 +57,24 @@ test("the Replay opens laid out, plays, pauses, jumps to a tick, and follows the
   await expect(position).toHaveText(held ?? "");
   await expect(rows).toHaveCount(heldRows);
 
+  // The penalty before it puts its player in the box, and Dallas on the power play.
+  const box = page.locator('[data-slot="penalty-box"]');
+  await ticks.and(page.locator('[aria-label^="2nd 2:24 Jordan Greenway"]')).click();
+  await expect(box.locator('[data-slot="boxed-penalty"]')).toHaveText(
+    /BUF\s*J\. Greenway\s*Interference.*2:00/,
+  );
+  await expect(box.locator('[data-slot="power-play"]')).toHaveText(
+    /DAL power play · 5 on 4 · 2:00/,
+  );
+  await expect(rink.locator('[data-slot="rink-power-play-zone"][data-on]')).toHaveCount(1);
+
   // Clicking a tick moves the playhead there: Dallas's tying goal in the 2nd, not yet reached.
   const tyingGoal = ticks.and(page.locator('[aria-label^="2nd 4:24 "]'));
   await expect(tyingGoal).toHaveAttribute("data-upcoming", "true");
   await tyingGoal.click();
+  // Scored as the penalty ran out: nobody is left in the box and the ice is clear.
+  await expect(box).toContainText("Nobody in the box");
+  await expect(rink.locator('[data-slot="rink-power-play-zone"][data-on]')).toHaveCount(0);
   await expect(score).toHaveText([/DAL.*2/, /BUF.*2/]);
   await expect(status).toHaveText("2nd 4:24");
   await expect(tyingGoal).not.toHaveAttribute("data-upcoming");
@@ -73,6 +87,10 @@ test("the Replay opens laid out, plays, pauses, jumps to a tick, and follows the
   const drawn = rink.locator('[data-slot="rink-fx"]');
   await expect(drawn).toHaveAttribute("data-kind", "goal");
   await expect(drawn).toHaveCSS("opacity", "1");
+  // And its sequence with it: the lamp behind the net it went into, and the scorer named.
+  const lamp = rink.locator('[data-slot="rink-lamp"][data-lit]');
+  await expect(lamp).toHaveAttribute("data-end", "right");
+  await expect(page.locator('[data-slot="goal-scorer"]').first()).toContainText("Esa Lindell (6)");
   const keyRows = await rows.count();
   expect(keyRows).toBeLessThan(74);
 
@@ -101,6 +119,7 @@ test("the Replay opens laid out, plays, pauses, jumps to a tick, and follows the
   await expect(status).toHaveText("Final/SO");
   // Nothing of the last play stepped onto is left on the ice.
   await expect(drawn).toHaveCSS("opacity", "0");
+  await expect(lamp).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "Shootout" })).toBeVisible();
   await expect(page.locator('[data-slot="play-row"]')).toHaveCount(11);
 });

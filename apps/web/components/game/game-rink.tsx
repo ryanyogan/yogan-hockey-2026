@@ -2,14 +2,18 @@
 
 import type { GameHeader, GameHeaderSide, Play } from "@yogan-hockey/schemas";
 import { LiveMarker } from "@yogan-hockey/ui/components/marker";
-import { type ReactNode, useRef } from "react";
+import { type ReactNode, useRef, useState } from "react";
+import { goalCall, goalFlag, STRENGTH_WORDS } from "../../lib/game/goal";
+import { type GameClock, NO_PENALTIES, penaltyState } from "../../lib/game/penalties";
 import { gameStatus, markKind, playTime } from "../../lib/game/plays";
 import { attackedEnd, type RinkEnd } from "../../lib/game/rink";
 import { periodLabel } from "../../lib/game/timeline";
 import { LocalTime } from "../local-time";
 import { TeamMark } from "../team-mark";
+import { PenaltyBox, PenaltyBoxSpace } from "./penalty-box";
 import { Rink } from "./rink";
 import { RinkAnimations } from "./rink-animations";
+import { teamColour } from "./team-colour";
 
 /*
  * Where the overlay sits, as fractions of the rink's width (`cqw`), so it keeps its place at any
@@ -79,7 +83,21 @@ function Score({ side, place }: { side: GameHeaderSide; place: Place }) {
         </>
       }
       wide={`${side.shots} shots`}
-      figure={side.score}
+      figure={
+        // A window one figure tall. A goal's sequence (`rink-player.ts`) writes the score before
+        // the goal above the figure and rolls the two up through the window; the figure itself is
+        // always the header's, so the roll can only end on the right score.
+        <span className="block h-[1em] overflow-hidden">
+          <span data-fx="score-roll" data-side={place} className="relative block">
+            <span
+              data-fx="score-before"
+              aria-hidden="true"
+              className="absolute inset-x-0 bottom-full block h-[1em] before:content-[attr(data-from)]"
+            />
+            {side.score}
+          </span>
+        </span>
+      }
       narrow={`${side.shots} sog`}
     />
   );
@@ -92,6 +110,10 @@ const CAPTION_ON_ICE = "max-w-[50cqw] truncate bg-black/70 px-4 py-1 text-slate-
 /* Under the ice where the ice is too small to write on. Two lines tall, so it never jumps. */
 const CAPTION_UNDER_ICE =
   "mt-1 line-clamp-2 min-h-10 bg-secondary px-2 py-0.5 leading-[18px] @2xl:hidden";
+/* A goal's caption is a flag beside two lines, each cut short, in the same room as any other's. */
+const GOAL_CAPTION_ON_ICE = "flex max-w-[56cqw] items-stretch bg-black/70 text-slate-100 leading-5";
+const GOAL_CAPTION_UNDER_ICE =
+  "mt-1 flex min-h-10 items-stretch bg-secondary leading-[18px] @2xl:hidden";
 
 /**
  * The rink before the game: the same ice at the same size as `GameRink`, so the page does not
@@ -139,6 +161,7 @@ export function MatchupRink({ header, status }: { header: GameHeader; status?: s
           )}
         </div>
       </div>
+      <PenaltyBoxSpace />
       <p data-slot="rink-caption" className={CAPTION_UNDER_ICE}>
         {where}
       </p>
@@ -168,19 +191,70 @@ function EndLabel({ end, header, plays, period, periodText }: EndProps & { end: 
 }
 type EndProps = { header: GameHeader; plays: readonly Play[]; period: number; periodText: string };
 
-function Caption({ play }: { play: Play }) {
+/**
+ * "GOAL" over centre ice while a goal's sequence is on the ice, which the player shows and hides.
+ * It stands on the live marker's line (the player dims the marker under it) or, in a Replay, which
+ * has no such line, under the clock. The word is CSS's, so the status still reads as it did.
+ */
+function GoalKicker({ live }: { live: boolean }) {
+  return (
+    <span
+      data-fx="goal-kicker"
+      aria-hidden="true"
+      className={`${STATUS_KICKER} absolute inset-x-0 font-bold text-live tracking-wider opacity-0 before:content-['Goal'] ${
+        live ? "top-0" : "top-full"
+      }`}
+    />
+  );
+}
+
+/**
+ * The play in focus, in words. A goal's are laid out as the approved prototype has them: a flag
+ * in the team's colour, the scorer, and how it was scored, led by the strength so that a long
+ * list of assists cannot push it out of sight.
+ */
+function Caption({ play, team }: { play: Play; team: GameHeaderSide | undefined }) {
+  const time = <span className="font-normal opacity-60">{playTime(play)}</span>;
+  if (markKind(play) !== "goal") {
+    return (
+      <>
+        {play.text} {time}
+      </>
+    );
+  }
+  const { scorer, tally, how, strength, shootout } = goalCall(play);
+  const who = scorer == null ? play.text : `${scorer}${tally == null ? "" : ` (${tally})`}`;
+  const said = [strength && STRENGTH_WORDS[strength], shootout && "shootout", scorer != null && how]
+    .filter(Boolean)
+    .join(" · ");
   return (
     <>
-      {markKind(play) === "goal" && "GOAL · "}
-      {play.text} <span className="opacity-60">{playTime(play)}</span>
+      <span
+        data-fx="caption-part"
+        data-slot="goal-flag"
+        style={goalFlag(team?.color)}
+        className="flex flex-none items-center bg-live px-3 font-bold text-white tracking-wider"
+      >
+        GOAL
+      </span>
+      <span data-fx="caption-part" className="min-w-0 self-center px-3 py-0.5">
+        <span data-slot="goal-scorer" className="block truncate font-bold">
+          {team && `${team.abbreviation} · `}
+          {who} {time}
+        </span>
+        <span data-slot="goal-how" className="block truncate opacity-70">
+          {said}
+        </span>
+      </span>
     </>
   );
 }
 
 /**
  * The rink as the page: the ice filling the width, the score, shots and clock laid over it, and
- * the play in focus ringed and captioned. Shots, saves and misses are played on the ice as they
- * arrive, and when a play is picked (`RinkAnimations`).
+ * the play in focus ringed and captioned. Shots, saves, misses and penalties are played on the
+ * ice as they arrive, and when a play is picked (`RinkAnimations`). Under it is the penalty box,
+ * and while a team has the advantage the zone it attacks is ruled in its colour.
  */
 export function GameRink({
   header,
@@ -191,6 +265,7 @@ export function GameRink({
   picked = false,
   status,
   notice,
+  clock = null,
 }: {
   /** Its score, shots, period and clock are what is laid over the ice. */
   header: GameHeader;
@@ -208,6 +283,11 @@ export function GameRink({
   status?: string;
   /** A warning under the clock: "Updates delayed". */
   notice?: string;
+  /**
+   * A live game's clock as last heard, which the penalties count down on between plays. Without
+   * one they stand as of the latest play: a Replay's playhead.
+   */
+  clock?: GameClock | null;
 }) {
   const { live, text } = gameStatus(header);
   // The ends are those of the period in focus, since the teams change ends each period.
@@ -215,22 +295,59 @@ export function GameRink({
   const periodText = focus?.periodText || periodLabel(period, header.seasonType);
   const ends = { header, plays, period, periodText };
   const rink = useRef<SVGSVGElement>(null);
+  // The words are the play in focus's, but for a goal whose sequence is on the ice: a poll of
+  // ESPN often brings the faceoff after a goal with it, and the scorer is still who to name.
+  const [goalOnIce, setGoalOnIce] = useState<string | null>(null);
+  const captioned =
+    (goalOnIce != null && played.find((play) => play.id === goalOnIce && play.scoring)) || focus;
+  const goal = captioned != null && markKind(captioned) === "goal";
+  const caption = captioned != null && (
+    <Caption
+      play={captioned}
+      team={[header.home, header.away].find((side) => side.id === captioned.teamId)}
+    />
+  );
+
+  // The box and the advantage are the game's as it stands (a Replay's at its playhead), not the
+  // picked play's: like the score, they do not move when a tick is clicked.
+  // A finished game laid out whole has nobody left in it, whether or not its last play says so.
+  const over = header.status === "final" && played.length === plays.length;
+  const penalties = over
+    ? NO_PENALTIES
+    : penaltyState(
+        played,
+        { homeTeamId: header.home.id, awayTeamId: header.away.id, seasonType: header.seasonType },
+        clock,
+      );
+  const ahead = [header.away, header.home].find((s) => s.id === penalties.advantage?.teamId);
+  // The zone is ruled only while the ice shows the ends of the period being played: with a play
+  // of another period picked, the ends are that period's, and the box alone says who is ahead.
+  const attacked =
+    ahead && period === penalties.period
+      ? attackedEnd(plays, header.home.id, ahead.id, period)
+      : null;
+  const powerPlay = ahead && attacked ? { end: attacked, style: teamColour(ahead) } : null;
   return (
     <div data-slot="game-rink" className="@container">
       <div className="relative">
-        <Rink ref={rink} plays={drawn} focus={focus} />
+        <Rink ref={rink} plays={drawn} focus={focus} powerPlay={powerPlay} />
         <RinkAnimations
           rink={rink}
           game={plays}
           plays={played}
           homeTeamId={header.home.id}
+          homeColour={header.home.color}
+          awayColour={header.away.color}
           focusId={focus?.id ?? null}
           picked={picked}
+          live={header.status === "live"}
+          onGoal={setGoalOnIce}
         />
         <div data-slot="rink-overlay" className="pointer-events-none absolute inset-0">
           <Score side={header.away} place="away" />
           <div data-slot="rink-status" className={STATUS_PLACE}>
             {live && <LiveMarker className={STATUS_KICKER} />}
+            <GoalKicker live={live} />
             {status ?? text}
             {notice != null && (
               <span data-slot="rink-notice" className="block text-small text-live leading-[15px]">
@@ -241,17 +358,27 @@ export function GameRink({
           <Score side={header.home} place="home" />
           <EndLabel end="left" {...ends} />
           <EndLabel end="right" {...ends} />
-          {focus != null && (
+          {captioned != null && (
             <div className="absolute inset-x-0 bottom-[1.96cqw] hidden justify-center @2xl:flex">
-              <p data-slot="rink-caption" className={CAPTION_ON_ICE} title={focus.text}>
-                <Caption play={focus} />
+              <p
+                data-slot="rink-caption"
+                data-play={captioned.id}
+                className={goal ? GOAL_CAPTION_ON_ICE : CAPTION_ON_ICE}
+                title={captioned.text}
+              >
+                {caption}
               </p>
             </div>
           )}
         </div>
       </div>
-      <p data-slot="rink-caption" className={CAPTION_UNDER_ICE}>
-        {focus != null && <Caption play={focus} />}
+      <PenaltyBox header={header} state={penalties} />
+      <p
+        data-slot="rink-caption"
+        data-play={captioned?.id}
+        className={goal ? GOAL_CAPTION_UNDER_ICE : CAPTION_UNDER_ICE}
+      >
+        {caption}
       </p>
     </div>
   );

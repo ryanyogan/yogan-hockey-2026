@@ -42,7 +42,6 @@ import {
 import {
   FIXTURE_SUBJECTS,
   type Interaction,
-  MENU_INTERACTION,
   type MeasuredRoute,
   measuredRoutes,
   SHELL_INTERACTIONS,
@@ -484,7 +483,7 @@ async function measureOnce(browser: Browser, route: MeasuredRoute, path: string)
     }
 
     const interactions: InteractionResult[] = [];
-    for (const interaction of [...SHELL_INTERACTIONS, ...route.interactions, MENU_INTERACTION]) {
+    for (const interaction of [...SHELL_INTERACTIONS, ...route.interactions]) {
       interactions.push({
         name: interaction.name,
         ms: await measureInteraction(page, interaction),

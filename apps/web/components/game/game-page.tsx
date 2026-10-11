@@ -110,7 +110,7 @@ function GameInPhase({
   archived: boolean;
   scoreboard?: Pick<Game, "status" | "period" | "clock">;
 } & Slots) {
-  const { status, notice } = streamReading({
+  const { status, notice, clock } = streamReading({
     header,
     plays,
     delayed,
@@ -137,6 +137,7 @@ function GameInPhase({
           pick={pick}
           status={status}
           notice={notice}
+          clock={clock}
         />
       );
     case "finished":

@@ -20,6 +20,8 @@ export const RINK = {
   creaseRadius: 6,
   netDepth: 3.4,
   netHalfWidth: 3,
+  /** The goal lamp, on the boards behind each net as it is on the glass in a real rink. */
+  lampRadius: 1.8,
   /** Room left round the boards for their stroke. */
   margin: 2,
 } as const;

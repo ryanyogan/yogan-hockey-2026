@@ -25,6 +25,9 @@ const PHONE = { width: 390, height: 844 };
 // The same phone on its side: the notch at one end, and wide enough for the sidebar.
 const SIDEWAYS = { width: 844, height: 390 };
 const SIDEWAYS_INSETS = { top: 0, right: 47, bottom: 21, left: 47 };
+// A small phone on its side is still narrower than the sidebar's breakpoint: it keeps the tab bar.
+const SMALL_SIDEWAYS = { width: 667, height: 375 };
+const TAB_BAR = 56;
 
 await mkdir(out, { recursive: true });
 const browser = await chromium.launch();
@@ -175,6 +178,10 @@ async function standalone(theme) {
         headerBox: header.getBoundingClientRect().toJSON(),
         headerContent: [...header.querySelectorAll("a, button")].map(box),
         footerContent: box(footer),
+        tabBarBox: document.querySelector('[data-slot="tab-bar"]').getBoundingClientRect().toJSON(),
+        tabBarContent: [...document.querySelectorAll('[data-slot="tab-bar"] a')].map(box),
+        stripBottom: document.querySelector('[data-slot="score-ticker"]').getBoundingClientRect()
+          .bottom,
         viewportHeight: innerHeight,
         sideways: document.documentElement.scrollWidth > innerWidth,
         themeColor: [...document.querySelectorAll('meta[name="theme-color"]')].map(
@@ -204,13 +211,22 @@ async function standalone(theme) {
     top.themeColor,
   );
 
-  await page.getByRole("button", { name: "Open menu" }).click();
-  const menu = page.getByRole("dialog", { name: "Menu" });
-  await menu.waitFor();
-  const menuTop = (await menu.boundingBox()).y;
-  check(`${theme}: the menu opens under the top bar`, menuTop === 44 + INSETS.top, { menuTop });
-  await page.screenshot({ path: `${out}/standalone-${theme}-390-menu.png` });
-  await page.keyboard.press("Escape");
+  check(
+    `${theme}: the tab bar's own background reaches the bottom edge`,
+    top.tabBarBox.bottom === top.viewportHeight && top.tabBarBox.height === TAB_BAR + INSETS.bottom,
+    top.tabBarBox,
+  );
+  check(
+    `${theme}: the tab bar's five places clear the home bar`,
+    top.tabBarContent.length === 5 &&
+      top.tabBarContent.every((item) => item.bottom <= top.viewportHeight - INSETS.bottom),
+    top.tabBarContent,
+  );
+  check(
+    `${theme}: the tab bar is below the score strip`,
+    top.stripBottom <= top.tabBarBox.top,
+    top,
+  );
 
   await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
   const bottom = await measure();
@@ -219,9 +235,14 @@ async function standalone(theme) {
     bottom.footerContent.bottom <= bottom.viewportHeight - INSETS.bottom,
     bottom.footerContent,
   );
+  check(
+    `${theme}: the footer's last line ends above the tab bar`,
+    bottom.footerContent.bottom <= bottom.tabBarBox.top,
+    bottom,
+  );
   await page.screenshot({ path: `${out}/standalone-${theme}-390-bottom.png` });
   await context.close();
-  return { operatingSystem: os, top, menuTop, bottom };
+  return { operatingSystem: os, top, bottom };
 }
 
 /** The shell with the phone on its side: the sidebar beside the notch, the page beside the other end. */
@@ -286,6 +307,74 @@ async function sideways() {
   return { simulatedInsets: SIDEWAYS_INSETS, ...measured };
 }
 
+/** A small phone on its side: the tab bar between the notch and the far end, over the home bar. */
+async function smallSideways() {
+  const context = await browser.newContext({
+    viewport: SMALL_SIDEWAYS,
+    colorScheme: "light",
+    hasTouch: true,
+  });
+  const page = await context.newPage();
+  const cdp = await context.newCDPSession(page);
+  await cdp.send("Emulation.setSafeAreaInsetsOverride", { insets: SIDEWAYS_INSETS });
+  await page.goto(base, { waitUntil: "networkidle" });
+  await page.evaluate(() => document.fonts.ready);
+  const measure = () =>
+    page.evaluate(() => {
+      const text = (node) => {
+        const range = document.createRange();
+        range.selectNodeContents(node);
+        const { left, right, bottom } = range.getBoundingClientRect();
+        return { left, right, bottom };
+      };
+      const bar = document.querySelector('[data-slot="tab-bar"]');
+      return {
+        tabBarShown: getComputedStyle(bar).display !== "none",
+        tabBarBox: bar.getBoundingClientRect().toJSON(),
+        tabBarContent: [...bar.querySelectorAll("a")].map(text),
+        stripBottom: document.querySelector('[data-slot="score-ticker"]').getBoundingClientRect()
+          .bottom,
+        footerBottom: text(document.querySelector("footer")).bottom,
+        sidewaysScroll: document.documentElement.scrollWidth > innerWidth,
+      };
+    });
+  const { left, right, bottom } = SIDEWAYS_INSETS;
+  const { width, height } = SMALL_SIDEWAYS;
+  const top = await measure();
+  check("small sideways: the tab bar is shown", top.tabBarShown, top);
+  check(
+    "small sideways: the tab bar's background reaches the bottom edge",
+    top.tabBarBox.bottom === height && top.tabBarBox.height === TAB_BAR + bottom,
+    top.tabBarBox,
+  );
+  check(
+    "small sideways: the tab bar's places clear the notch, the far end and the home bar",
+    top.tabBarContent.length === 5 &&
+      top.tabBarContent.every(
+        (item) =>
+          item.left >= left && item.right <= width - right && item.bottom <= height - bottom,
+      ),
+    top.tabBarContent,
+  );
+  check(
+    "small sideways: the tab bar is below the score strip",
+    top.stripBottom <= top.tabBarBox.top,
+    top,
+  );
+  check("small sideways: the page does not scroll sideways", !top.sidewaysScroll, top);
+  await page.screenshot({ path: `${out}/sideways-light-667-top.png` });
+  await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
+  const end = await measure();
+  check(
+    "small sideways: the footer's last line ends above the tab bar",
+    end.footerBottom <= end.tabBarBox.top,
+    end,
+  );
+  await page.screenshot({ path: `${out}/sideways-light-667-bottom.png` });
+  await context.close();
+  return { simulatedInsets: SIDEWAYS_INSETS, top, bottom: end };
+}
+
 const report = {
   base,
   checkedAt: new Date().toISOString(),
@@ -294,6 +383,7 @@ const report = {
   installability: await installability(),
   standalone: { light: await standalone("light"), dark: await standalone("dark") },
   sideways: await sideways(),
+  smallSideways: await smallSideways(),
   failures,
 };
 await browser.close();

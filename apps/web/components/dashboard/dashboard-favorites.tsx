@@ -44,7 +44,7 @@ export function DashboardFavorites() {
       ) : unavailable ? null : (
         <EmptyLedger>
           No favorite players yet.{" "}
-          <Link href="/players" className="underline">
+          <Link href="/players" className="tap-target underline">
             Find a player
           </Link>{" "}
           and press his heart to keep him here.

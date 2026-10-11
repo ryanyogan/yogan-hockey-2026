@@ -1,6 +1,6 @@
 {
-  "base": "http://localhost:5303",
-  "checkedAt": "2026-10-11T18:42:42.886Z",
+  "base": "http://localhost:5323",
+  "checkedAt": "2026-10-11T21:50:32.053Z",
   "chromium": "153.0.8010.12",
   "simulatedInsets": {
     "top": 47,
@@ -15,7 +15,7 @@
         "errorArguments": []
       }
     ],
-    "manifestUrl": "http://localhost:5303/manifest.webmanifest",
+    "manifestUrl": "http://localhost:5323/manifest.webmanifest",
     "manifestErrors": [],
     "installabilityErrors": [],
     "manifest": {
@@ -87,7 +87,7 @@
         "href": "/icons/pwa-192x192.png",
         "status": 200,
         "contentType": "image/png",
-        "cacheControl": "public, max-age=0, must-revalidate",
+        "cacheControl": "no-cache",
         "pageCache": null,
         "bytes": 2184
       },
@@ -96,7 +96,7 @@
         "href": "/icons/maskable-icon-192x192.png",
         "status": 200,
         "contentType": "image/png",
-        "cacheControl": "public, max-age=0, must-revalidate",
+        "cacheControl": "no-cache",
         "pageCache": null,
         "bytes": 1866
       },
@@ -105,7 +105,7 @@
         "href": "/icons/pwa-512x512.png",
         "status": 200,
         "contentType": "image/png",
-        "cacheControl": "public, max-age=0, must-revalidate",
+        "cacheControl": "no-cache",
         "pageCache": null,
         "bytes": 4304
       },
@@ -114,7 +114,7 @@
         "href": "/icons/maskable-icon-512x512.png",
         "status": 200,
         "contentType": "image/png",
-        "cacheControl": "public, max-age=0, must-revalidate",
+        "cacheControl": "no-cache",
         "pageCache": null,
         "bytes": 3963
       },
@@ -122,8 +122,8 @@
         "rel": "icon",
         "href": "/favicon.ico",
         "status": 200,
-        "contentType": "image/vnd.microsoft.icon",
-        "cacheControl": "public, max-age=0, must-revalidate",
+        "contentType": "image/x-icon",
+        "cacheControl": "no-cache",
         "pageCache": null,
         "bytes": 3774
       },
@@ -132,7 +132,7 @@
         "href": "/icons/pwa-64x64.png",
         "status": 200,
         "contentType": "image/png",
-        "cacheControl": "public, max-age=0, must-revalidate",
+        "cacheControl": "no-cache",
         "pageCache": null,
         "bytes": 1023
       },
@@ -141,7 +141,7 @@
         "href": "/icons/apple-touch-icon-180x180.png",
         "status": 200,
         "contentType": "image/png",
-        "cacheControl": "public, max-age=0, must-revalidate",
+        "cacheControl": "no-cache",
         "pageCache": null,
         "bytes": 1998
       },
@@ -150,7 +150,7 @@
         "href": "/icons/apple-splash-portrait-light-1320x2868.png",
         "status": 200,
         "contentType": "image/png",
-        "cacheControl": "public, max-age=0, must-revalidate",
+        "cacheControl": "no-cache",
         "pageCache": null,
         "bytes": 7774
       },
@@ -159,7 +159,7 @@
         "href": "/icons/apple-splash-portrait-dark-1320x2868.png",
         "status": 200,
         "contentType": "image/png",
-        "cacheControl": "public, max-age=0, must-revalidate",
+        "cacheControl": "no-cache",
         "pageCache": null,
         "bytes": 7207
       },
@@ -168,7 +168,7 @@
         "href": "/icons/apple-splash-portrait-light-1206x2622.png",
         "status": 200,
         "contentType": "image/png",
-        "cacheControl": "public, max-age=0, must-revalidate",
+        "cacheControl": "no-cache",
         "pageCache": null,
         "bytes": 6853
       },
@@ -177,7 +177,7 @@
         "href": "/icons/apple-splash-portrait-dark-1206x2622.png",
         "status": 200,
         "contentType": "image/png",
-        "cacheControl": "public, max-age=0, must-revalidate",
+        "cacheControl": "no-cache",
         "pageCache": null,
         "bytes": 6251
       },
@@ -186,7 +186,7 @@
         "href": "/icons/apple-splash-portrait-light-1260x2736.png",
         "status": 200,
         "contentType": "image/png",
-        "cacheControl": "public, max-age=0, must-revalidate",
+        "cacheControl": "no-cache",
         "pageCache": null,
         "bytes": 7243
       },
@@ -195,7 +195,7 @@
         "href": "/icons/apple-splash-portrait-dark-1260x2736.png",
         "status": 200,
         "contentType": "image/png",
-        "cacheControl": "public, max-age=0, must-revalidate",
+        "cacheControl": "no-cache",
         "pageCache": null,
         "bytes": 6703
       },
@@ -204,7 +204,7 @@
         "href": "/icons/apple-splash-portrait-light-1290x2796.png",
         "status": 200,
         "contentType": "image/png",
-        "cacheControl": "public, max-age=0, must-revalidate",
+        "cacheControl": "no-cache",
         "pageCache": null,
         "bytes": 7533
       },
@@ -213,7 +213,7 @@
         "href": "/icons/apple-splash-portrait-dark-1290x2796.png",
         "status": 200,
         "contentType": "image/png",
-        "cacheControl": "public, max-age=0, must-revalidate",
+        "cacheControl": "no-cache",
         "pageCache": null,
         "bytes": 6885
       },
@@ -222,7 +222,7 @@
         "href": "/icons/apple-splash-portrait-light-1179x2556.png",
         "status": 200,
         "contentType": "image/png",
-        "cacheControl": "public, max-age=0, must-revalidate",
+        "cacheControl": "no-cache",
         "pageCache": null,
         "bytes": 6711
       },
@@ -231,7 +231,7 @@
         "href": "/icons/apple-splash-portrait-dark-1179x2556.png",
         "status": 200,
         "contentType": "image/png",
-        "cacheControl": "public, max-age=0, must-revalidate",
+        "cacheControl": "no-cache",
         "pageCache": null,
         "bytes": 6141
       },
@@ -240,7 +240,7 @@
         "href": "/icons/apple-splash-portrait-light-1170x2532.png",
         "status": 200,
         "contentType": "image/png",
-        "cacheControl": "public, max-age=0, must-revalidate",
+        "cacheControl": "no-cache",
         "pageCache": null,
         "bytes": 6648
       },
@@ -249,7 +249,7 @@
         "href": "/icons/apple-splash-portrait-dark-1170x2532.png",
         "status": 200,
         "contentType": "image/png",
-        "cacheControl": "public, max-age=0, must-revalidate",
+        "cacheControl": "no-cache",
         "pageCache": null,
         "bytes": 6023
       },
@@ -258,7 +258,7 @@
         "href": "/icons/apple-splash-portrait-light-1284x2778.png",
         "status": 200,
         "contentType": "image/png",
-        "cacheControl": "public, max-age=0, must-revalidate",
+        "cacheControl": "no-cache",
         "pageCache": null,
         "bytes": 7463
       },
@@ -267,7 +267,7 @@
         "href": "/icons/apple-splash-portrait-dark-1284x2778.png",
         "status": 200,
         "contentType": "image/png",
-        "cacheControl": "public, max-age=0, must-revalidate",
+        "cacheControl": "no-cache",
         "pageCache": null,
         "bytes": 6783
       },
@@ -276,7 +276,7 @@
         "href": "/icons/apple-splash-portrait-light-1125x2436.png",
         "status": 200,
         "contentType": "image/png",
-        "cacheControl": "public, max-age=0, must-revalidate",
+        "cacheControl": "no-cache",
         "pageCache": null,
         "bytes": 6322
       },
@@ -285,7 +285,7 @@
         "href": "/icons/apple-splash-portrait-dark-1125x2436.png",
         "status": 200,
         "contentType": "image/png",
-        "cacheControl": "public, max-age=0, must-revalidate",
+        "cacheControl": "no-cache",
         "pageCache": null,
         "bytes": 5736
       },
@@ -294,7 +294,7 @@
         "href": "/icons/apple-splash-portrait-light-1242x2688.png",
         "status": 200,
         "contentType": "image/png",
-        "cacheControl": "public, max-age=0, must-revalidate",
+        "cacheControl": "no-cache",
         "pageCache": null,
         "bytes": 7137
       },
@@ -303,7 +303,7 @@
         "href": "/icons/apple-splash-portrait-dark-1242x2688.png",
         "status": 200,
         "contentType": "image/png",
-        "cacheControl": "public, max-age=0, must-revalidate",
+        "cacheControl": "no-cache",
         "pageCache": null,
         "bytes": 6515
       },
@@ -312,7 +312,7 @@
         "href": "/icons/apple-splash-portrait-light-828x1792.png",
         "status": 200,
         "contentType": "image/png",
-        "cacheControl": "public, max-age=0, must-revalidate",
+        "cacheControl": "no-cache",
         "pageCache": null,
         "bytes": 4363
       },
@@ -321,7 +321,7 @@
         "href": "/icons/apple-splash-portrait-dark-828x1792.png",
         "status": 200,
         "contentType": "image/png",
-        "cacheControl": "public, max-age=0, must-revalidate",
+        "cacheControl": "no-cache",
         "pageCache": null,
         "bytes": 3996
       },
@@ -330,7 +330,7 @@
         "href": "/icons/apple-splash-portrait-light-1242x2208.png",
         "status": 200,
         "contentType": "image/png",
-        "cacheControl": "public, max-age=0, must-revalidate",
+        "cacheControl": "no-cache",
         "pageCache": null,
         "bytes": 6559
       },
@@ -339,7 +339,7 @@
         "href": "/icons/apple-splash-portrait-dark-1242x2208.png",
         "status": 200,
         "contentType": "image/png",
-        "cacheControl": "public, max-age=0, must-revalidate",
+        "cacheControl": "no-cache",
         "pageCache": null,
         "bytes": 5977
       },
@@ -348,7 +348,7 @@
         "href": "/icons/apple-splash-portrait-light-750x1334.png",
         "status": 200,
         "contentType": "image/png",
-        "cacheControl": "public, max-age=0, must-revalidate",
+        "cacheControl": "no-cache",
         "pageCache": null,
         "bytes": 3693
       },
@@ -357,7 +357,7 @@
         "href": "/icons/apple-splash-portrait-dark-750x1334.png",
         "status": 200,
         "contentType": "image/png",
-        "cacheControl": "public, max-age=0, must-revalidate",
+        "cacheControl": "no-cache",
         "pageCache": null,
         "bytes": 3385
       }
@@ -381,28 +381,56 @@
         },
         "headerContent": [
           {
-            "top": 59.5,
+            "top": 58.5,
             "bottom": 77.5
           },
           {
-            "top": 58.8,
-            "bottom": 78.3
-          },
-          {
-            "top": 59.8,
-            "bottom": 76.8
+            "top": 57.5,
+            "bottom": 79.5
           }
         ],
         "footerContent": {
-          "top": 1471.5,
-          "bottom": 1499.5
+          "top": 1803,
+          "bottom": 1851
         },
+        "tabBarBox": {
+          "x": 0,
+          "y": 754,
+          "width": 390,
+          "height": 90,
+          "top": 754,
+          "right": 390,
+          "bottom": 844,
+          "left": 0
+        },
+        "tabBarContent": [
+          {
+            "top": 775,
+            "bottom": 791
+          },
+          {
+            "top": 775,
+            "bottom": 791
+          },
+          {
+            "top": 775,
+            "bottom": 791
+          },
+          {
+            "top": 775,
+            "bottom": 791
+          },
+          {
+            "top": 775,
+            "bottom": 791
+          }
+        ],
+        "stripBottom": 147,
         "viewportHeight": 844,
         "sideways": false,
         "themeColor": ["#fbfaf7", "#fbfaf7"],
         "background": "rgb(251, 250, 247)"
       },
-      "menuTop": 91,
       "bottom": {
         "osPrefersDark": true,
         "insetTop": "47px",
@@ -418,22 +446,51 @@
         },
         "headerContent": [
           {
-            "top": 59.5,
+            "top": 58.5,
             "bottom": 77.5
           },
           {
-            "top": 58.8,
-            "bottom": 78.3
-          },
-          {
-            "top": 59.8,
-            "bottom": 76.8
+            "top": 57.5,
+            "bottom": 79.5
           }
         ],
         "footerContent": {
-          "top": 764.5,
-          "bottom": 792.5
+          "top": 694,
+          "bottom": 742
         },
+        "tabBarBox": {
+          "x": 0,
+          "y": 754,
+          "width": 390,
+          "height": 90,
+          "top": 754,
+          "right": 390,
+          "bottom": 844,
+          "left": 0
+        },
+        "tabBarContent": [
+          {
+            "top": 775,
+            "bottom": 791
+          },
+          {
+            "top": 775,
+            "bottom": 791
+          },
+          {
+            "top": 775,
+            "bottom": 791
+          },
+          {
+            "top": 775,
+            "bottom": 791
+          },
+          {
+            "top": 775,
+            "bottom": 791
+          }
+        ],
+        "stripBottom": -962,
         "viewportHeight": 844,
         "sideways": false,
         "themeColor": ["#fbfaf7", "#fbfaf7"],
@@ -457,28 +514,56 @@
         },
         "headerContent": [
           {
-            "top": 59.5,
+            "top": 58.5,
             "bottom": 77.5
           },
           {
-            "top": 58.8,
-            "bottom": 78.3
-          },
-          {
-            "top": 59.8,
-            "bottom": 76.8
+            "top": 57.5,
+            "bottom": 79.5
           }
         ],
         "footerContent": {
-          "top": 1471.5,
-          "bottom": 1499.5
+          "top": 1803,
+          "bottom": 1851
         },
+        "tabBarBox": {
+          "x": 0,
+          "y": 754,
+          "width": 390,
+          "height": 90,
+          "top": 754,
+          "right": 390,
+          "bottom": 844,
+          "left": 0
+        },
+        "tabBarContent": [
+          {
+            "top": 775,
+            "bottom": 791
+          },
+          {
+            "top": 775,
+            "bottom": 791
+          },
+          {
+            "top": 775,
+            "bottom": 791
+          },
+          {
+            "top": 775,
+            "bottom": 791
+          },
+          {
+            "top": 775,
+            "bottom": 791
+          }
+        ],
+        "stripBottom": 147,
         "viewportHeight": 844,
         "sideways": false,
         "themeColor": ["#0f172a", "#0f172a"],
         "background": "rgb(15, 23, 42)"
       },
-      "menuTop": 91,
       "bottom": {
         "osPrefersDark": false,
         "insetTop": "47px",
@@ -494,22 +579,51 @@
         },
         "headerContent": [
           {
-            "top": 59.5,
+            "top": 58.5,
             "bottom": 77.5
           },
           {
-            "top": 58.8,
-            "bottom": 78.3
-          },
-          {
-            "top": 59.8,
-            "bottom": 76.8
+            "top": 57.5,
+            "bottom": 79.5
           }
         ],
         "footerContent": {
-          "top": 764.5,
-          "bottom": 792.5
+          "top": 694,
+          "bottom": 742
         },
+        "tabBarBox": {
+          "x": 0,
+          "y": 754,
+          "width": 390,
+          "height": 90,
+          "top": 754,
+          "right": 390,
+          "bottom": 844,
+          "left": 0
+        },
+        "tabBarContent": [
+          {
+            "top": 775,
+            "bottom": 791
+          },
+          {
+            "top": 775,
+            "bottom": 791
+          },
+          {
+            "top": 775,
+            "bottom": 791
+          },
+          {
+            "top": 775,
+            "bottom": 791
+          },
+          {
+            "top": 775,
+            "bottom": 791
+          }
+        ],
+        "stripBottom": -962,
         "viewportHeight": 844,
         "sideways": false,
         "themeColor": ["#0f172a", "#0f172a"],
@@ -526,9 +640,103 @@
     },
     "sidebarShown": true,
     "sidebarLeft": 63,
-    "sidebarBottom": 350.75,
+    "sidebarBottom": 348,
     "columnRight": 797,
     "sidewaysScroll": false
+  },
+  "smallSideways": {
+    "simulatedInsets": {
+      "top": 0,
+      "right": 47,
+      "bottom": 21,
+      "left": 47
+    },
+    "top": {
+      "tabBarShown": true,
+      "tabBarBox": {
+        "x": 0,
+        "y": 298,
+        "width": 667,
+        "height": 77,
+        "top": 298,
+        "right": 667,
+        "bottom": 375,
+        "left": 0
+      },
+      "tabBarContent": [
+        {
+          "left": 90.296875,
+          "right": 118.296875,
+          "bottom": 335
+        },
+        {
+          "left": 198.390625,
+          "right": 240.390625,
+          "bottom": 335
+        },
+        {
+          "left": 302.484375,
+          "right": 365.484375,
+          "bottom": 335
+        },
+        {
+          "left": 431.09375,
+          "right": 466.09375,
+          "bottom": 335
+        },
+        {
+          "left": 538.6875,
+          "right": 587.6875,
+          "bottom": 335
+        }
+      ],
+      "stripBottom": 100,
+      "footerBottom": 1766,
+      "sidewaysScroll": false
+    },
+    "bottom": {
+      "tabBarShown": true,
+      "tabBarBox": {
+        "x": 0,
+        "y": 298,
+        "width": 667,
+        "height": 77,
+        "top": 298,
+        "right": 667,
+        "bottom": 375,
+        "left": 0
+      },
+      "tabBarContent": [
+        {
+          "left": 90.296875,
+          "right": 118.296875,
+          "bottom": 335
+        },
+        {
+          "left": 198.390625,
+          "right": 240.390625,
+          "bottom": 335
+        },
+        {
+          "left": 302.484375,
+          "right": 365.484375,
+          "bottom": 335
+        },
+        {
+          "left": 431.09375,
+          "right": 466.09375,
+          "bottom": 335
+        },
+        {
+          "left": 538.6875,
+          "right": 587.6875,
+          "bottom": 335
+        }
+      ],
+      "stripBottom": -1380,
+      "footerBottom": 286,
+      "sidewaysScroll": false
+    }
   },
   "failures": []
 }

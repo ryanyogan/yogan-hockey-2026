@@ -11,7 +11,7 @@ export default function NotFound() {
       <SectionHeader title="Not found" count="404" />
       <p className="border-rule-head border-t px-2 py-row">
         Nothing is kept at this address.{" "}
-        <Link href="/" className="font-strong underline">
+        <Link href="/" className="tap-target font-strong underline">
           Back to tonight
         </Link>
       </p>

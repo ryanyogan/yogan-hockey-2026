@@ -6,9 +6,9 @@
   },
   "minimum": 44,
   "exempt": {
-    "timeline-tick": "A game's plays on a line 358px long: a hundred of them cannot each be 44px wide. The Replay's step buttons and the plays list's rows pick the same plays."
+    "timeline-tick": "A game's plays on a line 358px long, each tick 4 to 6px wide and 16 or 32px tall: a hundred of them cannot each be 44px wide. On the plays tab the rows of the plays list pick the same plays at full size; on the scoring and pick tabs nothing else does."
   },
-  "measuredAt": "2026-10-11T21:50:31.480Z",
+  "measuredAt": "2026-10-11T21:58:08.122Z",
   "pages": [
     {
       "route": "home",

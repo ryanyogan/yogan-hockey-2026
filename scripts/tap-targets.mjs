@@ -3,6 +3,9 @@
 //
 //   node scripts/tap-targets.mjs [baseURL] [out.json] [name-prefix]
 //
+// WIDTH=<px> measures at another width than 390: a narrower phone wraps a sentence sooner, and
+// two links that land one above the other share their reach.
+//
 // Needs a dev server in fixture mode (ESPN_FIXTURES=1) and TMPDIR set (see the build notes). It
 // exits 1 when a control's hit area is under 44px either way, or a shell check fails.
 //
@@ -16,16 +19,15 @@ import { PLAYER, ROUTES, seedPicks, TEAM } from "./look-routes.mjs";
 
 const [baseURL = "http://localhost:5173", out, only] = process.argv.slice(2);
 const MINIMUM = 44;
-const PHONE = { width: 390, height: 844 };
+const PHONE = { width: Number(process.env.WIDTH ?? 390), height: 844 };
 const PLACES = ["Home", "Scores", "Standings", "Teams", "Players"];
 /**
  * Controls that are left smaller than the minimum on purpose, by their `data-slot`, each with
- * the control of full size that does the same thing on the same page (what WCAG 2.5.8 calls an
- * equivalent). They are measured and listed, and do not fail the run.
+ * the reason. They are measured and counted, and do not fail the run.
  */
 const EXEMPT = {
   "timeline-tick":
-    "A game's plays on a line 358px long: a hundred of them cannot each be 44px wide. The Replay's step buttons and the plays list's rows pick the same plays.",
+    "A game's plays on a line 358px long, each tick 4 to 6px wide and 16 or 32px tall: a hundred of them cannot each be 44px wide. On the plays tab the rows of the plays list pick the same plays at full size; on the scoring and pick tabs nothing else does.",
 };
 
 /**

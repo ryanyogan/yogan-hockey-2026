@@ -46,14 +46,19 @@ const GIVE_UP_MS = 10_000;
 
 const here = () => window.location.pathname + window.location.search;
 
-/** Runs a change to the page inside a view transition, or plainly where there is to be none. */
+/**
+ * Makes a change to what React draws inside a view transition, or plainly where there is to be
+ * none. Only a transition needs the change drawn before its callback returns (`flushSync`): the
+ * browser takes its picture of the new page then. A plain change is left to React, which may be
+ * in the middle of a commit when an arrival is noticed.
+ */
 function transition(change: () => void) {
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (reduced || typeof document.startViewTransition !== "function") {
     change();
     return;
   }
-  document.startViewTransition(change);
+  document.startViewTransition(() => flushSync(change));
 }
 
 export function PendingRouteProvider({ children }: { children: ReactNode }) {
@@ -68,14 +73,19 @@ export function PendingRouteProvider({ children }: { children: ReactNode }) {
   const clear = useCallback(() => {
     if (giveUp.current != null) clearTimeout(giveUp.current);
     giveUp.current = null;
-    if (outlined.current) transition(() => flushSync(() => setPending(null)));
+    if (outlined.current) transition(() => setPending(null));
   }, []);
 
   const begin = useCallback(
     (href: string) => {
       const from = here();
       const outline = pendingOutline(from, href);
-      if (outline == null) return;
+      if (outline == null) {
+        // A second tap, on a link that gets no outline (back to the page tapped on, say): the
+        // first tap's outline would stand for a page that is no longer on its way.
+        clear();
+        return;
+      }
       if (giveUp.current != null) clearTimeout(giveUp.current);
       giveUp.current = setTimeout(clear, GIVE_UP_MS);
       const path = shownPath.current;
@@ -83,7 +93,7 @@ export function PendingRouteProvider({ children }: { children: ReactNode }) {
         // A view transition calls this a frame or more later: a page that was prefetched may
         // already be here, and an outline drawn now would have nothing to replace it.
         if (here() !== from || shownPath.current !== path) return;
-        flushSync(() => setPending({ ...outline, from, to: href.split(/[?#]/)[0] ?? href }));
+        setPending({ ...outline, from, to: href.split(/[?#]/)[0] ?? href });
         // A new page starts at its top, where the router will put it; a tab stays where it is.
         if (outline.scope === "page") window.scrollTo(0, 0);
       });

@@ -16,6 +16,7 @@ import { isFavoriteGame } from "../../lib/favorites";
 import { gameHref, gameStatusLine, gameWhere, hasScore } from "../../lib/scoreboard-view";
 import { Link } from "../link";
 import { TeamMark } from "../team-mark";
+import { FIXED_GAME_COLUMNS, GAME_SCORE_CELL, GAME_TEXT_CELL } from "./game-columns";
 import { GameStatus } from "./game-status";
 
 function Team({ side, favorite }: { side: ScoreboardSide; favorite: boolean }) {
@@ -37,28 +38,7 @@ function Team({ side, favorite }: { side: ScoreboardSide; favorite: boolean }) {
   );
 }
 
-/**
- * A cell of text: on a phone its first line stays level with its neighbours' first lines, and the
- * row is its two lines and 8px above and below (55px with its rule). Exported, with the score's,
- * for the ledger's placeholder, whose rows are then the same height.
- */
-export const GAME_TEXT_CELL = "whitespace-nowrap max-md:py-2 max-md:align-top";
-
-/**
- * A score on a phone starts level with the first line beside it. A finished game's losing score
- * steps back, so the winner's is found first.
- */
-export const GAME_SCORE_CELL = "max-md:pt-2! max-md:pl-0 max-md:align-top";
 const scoreCell = (lost: boolean) => `${GAME_SCORE_CELL} ${lost ? "text-note" : ""}`;
-
-/** Column widths that are the same in every ledger, so one under another lines up. */
-/** Exported for the ledger's placeholder (`components/route-skeletons.tsx`), which repeats them. */
-export const FIXED_GAME_COLUMNS = {
-  status: "w-28 sm:w-36",
-  team: "sm:w-52",
-  score: "w-8 sm:w-14",
-  note: "max-xl:hidden",
-};
 
 /**
  * Column widths for a ledger on its own. From `xl` they are the shares the Reference UI's table

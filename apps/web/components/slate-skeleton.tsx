@@ -1,5 +1,5 @@
 import { SectionSkeleton } from "@yogan-hockey/ui/components/skeleton";
-import { FIXED_GAME_COLUMNS, GAME_SCORE_CELL, GAME_TEXT_CELL } from "./scoreboard/game-ledger";
+import { FIXED_GAME_COLUMNS, GAME_SCORE_CELL, GAME_TEXT_CELL } from "./scoreboard/game-columns";
 
 /**
  * The slate's placeholder, apart from `route-skeletons.tsx` because the outlines drawn at a tap

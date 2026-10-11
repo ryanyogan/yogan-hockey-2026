@@ -2,6 +2,7 @@
 
 import type { ScoreboardGame } from "@yogan-hockey/schemas";
 import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
+import { useState } from "react";
 import { favoritesFirst } from "../../lib/favorites";
 import { slateDay } from "../../lib/game-time";
 import { pickNote } from "../../lib/picks";
@@ -16,8 +17,21 @@ const plural = (count: number, noun: string) => `${count} ${noun}${count === 1 ?
 /** Each game's pick in one line, by game id, as the page's server component read them. */
 type Picks = Readonly<Record<string, string>>;
 
-function Games({ title, games, picks }: { title: string; games: ScoreboardGame[]; picks: Picks }) {
-  const favoriteTeamIds = useFavorites("team").ids;
+function Games({
+  title,
+  games,
+  picks,
+  favoriteTeamIds,
+  leadingTeamIds,
+}: {
+  title: string;
+  games: ScoreboardGame[];
+  picks: Picks;
+  /** The favorite teams as they now are: their games are marked. */
+  favoriteTeamIds: readonly string[];
+  /** The favorite teams the page knew of when it was first drawn: their games lead. */
+  leadingTeamIds: readonly string[];
+}) {
   // A section with nothing in it is left out.
   if (games.length === 0) return null;
   return (
@@ -25,7 +39,7 @@ function Games({ title, games, picks }: { title: string; games: ScoreboardGame[]
       <SectionHeader title={title} count={games.length} />
       {/* Favorite teams' games lead each section, still in order of start among themselves. */}
       <GameLedger
-        games={favoritesFirst(games, favoriteTeamIds)}
+        games={favoritesFirst(games, leadingTeamIds)}
         favoriteTeamIds={favoriteTeamIds}
         pick={(game) => pickNote(picks[game.id], game.status)}
       />
@@ -39,7 +53,14 @@ function Games({ title, games, picks }: { title: string; games: ScoreboardGame[]
  */
 export function LiveScores({ picks = {} }: { picks?: Picks }) {
   const { date, games, heardAt } = useScoreboard();
+  const favoriteTeamIds = useFavorites("team").ids;
+  // Taken once (#127). A page the server drew knows no favorites until the browser's storage is
+  // read, after the first paint: a row that then took its section's lead would move under the
+  // visitor, so there the favorite is marked where it stands, as the ticker does. Arrived at by
+  // a link, the page is first drawn with the favorites known, and they lead.
+  const [leadingTeamIds] = useState(favoriteTeamIds);
   const sections = slateSections(games);
+  const shared = { picks, favoriteTeamIds, leadingTeamIds };
   const summary = [
     date && slateDay(date),
     games.length > 0 && plural(games.length, "game"),
@@ -59,10 +80,10 @@ export function LiveScores({ picks = {} }: { picks?: Picks }) {
           </p>
         )}
       </header>
-      <Games title="In progress" games={sections.live} picks={picks} />
-      <Games title="Upcoming" games={sections.upcoming} picks={picks} />
-      <Games title="Final" games={sections.final} picks={picks} />
-      <Games title="Postponed" games={sections.postponed} picks={picks} />
+      <Games title="In progress" games={sections.live} {...shared} />
+      <Games title="Upcoming" games={sections.upcoming} {...shared} />
+      <Games title="Final" games={sections.final} {...shared} />
+      <Games title="Postponed" games={sections.postponed} {...shared} />
       {games.length === 0 && (
         <Section>
           {/* Without a date the Scoreboard has not answered yet, which is not a day off. */}

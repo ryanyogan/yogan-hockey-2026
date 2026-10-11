@@ -1,9 +1,11 @@
-import { z } from "zod";
 import type { Standings, StandingsRow } from "./standings.ts";
 
-/** The four ways `/nhl` lays out the standings. The value is what the URL holds. */
-export const StandingsViewSchema = z.enum(["division", "conference", "wildcard", "league"]);
-export type StandingsView = z.infer<typeof StandingsViewSchema>;
+/**
+ * The four ways `/nhl` lays out the standings, in the order their tabs are drawn. The value is
+ * what the URL holds. This file has no zod in it: the error page reaches it on every route.
+ */
+export const STANDINGS_VIEWS = ["division", "conference", "wildcard", "league"] as const;
+export type StandingsView = (typeof STANDINGS_VIEWS)[number];
 
 /** One table of a standings view. */
 export type StandingsTable = {

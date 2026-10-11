@@ -1,3 +1,9 @@
 # The marks carry a hash of their bytes in their names (scripts/team-marks.ts).
 /team-marks/*
   Cache-Control: public, max-age=31536000, immutable
+
+# Everything the build puts under /_next/static has a hash of its bytes in its name (chunks, the
+# stylesheet, the fonts) or sits under a directory named for the one build that made it
+# (_buildManifest.js, _ssgManifest.js), so no address there ever answers with different bytes.
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable

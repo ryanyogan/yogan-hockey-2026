@@ -17,6 +17,8 @@ Each writes `docs/performance/results/<target>.json` and `<target>.md` (every ta
 - **local** builds this checkout with `ESPN_FIXTURES=1`, serves it with `vite preview` on `PORT+10000` behind `scripts/performance/compressing-proxy.ts` on `PORT`, migrates the local D1 the build reads, seeds the sample picks and archives the recorded finished game (`scripts/performance/prepare-fixtures.ts`), measures, and stops both servers.
 - **deployed** measures `https://hockey.yogan.dev` as it stands, with GET requests and the Scoreboard's socket only. It first writes `results/deployed-first-byte.md` (`scripts/performance/deployed-first-byte.sh`, no throttling).
 
+After a local run, delete `apps/web/.cloudflare/state` before running Playwright: the build leaves the finished game archived in Agent state that `pnpm dev` shares, and three game specs fail until it is gone.
+
 Run it on a machine doing nothing else. Other worktrees were building and testing on this one during both runs, so treat a difference under about 10% as noise.
 
 ## Profile and method

@@ -6,6 +6,7 @@
       "**",
       "!packages/db/migrations",
       "!packages/espn/fixtures",
+      "!docs/performance/results",
       "!prototypes/tuned-ledger/vendor",
       "!prototypes/tuned-ledger/data.js"
     ]

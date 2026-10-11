@@ -4,6 +4,7 @@ import NextLink from "next/link";
 import { useRouter } from "next/navigation";
 import type { ComponentProps } from "react";
 import { isInternalHref, linkIntent } from "../lib/link-intent";
+import { useBeginNavigation } from "./pending/pending-route";
 
 type LinkProps = Omit<ComponentProps<typeof NextLink>, "href" | "prefetch"> & { href: string };
 
@@ -32,9 +33,11 @@ export function Link({
   onPointerDown,
   onFocus,
   onBlur,
+  onClick,
   ...props
 }: LinkProps) {
   const router = useRouter();
+  const begin = useBeginNavigation();
   const internal = isInternalHref(href);
   const meaning = (act: () => void) => {
     if (!internal) return;
@@ -62,6 +65,17 @@ export function Link({
       onFocus={(event) => {
         onFocus?.(event);
         meaning(() => intent.rest(href));
+      }}
+      onClick={(event) => {
+        onClick?.(event);
+        // The click the router will take: the next page's outline is drawn now (#127).
+        const plain =
+          event.button === 0 &&
+          !event.metaKey &&
+          !event.ctrlKey &&
+          !event.shiftKey &&
+          !event.altKey;
+        if (internal && plain && !event.defaultPrevented && props.target == null) begin(href);
       }}
       onBlur={(event) => {
         onBlur?.(event);

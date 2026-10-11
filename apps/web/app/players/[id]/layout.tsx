@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { FavoriteHeart } from "../../../components/favorites/favorite-heart";
 import { Link } from "../../../components/link";
+import { PendingOutlet } from "../../../components/pending/pending-route";
 import {
   CareerSection,
   PlayerHeader,
@@ -48,7 +49,9 @@ export default async function PlayerLayout({ params, children }: Props) {
         }
       />
       {season && <SeasonSection season={season} />}
-      {children}
+      <PendingOutlet scope="tab" className="space-y-8">
+        {children}
+      </PendingOutlet>
       {career ? (
         <CareerSection career={career} />
       ) : (

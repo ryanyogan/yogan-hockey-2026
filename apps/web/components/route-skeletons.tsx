@@ -12,7 +12,7 @@ import { Rink } from "./game/rink";
  * that stays on the page is below a block that changes height.
  */
 
-export { GAME_COLUMNS, LiveSkeleton, SLATE_TABLE } from "./slate-skeleton";
+export { LiveSkeleton } from "./slate-skeleton";
 
 /**
  * `/nhl/games/:id`: the rink itself with nothing on it, which is the size of every state's rink;

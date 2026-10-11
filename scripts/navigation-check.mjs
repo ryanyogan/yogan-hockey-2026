@@ -7,7 +7,7 @@
 // TMPDIR set (see the build notes). `shots` slows the router's requests by 1.5 s, taps a link on
 // each journey at 390 and 1440 wide, light and dark, and writes <journey>-<width>-<scheme>-1-outline.png
 // and -2-page.png with the offsets of both's blocks, for comparing an outline with its page.
-// `stuck` tries a second tap, a tap back, back and forward, a request that fails, a 500, one never
+// `stuck` tries a second tap, a tap back (also within one frame of the first), back and forward, a request that fails, a 500, one never
 // answered (the old page returns after 10 s) and reduced motion (no view transition). It prints
 // ok or FAIL a line, and fails on any console error it did not cause itself.
 import { mkdirSync } from "node:fs";
@@ -292,6 +292,22 @@ if (part === "stuck" || part === "all") {
         !later.outline && later.hiddenBoxes === 0,
         `soon=${JSON.stringify(soon)} later=${JSON.stringify(later)}`,
       ];
+    },
+    "two taps in one frame, the second back to the page tapped on": async ({ page, net }) => {
+      await load(page, "/nhl");
+      net.delay = 1500;
+      const menu = page.getByRole("button", { name: "Open menu" });
+      if (await menu.isVisible()) await menu.click();
+      // Both clicks before the first one's view transition has called back.
+      await page.evaluate(() => {
+        const link = (href) =>
+          [...document.querySelectorAll(`a[href="${href}"]`)].find((a) => a.offsetParent != null);
+        link("/players").click();
+        link("/nhl").click();
+      });
+      await sleep(4000);
+      const later = await state(page);
+      return [!later.outline && later.hiddenBoxes === 0, JSON.stringify(later)];
     },
     "double tap on the same link": async ({ page, net }) => {
       await load(page, "/");

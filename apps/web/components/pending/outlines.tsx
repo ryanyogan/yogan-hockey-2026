@@ -15,7 +15,7 @@ import {
 /**
  * What stands in for a page between the tap on a link and the page's arrival (#127), drawn in
  * the browser from the address alone. Each is the route's own loading outline where it has one
- * (`route-skeletons.tsx`, `team/team-skeletons.tsx`), under a bar for whatever the route's
+ * (`slate-skeleton.tsx`, `team/team-skeletons.tsx`), under a bar for whatever the route's
  * layout draws first; the routes with no `loading.tsx` get a ledger of their usual shape.
  *
  * These are previews, not copies: a header's height depends on its text, which is not known

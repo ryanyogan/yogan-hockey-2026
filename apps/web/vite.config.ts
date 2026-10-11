@@ -10,7 +10,7 @@ import { defineConfig, type Plugin } from "vite";
  * links as `<style>` from `globalThis.__VINEXT_INLINE_CSS__`, a map of href to CSS, but only its
  * Node server fills that map (`vinext/dist/server/prod-server.js`). This writes the same line at
  * the head of the Worker's server entry once the client build has written the stylesheets, so
- * the first paint does not wait a second round trip for 9 kB. A navigation still links the file.
+ * the first paint does not wait a second round trip for 10 kB. A navigation still links the file.
  * The build log says "inlined ..." when it has; check that it still does after a vinext bump.
  */
 const WORKER_OUTPUT = ".cloudflare/output/v0/workers/default";

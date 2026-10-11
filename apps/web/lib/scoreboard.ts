@@ -7,8 +7,8 @@ import { SCOREBOARD_CONNECTION } from "./scoreboard-connection";
 /**
  * Today's games for first paint, and when ESPN was last heard from, read from the Scoreboard Agent
  * by a server component. The Agent asks ESPN first when what it has is old. The answer is copied
- * to a plain object, so it can be passed to the client component that then keeps it current with
- * `useAgent`.
+ * to a plain object, so it can be passed to the client component that then keeps it current from
+ * its socket (`lib/scoreboard-socket.ts`).
  *
  * One read a request (`cache`): the layout wants it for first paint and a page for its picks.
  */

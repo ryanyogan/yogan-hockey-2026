@@ -69,6 +69,9 @@ export function PendingRouteProvider({ children }: { children: ReactNode }) {
   shownPath.current = pathname;
   const outlined = useRef(false);
   outlined.current = pending != null;
+  // Counts the taps, so an outline whose drawing is still waiting on a view transition is not
+  // drawn after a later tap has taken its place.
+  const taps = useRef(0);
 
   const clear = useCallback(() => {
     if (giveUp.current != null) clearTimeout(giveUp.current);
@@ -78,6 +81,7 @@ export function PendingRouteProvider({ children }: { children: ReactNode }) {
 
   const begin = useCallback(
     (href: string) => {
+      const tap = ++taps.current;
       const from = here();
       const outline = pendingOutline(from, href);
       if (outline == null) {
@@ -91,8 +95,9 @@ export function PendingRouteProvider({ children }: { children: ReactNode }) {
       const path = shownPath.current;
       transition(() => {
         // A view transition calls this a frame or more later: a page that was prefetched may
-        // already be here, and an outline drawn now would have nothing to replace it.
-        if (here() !== from || shownPath.current !== path) return;
+        // already be here, and an outline drawn now would have nothing to replace it. So would
+        // one drawn after a second tap that asked for none: its give-up timer is already stopped.
+        if (tap !== taps.current || here() !== from || shownPath.current !== path) return;
         setPending({ ...outline, from, to: href.split(/[?#]/)[0] ?? href });
         // A new page starts at its top, where the router will put it; a tab stays where it is.
         if (outline.scope === "page") window.scrollTo(0, 0);

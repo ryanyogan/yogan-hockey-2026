@@ -59,7 +59,7 @@ Budgets: largest paint under 1500 ms cached and 2500 ms rendered; a shift that p
 | Slowest tap (200 ms) | 64 to 104 | 72 to 144 |
 | Next shell (200 ms) | 661 to 1647, a miss on every route | 71 to 179 |
 | Blank frames | 0 | 0 |
-| View transition | on no navigation | on every navigation |
+| View transition | on no navigation | on every navigation (in at least one of its three runs, which is all the measurement records) |
 | Script, gzip | 244.0 to 252.6 kB | 187.8 to 194.6 kB; a game's routes 246.0 kB |
 
 ## What changed
@@ -83,7 +83,7 @@ A route may not send more than its baseline budget, and none does. The budgets a
 | `/players` (and a search) | 36 → 34 | 250.9 | 251 | 194.0 | **196** | 5.2 → 16.3 |
 | `/players/:id` (and `/games`) | 30 → 29 | 244.6 | 245 | 188.5 | **191** | 12.8 → 24.1 |
 
-- **A game's routes are 246.0 kB, 7 kB under their baseline budget, and 52 to 58 kB over every other route.** They lost what the others lost (about 57 kB) and gained the work merged since the baseline: the rink's animations (#141), penalties (#143) and the goal sequence (#142). Before #142 was merged the same build sent 244.2 kB. What only a game loads: zod (the one place the browser parses anything), the game page, and the rink's player.
+- **A game's routes are 246.0 kB, 7 kB under their baseline budget, and 51 to 58 kB over every other route.** They lost what the others lost (about 57 kB) and gained the work merged since the baseline: the rink's animations (#141), penalties (#143) and the goal sequence (#142). Before #142 was merged the same build sent 244.2 kB (one build's manifest, not in the recorded results). What only a game loads: zod (the one place the browser parses anything), the game page, and the rink's player.
 - **Every document is about 11 to 13 kB larger gzipped**: the stylesheet, 9.8 kB, is now in it, and no longer a file the browser keeps between pages. That is the price of the first paint not waiting a round trip (562 ms on this profile); #138's look is the rest.
 
 ## Misses that stand
@@ -97,8 +97,11 @@ A route may not send more than its baseline budget, and none does. The budgets a
 
 ## Without a budget, and worth knowing
 
-- **A page still hydrates 4.2 to 6.7 s after its first byte locally** (4.3 to 7.0 s in the baseline). The script is 55 kB smaller and the number barely moved: the local preview is HTTP/1.1, six requests at a time, each behind 562 ms of latency, so the count of files (28 to 37) decides it, not their size. The deployed site, on HTTP/2, was 3.4 to 3.9 s; what the smaller script is worth there is for #144 to measure. The baseline proposed a budget of 3 s; none was set here, since it can only be judged deployed.
-- **The next page's content arrives a little later than it did**: 63 ms at the median (695 to 1819 ms against 661 to 1750), the cost of two view transitions on a slowed processor. One navigation is clearly slower: a team's stats tab to its schedule, the heaviest page of the site, 1070 to 1121 ms in the baseline, 1780 to 2188 ms in this run and 1263 to 1570 ms run alone three times afterwards. The page arrives with its own placeholder at about 0.8 s, as before, and its 190 rows are drawn 0.45 to 0.7 s later. The shell is at 83 to 89 ms, where it was 739 to 748.
+- **A page still hydrates 4.2 to 6.7 s after its first byte locally** (4.3 to 7.0 s in the baseline). The script is 56 to 57 kB smaller (7 kB on a game's routes) and the number barely moved: the local preview is HTTP/1.1, six requests at a time, each behind 562 ms of latency, so the count of files (28 to 37) decides it, not their size. The deployed site, on HTTP/2, was 3.4 to 3.9 s; what the smaller script is worth there is for #144 to measure. The baseline proposed a budget of 3 s; none was set here, since it can only be judged deployed.
+- **The next page's content arrives a little later than it did**: 63 ms at the median (695 to 2188 ms against 661 to 1750; 695 to 1819 but for one), the cost of two view transitions on a slowed processor. One navigation is clearly slower: a team's stats tab to its schedule, the heaviest page of the site, 1070 to 1121 ms in the baseline, 1780 to 2188 ms in this run and 1263 to 1570 ms run alone three times afterwards (not in the recorded results). The page arrives with its own placeholder at about 0.8 s, as before, and its 190 rows are drawn 0.45 to 0.7 s later. The shell is at 83 to 89 ms, where it was 739 to 748.
+- **The slowest tap is slower, and inside its budget**: 72 to 144 ms where the baseline had 64 to 104 (budget 200). More than the 10% of noise on several routes, and its cause was not looked for.
+- **Three client components the baseline said could be the server's still run in the browser**: the dashboard's favorites, the favorites list on `/players` and the hook that resolves both read localStorage, and wait on #132.
+- **The two un-hashed files under `/_next/static/<buildId>/`** (`_buildManifest.js`, `_ssgManifest.js`) are kept for a year like the rest: the directory is a new id each build.
 - **A second tap during a navigation** draws the second link's outline; a tap back to the page tapped on shows that page again; a navigation not arrived in 10 s shows the page tapped on again; one whose request fails is loaded by the browser as a document (vinext's own fallback). `scripts/navigation-check.mjs` tries each of these.
 
 ## Limits

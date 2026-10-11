@@ -130,7 +130,8 @@ test("/nhl/live lists the slate in sections, links each game, and follows the so
   await expect(upcoming.getByRole("row")).toHaveCount(9);
   await expect(entry).toHaveText(/NSH 2.*TOR 1.*2nd 12:34/);
   await expect(entry).toHaveAttribute("data-live", "");
-  await expect(ticker.getByRole("link").nth(1)).toHaveAttribute("href", `/nhl/games/${GAME_ID}`);
+  // Tinted where it stood, second by start: the ticker's order is held while the page is open.
+  await expect(ticker.getByRole("link").nth(2)).toHaveAttribute("href", `/nhl/games/${GAME_ID}`);
 
   // A poll that finds nothing new sends only its time, and "updated" follows it.
   sayHeardAt("2031-01-16T01:02:03.000Z");

@@ -1,5 +1,6 @@
 import type { Game, GameHeader, GameStatus, Play } from "@yogan-hockey/schemas";
 import { RECONNECTING } from "../connection-drop";
+import { type GameClock, timePlayed } from "./penalties";
 import { periodLabel, SHOOTOUT } from "./timeline";
 
 /**
@@ -52,6 +53,11 @@ export type StreamReading = {
   status?: string;
   /** A warning under it. */
   notice?: string;
+  /**
+   * The game clock as last heard, as time played, where the header or the Scoreboard has one:
+   * what the penalty box counts down on between plays.
+   */
+  clock?: GameClock;
 };
 
 /**
@@ -92,8 +98,11 @@ export function streamReading({
     reading.status = `End of ${periodLabel(last.period, header.seasonType)}`;
   } else if (period !== SHOOTOUT && header.clock === NO_CLOCK) {
     const agrees = scoreboard?.status === "live" && scoreboard.period === header.period;
-    reading.status =
-      agrees && scoreboard.clock !== NO_CLOCK ? `${period} ${scoreboard.clock}` : period;
+    const heard = agrees && scoreboard.clock !== NO_CLOCK ? scoreboard.clock : null;
+    reading.status = heard == null ? period : `${period} ${heard}`;
+    if (heard != null) reading.clock = timePlayed(header.period, heard, header.seasonType);
+  } else if (period !== SHOOTOUT) {
+    reading.clock = timePlayed(header.period, header.clock, header.seasonType);
   }
   return reading;
 }

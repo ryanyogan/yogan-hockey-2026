@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { clockTime, gameDay, gameTime, NHL_TIME_ZONE, slateDay } from "./game-time";
+import { clockTime, easternTime, gameDay, gameTime, NHL_TIME_ZONE, slateDay } from "./game-time";
 
 // Nashville at Toronto, 7:00 PM in Toronto on Tuesday 6 October 2026.
 const START = "2026-10-06T23:00:00.000Z";
@@ -39,5 +39,25 @@ describe("a slate's date", () => {
   it("is the calendar day it names, whatever zone reads it", () => {
     expect(slateDay("2026-10-06")).toBe("Tue Oct 6");
     expect(slateDay("2027-01-01")).toBe("Fri Jan 1");
+  });
+});
+
+describe("the time the server writes before the visitor's zone is known", () => {
+  it("is Eastern and says so, a day excepted", () => {
+    expect(easternTime(LATE, "time")).toBe("10:00 PM ET");
+    expect(easternTime("2026-10-07T00:14:07.000Z", "clock")).toBe("20:14:07 ET");
+    expect(easternTime(LATE, "day")).toBe("Thu Oct 8");
+  });
+
+  it("is never shorter than the visitor's own, so the room it took holds either", () => {
+    const zones = ["America/Chicago", "America/Los_Angeles", "Europe/Berlin", "Asia/Kolkata"];
+    // Every half hour of a day: one o'clock Eastern is ten or twelve somewhere else.
+    for (let half = 0; half < 48; half++) {
+      const at = new Date(Date.parse(START) + half * 30 * 60_000).toISOString();
+      for (const zone of zones) {
+        expect(gameTime(at, zone).length).toBeLessThanOrEqual(easternTime(at, "time").length);
+        expect(clockTime(at, zone).length).toBeLessThanOrEqual(easternTime(at, "clock").length);
+      }
+    }
   });
 });

@@ -72,10 +72,10 @@ const PAGES: Record<Outline, () => ReactNode> = {
         className={`table-fixed ${SLATE_TABLE}`}
         columns={GAME_COLUMNS}
       />
-      <SectionSkeleton title="Standings" rows={8} density="compact" columns={FIGURES} />
+      <SectionSkeleton title="Standings" rows={8} columns={FIGURES} />
     </>
   ),
-  standings: () => <SectionSkeleton title="NHL" rows={16} density="compact" columns={FIGURES} />,
+  standings: () => <SectionSkeleton title="NHL" rows={16} columns={FIGURES} />,
   live: () => <LiveSkeleton />,
   players: () => <SectionSkeleton title="Players" rows={3} columns={FIGURES} />,
   player: () => (
@@ -93,7 +93,6 @@ const PAGES: Record<Outline, () => ReactNode> = {
       <SectionSkeleton
         label="The game"
         rows={6}
-        density="compact"
         columns={[{ width: "sm" }, { width: "sm" }, { width: "xl", className: "w-full" }]}
       />
     </>

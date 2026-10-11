@@ -3,13 +3,16 @@
 import type { GameHeader, GameHeaderSide, Play } from "@yogan-hockey/schemas";
 import { LiveMarker } from "@yogan-hockey/ui/components/marker";
 import { type ReactNode, useRef } from "react";
+import { type GameClock, NO_PENALTIES, penaltyState } from "../../lib/game/penalties";
 import { gameStatus, markKind, playTime } from "../../lib/game/plays";
 import { attackedEnd, type RinkEnd } from "../../lib/game/rink";
 import { periodLabel } from "../../lib/game/timeline";
 import { LocalTime } from "../local-time";
 import { TeamMark } from "../team-mark";
+import { PenaltyBox, PenaltyBoxSpace } from "./penalty-box";
 import { Rink } from "./rink";
 import { RinkAnimations } from "./rink-animations";
+import { teamColour } from "./team-colour";
 
 /*
  * Where the overlay sits, as fractions of the rink's width (`cqw`), so it keeps its place at any
@@ -53,14 +56,14 @@ function OverIce({
       data-side={place}
       className={`absolute top-1 @2xl:top-[1.43cqw] ${SCORE_SIDE[place]}`}
     >
-      <div className="whitespace-nowrap text-[10px] text-foreground/60 leading-[15px] @2xl:text-[clamp(10px,1.25cqw,14px)] @2xl:leading-[1.43]">
+      <div className="whitespace-nowrap text-small text-note leading-[15px] @2xl:text-[clamp(10px,1.25cqw,14px)] @2xl:leading-[1.43]">
         {line}
         <span className="hidden @2xl:inline"> · {wide}</span>
       </div>
-      <div className="font-bold text-2xl leading-none @2xl:text-[clamp(24px,5.36cqw,60px)]">
+      <div className="font-strong text-2xl leading-none @2xl:text-[clamp(24px,5.36cqw,60px)]">
         {figure}
       </div>
-      <div className="whitespace-nowrap text-[10px] text-foreground/60 leading-[15px] @2xl:hidden">
+      <div className="whitespace-nowrap text-small text-note leading-[15px] @2xl:hidden">
         {narrow}
       </div>
     </div>
@@ -86,7 +89,7 @@ function Score({ side, place }: { side: GameHeaderSide; place: Place }) {
 }
 
 const STATUS_PLACE =
-  "absolute top-1 left-1/2 -translate-x-1/2 whitespace-nowrap text-center text-[10px] leading-[15px] @2xl:top-[1.43cqw] @2xl:text-[clamp(10px,1.43cqw,16px)] @2xl:leading-normal";
+  "absolute top-1 left-1/2 -translate-x-1/2 whitespace-nowrap text-center text-small leading-[15px] @2xl:top-[1.43cqw] @2xl:text-[clamp(10px,1.43cqw,16px)] @2xl:leading-normal";
 const STATUS_KICKER = "block uppercase @2xl:text-[clamp(10px,1.07cqw,12px)] @2xl:leading-[1.33]";
 const CAPTION_ON_ICE = "max-w-[50cqw] truncate bg-black/70 px-4 py-1 text-slate-100 leading-5";
 /* Under the ice where the ice is too small to write on. Two lines tall, so it never jumps. */
@@ -124,7 +127,7 @@ export function MatchupRink({ header, status }: { header: GameHeader; status?: s
         <div data-slot="rink-overlay" className="pointer-events-none absolute inset-0">
           {team("away")}
           <div data-slot="rink-status" className={STATUS_PLACE}>
-            <span className={`${STATUS_KICKER} text-foreground/60`}>
+            <span className={`${STATUS_KICKER} text-note`}>
               <LocalTime at={header.startTime} show="day" />
             </span>
             {status ?? <LocalTime at={header.startTime} show="time" />}
@@ -139,6 +142,7 @@ export function MatchupRink({ header, status }: { header: GameHeader; status?: s
           )}
         </div>
       </div>
+      <PenaltyBoxSpace />
       <p data-slot="rink-caption" className={CAPTION_UNDER_ICE}>
         {where}
       </p>
@@ -156,7 +160,7 @@ function EndLabel({ end, header, plays, period, periodText }: EndProps & { end: 
     <div
       data-slot="rink-end"
       data-end={end}
-      className={`absolute top-1/2 hidden -translate-y-1/2 whitespace-nowrap text-[10px] text-foreground/60 [writing-mode:vertical-rl] @2xl:block ${
+      className={`absolute top-1/2 hidden -translate-y-1/2 whitespace-nowrap text-small text-note [writing-mode:vertical-rl] @2xl:block ${
         end === "left"
           ? "left-[3.7cqw] -translate-x-1/2 rotate-180"
           : "right-[3.7cqw] translate-x-1/2"
@@ -179,8 +183,9 @@ function Caption({ play }: { play: Play }) {
 
 /**
  * The rink as the page: the ice filling the width, the score, shots and clock laid over it, and
- * the play in focus ringed and captioned. Shots, saves and misses are played on the ice as they
- * arrive, and when a play is picked (`RinkAnimations`).
+ * the play in focus ringed and captioned. Shots, saves, misses and penalties are played on the
+ * ice as they arrive, and when a play is picked (`RinkAnimations`). Under it is the penalty box,
+ * and while a team has the advantage the zone it attacks is ruled in its colour.
  */
 export function GameRink({
   header,
@@ -191,6 +196,7 @@ export function GameRink({
   picked = false,
   status,
   notice,
+  clock = null,
 }: {
   /** Its score, shots, period and clock are what is laid over the ice. */
   header: GameHeader;
@@ -208,6 +214,11 @@ export function GameRink({
   status?: string;
   /** A warning under the clock: "Updates delayed". */
   notice?: string;
+  /**
+   * A live game's clock as last heard, which the penalties count down on between plays. Without
+   * one they stand as of the latest play: a Replay's playhead.
+   */
+  clock?: GameClock | null;
 }) {
   const { live, text } = gameStatus(header);
   // The ends are those of the period in focus, since the teams change ends each period.
@@ -215,10 +226,30 @@ export function GameRink({
   const periodText = focus?.periodText || periodLabel(period, header.seasonType);
   const ends = { header, plays, period, periodText };
   const rink = useRef<SVGSVGElement>(null);
+
+  // The box and the advantage are the game's as it stands (a Replay's at its playhead), not the
+  // picked play's: like the score, they do not move when a tick is clicked.
+  // A finished game laid out whole has nobody left in it, whether or not its last play says so.
+  const over = header.status === "final" && played.length === plays.length;
+  const penalties = over
+    ? NO_PENALTIES
+    : penaltyState(
+        played,
+        { homeTeamId: header.home.id, awayTeamId: header.away.id, seasonType: header.seasonType },
+        clock,
+      );
+  const ahead = [header.away, header.home].find((s) => s.id === penalties.advantage?.teamId);
+  // The zone is ruled only while the ice shows the ends of the period being played: with a play
+  // of another period picked, the ends are that period's, and the box alone says who is ahead.
+  const attacked =
+    ahead && period === penalties.period
+      ? attackedEnd(plays, header.home.id, ahead.id, period)
+      : null;
+  const powerPlay = ahead && attacked ? { end: attacked, style: teamColour(ahead) } : null;
   return (
     <div data-slot="game-rink" className="@container">
       <div className="relative">
-        <Rink ref={rink} plays={drawn} focus={focus} />
+        <Rink ref={rink} plays={drawn} focus={focus} powerPlay={powerPlay} />
         <RinkAnimations
           rink={rink}
           game={plays}
@@ -233,7 +264,7 @@ export function GameRink({
             {live && <LiveMarker className={STATUS_KICKER} />}
             {status ?? text}
             {notice != null && (
-              <span data-slot="rink-notice" className="block text-[10px] text-live leading-[15px]">
+              <span data-slot="rink-notice" className="block text-small text-live leading-[15px]">
                 {notice}
               </span>
             )}
@@ -250,6 +281,7 @@ export function GameRink({
           )}
         </div>
       </div>
+      <PenaltyBox header={header} state={penalties} />
       <p data-slot="rink-caption" className={CAPTION_UNDER_ICE}>
         {focus != null && <Caption play={focus} />}
       </p>

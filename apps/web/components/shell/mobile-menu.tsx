@@ -92,7 +92,7 @@ function Menu() {
       <button
         ref={trigger}
         type="button"
-        className={buttonVariants({ variant: "ghost", size: "inline" })}
+        className={buttonVariants({ variant: "ghost", size: "touch" })}
         aria-label={open ? "Close menu" : "Open menu"}
         aria-haspopup="dialog"
         aria-expanded={open}

@@ -153,7 +153,7 @@ function ReplayTransport({
       {/* One line at every width, so the page below it stays put when playing starts. */}
       <p
         data-slot="replay-position"
-        className="min-w-0 flex-1 truncate text-foreground/50 max-sm:basis-full"
+        className="min-w-0 flex-1 truncate text-label max-sm:basis-full"
       >
         {wholeGame ? (
           <>
@@ -185,7 +185,7 @@ function ReplaySpeedChoice({
       {REPLAY_SPEEDS.map((choice) => (
         <label
           key={choice}
-          className={`cursor-pointer has-focus-visible:ring-2 has-focus-visible:ring-ring max-sm:px-4 max-sm:py-3 ${navItemVariants(
+          className={`cursor-pointer has-focus-visible:ring-2 has-focus-visible:ring-ring max-sm:px-4 max-sm:py-row ${navItemVariants(
             { current: choice === speed },
           )}`}
         >
@@ -215,7 +215,7 @@ export function ReplayPending({ gaveUp }: { gaveUp: boolean }) {
       </Button>
       <p
         data-slot="replay-pending-note"
-        className="min-w-0 flex-1 truncate text-foreground/50 max-sm:basis-full"
+        className="min-w-0 flex-1 truncate text-label max-sm:basis-full"
       >
         {gaveUp
           ? "The replay could not be made ready. Load the page again to try once more."

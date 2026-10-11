@@ -23,12 +23,16 @@ test("a player and a team are made favorites, kept over a reload, and let go", a
   // The heart took the click: the row's link did not open his page.
   await expect(page).toHaveURL(/\/nhl\/teams\/21\/roster$/);
 
-  // The favorite team's game leads the ticker on every page...
+  // The favorite team's game is marked in the ticker where it stands: the ticker holds its order
+  // for as long as the visitor stays on a page...
+  await expect(ticker.getByRole("listitem").first()).toContainText(/CAR.+MTL/);
+  await expect(ticker.getByRole("listitem").nth(1)).toContainText(/NSH.+TOR/);
+  await expect(ticker.getByRole("listitem").nth(1)).toContainText("favorite team");
+
+  // ...and leads it on the next one, and its section of /nhl/live, where the team is marked.
+  await site.getByRole("link", { name: "Scores", exact: true }).click();
   await expect(ticker.getByRole("listitem").first()).toContainText(/NSH.+TOR/);
   await expect(ticker.getByRole("listitem").first()).toContainText("favorite team");
-
-  // ...and its section of /nhl/live, where the team is marked.
-  await site.getByRole("link", { name: "Scores", exact: true }).click();
   const upcoming = page.getByRole("region", { name: "Upcoming" });
   await expect(upcoming.getByRole("row").nth(1)).toContainText("NSH at TOR");
   await expect(upcoming.getByRole("row").nth(1)).toContainText("favorite team");
@@ -57,10 +61,11 @@ test("a player and a team are made favorites, kept over a reload, and let go", a
   await expect(teamHeart).toHaveAttribute("aria-pressed", "true");
   await teamHeart.click();
   await expect(teamHeart).toHaveAttribute("aria-pressed", "false");
-  await expect(ticker.getByRole("listitem").first()).toContainText(/CAR.+MTL/);
+  // The game loses its mark at once and its lead on the next page.
   await expect(ticker).not.toContainText("favorite team");
 
   await site.getByRole("link", { name: "players" }).click();
+  await expect(ticker.getByRole("listitem").first()).toContainText(/CAR.+MTL/);
   await expect(favorites).toContainText("No favorite players yet");
   expect(
     await page.evaluate(() => [

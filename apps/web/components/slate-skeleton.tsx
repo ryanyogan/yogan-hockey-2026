@@ -1,5 +1,5 @@
 import { SectionSkeleton } from "@yogan-hockey/ui/components/skeleton";
-import { FIXED_GAME_COLUMNS } from "./scoreboard/game-ledger";
+import { FIXED_GAME_COLUMNS, GAME_SCORE_CELL, GAME_TEXT_CELL } from "./scoreboard/game-ledger";
 
 /**
  * The slate's placeholder, apart from `route-skeletons.tsx` because the outlines drawn at a tap
@@ -14,12 +14,14 @@ const SLATE_ROWS = 8;
  * `GameLedger`'s six columns: status, away, score, home, score, note. A team's cell is its mark
  * and its abbreviation, and a bar of `lg` holds the place of both.
  */
+const TEXT = { cellClassName: GAME_TEXT_CELL };
+const SCORE = { width: "xs" as const, numeric: true, cellClassName: GAME_SCORE_CELL };
 export const GAME_COLUMNS = [
-  { width: "md" as const, className: FIXED_GAME_COLUMNS.status, detail: "fine" as const },
-  { width: "lg" as const, className: FIXED_GAME_COLUMNS.team },
-  { width: "xs" as const, numeric: true, className: FIXED_GAME_COLUMNS.score },
-  { width: "lg" as const, className: FIXED_GAME_COLUMNS.team },
-  { width: "xs" as const, numeric: true, className: FIXED_GAME_COLUMNS.score },
+  { ...TEXT, width: "md" as const, className: FIXED_GAME_COLUMNS.status, detail: "fine" as const },
+  { ...TEXT, width: "lg" as const, className: FIXED_GAME_COLUMNS.team },
+  { ...SCORE, className: FIXED_GAME_COLUMNS.score },
+  { ...TEXT, width: "lg" as const, className: FIXED_GAME_COLUMNS.team },
+  { ...SCORE, className: FIXED_GAME_COLUMNS.score },
   { width: "lg" as const, className: FIXED_GAME_COLUMNS.note },
 ];
 
@@ -31,7 +33,7 @@ export function LiveSkeleton() {
   return (
     <>
       <header className="flex flex-wrap items-baseline justify-between gap-x-4">
-        <h1 className="font-bold uppercase">Live scores</h1>
+        <h1 className="font-strong uppercase">Live scores</h1>
       </header>
       <SectionSkeleton
         label="Today's games"

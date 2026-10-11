@@ -9,6 +9,7 @@ import {
   gameHref,
   gameStatusLine,
   hasScore,
+  heldOrder,
   type StripReach,
   stripReach,
   TICKER_STRIP_HEIGHT,
@@ -32,10 +33,10 @@ function Side({
   className?: string;
 }) {
   return (
-    <span className={`${side.winner ? "font-bold" : ""} ${className}`}>
+    <span className={`${side.winner ? "font-strong" : ""} ${className}`}>
       <span className="whitespace-nowrap">
-        {/* The gap is 4px on a phone: a cell's 68px then holds the mark, "WSH" and "10". */}
-        <TeamMark teamId={side.id} eager className="mr-1 md:mr-1.5" />
+        {/* The gap is 4px on a phone: a cell's 72px then holds the mark, "WSH" and "10". */}
+        <TeamMark teamId={side.id} eager className="mr-1 md:mr-[0.45em]" />
         <span data-slot="team">{side.abbreviation}</span>
       </span>
       {scored && <span className="tabular-nums"> {side.score}</span>}
@@ -51,14 +52,15 @@ function Side({
  */
 const LAYOUT = {
   cell: {
-    link: "max-md:grid max-md:h-full max-md:w-22 max-md:grid-cols-[1fr_auto] max-md:content-center max-md:gap-x-1 max-md:px-2.5 max-md:leading-4 md:flex md:items-baseline md:gap-2 md:px-3 md:py-1.5",
-    marker: "max-md:col-start-2 max-md:row-start-1 max-md:text-[10px]",
+    // A phone's cell is the prototype's: 13px on an 18px line under a status of 11px on 14.
+    link: "h-full max-md:grid max-md:w-22 max-md:grid-cols-[1fr_auto] max-md:content-center max-md:gap-x-1 max-md:px-2 max-md:text-[13px] max-md:leading-[18px] md:flex md:items-center md:gap-2 md:px-3",
+    marker: "max-md:col-start-2 max-md:row-start-1 max-md:text-[11px] max-md:leading-[14px]",
     side: "max-md:col-span-2 max-md:flex max-md:justify-between max-md:gap-2",
     at: "max-md:sr-only",
-    status: "max-md:col-start-1 max-md:row-start-1 max-md:text-[10px]",
+    status: "max-md:col-start-1 max-md:row-start-1 max-md:text-[11px] max-md:leading-[14px]",
   },
   row: {
-    link: "flex min-h-11 items-center gap-2 px-4 md:min-h-0 md:px-6 md:py-1.5",
+    link: "flex min-h-11 items-center gap-2 px-4 md:min-h-0 md:px-6 md:py-row",
     marker: "",
     side: "",
     at: "",
@@ -92,12 +94,12 @@ function Entry({
         </FavoriteMarker>
       )}
       <Side side={game.away} scored={scored} className={classes.side} />
-      <span className={`text-foreground/40 ${classes.at}`}>
+      <span className={`text-label ${classes.at}`}>
         <span aria-hidden="true">@</span>
         <span className="sr-only">at</span>
       </span>
       <Side side={game.home} scored={scored} className={classes.side} />
-      <span className={`${live ? "font-bold text-live" : "text-foreground/50"} ${classes.status}`}>
+      <span className={`${live ? "font-strong text-live" : "text-label"} ${classes.status}`}>
         {/* The tint says "live" to the eye only. */}
         {live && status !== "live" && <span className="sr-only">live, </span>}
         <GameStatus game={game} />
@@ -123,6 +125,23 @@ function scrollSidewaysByWheel(strip: HTMLElement | null) {
   return () => strip.removeEventListener("wheel", onWheel);
 }
 
+/**
+ * The games in the order the ticker first drew them on this page, for as long as the visitor
+ * stays on it (`heldOrder`): a favorite read from the browser after the first paint is marked
+ * where its game stands, and a game that goes live is tinted where it stands. `page` names the
+ * slate and the address; when either changes the order is taken afresh from `fresh`, since going
+ * to another page is the visitor's own act. A page whose slate first comes down the socket draws
+ * nothing until then, so its first order already has the favorites in the lead.
+ */
+function useHeldOrder(page: string, fresh: ScoreboardGame[]): ScoreboardGame[] {
+  const [held, setHeld] = useState<{ page: string; ids: string[] }>({ page, ids: [] });
+  const ordered = heldOrder(held.page === page ? held.ids : [], fresh);
+  const ids = ordered.map((game) => game.id);
+  // Kept while rendering, not in an effect: the order drawn is the order held.
+  if (held.page !== page || held.ids.join() !== ids.join()) setHeld({ page, ids });
+  return ordered;
+}
+
 const NOTHING_HIDDEN: StripReach = { before: false, after: false, hidden: 0 };
 
 /**
@@ -130,8 +149,8 @@ const NOTHING_HIDDEN: StripReach = { before: false, after: false, hidden: 0 };
  * arriving, a window resized) and as its entries change. `order` is the entries, in order.
  *
  * A new order also sends the strip back to its start. A strip that snaps keeps hold of the entry
- * it had snapped to, so when a favorite or a game just begun took the lead it did so out of view,
- * to the left of where the strip stood.
+ * it had snapped to, so when another page's order puts a favorite or a game just begun in the lead
+ * it would do so out of view, to the left of where the strip stood.
  */
 function useStripReach(order: string) {
   const strip = useRef<HTMLUListElement>(null);
@@ -204,8 +223,11 @@ export function ScoreTicker() {
   const pathname = usePathname();
   // Open on the page it was opened on: going anywhere else closes it.
   const [openOn, setOpenOn] = useState<string | null>(null);
-  // Favorite teams' games lead the whole strip, whatever their status.
-  const ordered = favoritesFirst(tickerGames(games), favoriteTeamIds);
+  // Favorite teams' games lead the whole strip, whatever their status, in an order taken once.
+  const ordered = useHeldOrder(
+    `${date} ${pathname}`,
+    favoritesFirst(tickerGames(games), favoriteTeamIds),
+  );
   const { strip, reach } = useStripReach(ordered.map((game) => game.id).join());
   // One function for the strip's life, so the wheel's listener is added once.
   const stripRef = useCallback(
@@ -240,12 +262,12 @@ export function ScoreTicker() {
       <div className={`flex ${TICKER_STRIP_HEIGHT}`}>
         <Link
           href="/nhl/live"
-          className="flex shrink-0 items-center border-rule border-r px-3 font-bold uppercase hover:bg-highlight md:px-6 md:py-1.5"
+          className="flex shrink-0 items-center border-rule border-r pr-3 pl-4 font-strong uppercase hover:bg-highlight max-md:text-(length:--fs-small) md:px-6"
         >
           scores
         </Link>
         {ordered.length === 0 ? (
-          <p className="self-center px-3 text-foreground/50 md:py-1.5">No games today</p>
+          <p className="self-center px-3 text-label">No games today</p>
         ) : (
           // Positioned, so the entries' text for screen readers stays inside the scrolling strip.
           <ul
@@ -253,7 +275,10 @@ export function ScoreTicker() {
             className={`relative flex min-w-0 flex-1 overflow-x-auto overscroll-x-contain [scrollbar-width:none] max-md:snap-x max-md:snap-mandatory ${FADE_WIDTH} ${fadeOf(reach)}`}
           >
             {ordered.map((game) => (
-              <li key={game.id} className="shrink-0 snap-start border-border border-r">
+              <li
+                key={game.id}
+                className="shrink-0 snap-start border-rule border-r last:border-r-0"
+              >
                 <Entry game={game} favorite={isFavoriteGame(game, favoriteTeamIds)} layout="cell" />
               </li>
             ))}
@@ -267,7 +292,7 @@ export function ScoreTicker() {
             aria-controls={open ? slateId : undefined}
             onClick={() => setOpenOn(open ? null : pathname)}
             // One width open or closed on a phone, so the strip beside it does not move.
-            className="flex w-12 shrink-0 cursor-pointer items-center justify-center gap-1 border-rule border-l font-bold hover:bg-highlight md:w-auto md:min-w-11 md:gap-1.5 md:px-3"
+            className="flex w-12 shrink-0 cursor-pointer items-center justify-center gap-2 border-rule border-l font-strong hover:bg-highlight md:w-auto md:min-w-11 md:px-4"
           >
             <span className="sr-only">
               {open ? "Close the slate" : `All ${ordered.length} games`}
@@ -280,7 +305,7 @@ export function ScoreTicker() {
             {/* Drawn, not typed: Geist Mono has no arrow, and each fallback font draws its own. */}
             <span
               aria-hidden="true"
-              className={`size-0 border-x-4 border-x-transparent border-t-[5px] border-t-current ${open ? "rotate-180" : ""}`}
+              className={`size-0 border-x-4 border-x-transparent border-t-4 border-t-current ${open ? "rotate-180" : ""}`}
             />
           </button>
         )}

@@ -24,7 +24,7 @@ export function TeamNowFrame({ children }: { children: ReactNode }) {
 
 /**
  * The team page's placeholders. Each repeats the columns of the ledger it stands in for (their
- * `numeric`, their `className`, the ledger's `density`), which is what makes it the same size:
+ * `numeric`, their `className`), which is what makes it the same size:
  * change a ledger's columns and change them here.
  */
 
@@ -50,10 +50,9 @@ export function NextGameSkeleton() {
 /** The Schedule tab: `UpcomingLedger` beside `ResultsLedger` (`schedule-ledgers.tsx`). */
 export function ScheduleSkeleton() {
   return (
-    <div className="grid gap-8 xl:grid-cols-2">
+    <div className="grid grid-cols-1 gap-8 xl:grid-cols-2">
       <SectionSkeleton
         title="Upcoming"
-        density="compact"
         rows={ROWS_PAST_THE_FOLD}
         columns={[
           { width: "md" },
@@ -63,7 +62,6 @@ export function ScheduleSkeleton() {
       />
       <SectionSkeleton
         title="Results"
-        density="compact"
         rows={ROWS_PAST_THE_FOLD}
         columns={[
           { width: "md" },
@@ -79,10 +77,9 @@ export function ScheduleSkeleton() {
 /** The Roster tab: `RosterLedger` with its column of hearts (`roster-ledger.tsx`). */
 export function RosterSkeleton() {
   return (
-    <div className="grid gap-8 xl:grid-cols-2">
+    <div className="grid grid-cols-1 gap-8 xl:grid-cols-2">
       <SectionSkeleton
         title="Roster"
-        density="compact"
         rows={ROWS_PAST_THE_FOLD}
         columns={[
           { width: "xs", numeric: true, className: "min-w-8" },

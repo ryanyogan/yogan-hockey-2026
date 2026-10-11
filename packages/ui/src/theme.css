@@ -3,9 +3,17 @@
  * An app's stylesheet imports "tailwindcss" and then this file, and sets --font-geist-mono
  * (Geist Mono) on <html>.
  *
- * Secondary text is the foreground at an opacity, as the Reference UI draws it:
- *   /70 a note, /60 an idle nav link or a second line, /50 a column header or a section count,
- *   /40 an aside (a team's record, a rank, the footer).
+ * The values are the approved prototype's (docs/design/tuned-ledger.md): its colours, its type
+ * scale with the larger phone sizes, its five weights and its one spacing scale.
+ *
+ * Secondary text is three solid colours a theme, each passing WCAG AA on the page:
+ *   `text-note` a note, an idle link or a second line; `text-label` a column header or a count;
+ *   `text-aside` an aside (a team's record, a rank, the footer).
+ * Rules are three: `border-border` under a row, `border-rule-head` under a column header,
+ * `border-rule` framing the shell.
+ *
+ * Spacing is one scale, 4, 8, 12, 16, 24, 32 and 48px: Tailwind's steps 1, 2, 3, 4, 6, 8 and 12.
+ * A ledger row's own padding is `py-row` (6px; 11px on a phone, where a row is a thumb's height).
  */
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -14,6 +22,22 @@
 @source "./components";
 
 @custom-variant dark (&:is(.dark *));
+
+/*
+ * What stands in for Geist Mono until its file arrives: whichever of these the device has. Each
+ * is a monospace face six tenths of an em wide, as Geist Mono is, so no line changes length when
+ * the real face is swapped in; the overrides are Geist Mono's own ascent and descent, and every
+ * line's height is set in pixels besides. An app names it after Geist Mono in its font stack.
+ */
+@font-face {
+  font-family: "Geist Mono Fallback";
+  src:
+    local("Menlo"), local("Roboto Mono"), local("Liberation Mono"), local("DejaVu Sans Mono"),
+    local("Courier New");
+  ascent-override: 100.5%;
+  descent-override: 29.5%;
+  line-gap-override: 0%;
+}
 
 :root {
   color-scheme: light;
@@ -27,24 +51,52 @@
   --secondary: #f0eee8;
   --secondary-foreground: #171717;
   --muted: #f0eee8;
-  --muted-foreground: #737373;
+  --muted-foreground: #6b6660;
   --accent: #fef9c2;
   --accent-foreground: #171717;
-  --destructive: #dc2626;
+  --destructive: #c81e1e;
+  /* Secondary text, from the least quiet to the most. */
+  --note: #44403c;
+  --label: #57534e;
+  --aside: #6b6660;
   /* The rule under a ledger row. */
-  --border: #e5e5e5;
-  /* The heavier rule that frames the shell: sidebar, top bar, tab strip. */
-  --rule: #d4d4d4;
-  --input: #d4d4d4;
-  --ring: #a3a3a3;
+  --border: #c9c5bc;
+  /* The rule under a column header. */
+  --rule-head: #8a857c;
+  /* The heavier rule that frames the shell: sidebar, top bar, score strip, tab strip. */
+  --rule: #8a857c;
+  --input: #8a857c;
+  --ring: #6b6660;
   /* A game in progress: the marker's colour and the tint behind its row. */
-  --live: #dc2626;
-  --live-tint: #fef2f2;
+  --live: #c81e1e;
+  --live-tint: #fdeceb;
   /* The row under the pointer. */
-  --highlight: #fef9c2;
+  --highlight: #fdf5b0;
   /* A figure above or below zero, such as a goal difference. */
   --positive: #15803d;
-  --negative: #dc2626;
+  --negative: #c81e1e;
+
+  /* Type: a body size, a small size and a score. A phone gets the larger set below. */
+  --fs: 13px;
+  --lh: 20px;
+  --fs-small: 11px;
+  --lh-small: 16px;
+  --fs-score: 16px;
+  --fs-wordmark: 14px;
+  /* A ledger row is its line and this above and below: 33px with its rule. */
+  --row-pad: 6px;
+}
+
+/* A phone: larger type, and a ledger row is 45px, a thumb's height. Below Tailwind's `md`. */
+@media (max-width: 767.98px) {
+  :root {
+    --fs: 15px;
+    --lh: 22px;
+    --fs-small: 12px;
+    --fs-score: 20px;
+    --fs-wordmark: 15px;
+    --row-pad: 11px;
+  }
 }
 
 .dark {
@@ -62,12 +114,16 @@
   --accent: #1e293b;
   --accent-foreground: #f1f5f9;
   --destructive: #f87171;
-  --border: #1e293b;
-  --rule: #475569;
-  --input: #475569;
-  --ring: #64748b;
+  --note: #cbd5e1;
+  --label: #a9b6c8;
+  --aside: #94a3b8;
+  --border: #3b4a61;
+  --rule-head: #64748b;
+  --rule: #64748b;
+  --input: #64748b;
+  --ring: #94a3b8;
   --live: #f87171;
-  --live-tint: #2a1a2a;
+  --live-tint: #3a1d2c;
   --highlight: #1e293b;
   --positive: #4ade80;
   --negative: #f87171;
@@ -88,7 +144,11 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
+  --color-note: var(--note);
+  --color-label: var(--label);
+  --color-aside: var(--aside);
   --color-border: var(--border);
+  --color-rule-head: var(--rule-head);
   --color-rule: var(--rule);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -97,6 +157,29 @@
   --color-highlight: var(--highlight);
   --color-positive: var(--positive);
   --color-negative: var(--negative);
+  /* `text-body`, `text-small`, `text-score`, `text-wordmark`: each with its line. */
+  --text-body: var(--fs);
+  --text-body--line-height: var(--lh);
+  --text-small: var(--fs-small);
+  --text-small--line-height: var(--lh-small);
+  --text-score: var(--fs-score);
+  --text-score--line-height: var(--lh);
+  --text-wordmark: var(--fs-wordmark);
+  --text-wordmark--line-height: var(--lh);
+  /*
+   * The five weights, by what the text is: `font-quiet` an aside or a count, `font-body` (the
+   * default), `font-label` a column header or the current place, `font-strong` a title or a
+   * winner, `font-score` a score. Geist Mono at the Medium treatment.
+   */
+  --font-weight-quiet: 400;
+  --font-weight-body: 500;
+  --font-weight-label: 500;
+  --font-weight-strong: 700;
+  --font-weight-score: 700;
+  /* `py-row`: a ledger row's padding above and below. */
+  --spacing-row: var(--row-pad);
+  /* `tracking-label`: capitals in the small size. */
+  --tracking-label: 0.06em;
   --radius-sm: var(--radius);
   --radius-md: var(--radius);
   --radius-lg: var(--radius);
@@ -108,7 +191,7 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background font-mono text-[13px] text-foreground;
+    @apply bg-background font-body font-mono text-body text-foreground tabular-nums antialiased;
   }
 }
 

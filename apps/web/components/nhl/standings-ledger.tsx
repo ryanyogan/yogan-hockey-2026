@@ -45,12 +45,12 @@ export function StandingsLedger({
           {line == null ? undefined : `playoff line: top ${line}`}
         </SectionHeader>
       )}
-      <Ledger density="compact">
+      <Ledger>
         <LedgerHead>
           {/* Wide enough for two digits, so the teams line up from one table to the next. */}
           <LedgerColumn className={compact ? undefined : "min-w-8"}>#</LedgerColumn>
           {/* The team takes the slack, so the figures stay together at the right edge. */}
-          <LedgerColumn className={compact ? undefined : "w-full"}>team</LedgerColumn>
+          <LedgerColumn className={compact ? "w-[40%]" : "w-full"}>team</LedgerColumn>
           {compact ? null : <LedgerColumn numeric>gp</LedgerColumn>}
           <LedgerColumn numeric>w</LedgerColumn>
           <LedgerColumn numeric>l</LedgerColumn>
@@ -68,11 +68,7 @@ export function StandingsLedger({
                   className={ledgerRowLink}
                   aria-label={compact ? row.team.name : undefined}
                 >
-                  {/*
-                    The dashboard's table spreads its columns by what is in them, so a mark that
-                    took room would move every figure: there it hangs in the rank's column.
-                  */}
-                  <TeamMark teamId={row.team.id} hang={compact} />
+                  <TeamMark teamId={row.team.id} />
                   {compact ? row.team.abbreviation : <TeamName team={row.team} />}
                 </Link>
               </LedgerCell>

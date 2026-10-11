@@ -1,5 +1,5 @@
-import { cn } from "cn";
 import type { ComponentProps, ReactNode } from "react";
+import { cn } from "../cn";
 import {
   Ledger,
   LedgerBody,
@@ -24,9 +24,8 @@ import { Section, SectionHeader } from "./section";
  *
  * The rule that keeps it exact: a skeleton is the real component's markup with a `SkeletonBar`
  * where each value would be. Give `columns` the real ledger's columns, with the same `numeric`
- * and the same `className` (the `w-full` that takes the slack, a `max-sm:hidden`), and the same
- * `density`. A row is then the real row's height by construction (32.5px, compact 28.5px, and a
- * section's header line 23.5px), whatever the tokens become.
+ * and the same `className` (the `w-full` that takes the slack, a `max-sm:hidden`). A row is then
+ * the real row's height by construction (33px, and 45px on a phone), whatever the tokens become.
  *
  * What a skeleton cannot know is how many rows are coming. Where the number is fixed (a team's
  * record, a Next Game card) say it. Where it is not (a schedule, a roster), give enough rows to
@@ -66,6 +65,8 @@ type SkeletonColumn = {
   numeric?: boolean;
   /** The real column's classes: `w-full` on the one that takes the slack, `max-sm:hidden`. */
   className?: string;
+  /** Classes the real ledger gives the column's cells and not its header: a cell's own padding. */
+  cellClassName?: string;
   /** A second line under the value, as `LedgerDetail` draws; `"fine"` for its small print. */
   detail?: boolean | "fine";
 };
@@ -77,16 +78,14 @@ type SkeletonColumn = {
 function LedgerSkeleton({
   columns,
   rows,
-  density = "default",
   className,
 }: {
   columns: readonly SkeletonColumn[];
   rows: number;
-  density?: "default" | "compact";
   className?: string;
 }) {
   return (
-    <Ledger density={density} className={className} aria-hidden="true" data-skeleton="">
+    <Ledger className={className} aria-hidden="true" data-skeleton="">
       <LedgerHead>
         {columns.map((column, index) => (
           // biome-ignore lint/suspicious/noArrayIndexKey: columns have no other identity
@@ -100,8 +99,12 @@ function LedgerSkeleton({
           // biome-ignore lint/suspicious/noArrayIndexKey: placeholder rows have no other identity
           <LedgerRow key={row}>
             {columns.map((column, index) => (
-              // biome-ignore lint/suspicious/noArrayIndexKey: as above
-              <LedgerCell key={index} numeric={column.numeric} className={column.className}>
+              <LedgerCell
+                // biome-ignore lint/suspicious/noArrayIndexKey: as above
+                key={index}
+                numeric={column.numeric}
+                className={cn(column.className, column.cellClassName)}
+              >
                 <SkeletonBar width={column.width} />
                 {column.detail && (
                   <LedgerDetail fine={column.detail === "fine"}>

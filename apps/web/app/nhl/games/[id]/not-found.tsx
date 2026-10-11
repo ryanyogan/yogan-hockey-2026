@@ -9,9 +9,9 @@ export default function GameNotFound() {
   return (
     <Section>
       <SectionHeader title="Game not found" count="404" />
-      <p className="border-foreground/20 border-t px-2 py-1.5">
+      <p className="border-rule-head border-t px-2 py-row">
         No game is kept at this address.{" "}
-        <Link href="/nhl/live" className="font-bold underline">
+        <Link href="/nhl/live" className="font-strong underline">
           Live scores
         </Link>
       </p>

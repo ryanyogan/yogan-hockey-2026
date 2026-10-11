@@ -35,12 +35,10 @@ export function TonightGames({
   return (
     <Section aria-label="Tonight">
       <SectionHeader title="Tonight" count={tonightSummary(games)}>
-        <span className="flex flex-wrap gap-x-4">
-          {record != null && <span data-slot="picks-record">{record}</span>}
-          <Link href="/nhl/live" className={headerLink}>
-            all scores
-          </Link>
-        </span>
+        {record != null && <span data-slot="picks-record">{record}</span>}
+        <Link href="/nhl/live" className={headerLink}>
+          all scores
+        </Link>
       </SectionHeader>
       {games.length > 0 ? (
         <GameLedger

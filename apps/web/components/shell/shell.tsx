@@ -9,7 +9,7 @@ import { ThemeToggle } from "./theme-toggle";
 
 function Wordmark({ className = "" }: { className?: string }) {
   return (
-    <Link href="/" className={`font-bold text-sm ${className}`}>
+    <Link href="/" className={`font-strong text-wordmark ${className}`}>
       YOGAN/HOCKEY
     </Link>
   );
@@ -25,21 +25,26 @@ export function Shell({ children }: { children: ReactNode }) {
       <a href="#main-content" className="skip-link">
         Skip to content
       </a>
-      <aside className="sticky top-0 hidden h-screen w-[calc(12rem+var(--safe-left))] shrink-0 flex-col gap-1 border-rule border-r p-4 pt-[calc(1rem+var(--safe-top))] pb-[calc(1rem+var(--safe-bottom))] pl-[calc(1rem+var(--safe-left))] md:flex">
+      <aside className="sticky top-0 hidden h-screen w-[calc(12rem+var(--safe-left))] shrink-0 flex-col gap-1 p-4 pt-[calc(1rem+var(--safe-top))] pb-[calc(1rem+var(--safe-bottom))] pl-[calc(1rem+var(--safe-left))] md:flex">
         <Wordmark className="mb-4" />
-        <nav aria-label="Site" className="flex flex-col gap-1">
+        <nav aria-label="Site" className="flex flex-col">
           {/* Reading the query string suspends during a static render. */}
           <Suspense>
             <NavLinks />
           </Suspense>
         </nav>
-        <ThemeToggle className="mt-auto self-start px-2" />
+        <ThemeToggle className="mt-auto self-start px-2 py-1" />
       </aside>
-      <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex h-(--top-bar) shrink-0 items-center justify-between border-rule border-b bg-background pt-(--safe-top) pr-[calc(1rem+var(--safe-right))] pl-[calc(1rem+var(--safe-left))] md:hidden">
+      {/*
+        The rule beside the sidebar is the column's: the sidebar is one screen tall, and a rule of
+        its own would stop a screen down a long page.
+      */}
+      <div className="flex min-w-0 flex-1 flex-col border-rule md:border-l">
+        <header className="sticky top-0 z-30 flex h-(--top-bar) shrink-0 items-center justify-between border-rule border-b bg-background pt-(--safe-top) pr-[calc(0.5rem+var(--safe-right))] pl-[calc(1rem+var(--safe-left))] md:hidden">
           <Wordmark />
-          <div className="flex items-center gap-4">
-            <ThemeToggle />
+          {/* Each is 44px tall and padded by 8px, so the two sit 16px apart. */}
+          <div className="flex items-center">
+            <ThemeToggle className="min-h-11 px-2" />
             <MobileMenu />
           </div>
         </header>
@@ -48,7 +53,7 @@ export function Shell({ children }: { children: ReactNode }) {
         <main
           id="main-content"
           tabIndex={-1}
-          className="flex-1 p-4 pr-[calc(1rem+var(--safe-right))] pl-[calc(1rem+var(--safe-left))] md:p-6 md:pr-[calc(1.5rem+var(--safe-right))]"
+          className="flex-1 p-4 pr-[calc(1rem+var(--safe-right))] pb-8 pl-[calc(1rem+var(--safe-left))] md:p-6 md:pr-[calc(1.5rem+var(--safe-right))] md:pb-8"
         >
           <PendingOutlet scope="page" className="space-y-8">
             {children}

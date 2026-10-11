@@ -39,7 +39,7 @@ export function RosterLedger({
       {players.length === 0 ? (
         <EmptyLedger>No roster yet this season.</EmptyLedger>
       ) : (
-        <Ledger density="compact">
+        <Ledger>
           <LedgerHead>
             {/* Wide enough for two digits, so the names line up. */}
             <LedgerColumn numeric className="min-w-8">

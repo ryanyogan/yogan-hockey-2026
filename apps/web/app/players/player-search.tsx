@@ -86,7 +86,7 @@ export function PlayerSearch({ initial }: { initial: Search }) {
         <form action="/players" method="get" onSubmit={submit}>
           <label
             htmlFor={inputId}
-            className="block py-1 text-xs text-muted-foreground uppercase tracking-wider"
+            className="block py-1 font-label text-label text-small uppercase tracking-label"
           >
             player name
           </label>
@@ -102,7 +102,7 @@ export function PlayerSearch({ initial }: { initial: Search }) {
             spellCheck={false}
             placeholder="two letters or more"
             // 16px on a phone, where a smaller field makes Safari zoom the page on focus.
-            className="w-full max-w-md border border-foreground/20 bg-transparent px-2 py-1.5 text-base outline-none placeholder:text-muted-foreground focus-visible:border-foreground md:text-[13px]"
+            className="w-full max-w-md border border-rule-head bg-transparent px-2 py-row text-base outline-none placeholder:text-muted-foreground focus-visible:border-foreground md:text-body"
           />
         </form>
       </search>

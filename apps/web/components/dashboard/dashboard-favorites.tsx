@@ -2,15 +2,40 @@
 
 import { LiveMarker } from "@yogan-hockey/ui/components/marker";
 import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
+import type { ReactNode } from "react";
 import { DASHBOARD_FAVORITES, gamePlayingNow } from "../../lib/dashboard";
 import type { FavoritePlayer } from "../../lib/favorite-players";
 import { gameHref } from "../../lib/scoreboard-view";
 import { FavoritePlayersLedger } from "../favorites/favorite-players-ledger";
 import { useFavoritePlayers } from "../favorites/use-favorite-players";
 import { Link } from "../link";
+import { PlayerLedger } from "../players/player-ledger";
 import { useScoreboard } from "../scoreboard/scoreboard-provider";
 import { EmptyLedger } from "../team/empty-ledger";
 import { headerLink } from "./header-link";
+
+/** A row with nobody in it: the name's line is kept by a space that does not collapse. */
+const NOBODY = { name: "\u00a0", jersey: null, position: null, headshot: null, team: null };
+const ROOM = Array.from({ length: DASHBOARD_FAVORITES }, (_, row) => ({ ...NOBODY, id: `${row}` }));
+
+/**
+ * The room the listed favorites take, held from the first paint so that the standings below do
+ * not move when the rows arrive, seconds later. It is the ledger itself, unseen, with a row for
+ * each favorite the dashboard has room for: the same columns and the same line under the name on
+ * a phone, so the same height, in the grid cell the real thing is drawn in (`TeamNowFrame` does
+ * the same). A visitor with fewer favorites, or none, has that much space under the section.
+ * Favorites become the Account's and are drawn by the server in #132, and this goes then.
+ */
+function FavoritesRoom({ children }: { children: ReactNode }) {
+  return (
+    <div className="grid grid-cols-1">
+      <div aria-hidden="true" className="pointer-events-none invisible col-start-1 row-start-1">
+        <PlayerLedger compact players={ROOM} line={() => "\u00a0"} action={() => null} />
+      </div>
+      <div className="col-start-1 row-start-1">{children}</div>
+    </div>
+  );
+}
 
 /**
  * The dashboard's Favorites block: the visitor's first four favorite players, each marked "live"
@@ -37,25 +62,27 @@ export function DashboardFavorites() {
           all players
         </Link>
       </SectionHeader>
-      {status === "listed" ? (
-        <FavoritePlayersLedger compact players={players} note={live} />
-      ) : status === "waiting" ? (
-        <EmptyLedger>Reading your favorites.</EmptyLedger>
-      ) : unavailable ? null : (
-        <EmptyLedger>
-          No favorite players yet.{" "}
-          <Link href="/players" className="underline">
-            Find a player
-          </Link>{" "}
-          and press his heart to keep him here.
-        </EmptyLedger>
-      )}
-      {unavailable && (
-        // Favorites that are still his: they are asked for again when the page is next opened.
-        <EmptyLedger role="status">
-          {status === "listed" ? "Some favorites" : "Your favorites"} could not be read just now.
-        </EmptyLedger>
-      )}
+      <FavoritesRoom>
+        {status === "listed" ? (
+          <FavoritePlayersLedger compact players={players} note={live} />
+        ) : status === "waiting" ? (
+          <EmptyLedger>Reading your favorites.</EmptyLedger>
+        ) : unavailable ? null : (
+          <EmptyLedger>
+            No favorite players yet.{" "}
+            <Link href="/players" className="underline">
+              Find a player
+            </Link>{" "}
+            and press his heart to keep him here.
+          </EmptyLedger>
+        )}
+        {unavailable && (
+          // Favorites that are still his: they are asked for again when the page is next opened.
+          <EmptyLedger role="status">
+            {status === "listed" ? "Some favorites" : "Your favorites"} could not be read just now.
+          </EmptyLedger>
+        )}
+      </FavoritesRoom>
     </Section>
   );
 }

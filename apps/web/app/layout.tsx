@@ -14,7 +14,18 @@ import { PAGE_CACHE_REQUEST_HEADER } from "../lib/page-cache";
 import { readScoreboard } from "../lib/scoreboard";
 import "./globals.css";
 
-const mono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" });
+// One variable file holds every weight the theme uses (400, 500 and 700). vinext downloads it at
+// build time and serves it from this site, with the Latin file preloaded in every page's head.
+// Until it arrives the text is drawn in a monospace face the device has ("Geist Mono Fallback",
+// `theme.css`): the same advance and the same line, so nothing moves when it is swapped in. The
+// fallback vinext would generate is Arial resized, whose letters are not one width.
+const mono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-geist-mono",
+  display: "swap",
+  adjustFontFallback: false,
+  fallback: ["Geist Mono Fallback"],
+});
 
 export const metadata: Metadata = {
   title: { default: APP_NAME, template: `%s · ${APP_NAME}` },

@@ -4,6 +4,7 @@ import type { GameHeader, Play } from "@yogan-hockey/schemas";
 import { Button } from "@yogan-hockey/ui/components/button";
 import { UrlTabs } from "@yogan-hockey/ui/components/url-tabs";
 import { type ReactNode, useState } from "react";
+import type { GameClock } from "../../lib/game/penalties";
 import { focusedPlay, toggleSelection, visiblePlays } from "../../lib/game/plays";
 import { type GameTab, gameTabLinks, gameTabOfPath, shownGameTab } from "../../lib/game/tabs";
 import { Link } from "../link";
@@ -34,6 +35,7 @@ export function GameView({
   pick,
   status,
   notice,
+  clock,
   selectedId: controlledId,
   onSelect,
   everyPlay: controlledEveryPlay,
@@ -54,6 +56,8 @@ export function GameView({
   status?: string;
   /** A warning under them: "Updates delayed". */
   notice?: string;
+  /** A live game's clock as last heard, where it is later than the latest play. */
+  clock?: GameClock;
   /** The picked play, for a page that holds the selection itself; null follows the game. */
   selectedId?: string | null;
   onSelect?: (playId: string | null) => void;
@@ -106,8 +110,9 @@ export function GameView({
         picked={picked}
         status={status}
         notice={notice}
+        clock={clock}
       />
-      <div className="mt-6">
+      <div className="mt-4">
         <PeriodTimeline
           game={header}
           plays={game}
@@ -118,7 +123,7 @@ export function GameView({
           onSelect={toggle}
         />
         {transport ?? (
-          <p data-slot="timeline-hint" className="mt-1 text-foreground/50">
+          <p data-slot="timeline-hint" className="mt-1 text-label">
             Click a tick to see that play on the ice.{" "}
             {picked ? (
               <>
@@ -197,7 +202,7 @@ function GameTabs({
   );
   return (
     <>
-      <div className="mt-6 flex flex-wrap items-center justify-between gap-2">
+      <div className="mt-8 flex flex-wrap items-center justify-between gap-2">
         <UrlTabs label="Game" link={Link} current={tab} tabs={gameTabLinks(pathname, hasPick)} />
         {/* On every tab: it decides the dots and the ticks as well as the list. */}
         <KeyPlaysToggle

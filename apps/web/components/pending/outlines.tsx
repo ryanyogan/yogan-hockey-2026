@@ -1,7 +1,8 @@
 import { SectionSkeleton } from "@yogan-hockey/ui/components/skeleton";
 import type { ReactNode } from "react";
+import { RINK } from "../../lib/game/rink";
 import type { Outline } from "../../lib/pending-route";
-import { GAME_COLUMNS, GameSkeleton, LiveSkeleton, SLATE_TABLE } from "../route-skeletons";
+import { GAME_COLUMNS, LiveSkeleton, SLATE_TABLE } from "../slate-skeleton";
 import {
   NextGameSkeleton,
   RosterSkeleton,
@@ -25,6 +26,15 @@ const FIGURES = [
   { width: "sm" as const, numeric: true },
   { width: "sm" as const, numeric: true },
 ];
+
+/**
+ * The room a game's rink takes, as an empty box of the rink's proportions. Not `GameSkeleton`'s
+ * drawn rink: these outlines are in every route's script, and `Rink` brings the plays' code and
+ * zod with it (27 kB gzipped), which only a game's page should load.
+ */
+const RINK_BOX = {
+  aspectRatio: `${RINK.halfLength + RINK.margin} / ${RINK.halfWidth + RINK.margin}`,
+};
 
 /** The line a layout draws first: who the team, game or player is. */
 function Identity({ label }: { label: string }) {
@@ -79,7 +89,13 @@ const PAGES: Record<Outline, () => ReactNode> = {
   game: () => (
     <>
       <Identity label="Game" />
-      <GameSkeleton />
+      <div aria-hidden="true" className="bg-secondary" style={RINK_BOX} />
+      <SectionSkeleton
+        label="The game"
+        rows={6}
+        density="compact"
+        columns={[{ width: "sm" }, { width: "sm" }, { width: "xl", className: "w-full" }]}
+      />
     </>
   ),
   "game-tab": () => PAGES.game(),

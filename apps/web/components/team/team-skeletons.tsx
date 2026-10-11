@@ -1,7 +1,7 @@
 import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
 import { LedgerSkeleton, SectionSkeleton } from "@yogan-hockey/ui/components/skeleton";
 import type { ReactNode } from "react";
-import { GAME_COLUMNS, SLATE_TABLE } from "../route-skeletons";
+import { GAME_COLUMNS, SLATE_TABLE } from "../slate-skeleton";
 
 /** All states occupy the live ledger's geometry, including when there is no next game. */
 export function TeamNowFrame({ children }: { children: ReactNode }) {

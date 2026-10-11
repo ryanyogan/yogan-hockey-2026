@@ -1,7 +1,6 @@
 "use client";
 
 import type { ScoreboardReading, ScoreboardState } from "@yogan-hockey/schemas";
-import { useAgent } from "agents/react";
 import {
   createContext,
   type ReactNode,
@@ -13,7 +12,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { SCOREBOARD_CONNECTION } from "../../lib/scoreboard-connection";
+import { followScoreboard } from "../../lib/scoreboard-socket";
 import { heardAtFrom, laterOf } from "../../lib/scoreboard-view";
 import { waitForScoreboard } from "../../lib/scoreboard-wait";
 import { useDropWatch } from "../../lib/use-drop-watch";
@@ -99,20 +98,24 @@ export function ScoreboardProvider({
     };
   }, [initial]);
 
-  useAgent<ScoreboardState>({
-    ...SCOREBOARD_CONNECTION,
-    onOpen: drop.opened,
-    onClose: drop.closed,
-    onStateUpdate: (next) => {
-      wait.current?.heard();
-      setState(next);
-      setFirstHeard((first) => (first === undefined ? (next.invalidatedAt ?? null) : first));
-    },
-    onMessage: (message) => {
-      const at = heardAtFrom(message.data);
-      if (at != null) setLastHeardAt((heardAt) => laterOf(heardAt, at));
-    },
-  });
+  const { opened, closed } = drop;
+  useEffect(
+    () =>
+      followScoreboard(window.location.host, {
+        onOpen: opened,
+        onClose: closed,
+        onState: (next) => {
+          wait.current?.heard();
+          setState(next);
+          setFirstHeard((first) => (first === undefined ? (next.invalidatedAt ?? null) : first));
+        },
+        onMessage: (data) => {
+          const at = heardAtFrom(data);
+          if (at != null) setLastHeardAt((heardAt) => laterOf(heardAt, at));
+        },
+      }),
+    [opened, closed],
+  );
   useRefreshOnInvalidation(
     initial == null ? firstHeard : rendered == null ? undefined : (rendered.invalidatedAt ?? null),
     state == null ? undefined : (state.invalidatedAt ?? null),

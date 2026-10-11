@@ -131,7 +131,7 @@ export function GameView({
                 <Button
                   variant="ghost"
                   size="inline"
-                  className="underline"
+                  className="tap-target underline"
                   onClick={() => select(null)}
                 >
                   {header.status === "live" ? "follow live" : "back to the latest"}

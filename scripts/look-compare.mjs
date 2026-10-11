@@ -41,6 +41,26 @@ const PARTS = {
   "sidebar link": [".sidebar .nav-item", 'aside nav[aria-label="Site"] a', BOX],
   wordmark: [".wordmark", 'a[href="/"].font-strong', BOX],
   tab: [".tabs a", '[data-slot="url-tabs"] a', ["height"]],
+  // The phone's shell: the top bar and its one button, and the tab bar at the foot of the screen.
+  // Each is also compared for its background, its top and left rules and its bottom padding. A
+  // cell's one line is centred in its 56px, so its line height (the body's in the prototype, the
+  // small size's on the site) moves nothing and is left out.
+  "top bar": [".topbar", "header", BOX, { shell: true }],
+  "theme toggle": [".topbar .theme-toggle", "header button", BOX, { shell: true }],
+  "tab bar": [".tabbar", '[data-slot="tab-bar"]', BOX, { shell: true }],
+  "tab bar link": [".tabbar a", '[data-slot="tab-bar"] a', BOX, { shell: true, centred: true }],
+  "tab bar second link": [
+    ".tabbar a + a",
+    '[data-slot="tab-bar"] a + a',
+    BOX,
+    { shell: true, centred: true },
+  ],
+  "tab bar current": [
+    '.tabbar a[aria-current="page"]',
+    '[data-slot="tab-bar"] a[aria-current="page"]',
+    BOX,
+    { shell: true, centred: true },
+  ],
   // The game page under its rink, which is not compared: the rink is drawn by other tickets.
   timeline: [".timeline", '[data-slot="period-timeline"]', ["x", "width", "height"]],
   "play row": [".plays .play", '[data-slot="play-row"]', ["x", "width"]],
@@ -65,6 +85,15 @@ const STYLES = [
   "borderBottomColor",
   "paddingTop",
   "paddingLeft",
+];
+/** Compared on the phone's shell only: elsewhere a background says which play or row is picked. */
+const SHELL_STYLES = [
+  "paddingBottom",
+  "backgroundColor",
+  "borderTopWidth",
+  "borderTopColor",
+  "borderLeftWidth",
+  "borderLeftColor",
 ];
 
 const measure = ([parts, styles]) => {
@@ -136,7 +165,7 @@ for (const target of PAGES) {
           name,
           pair[which === "prototype" ? 0 : 1],
         ]);
-        const measured = await page.evaluate(measure, [parts, STYLES]);
+        const measured = await page.evaluate(measure, [parts, [...STYLES, ...SHELL_STYLES]]);
         await context.close();
         return measured;
       };
@@ -160,10 +189,12 @@ for (const target of PAGES) {
           if (name === "footer" && key === "y" && !target.whole) continue;
           if (Math.abs(a[key] - b[key]) > 0.5) differs.push(`${key} ${a[key]} -> ${b[key]}`);
         }
-        for (const style of STYLES) {
+        const { shell = false, centred = false } = PARTS[name][3] ?? {};
+        for (const style of shell ? [...STYLES, ...SHELL_STYLES] : STYLES) {
+          if (centred && style === "lineHeight") continue;
           // The first family is the face; the fallbacks after it are each page's own.
           // A rule that is not drawn has no colour to compare.
-          if (style === "borderBottomColor" && a.borderBottomWidth === "0px") continue;
+          if (style.endsWith("Color") && a[style.replace("Color", "Width")] === "0px") continue;
           const same =
             style === "fontFamily"
               ? a[style].split(",")[0].replaceAll('"', "") ===

@@ -17,7 +17,7 @@ writes it and the seven shots again (see the build notes for the `TMPDIR` it nee
   `default`, `mobile-web-app-capable` and Apple's older name for it, and 24 splash images: 12
   iPhone screens, portrait, in paper and in slate, chosen by `prefers-color-scheme`.
 - **Shell**: `viewport-fit=cover`, and `env(safe-area-inset-*)` added to the padding of the top
-  bar, the phone menu, the sidebar, the ticker strip, the page and the footer.
+  bar, the phone's tab bar, the sidebar, the ticker strip, the page and the footer.
 - **Favicon**: `/favicon.ico` and a 64px PNG. The site had none; every visit used to ask the
   Worker for `/favicon.ico` and get the not-found page.
 
@@ -37,15 +37,16 @@ Worker's own entry, with the page cache on), Chromium 153.0.8010.12.
 | `/manifest.webmanifest` | 200, `application/manifest+json`, 812 bytes, no `x-page-cache`, no redirect, also with a stray `?tab=scoring` |
 | The 4 manifest icons, the touch icon, both favicons, the 24 splash images | each 200 and `image/*`, served by the platform's static assets before the Worker runs |
 | Top bar with a 47px status bar | its background starts at 0 and is 91px high (44 + 47); the wordmark and both buttons start at 58.8px or lower |
-| Phone menu | opens at 91px, under the bar |
-| Footer with a 34px home bar | its last line ends 34px or more above the bottom edge |
+| Tab bar with a 34px home bar (#139) | its background runs to the bottom edge and is 90px high (56 + 34); its five places end 53px above the edge; it starts 607px below the score strip |
+| Footer with a 34px home bar | its last line ends 12px above the tab bar, 102px above the bottom edge |
 | Sideways scroll at 390px | none |
 | Bars' colour with the visitor's theme opposite to the operating system's | both tags carry the shown theme's colour, in light and in dark |
+| A small phone on its side (667 by 375, 47px at each end, 21px home bar): still the tab bar | the bar is 77px high (56 + 21) and runs edge to edge; its places start at 90px and end at 588px, inside the 47px bands, and 40px above the bottom edge; the score strip ends 198px above it and the footer's last line 12px above it |
 | Phone on its side (844 by 390, 47px at each end, 21px home bar): the sidebar layout | the sidebar's links start at 63px, its theme switch ends 39px above the bottom edge, and the ticker, page and footer end at 797px, the edge of the 47px band |
 
 Shots (390 by 844, the hatched bands are where the simulated status bar, home bar and notch are):
-`standalone-light-390-top.png`, `-menu.png`, `-bottom.png`, the same three for dark, and
-`sideways-light-844.png`.
+`standalone-light-390-top.png` and `-bottom.png`, the same two for dark, `sideways-light-844.png`,
+and `sideways-light-667-top.png` and `-bottom.png` (no bands drawn on those two).
 
 ## What the machine checks are, and are not
 
@@ -94,9 +95,10 @@ iPhone, Safari (Share, then Add to Home Screen):
 
 - [ ] The sheet proposes the name "Hockey" and shows the "Y/H" icon.
 - [ ] It opens with no Safari bars, and a splash of the mark on paper (light) or slate (dark).
-- [ ] Nothing sits under the notch or island: the wordmark, "dark mode" and "menu" are all
-      reachable.
-- [ ] Scrolled to the end, the footer's last line is above the home bar.
+- [ ] Nothing sits under the notch or island: the wordmark and "dark mode" are both reachable.
+- [ ] The tab bar's five places sit above the home bar, and its colour runs under the home bar
+      to the bottom edge.
+- [ ] Scrolled to the end, the footer's last line is above the tab bar.
 - [ ] Turned sideways, nothing is under the notch.
 - [ ] The status bar is readable in both themes (see the limit above if the theme and the
       phone's own setting differ).

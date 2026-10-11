@@ -121,7 +121,7 @@ Every cached read is `unstable_cache` over vinext's data cache on KV (`apps/web/
 
 Site-wide:
 
-- Sidebar navigation, in the Parity Reference's order: Standings, Teams, Players, Family, Live Scores. The wordmark links to `/`. Below the `md` breakpoint the sidebar becomes a menu opened from the top bar, which closes on navigation.
+- Sidebar navigation, in the Parity Reference's order: Standings, Teams, Players, Family, Live Scores. The wordmark links to `/`. Below the `md` breakpoint the sidebar becomes a tab bar fixed to the foot of the screen, the five places in it one tap each (#139; it was a menu opened from the top bar).
 - A light/dark toggle that follows the operating system until the visitor chooses. Both themes exist for every page.
 - Page titles name the page, team or player.
 - An unknown path, team or player gets a not-found page inside the normal layout.

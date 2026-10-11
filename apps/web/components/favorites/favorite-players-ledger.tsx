@@ -27,7 +27,7 @@ export function FavoritePlayersLedger({
       compact={compact}
       line={seasonLine}
       action={(player) => (
-        <span className="inline-flex items-baseline gap-4 whitespace-nowrap">
+        <span className="inline-flex items-center gap-4 whitespace-nowrap align-top">
           {note?.(player)}
           <FavoriteHeart kind="player" id={player.id} name={player.name} />
         </span>

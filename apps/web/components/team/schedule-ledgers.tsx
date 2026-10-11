@@ -66,7 +66,7 @@ export function UpcomingLedger({
       {rows.length + postponed.length === 0 ? (
         <EmptyLedger>No games left to play this season.</EmptyLedger>
       ) : (
-        <Ledger density="compact">
+        <Ledger>
           <LedgerHead>
             <LedgerColumn>date</LedgerColumn>
             <LedgerColumn className="w-full">opponent</LedgerColumn>
@@ -124,7 +124,7 @@ export function ResultsLedger({
       {rows.length === 0 ? (
         <EmptyLedger>No games played yet this season.</EmptyLedger>
       ) : (
-        <Ledger density="compact">
+        <Ledger>
           <LedgerHead>
             <LedgerColumn>date</LedgerColumn>
             <LedgerColumn className="w-full">opponent</LedgerColumn>
@@ -139,11 +139,11 @@ export function ResultsLedger({
                 <GameCells row={row} />
                 <LedgerCell
                   tone={row.won ? "positive" : "negative"}
-                  className="whitespace-nowrap font-bold"
+                  className="whitespace-nowrap font-strong"
                 >
                   {row.won ? "W" : "L"}
                   {row.extraTime && (
-                    <LedgerAside className="font-normal"> {row.extraTime}</LedgerAside>
+                    <LedgerAside className="font-quiet"> {row.extraTime}</LedgerAside>
                   )}
                 </LedgerCell>
                 <LedgerCell numeric className="whitespace-nowrap">

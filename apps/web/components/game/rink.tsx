@@ -91,7 +91,7 @@ function Goal({ side }: { side: 1 | -1 }) {
         height={2 * netHalfWidth}
         fill="none"
         strokeWidth={0.5}
-        className="stroke-foreground/50"
+        className="stroke-aside"
       />
     </g>
   );

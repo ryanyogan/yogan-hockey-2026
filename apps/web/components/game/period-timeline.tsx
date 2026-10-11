@@ -45,7 +45,7 @@ export function PeriodTimeline({
 }) {
   const { periods, positions } = layoutTimeline(plays, game);
   return (
-    <div data-slot="period-timeline" className="relative h-12 bg-secondary">
+    <div data-slot="period-timeline" className="relative h-12 border border-rule">
       {periods.map((period) => (
         <div
           key={period.period}
@@ -53,9 +53,7 @@ export function PeriodTimeline({
           className={`absolute inset-y-0 border-rule ${period.start > 0 ? "border-l" : ""}`}
           style={{ left: `${period.start * 100}%`, width: `${period.width * 100}%` }}
         >
-          <span className="absolute top-0.5 left-1 text-[10px] text-foreground/40">
-            {period.label}
-          </span>
+          <span className="absolute top-0.5 left-1 text-label text-small">{period.label}</span>
         </div>
       ))}
       {[...ticks, ...upcoming].map((play, index) => {

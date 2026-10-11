@@ -8,7 +8,8 @@
       "!packages/espn/fixtures",
       "!docs/performance/results",
       "!prototypes/tuned-ledger/vendor",
-      "!prototypes/tuned-ledger/data.js"
+      "!prototypes/tuned-ledger/data.js",
+      "!docs/design/approved-look/*.json"
     ]
   },
   "formatter": { "indentStyle": "space", "indentWidth": 2, "lineWidth": 100 },

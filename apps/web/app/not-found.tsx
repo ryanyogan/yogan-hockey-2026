@@ -9,9 +9,9 @@ export default function NotFound() {
   return (
     <Section>
       <SectionHeader title="Not found" count="404" />
-      <p className="border-foreground/20 border-t px-2 py-1.5">
+      <p className="border-rule-head border-t px-2 py-row">
         Nothing is kept at this address.{" "}
-        <Link href="/" className="font-bold underline">
+        <Link href="/" className="font-strong underline">
           Back to tonight
         </Link>
       </p>

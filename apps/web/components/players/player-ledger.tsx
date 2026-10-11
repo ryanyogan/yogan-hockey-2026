@@ -54,13 +54,13 @@ export function PlayerLedger<P extends PlayerSearchResult>({
         {players.map((player) => (
           <LedgerRow key={player.id} interactive>
             <LedgerCell>
-              <Link href={`/players/${player.id}`} className={ledgerRowLink}>
+              <Link href={`/players/${player.id}`} className={`font-strong ${ledgerRowLink}`}>
                 {player.name}
               </Link>
               {player.jersey && !compact ? <LedgerAside> #{player.jersey}</LedgerAside> : null}
               {/* A phone has no room for the column, so the line goes under his name. */}
               {line ? (
-                <LedgerDetail className={compact ? "sm:hidden" : "whitespace-nowrap sm:hidden"}>
+                <LedgerDetail fine className="sm:hidden">
                   {line(player)}
                 </LedgerDetail>
               ) : null}

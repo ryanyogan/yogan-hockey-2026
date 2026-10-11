@@ -54,14 +54,14 @@ function GameUnreadable({ pathname }: { pathname: string }) {
   return (
     <Section data-slot="game-unreadable">
       <SectionHeader title="Game" />
-      <p className="border-foreground/20 border-t px-2 py-1.5">
+      <p className="border-rule-head border-t px-2 py-row">
         This game could not be read just now.{" "}
         {/* A plain link: the page is rendered again from nothing, which is the retry. */}
-        <a href={pathname} className="font-bold underline">
+        <a href={pathname} className="font-strong underline">
           Try again
         </a>{" "}
         or see the{" "}
-        <Link href="/nhl/live" className="font-bold underline">
+        <Link href="/nhl/live" className="font-strong underline">
           live scores
         </Link>
         .

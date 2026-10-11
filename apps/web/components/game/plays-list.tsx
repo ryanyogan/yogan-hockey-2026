@@ -1,5 +1,6 @@
 import type { GameHeader, Play } from "@yogan-hockey/schemas";
 import { navItemVariants } from "@yogan-hockey/ui/components/nav-item";
+import { tabCell, tabStrip } from "@yogan-hockey/ui/components/url-tabs";
 import type { ReactNode } from "react";
 import { markKind, playTime, scoringPlays, teamAbbreviation } from "../../lib/game/plays";
 
@@ -27,15 +28,15 @@ function PlayRow({
       data-play={play.id}
       aria-pressed={picked}
       onClick={() => onSelect(play.id)}
-      className={`flex w-full cursor-pointer gap-3 border-border border-b py-1.5 text-left outline-none hover:bg-highlight focus-visible:ring-2 focus-visible:ring-ring ${
+      className={`flex w-full cursor-pointer gap-2 border-border border-b px-2 py-row text-left outline-none hover:bg-highlight focus-visible:ring-2 focus-visible:ring-ring ${
         focused ? "bg-highlight" : ""
       }`}
     >
-      <span className="w-[9ch] shrink-0 text-foreground/50">{playTime(play)}</span>
-      <span className="w-[3ch] shrink-0">{teamAbbreviation(header, play.teamId)}</span>
-      <span className={markKind(play) === "goal" ? "font-bold text-live" : ""}>
+      <span className="w-[9ch] shrink-0 text-label">{playTime(play)}</span>
+      <span className="w-[4ch] shrink-0">{teamAbbreviation(header, play.teamId)}</span>
+      <span className={markKind(play) === "goal" ? "font-strong text-live" : ""}>
         {play.text}
-        {note != null && <span className="font-normal text-foreground/50"> {note}</span>}
+        {note != null && <span className="font-quiet text-label"> {note}</span>}
       </span>
     </button>
   );
@@ -61,10 +62,10 @@ export function PlaysList({
   /** The plays to list, in the game's order: the Key plays, or every play. */
   plays: readonly Play[];
 }) {
-  if (plays.length === 0) return <p className="text-foreground/50">No plays yet.</p>;
+  if (plays.length === 0) return <p className="text-label">No plays yet.</p>;
   return (
     <div data-slot="plays-list" className="@container">
-      <div className="grid gap-x-8 @3xl:grid-cols-2">
+      <div className="grid gap-x-8 border-rule-head border-t @3xl:grid-cols-2">
         {plays.toReversed().map((play) => (
           <PlayRow
             key={play.id}
@@ -97,12 +98,12 @@ export function KeyPlaysToggle({
     { value: true, label: "every play", count: totalCount },
   ];
   return (
-    <fieldset data-slot="key-plays-toggle" className="flex flex-wrap gap-1">
+    <fieldset data-slot="key-plays-toggle" className={tabStrip}>
       <legend className="sr-only">Which plays to show</legend>
       {choices.map((choice) => (
         <label
           key={choice.label}
-          className={`cursor-pointer has-focus-visible:ring-2 has-focus-visible:ring-ring ${navItemVariants(
+          className={`cursor-pointer has-focus-visible:ring-2 has-focus-visible:ring-ring ${tabCell} ${navItemVariants(
             { current: choice.value === everyPlay },
           )}`}
         >
@@ -116,7 +117,7 @@ export function KeyPlaysToggle({
             // React, and the next click on it then changes nothing for `onChange` to hear.
             onClick={() => onChange(choice.value)}
           />
-          {choice.label} <span className="opacity-60">{choice.count}</span>
+          {choice.label} <span className="ml-[1ch] opacity-70">{choice.count}</span>
         </label>
       ))}
     </fieldset>
@@ -136,7 +137,7 @@ export function ScoringSummary({
 }: ListProps & { plays: readonly Play[] }) {
   const { goals, shootout } = scoringPlays(plays);
   if (goals.length + shootout.length === 0) {
-    return <p className="text-foreground/50">No goals yet.</p>;
+    return <p className="text-label">No goals yet.</p>;
   }
   const { home, away } = header;
   return (
@@ -154,7 +155,7 @@ export function ScoringSummary({
       ))}
       {shootout.length > 0 && (
         <>
-          <h3 className="mt-4 mb-1 font-bold uppercase">Shootout</h3>
+          <h3 className="mt-4 mb-1 font-strong uppercase">Shootout</h3>
           {shootout.map((play) => (
             <PlayRow
               key={play.id}

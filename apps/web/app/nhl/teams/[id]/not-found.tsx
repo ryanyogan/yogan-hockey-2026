@@ -10,9 +10,9 @@ export default function TeamNotFound() {
   return (
     <Section>
       <SectionHeader title="Team not found" count="404" />
-      <p className="border-foreground/20 border-t px-2 py-1.5">
+      <p className="border-rule-head border-t px-2 py-row">
         No team is kept at this address.{" "}
-        <Link href={nhlHref({ tab: "teams", view: "division" })} className="font-bold underline">
+        <Link href={nhlHref({ tab: "teams", view: "division" })} className="font-strong underline">
           All teams
         </Link>
       </p>

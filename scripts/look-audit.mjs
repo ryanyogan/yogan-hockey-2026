@@ -3,8 +3,9 @@
 //
 //   overflow  the document is no wider than the window;
 //   rules     every drawn rule (a border, or a filled box a pixel or two thick) ends, within half
-//             a pixel, on a rule it meets, on the edge of the page, or on the edge of the column
-//             it is drawn in (tables are not boxed: docs/design/tuned-ledger.md);
+//             a pixel, on a rule it meets, on the edge of the page (of the window, for what is
+//             fixed to it), or on the edge of the column it is drawn in (tables are not boxed:
+//             docs/design/tuned-ledger.md);
 //   spacing   every padding, margin and gap is a value of the one spacing scale, or is named in
 //             ALLOWED below with its reason;
 //   shift     the layout shift of a cold load, with favorites in the browser and with none.
@@ -28,15 +29,15 @@ import {
 
 const [baseURL = "http://localhost:5173", outDir = "docs/design/rules-and-padding", only] =
   process.argv.slice(2);
-await mkdir(outDir, { recursive: true });
+if (!only) await mkdir(outDir, { recursive: true });
 
 /** The one spacing scale (packages/ui/src/theme.css). */
 const SCALE = [0, 4, 8, 12, 16, 24, 32, 48];
 
 /**
  * Spacing that is not on the scale and is meant. Each entry: the properties, the value in px (a
- * number, or the name of a custom property on <html> that holds it), a selector the element must
- * match, and why.
+ * signed number, or the name of a custom property on <html> that holds a length), a selector the
+ * element must match, and why.
  */
 const ALLOWED = [
   {
@@ -59,9 +60,15 @@ const ALLOWED = [
   },
   {
     properties: ["margin-top", "margin-bottom", "margin-left", "margin-right"],
-    value: 1,
+    value: -1,
     selector: "*",
     why: "A 1px negative margin laps one rule over the next so that two do not double.",
+  },
+  {
+    properties: ["padding-bottom"],
+    value: "--tab-bar",
+    selector: "div:has(> main#main-content)",
+    why: "The phone's tab bar is fixed over the foot of the window, so the shell is padded by the bar's height (`--tab-bar`: the prototype's 56px, and the home bar's room on a phone that has one) and the footer ends above it.",
   },
 ];
 
@@ -105,7 +112,7 @@ const measure = ([scale, allowed, notAudited]) => {
   const round = (value) => Math.round(value * 100) / 100;
   const pageWidth = document.documentElement.clientWidth;
   const pageHeight = document.documentElement.scrollHeight;
-  const root = getComputedStyle(document.documentElement);
+  const windowHeight = document.documentElement.clientHeight;
 
   const describe = (element) => {
     const slots = [];
@@ -134,10 +141,61 @@ const measure = ([scale, allowed, notAudited]) => {
     return parts.length < 4 || parts[3] > 0;
   };
 
-  /** The box an ancestor that clips lets through, and the edges of the columns an element is in. */
+  /**
+   * The edges of the track a cell of a grid stands in, or of the room a row of boxes gives one of
+   * its boxes: from the row's edge or the neighbour before it to the neighbour after it or the
+   * row's other edge. Not the cell's own box, which a `max-width` can make narrower than its
+   * column: a rule on it would then end at nothing and still be at "its column's edge".
+   */
+  const track = (cell, parent, parentStyle) => {
+    const outer = parent.getBoundingClientRect();
+    const left = outer.left + parent.clientLeft + parseFloat(parentStyle.paddingLeft);
+    const right =
+      outer.left + parent.clientLeft + parent.clientWidth - parseFloat(parentStyle.paddingRight);
+    const box = cell.getBoundingClientRect();
+    const gap = parseFloat(parentStyle.columnGap) || 0;
+    if (parentStyle.display.includes("grid")) {
+      const widths = parentStyle.gridTemplateColumns
+        .replace(/\[[^\]]*\]/g, "")
+        .split(/\s+/)
+        .filter(Boolean)
+        .map(parseFloat);
+      if (widths.length > 0 && widths.every((width) => !Number.isNaN(width))) {
+        const lines = [];
+        let at = left;
+        for (const width of widths) {
+          lines.push([at, at + width]);
+          at += width + gap;
+        }
+        const mine = lines.filter(
+          ([x1, x2]) => x2 > box.left + EPSILON && x1 < box.right - EPSILON,
+        );
+        if (mine.length > 0) return [mine[0][0], mine[mine.length - 1][1]];
+      }
+    }
+    // A row of boxes, or a grid whose tracks could not be read: the neighbours on the same line.
+    let [x1, x2] = [left, right];
+    for (const other of parent.children) {
+      if (other === cell || other.getClientRects().length === 0) continue;
+      if (["absolute", "fixed"].includes(getComputedStyle(other).position)) continue;
+      const beside = other.getBoundingClientRect();
+      if (beside.bottom <= box.top + EPSILON || beside.top >= box.bottom - EPSILON) continue;
+      if (beside.right <= box.left + EPSILON) x1 = Math.max(x1, beside.right + gap);
+      if (beside.left >= box.right - EPSILON) x2 = Math.min(x2, beside.left - gap);
+    }
+    return [x1, x2];
+  };
+
+  /**
+   * Where an element is drawn: the box an ancestor that clips lets through, the edges of the
+   * columns it is in, the box fixed to the window that holds it, if one does, and whether it is
+   * in a box that sticks to the window.
+   */
   const context = (element) => {
     let clip = { x1: -Infinity, x2: Infinity, y1: -Infinity, y2: Infinity };
     const columns = new Set();
+    let fixed = null;
+    let stuck = false;
     // The element itself may be the cell of a grid (a play's row); only its ancestors clip it.
     for (let at = element; at && at !== document.body; at = at.parentElement) {
       const style = getComputedStyle(at);
@@ -160,15 +218,26 @@ const measure = ([scale, allowed, notAudited]) => {
       const parent = at.parentElement ? getComputedStyle(at.parentElement) : null;
       const cellOfGrid = parent?.display.includes("grid");
       const cellOfRow = parent?.display.includes("flex") && parent.flexDirection.startsWith("row");
-      if (["MAIN", "FOOTER", "HEADER", "ASIDE"].includes(at.tagName) || cellOfGrid || cellOfRow) {
-        // A column is as wide as what it holds: inside its padding. The cell that draws the rule
-        // is the column itself, edge to edge.
+      const part = ["MAIN", "FOOTER", "HEADER", "ASIDE"].includes(at.tagName);
+      if (at === element && (cellOfGrid || cellOfRow)) {
+        // The cell that draws the rule: its column is the track it was given.
+        const [x1, x2] = track(at, at.parentElement, parent);
+        columns.add(round(x1 + scrollX));
+        columns.add(round(x2 + scrollX));
+      } else if (part || cellOfGrid || cellOfRow) {
+        // A column is as wide as what it holds: inside its padding. The part of the shell that
+        // draws the rule itself is the column, edge to edge.
         const own = at === element;
         columns.add(round(own ? box.left + scrollX : inner.x1 + parseFloat(style.paddingLeft)));
         columns.add(round(own ? box.right + scrollX : inner.x2 - parseFloat(style.paddingRight)));
       }
+      if (style.position === "fixed") {
+        fixed = at;
+        break;
+      }
+      if (style.position === "sticky") stuck = true;
     }
-    return { clip, columns: [...columns] };
+    return { clip, columns: [...columns], fixed, stuck };
   };
 
   // 1. Every rule, as a box in the document's coordinates.
@@ -178,11 +247,15 @@ const measure = ([scale, allowed, notAudited]) => {
     if (!drawn(element)) continue;
     const style = getComputedStyle(element);
     const box = element.getBoundingClientRect();
+    const { clip, columns, fixed, stuck } = context(element);
+    // What is fixed to the window is measured in the window, where it stays; the rest in the
+    // document.
+    const [dx, dy] = fixed ? [0, 0] : [scrollX, scrollY];
     const [left, right, top, bottom] = [
-      box.left + scrollX,
-      box.right + scrollX,
-      box.top + scrollY,
-      box.bottom + scrollY,
+      box.left + dx,
+      box.right + dx,
+      box.top + dy,
+      box.bottom + dy,
     ];
     const sides = [];
     for (const [side, across] of [
@@ -229,30 +302,54 @@ const measure = ([scale, allowed, notAudited]) => {
       const of = getComputedStyle(element, pseudo);
       if (of.content === "none" || of.content === "normal") continue;
       const bordered = ["Top", "Bottom", "Left", "Right"].some(
-        (side) => parseFloat(of[`border${side}Width`]) > 0 && of[`border${side}Style`] !== "none",
+        (side) =>
+          parseFloat(of[`border${side}Width`]) > 0 &&
+          !["none", "hidden"].includes(of[`border${side}Style`]) &&
+          opaque(of[`border${side}Color`]),
       );
-      if (bordered) {
+      // Its size is known only when it is given one (a positioned or block box).
+      const [wide, tall] = [parseFloat(of.width), parseFloat(of.height)];
+      const filled =
+        Math.min(wide, tall) > 0 &&
+        Math.min(wide, tall) <= 2 &&
+        Math.max(wide, tall) >= 8 &&
+        opaque(of.backgroundColor) &&
+        of.backgroundColor !== "rgba(0, 0, 0, 0)";
+      if (bordered || filled) {
         const key = `${describe(element)} ${pseudo}`;
         unmeasured.set(key, (unmeasured.get(key) ?? 0) + 1);
       }
     }
-    // A box under 8px each way with borders is a drawn glyph (the ticker's triangle), not a rule.
+    // A box under 12px each way with borders is a drawn glyph (the ticker's triangle), not a rule.
     if (sides.length === 0 || Math.max(box.width, box.height) < 12) continue;
-    const { clip, columns } = context(element);
+    // The window cuts what is fixed to it as a clipping ancestor would.
+    const within = fixed
+      ? {
+          x1: Math.max(clip.x1, 0),
+          x2: Math.min(clip.x2, pageWidth),
+          y1: Math.max(clip.y1, 0),
+          y2: Math.min(clip.y2, windowHeight),
+        }
+      : clip;
     for (const side of sides) {
       const clipped = {
         ...side,
-        x1: Math.max(side.x1, clip.x1),
-        x2: Math.min(side.x2, clip.x2),
-        y1: Math.max(side.y1, clip.y1),
-        y2: Math.min(side.y2, clip.y2),
+        x1: Math.max(side.x1, within.x1),
+        x2: Math.min(side.x2, within.x2),
+        y1: Math.max(side.y1, within.y1),
+        y2: Math.min(side.y2, within.y2),
       };
       if (clipped.x2 - clipped.x1 <= 0 || clipped.y2 - clipped.y1 <= 0) continue;
-      // Where a clip cut the rule, the edge of what clipped it is where it ends.
-      const edges = new Set(columns);
-      if (clipped.x1 !== side.x1) edges.add(round(clipped.x1));
-      if (clipped.x2 !== side.x2) edges.add(round(clipped.x2));
-      rules.push({ ...clipped, edges: [...edges], from: describe(element) });
+      // A rule that runs across may end at its column's edge. Where a clip cut a rule, whichever
+      // way it runs, the edge of what clipped it is where it ends.
+      const [start, end] = side.across ? ["x1", "x2"] : ["y1", "y2"];
+      const edges = new Set(side.across ? columns : []);
+      if (clipped[start] !== side[start]) edges.add(round(clipped[start]));
+      if (clipped[end] !== side[end]) edges.add(round(clipped[end]));
+      // What sticks to the window (the sidebar, a screen tall) ends where the window does, as
+      // the page under it does not: the window's head and foot are edges for a rule down it.
+      if (stuck && !side.across) edges.add(round(scrollY)).add(round(scrollY + windowHeight));
+      rules.push({ ...clipped, edges: [...edges], fixed, from: describe(element) });
     }
   }
 
@@ -262,9 +359,15 @@ const measure = ([scale, allowed, notAudited]) => {
     rule.across
       ? `h ${Math.round(rule.y1 * 2)} ${rule.thick} ${rule.colour}`
       : `v ${Math.round(rule.x1 * 2)} ${rule.thick} ${rule.colour}`;
-  const groups = new Map();
-  for (const rule of rules) groups.set(key(rule), [...(groups.get(key(rule)) ?? []), rule]);
-  for (const group of groups.values()) {
+  // What is fixed to the window is its own layer: the page scrolls under it, so a rule of the
+  // page that happens to pass under a fixed rule's end does not meet it.
+  const layers = new Map();
+  for (const rule of rules) {
+    const groups = layers.get(rule.fixed) ?? new Map();
+    groups.set(key(rule), [...(groups.get(key(rule)) ?? []), rule]);
+    layers.set(rule.fixed, groups);
+  }
+  for (const group of [...layers.values()].flatMap((groups) => [...groups.values()])) {
     const [start, end] = group[0].across ? ["x1", "x2"] : ["y1", "y2"];
     group.sort((a, b) => a[start] - b[start]);
     let current = null;
@@ -280,43 +383,48 @@ const measure = ([scale, allowed, notAudited]) => {
   }
 
   // 3. Each end of each rule meets something, or is a finding.
-  const touches = (a, b) =>
-    a.x1 <= b.x2 + EPSILON &&
-    a.x2 >= b.x1 - EPSILON &&
-    a.y1 <= b.y2 + EPSILON &&
-    a.y2 >= b.y1 - EPSILON;
   const near = (a, b) => Math.abs(a - b) <= EPSILON;
   const ruleFindings = [];
   for (const rule of merged) {
     const [start, end, cross1, cross2] = rule.across
       ? ["x1", "x2", "y1", "y2"]
       : ["y1", "y2", "x1", "x2"];
-    const limit = rule.across ? pageWidth : pageHeight;
+    const limit = rule.across ? pageWidth : rule.fixed ? windowHeight : pageHeight;
+    const others = merged.filter((other) => other !== rule && other.fixed === rule.fixed);
     for (const which of [start, end]) {
       const at = rule[which];
       if (near(at, 0) || near(at, limit)) continue;
-      // The end, as a box of no length.
-      const cap = { ...rule, [start]: at, [end]: at };
-      const others = merged.filter((other) => other !== rule);
-      if (others.some((other) => touches(cap, other))) continue;
-      // Only a rule that runs across the page ends at a column's edge; one that runs down it
-      // must meet a rule or the page's edge.
-      if (rule.across && rule.edges.some((edge) => near(edge, at))) continue;
+      // It meets a rule that runs the other way and touches this end, or one that runs the same
+      // way through it (the same line, drawn in another colour or weight). A rule alongside, a
+      // pixel above or below, is not met.
+      const meets = others.some((other) => {
+        if (at < other[start] - EPSILON || at > other[end] + EPSILON) return false;
+        return other.across !== rule.across
+          ? rule[cross1] <= other[cross2] + EPSILON && rule[cross2] >= other[cross1] - EPSILON
+          : Math.min(rule[cross2], other[cross2]) - Math.max(rule[cross1], other[cross1]) > 0;
+      });
+      if (meets) continue;
+      // Its column's edge (only for a rule that runs across), or the edge of what clipped it.
+      if (rule.edges.some((edge) => near(edge, at))) continue;
       // What it missed: a rule running the other way, alongside this end and within 24px of it.
       const missed = others
         .filter(
           (other) =>
             other.across !== rule.across &&
-            other[cross1 === "y1" ? "y1" : "x1"] <= rule[cross2] + EPSILON &&
-            other[cross1 === "y1" ? "y2" : "x2"] >= rule[cross1] - EPSILON,
+            other[cross1] <= rule[cross2] + EPSILON &&
+            other[cross2] >= rule[cross1] - EPSILON,
         )
         .map((other) => {
-          const line = other[start];
-          const beyond = which === start ? line - at : at - line - other.thick;
-          return { other, beyond };
+          // How far past the other rule's far side this end runs (over), or how far from its
+          // near side it stops (short).
+          const [near1, far1] =
+            which === start ? [other[end], other[start]] : [other[start], other[end]];
+          const over = which === start ? far1 - at : at - far1;
+          const short = which === start ? at - near1 : near1 - at;
+          return { other, over, short, by: over > 0 ? over : short };
         })
-        .filter(({ beyond }) => Math.abs(beyond) <= 24)
-        .sort((a, b) => Math.abs(a.beyond) - Math.abs(b.beyond))[0];
+        .filter(({ by }) => by <= 24)
+        .sort((a, b) => a.by - b.by)[0];
       const side = rule.across
         ? which === start
           ? "left"
@@ -329,22 +437,32 @@ const measure = ([scale, allowed, notAudited]) => {
         end: side,
         at: round(at),
         fault: missed
-          ? `${missed.beyond > 0 ? "overshoots" : "stops short of"} the rule of ${missed.other.from} by ${round(Math.abs(missed.beyond))}px`
-          : `ends at nothing (${rule.across ? "column edges" : "no rule"} ${rule.across ? rule.edges.join(", ") : ""})`,
+          ? `${missed.over > 0 ? "overshoots" : "stops short of"} the rule of ${missed.other.from} by ${round(missed.by)}px`
+          : "ends at nothing",
+        // The edges it could have ended at.
+        edges: rule.edges,
       });
     }
   }
 
   // 4. Every padding, margin and gap.
-  // A number of px, a custom property of <html> that holds one, or "em": set in the text's size.
-  const isAllowed = (entry, element, property, size) => {
+  // A signed number of px, a custom property of <html> that holds a length (a `calc()` too, so
+  // it is read off a box that is that tall), or "em": set in the text's size.
+  const lengths = new Map();
+  const lengthOf = (name) => {
+    if (!lengths.has(name)) {
+      const probe = document.body.appendChild(document.createElement("div"));
+      probe.style.cssText = `position:absolute;visibility:hidden;height:var(${name})`;
+      lengths.set(name, probe.getBoundingClientRect().height);
+      probe.remove();
+    }
+    return lengths.get(name);
+  };
+  const isAllowed = (entry, element, property, px) => {
     if (!entry.properties.includes(property) || !element.matches(entry.selector)) return false;
     if (entry.value === "em") return true;
-    const value =
-      typeof entry.value === "number"
-        ? entry.value
-        : parseFloat(root.getPropertyValue(entry.value));
-    return Math.abs(value - size) < 0.01;
+    const value = typeof entry.value === "number" ? entry.value : lengthOf(entry.value);
+    return Math.abs(value - px) < 0.01;
   };
   const spacing = [];
   const properties = [
@@ -375,14 +493,14 @@ const measure = ([scale, allowed, notAudited]) => {
       if (Number.isNaN(px)) continue;
       const size = Math.abs(px);
       if (scale.some((step) => Math.abs(step - size) < 0.01)) continue;
-      if (allowed.some((entry) => isAllowed(entry, element, property, size))) continue;
+      if (allowed.some((entry) => isAllowed(entry, element, property, px))) continue;
       spacing.push({ element: describe(element), property, value: round(px) });
     }
   }
 
   return {
     theme: document.documentElement.classList.contains("dark") ? "dark" : "light",
-    overflow: document.documentElement.scrollWidth - innerWidth,
+    overflow: document.documentElement.scrollWidth - pageWidth,
     rulesMeasured: merged.length,
     rules: ruleFindings,
     unmeasured: [...unmeasured].map(([rule, count]) => ({ rule, count })),
@@ -475,7 +593,7 @@ const distinct = (kind, text) => {
 };
 const ruleLines = distinct(
   "rules",
-  (finding) => `${finding.rule}: ${finding.end} end ${finding.fault.replace(/\(.*\)/, "").trim()}`,
+  (finding) => `${finding.rule}: ${finding.end} end ${finding.fault}`,
 );
 const spacingLines = distinct(
   "spacing",

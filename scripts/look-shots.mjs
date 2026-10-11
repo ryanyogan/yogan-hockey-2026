@@ -11,14 +11,19 @@
 // font or shows the wrong theme.
 import { mkdir, writeFile } from "node:fs/promises";
 import { chromium } from "@playwright/test";
-import { PLAYER, ROUTES, seedPicks, TEAM } from "./look-routes.mjs";
+import {
+  PLAYER,
+  ROUTES,
+  removeDevOverlay,
+  seedPicks,
+  TEAM,
+  THEMES,
+  WIDTHS,
+} from "./look-routes.mjs";
 
 const [baseURL = "http://localhost:5173", outDir = "docs/design/approved-look", only] =
   process.argv.slice(2);
 await mkdir(outDir, { recursive: true });
-
-const WIDTHS = { 390: 844, 1440: 900 };
-const THEMES = ["light", "dark"];
 
 /** WCAG 2.x relative luminance and contrast, from the `rgb()` strings the browser reports. */
 function luminance([r, g, b]) {
@@ -90,11 +95,7 @@ for (const route of ROUTES) {
       await page.evaluate(() => document.fonts.ready);
       if (route.waitFor) await page.locator(route.waitFor).first().waitFor();
       await page.waitForTimeout(300);
-      if (route.overlay) {
-        await page.evaluate(() => {
-          document.getElementById("__vinext_dev_error_overlay_root")?.remove();
-        });
-      }
+      if (route.overlay) await removeDevOverlay(page);
       const measured = await page.evaluate(() => {
         const visible = (selector) =>
           [...document.querySelectorAll(selector)].find(

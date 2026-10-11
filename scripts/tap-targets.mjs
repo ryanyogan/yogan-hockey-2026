@@ -15,7 +15,7 @@
 // that reaches past a line of text counts, as a finger finds it.
 import { writeFile } from "node:fs/promises";
 import { chromium } from "@playwright/test";
-import { PLAYER, ROUTES, seedPicks, TEAM } from "./look-routes.mjs";
+import { PLAYER, ROUTES, removeDevOverlay, seedPicks, TEAM } from "./look-routes.mjs";
 
 const [baseURL = "http://localhost:5173", out, only] = process.argv.slice(2);
 const MINIMUM = 44;
@@ -211,11 +211,7 @@ for (const route of ROUTES) {
   // The page answers a tap only once it has hydrated.
   if (!route.overlay) await page.waitForFunction(() => window.__NEXT_HYDRATED === true);
   await page.waitForTimeout(300);
-  if (route.overlay) {
-    await page.evaluate(() => {
-      document.getElementById("__vinext_dev_error_overlay_root")?.remove();
-    });
-  }
+  if (route.overlay) await removeDevOverlay(page);
 
   for (const state of [{ name: "as it loads", act: null }, ...(STATES[route.name] ?? [])]) {
     if (state.act) {

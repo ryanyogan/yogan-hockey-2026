@@ -1,6 +1,6 @@
 import { SectionSkeleton, SkeletonBar } from "@yogan-hockey/ui/components/skeleton";
 import { Rink } from "./game/rink";
-import { GAME_LEDGER_COLUMNS } from "./scoreboard/game-ledger";
+import { FIXED_GAME_COLUMNS } from "./scoreboard/game-ledger";
 
 /**
  * The placeholders of the live page and a game's page (#95), each drawn by its
@@ -15,22 +15,21 @@ import { GAME_LEDGER_COLUMNS } from "./scoreboard/game-ledger";
 /** A night's slate is anything from no games to sixteen; eight rows fill a laptop's window. */
 const SLATE_ROWS = 8;
 
-/** The same five columns as GameLedger, including its visible AI pick on phones. */
+/**
+ * `GameLedger`'s six columns: status, away, score, home, score, note. A team's cell is its mark
+ * and its abbreviation, and a bar of `lg` holds the place of both.
+ */
 export const GAME_COLUMNS = [
-  { width: "sm" as const, className: GAME_LEDGER_COLUMNS.status },
-  {
-    width: "sm" as const,
-    className: `${GAME_LEDGER_COLUMNS.team} [&_[data-slot=ledger-detail]]:text-xs [&_[data-slot=ledger-detail]]:leading-[14px]`,
-    detail: true,
-  },
-  {
-    width: "sm" as const,
-    className: `${GAME_LEDGER_COLUMNS.team} [&_[data-slot=ledger-detail]]:text-xs [&_[data-slot=ledger-detail]]:leading-[14px]`,
-    detail: true,
-  },
-  { width: "sm" as const, className: GAME_LEDGER_COLUMNS.pick },
-  { width: "lg" as const, className: GAME_LEDGER_COLUMNS.location },
+  { width: "md" as const, className: FIXED_GAME_COLUMNS.status, detail: "fine" as const },
+  { width: "lg" as const, className: FIXED_GAME_COLUMNS.team },
+  { width: "xs" as const, numeric: true, className: FIXED_GAME_COLUMNS.score },
+  { width: "lg" as const, className: FIXED_GAME_COLUMNS.team },
+  { width: "xs" as const, numeric: true, className: FIXED_GAME_COLUMNS.score },
+  { width: "lg" as const, className: FIXED_GAME_COLUMNS.note },
 ];
+
+/** A phone's row has a second line under the status (the pick or the venue); a wide page's none. */
+export const SLATE_TABLE = "[&_[data-slot=ledger-detail]]:xl:hidden";
 
 /** `/nhl/live`: the heading, then the slate in the fixed columns its sections share. */
 export function LiveSkeleton() {
@@ -42,7 +41,7 @@ export function LiveSkeleton() {
       <SectionSkeleton
         label="Today's games"
         rows={SLATE_ROWS}
-        className="game-ledger"
+        className={`table-fixed ${SLATE_TABLE}`}
         columns={GAME_COLUMNS}
       />
     </>

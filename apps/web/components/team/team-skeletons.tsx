@@ -1,7 +1,7 @@
 import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
 import { LedgerSkeleton, SectionSkeleton } from "@yogan-hockey/ui/components/skeleton";
 import type { ReactNode } from "react";
-import { GAME_COLUMNS } from "../route-skeletons";
+import { GAME_COLUMNS, SLATE_TABLE } from "../route-skeletons";
 
 /** All states occupy the live ledger's geometry, including when there is no next game. */
 export function TeamNowFrame({ children }: { children: ReactNode }) {
@@ -10,7 +10,11 @@ export function TeamNowFrame({ children }: { children: ReactNode }) {
       <div aria-hidden="true" className="invisible col-start-1 row-start-1 pointer-events-none">
         <Section>
           <SectionHeader title="Playing now" />
-          <LedgerSkeleton className="game-ledger" columns={GAME_COLUMNS} rows={1} />
+          <LedgerSkeleton
+            className={`table-fixed ${SLATE_TABLE}`}
+            columns={GAME_COLUMNS}
+            rows={1}
+          />
         </Section>
       </div>
       <div className="col-start-1 row-start-1">{children}</div>
@@ -46,7 +50,7 @@ export function NextGameSkeleton() {
 /** The Schedule tab: `UpcomingLedger` beside `ResultsLedger` (`schedule-ledgers.tsx`). */
 export function ScheduleSkeleton() {
   return (
-    <div className="grid gap-4 xl:grid-cols-2">
+    <div className="grid gap-8 xl:grid-cols-2">
       <SectionSkeleton
         title="Upcoming"
         density="compact"
@@ -75,7 +79,7 @@ export function ScheduleSkeleton() {
 /** The Roster tab: `RosterLedger` with its column of hearts (`roster-ledger.tsx`). */
 export function RosterSkeleton() {
   return (
-    <div className="grid gap-4 xl:grid-cols-2">
+    <div className="grid gap-8 xl:grid-cols-2">
       <SectionSkeleton
         title="Roster"
         density="compact"

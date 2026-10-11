@@ -2,6 +2,12 @@
 
 What earlier tickets learned that the code does not show. Read before building; add a line when you learn something the next subagent would otherwise rediscover. Keep each note to what cannot be found by reading the code.
 
+## Original design restoration (#121)
+
+- **Current visual direction is the original ledger, not the later prototypes.** See `docs/design/original-restored.md`. Restore presentation from `f07b4bb` selectively; it predates the #107 shared game/player layouts, stable Home ordering and intentional Family/fictional-player retirement. A wholesale checkout would lose those changes.
+- **The original score strip has matching helpers and skeleton geometry.** Its wheel handling and hidden-entry count live in `lib/scoreboard-view.ts`; the shared `TICKER_STRIP_HEIGHT` is also the streamed fallback. The original ledger has separate score cells and phone-only fine detail, so its skeleton columns and the TeamNow reservation must use that shape together. The reservation keeps #107's full-width stacking and reduced row counts.
+- **AI feedback survives the old note cell.** Available/pending picks appear before the venue on desktop and under status on phones; missing/failed picks explicitly say “No pick”. Do not restore Family content or old favorite-promoting Home order alongside the visual shell.
+
 ## Nested game/player routes and measured loading costs (#107, 2026-10-11)
 
 - **Family remains retired by #99.** The third tabbed route in the old ticket is intentionally superseded; no Family route or fictional player was restored.
@@ -30,7 +36,7 @@ Screenshots in `docs/design/performance-before` and `performance-after` use the 
 
 - **Home order differs intentionally from Scores and the ticker.** Ryan wants home games to stay put during live updates and favorite hydration: scheduled start, then game id for ties. Do not reuse `tickerGames` or `favoritesFirst` for the home ledger; their status/favorite promotion caused rows to jump. Favorite markers and live details still update in place.
 
-## Approved navigation and panels (#99, current visual direction)
+## Historical navigation and panels (#99, superseded by #121)
 
 - **The approved direction supersedes the old variant C measurements below.** The durable sample is `prototypes/navigation-preview`; `docs/design/navigation-direction.md` records the user's approval. `docs/design/aligned-ui` holds the production comparisons. Shared edges use a 1440px maximum width with 24px desktop, 16px intermediate and 12px phone gutters. The server root layout owns the 56px desktop / 88px phone header; all five destinations stay visible and no menu/sidebar remains.
 - **No carousel machinery remains.** `ScoreTicker` uses one CSS grid, with all games visible and wrapping, and the existing single Scoreboard socket. Its initial unknown slate uses the same nine-cell CSS grid as a typical slate (including its intermediate-width wrapping). A different game count can move the page on first data arrival; navigation retains the filled grid. Do not claim arbitrary initial slates have zero layout shift.

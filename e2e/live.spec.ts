@@ -54,31 +54,58 @@ test("/nhl/live lists the slate in sections, links each game, and follows the so
   );
   // Each team with its record, then where the game is played and who shows it.
   const row = upcoming.getByRole("row").filter({ hasText: "NSH" });
-  await expect(row.getByRole("cell").nth(1)).toHaveText("NSH1-1-0");
-  await expect(row.getByRole("cell").nth(2)).toHaveText("TOR1-2-0");
+  await expect(row.getByRole("cell").nth(1)).toHaveText("NSH 1-1-0");
+  await expect(row.getByRole("cell").nth(3)).toHaveText("TOR 1-2-0");
   await expect(row.locator('[data-slot="game-pick"]')).toHaveText("TOR 58%");
-  await expect(row.getByRole("cell").last()).toHaveText("Scotiabank Arena · ESPN+, Scripps Sports");
+  await expect(row.getByRole("cell").last()).toHaveText(
+    "TOR 58%Scotiabank Arena · ESPN+, Scripps Sports",
+  );
 
   // The ticker, on this page as on every other: a way to the scores, then one entry per game.
   const ticker = page.getByRole("navigation", { name: "Scores" });
-  await expect(ticker.getByRole("link")).toHaveCount(9);
+  await expect(ticker.getByRole("link")).toHaveCount(10);
   const entry = ticker.locator(`a[href="/nhl/games/${GAME_ID}"]`);
   await expect(entry).toHaveText(/NSH.*TOR.*6:00 PM$/);
-  // Every score fits without a carousel or sideways page scrolling, also on narrow phones.
+  // Nine games are wider than the strip, and a plain vertical wheel reaches the rest.
+  const strip = ticker.getByRole("list");
+  await expect(async () => {
+    await strip.hover();
+    await page.mouse.wheel(0, 300);
+    expect(await strip.evaluate((list) => list.scrollLeft)).toBeGreaterThan(0);
+  }).toPass();
+
+  // On a phone the strip shows three games at a time, so the count at its end opens the whole
+  // slate beneath it: every game a row, none of them past the edge of the page.
   const desktop = page.viewportSize();
-  for (const width of [320, 390, 768, 1440]) {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await ticker.getByRole("button", { name: "All 9 games" }).click();
+  const wholeSlate = ticker.getByRole("list", { name: "All of today's games" });
+  await expect(wholeSlate.getByRole("link")).toHaveCount(9);
+  await expect(wholeSlate.locator(`a[href="/nhl/games/${GAME_ID}"]`)).toBeInViewport({ ratio: 1 });
+  const sideways = await page.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  );
+  expect(sideways).toBe(0);
+  await page.keyboard.press("Escape");
+  await expect(wholeSlate).toBeHidden();
+  // The restored note moves below status on tablets too; a fixed-width note must not hide a pick.
+  for (const width of [320, 390, 640, 768, 1024, 1280, 1440]) {
     await page.setViewportSize({ width, height: 844 });
-    const list = ticker.getByRole("list", { name: "All of today's games" });
-    await expect(list.getByRole("link")).toHaveCount(9);
-    for (const link of await list.getByRole("link").all())
-      await expect(link).toBeInViewport({ ratio: 1 });
-    expect(await list.evaluate((node) => node.scrollWidth - node.clientWidth)).toBe(0);
+    const visiblePick = row.getByText("TOR 58%", { exact: true }).filter({ visible: true });
+    await expect(visiblePick).toBeVisible();
+    expect(
+      await visiblePick.evaluate((node) => {
+        const cell = node.closest("td");
+        return (
+          cell != null && node.getBoundingClientRect().right <= cell.getBoundingClientRect().right
+        );
+      }),
+    ).toBe(true);
     expect(
       await page.evaluate(
         () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
       ),
     ).toBe(0);
-    await expect(row.locator('[data-slot="game-pick"]')).toBeVisible();
   }
   if (desktop != null) await page.setViewportSize(desktop);
 
@@ -103,7 +130,7 @@ test("/nhl/live lists the slate in sections, links each game, and follows the so
   await expect(upcoming.getByRole("row")).toHaveCount(9);
   await expect(entry).toHaveText(/NSH 2.*TOR 1.*2nd 12:34/);
   await expect(entry).toHaveAttribute("data-live", "");
-  await expect(ticker.getByRole("link").first()).toHaveAttribute("href", `/nhl/games/${GAME_ID}`);
+  await expect(ticker.getByRole("link").nth(1)).toHaveAttribute("href", `/nhl/games/${GAME_ID}`);
 
   // A poll that finds nothing new sends only its time, and "updated" follows it.
   sayHeardAt("2031-01-16T01:02:03.000Z");

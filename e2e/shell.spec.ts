@@ -1,18 +1,23 @@
 import { expect, test } from "@playwright/test";
 
-const DARK_BACKGROUND = "rgb(16, 23, 35)";
-const LIGHT_BACKGROUND = "rgb(250, 250, 250)";
+const DARK_BACKGROUND = "rgb(15, 23, 42)";
+const LIGHT_BACKGROUND = "rgb(251, 250, 247)";
 
-test("the shared header keeps every page visible on phones, remembers theme and survives navigation", async ({
+test("the shell renders, switches theme, and its phone menu closes on navigation", async ({
   page,
 }) => {
+  // The operating system asks for dark, and the visitor has not chosen yet.
   await page.emulateMedia({ colorScheme: "dark" });
+  // An unknown path gets the not-found page inside the shell, so the shell is checked there.
+  // (One hard navigation only: on a cold dev server a second one, made while the first page's
+  // modules are still loading, crashes the page.)
   await page.goto("/no-such-page");
   await expect(page.getByRole("heading", { name: "Not found" })).toBeVisible();
-  const header = page.getByRole("banner");
-  const nav = header.getByRole("navigation", { name: "Site" });
-  await expect(header.getByRole("link", { name: "YOGAN/HOCKEY" })).toHaveAttribute("href", "/");
-  await expect(nav.getByRole("link")).toHaveText([
+
+  // Desktop: the sidebar, with the wordmark leading home and the places in order.
+  const sidebar = page.getByRole("complementary");
+  await expect(sidebar.getByRole("link", { name: "YOGAN/HOCKEY" })).toHaveAttribute("href", "/");
+  await expect(sidebar.getByRole("navigation", { name: "Site" }).getByRole("link")).toHaveText([
     "Home",
     "Scores",
     "Standings",
@@ -20,35 +25,49 @@ test("the shared header keeps every page visible on phones, remembers theme and 
     "Players",
   ]);
   await expect(page.getByRole("contentinfo")).toContainText("ESPN");
-  await expect(page.getByRole("complementary")).toHaveCount(0);
-  await expect(page.getByRole("button", { name: "Open menu" })).toHaveCount(0);
+  await expect(page.locator('[data-slot="score-ticker"]')).toBeAttached();
+  await expect(page.getByRole("button", { name: "Open menu" })).toBeHidden();
+
+  // The theme follows the operating system until the visitor chooses, then keeps the choice.
   const body = page.locator("body");
-  // Light is the approved default, even when the OS asks for dark.
-  await expect(body).toHaveCSS("background-color", LIGHT_BACKGROUND);
+  await expect(body).toHaveCSS("background-color", DARK_BACKGROUND);
+  // A press before the page has hydrated does nothing, so press until one lands.
   await expect(async () => {
-    await header.getByRole("button", { name: "dark mode" }).click();
-    await expect(body).toHaveCSS("background-color", DARK_BACKGROUND, { timeout: 1000 });
+    await sidebar.getByRole("button", { name: /^(dark|light) mode$/ }).click();
+    await expect(body).toHaveCSS("background-color", LIGHT_BACKGROUND, { timeout: 1000 });
   }).toPass();
   await page.reload();
-  await expect(body).toHaveCSS("background-color", DARK_BACKGROUND);
+  await expect(body).toHaveCSS("background-color", LIGHT_BACKGROUND);
+
+  // Phone: the sidebar gives way to a top bar whose menu closes when a link is followed.
   await page.setViewportSize({ width: 390, height: 844 });
-  for (const link of await nav.getByRole("link").all())
-    await expect(link).toBeInViewport({ ratio: 1 });
-  // vinext rebuilds its not-found fallback on the way back to a real route.
-  await nav.getByRole("link", { name: "Home", exact: true }).click();
-  await expect(page.getByRole("heading", { name: "Games", exact: true })).toBeVisible();
-  // A browser-only marker is lost if the persistent shell remounts.
+  await expect(sidebar).toBeHidden();
+  await page.getByRole("button", { name: "Open menu" }).click();
+  const menu = page.getByRole("dialog", { name: "Menu" });
+  await menu.getByRole("link", { name: "Home", exact: true }).click();
+  await expect(page.getByRole("region", { name: "Tonight" })).toBeVisible();
+  const header = page.getByRole("banner");
   await header.evaluate((node) => node.setAttribute("data-persistence-check", "kept"));
-  await nav.getByRole("link", { name: "Players", exact: true }).click();
+  await page.getByRole("button", { name: "Open menu" }).click();
+  await menu.getByRole("link", { name: "Players", exact: true }).click();
   await expect(page).toHaveURL(/\/players$/);
+  await expect(menu).toBeHidden();
   await expect(header).toHaveAttribute("data-persistence-check", "kept");
-  await expect(nav.getByRole("link", { name: "Players", exact: true })).toHaveAttribute(
+  await page.getByRole("button", { name: "Open menu" }).click();
+  await expect(menu.getByRole("link", { name: "Players", exact: true })).toHaveAttribute(
     "aria-current",
     "page",
   );
-  await header.getByRole("button", { name: "light mode" }).click();
-  await expect(body).toHaveCSS("background-color", LIGHT_BACKGROUND);
-  // Retired public routes have no special data or redirects left behind.
+  await page.keyboard.press("Escape");
+  await expect(menu).toBeHidden();
+
+  // The top bar carries the toggle on a phone, so both themes are reachable there too.
+  const topBar = page.getByRole("banner");
+  // The dev server may have reloaded the page for the new route, so again press until one lands.
+  await expect(async () => {
+    await topBar.getByRole("button", { name: /^(dark|light) mode$/ }).click();
+    await expect(body).toHaveCSS("background-color", DARK_BACKGROUND, { timeout: 1000 });
+  }).toPass();
   for (const path of [
     "/family/rylan",
     "/yogan",

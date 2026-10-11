@@ -1,4 +1,6 @@
-# Accepted navigation and UI direction
+# Historical navigation and UI direction
+
+Superseded by [the original ledger restoration (#121)](original-restored.md) at Ryan’s request. This document and its sample preserve the earlier checkpoint only.
 
 Ryan approved this direction on 2026-10-10 after reviewing the interactive sample in light and dark, on phone and desktop. This is a saved design checkpoint for issue #99, not completion of the ticket or a production implementation.
 

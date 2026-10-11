@@ -18,7 +18,7 @@ import { headerLink } from "./header-link";
  * The picks are not this component's to read (they are in D1, and this is the browser). The
  * page, a server component, hands them in:
  *
- * - `picks`: what to say in each game's AI-pick column, by game id: "TOR 58%", "pick pending".
+ * - `picks`: what to say in each game's note/detail, by game id: "TOR 58%", "pick pending".
  *   A game with no entry shows No pick; it never invents a probability.
  * - `record`: the season record of the picks, "picks: 34 right, 21 wrong", at the right-hand end
  *   of the header line.
@@ -44,6 +44,7 @@ export function TonightGames({
       </SectionHeader>
       {games.length > 0 ? (
         <GameLedger
+          fitted
           games={tonightGames(games)}
           favoriteTeamIds={favoriteTeamIds}
           pick={

@@ -1,0 +1,267 @@
+{
+  "origin": "http://localhost:5194",
+  "checkedAt": "2026-10-11T16:44:10.078Z",
+  "pages": [
+    {
+      "route": "home",
+      "width": 1440,
+      "theme": "dark",
+      "screenshot": "home-dark-1440.png",
+      "scrollWidth": 1440,
+      "rinkLabels": [],
+      "tinyControls": [],
+      "brokenImages": 0
+    },
+    {
+      "route": "game",
+      "width": 1440,
+      "theme": "dark",
+      "screenshot": "game-dark-1440.png",
+      "scrollWidth": 1440,
+      "rinkLabels": [
+        {
+          "class": "clock",
+          "size": 13
+        },
+        {
+          "class": "rink-direction",
+          "size": 12
+        },
+        {
+          "class": "rink-legend",
+          "size": 12
+        }
+      ],
+      "tinyControls": [],
+      "brokenImages": 0
+    },
+    {
+      "route": "home",
+      "width": 1440,
+      "theme": "light",
+      "screenshot": "home-light-1440.png",
+      "scrollWidth": 1440,
+      "rinkLabels": [],
+      "tinyControls": [],
+      "brokenImages": 0
+    },
+    {
+      "route": "game",
+      "width": 1440,
+      "theme": "light",
+      "screenshot": "game-light-1440.png",
+      "scrollWidth": 1440,
+      "rinkLabels": [
+        {
+          "class": "clock",
+          "size": 13
+        },
+        {
+          "class": "rink-direction",
+          "size": 12
+        },
+        {
+          "class": "rink-legend",
+          "size": 12
+        }
+      ],
+      "tinyControls": [],
+      "brokenImages": 0
+    },
+    {
+      "route": "home",
+      "width": 390,
+      "theme": "dark",
+      "screenshot": "home-dark-390.png",
+      "scrollWidth": 390,
+      "rinkLabels": [],
+      "tinyControls": [],
+      "brokenImages": 0
+    },
+    {
+      "route": "game",
+      "width": 390,
+      "theme": "dark",
+      "screenshot": "game-dark-390.png",
+      "scrollWidth": 390,
+      "rinkLabels": [
+        {
+          "class": "clock",
+          "size": 12
+        },
+        {
+          "class": "rink-direction",
+          "size": 12
+        },
+        {
+          "class": "rink-legend",
+          "size": 12
+        }
+      ],
+      "tinyControls": [],
+      "brokenImages": 0
+    },
+    {
+      "route": "home",
+      "width": 390,
+      "theme": "light",
+      "screenshot": "home-light-390.png",
+      "scrollWidth": 390,
+      "rinkLabels": [],
+      "tinyControls": [],
+      "brokenImages": 0
+    },
+    {
+      "route": "game",
+      "width": 390,
+      "theme": "light",
+      "screenshot": "game-light-390.png",
+      "scrollWidth": 390,
+      "rinkLabels": [
+        {
+          "class": "clock",
+          "size": 12
+        },
+        {
+          "class": "rink-direction",
+          "size": 12
+        },
+        {
+          "class": "rink-legend",
+          "size": 12
+        }
+      ],
+      "tinyControls": [],
+      "brokenImages": 0
+    },
+    {
+      "route": "home",
+      "width": 320,
+      "theme": "dark",
+      "screenshot": "home-dark-320.png",
+      "scrollWidth": 320,
+      "rinkLabels": [],
+      "tinyControls": [],
+      "brokenImages": 0
+    },
+    {
+      "route": "game",
+      "width": 320,
+      "theme": "dark",
+      "screenshot": "game-dark-320.png",
+      "scrollWidth": 320,
+      "rinkLabels": [
+        {
+          "class": "clock",
+          "size": 12
+        },
+        {
+          "class": "rink-direction",
+          "size": 12
+        },
+        {
+          "class": "rink-legend",
+          "size": 12
+        }
+      ],
+      "tinyControls": [],
+      "brokenImages": 0
+    },
+    {
+      "route": "home",
+      "width": 320,
+      "theme": "light",
+      "screenshot": "home-light-320.png",
+      "scrollWidth": 320,
+      "rinkLabels": [],
+      "tinyControls": [],
+      "brokenImages": 0
+    },
+    {
+      "route": "game",
+      "width": 320,
+      "theme": "light",
+      "screenshot": "game-light-320.png",
+      "scrollWidth": 320,
+      "rinkLabels": [
+        {
+          "class": "clock",
+          "size": 12
+        },
+        {
+          "class": "rink-direction",
+          "size": 12
+        },
+        {
+          "class": "rink-legend",
+          "size": 12
+        }
+      ],
+      "tinyControls": [],
+      "brokenImages": 0
+    }
+  ],
+  "checks": [
+    "home dark 1440: no horizontal overflow",
+    "home dark 1440: theme applied",
+    "home dark 1440: local assets loaded",
+    "home dark 1440: controls at least 44px tall",
+    "game dark 1440: no horizontal overflow",
+    "game dark 1440: theme applied",
+    "game dark 1440: local assets loaded",
+    "game dark 1440: controls at least 44px tall",
+    "game dark 1440: rink labels and clock at least 12px",
+    "home light 1440: no horizontal overflow",
+    "home light 1440: theme applied",
+    "home light 1440: local assets loaded",
+    "home light 1440: controls at least 44px tall",
+    "game light 1440: no horizontal overflow",
+    "game light 1440: theme applied",
+    "game light 1440: local assets loaded",
+    "game light 1440: controls at least 44px tall",
+    "game light 1440: rink labels and clock at least 12px",
+    "home dark 390: no horizontal overflow",
+    "home dark 390: theme applied",
+    "home dark 390: local assets loaded",
+    "home dark 390: controls at least 44px tall",
+    "game dark 390: no horizontal overflow",
+    "game dark 390: theme applied",
+    "game dark 390: local assets loaded",
+    "game dark 390: controls at least 44px tall",
+    "game dark 390: rink labels and clock at least 12px",
+    "home light 390: no horizontal overflow",
+    "home light 390: theme applied",
+    "home light 390: local assets loaded",
+    "home light 390: controls at least 44px tall",
+    "game light 390: no horizontal overflow",
+    "game light 390: theme applied",
+    "game light 390: local assets loaded",
+    "game light 390: controls at least 44px tall",
+    "game light 390: rink labels and clock at least 12px",
+    "home dark 320: no horizontal overflow",
+    "home dark 320: theme applied",
+    "home dark 320: local assets loaded",
+    "home dark 320: controls at least 44px tall",
+    "game dark 320: no horizontal overflow",
+    "game dark 320: theme applied",
+    "game dark 320: local assets loaded",
+    "game dark 320: controls at least 44px tall",
+    "game dark 320: rink labels and clock at least 12px",
+    "home light 320: no horizontal overflow",
+    "home light 320: theme applied",
+    "home light 320: local assets loaded",
+    "home light 320: controls at least 44px tall",
+    "game light 320: no horizontal overflow",
+    "game light 320: theme applied",
+    "game light 320: local assets loaded",
+    "game light 320: controls at least 44px tall",
+    "game light 320: rink labels and clock at least 12px",
+    "Home has stable start-time order",
+    "Live filter shows exactly two sample games",
+    "Favorites filter shows selected teams",
+    "Favorite removal persists after reload",
+    "Empty favorites gives an actionable empty state",
+    "Filtering restores original game order"
+  ],
+  "errors": []
+}

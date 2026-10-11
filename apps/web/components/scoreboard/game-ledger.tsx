@@ -22,28 +22,41 @@ function Team({ side, favorite }: { side: ScoreboardSide; favorite: boolean }) {
   return (
     <>
       <TeamMark teamId={side.id} />
-      <span className={side.winner ? "font-bold" : undefined}>{side.abbreviation}</span>{" "}
+      <span className={side.winner ? "font-strong" : undefined}>{side.abbreviation}</span>{" "}
       {/* A phone has no last column to say "favorite team" in: the star goes by the team. */}
       {favorite && (
-        <FavoriteMarker className="text-foreground/70 xl:hidden">
+        <FavoriteMarker className="text-note xl:hidden">
           <span className="sr-only">favorite team</span>
         </FavoriteMarker>
       )}
       {/* Beside the team on a wide page; on a phone, where the two do not fit, under it. */}
-      {side.record && <LedgerAside className="max-xl:block">{side.record}</LedgerAside>}
+      {side.record && (
+        <LedgerAside className="max-xl:block max-xl:text-small">{side.record}</LedgerAside>
+      )}
     </>
   );
 }
 
-/** A cell of text: on a phone its first line stays level with its neighbours' first lines. */
-const TEXT_CELL = "whitespace-nowrap max-sm:align-top";
+/**
+ * A cell of text: on a phone its first line stays level with its neighbours' first lines, and the
+ * row is its two lines and 8px above and below (55px with its rule). Exported, with the score's,
+ * for the ledger's placeholder, whose rows are then the same height.
+ */
+export const GAME_TEXT_CELL = "whitespace-nowrap max-md:py-2 max-md:align-top";
+
+/**
+ * A score on a phone starts level with the first line beside it. A finished game's losing score
+ * steps back, so the winner's is found first.
+ */
+export const GAME_SCORE_CELL = "max-md:pt-2! max-md:pl-0 max-md:align-top";
+const scoreCell = (lost: boolean) => `${GAME_SCORE_CELL} ${lost ? "text-note" : ""}`;
 
 /** Column widths that are the same in every ledger, so one under another lines up. */
 /** Exported for the ledger's placeholder (`components/route-skeletons.tsx`), which repeats them. */
 export const FIXED_GAME_COLUMNS = {
   status: "w-28 sm:w-36",
   team: "sm:w-52",
-  score: "w-10 sm:w-14",
+  score: "w-8 sm:w-14",
   note: "max-xl:hidden",
 };
 
@@ -54,7 +67,7 @@ export const FIXED_GAME_COLUMNS = {
 const FITTED_GAME_COLUMNS = {
   status: "max-sm:w-28 xl:w-[20.78%]",
   team: "xl:w-[17.61%]",
-  score: "max-sm:w-10 xl:w-[5.2%]",
+  score: "max-sm:w-8 xl:w-[5.2%]",
   note: "max-xl:hidden xl:w-auto",
 };
 
@@ -113,15 +126,16 @@ export function GameLedger({
           const where = gameWhere(game);
           const picked = pick?.(game);
           const hasPick = picked != null && picked !== false;
+          const final = game.status === "final";
           return (
             <LedgerRow key={game.id} live={game.status === "live"} interactive>
-              <LedgerCell className={TEXT_CELL}>
+              <LedgerCell className={GAME_TEXT_CELL}>
                 <Link href={gameHref(game)} className={ledgerRowLink}>
                   <span className="sr-only">
                     {game.away.abbreviation} at {game.home.abbreviation},{" "}
                   </span>
                   {game.status === "live" ? (
-                    <LiveMarker strong className="text-foreground underline">
+                    <LiveMarker strong className="text-foreground underline underline-offset-[3px]">
                       {/* The marker says "live" itself: a game in its warm-up has no more to add. */}
                       {status === "live" ? null : status}
                     </LiveMarker>
@@ -133,24 +147,30 @@ export function GameLedger({
                   {hasPick ? picked : "No pick"}
                 </LedgerDetail>
               </LedgerCell>
-              <LedgerCell className={TEXT_CELL}>
+              <LedgerCell className={GAME_TEXT_CELL}>
                 <Team side={game.away} favorite={favoriteTeamIds.includes(game.away.id)} />
               </LedgerCell>
-              <LedgerCell tone="score">{hasScore(game) ? game.away.score : null}</LedgerCell>
-              <LedgerCell className={TEXT_CELL}>
+              <LedgerCell tone="score" className={scoreCell(final && !game.away.winner)}>
+                {hasScore(game) ? game.away.score : null}
+              </LedgerCell>
+              <LedgerCell className={GAME_TEXT_CELL}>
                 <Team side={game.home} favorite={favoriteTeamIds.includes(game.home.id)} />
               </LedgerCell>
-              <LedgerCell tone="score">{hasScore(game) ? game.home.score : null}</LedgerCell>
+              <LedgerCell tone="score" className={scoreCell(final && !game.home.winner)}>
+                {hasScore(game) ? game.home.score : null}
+              </LedgerCell>
               {/* `max-w-0`: a long note is cut short, and never widens its column. */}
               <LedgerCell tone="note" className="max-w-0 truncate max-xl:hidden">
                 {favorite && <FavoriteMarker className="mr-4">favorite team</FavoriteMarker>}
                 {hasPick && (
-                  <span data-slot="game-pick" className="mr-4">
+                  <span data-slot="game-pick" className="mr-4 font-label">
                     {picked}
                   </span>
                 )}
                 {!hasPick && <span className="mr-4">No pick</span>}
-                <span title={where || undefined}>{where}</span>
+                <span title={where || undefined} className="text-aside">
+                  {where}
+                </span>
               </LedgerCell>
             </LedgerRow>
           );

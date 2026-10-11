@@ -110,7 +110,7 @@ function GameInPhase({
   archived: boolean;
   scoreboard?: Pick<Game, "status" | "period" | "clock">;
 } & Slots) {
-  const { status, notice } = streamReading({
+  const { status, notice, clock } = streamReading({
     header,
     plays,
     delayed,
@@ -137,6 +137,7 @@ function GameInPhase({
           pick={pick}
           status={status}
           notice={notice}
+          clock={clock}
         />
       );
     case "finished":
@@ -160,7 +161,7 @@ const noSelection = () => {};
 /** What a game still to come says in the pick's place until its Prediction arrives. */
 function GamePickPending() {
   return (
-    <p data-slot="game-pick-pending" className="max-w-prose text-foreground/70">
+    <p data-slot="game-pick-pending" className="max-w-prose text-note">
       {PICK_PENDING}
     </p>
   );
@@ -192,7 +193,7 @@ function ScheduledGame({
           selectedId={null}
           onSelect={noSelection}
         />
-        <p data-slot="timeline-hint" className="mt-1 text-foreground/50">
+        <p data-slot="timeline-hint" className="mt-1 text-label">
           {calledOff
             ? "This game will not be played as scheduled."
             : "The plays are drawn here once the puck drops. This page follows the game by itself."}

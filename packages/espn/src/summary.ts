@@ -204,6 +204,7 @@ const EspnSummary = z.object({
 type EspnSummary = z.infer<typeof EspnSummary>;
 
 function playFrom(play: EspnPlay): Play {
+  const minutes = Number(play.type.penaltyMinutes ?? Number.NaN);
   return {
     id: play.id,
     // "End of Game" has no abbreviation, so it is named from its wording: "end-of-game".
@@ -217,6 +218,8 @@ function playFrom(play: EspnPlay): Play {
     coordinate: play.coordinate ?? null,
     scoring: play.scoringPlay === true,
     penalty: play.type.penaltyMinutes != null,
+    // ESPN sends the minutes as text ("2").
+    ...(Number.isFinite(minutes) && minutes >= 0 && { penaltyMinutes: minutes }),
     homeScore: play.homeScore,
     awayScore: play.awayScore,
     strength: play.strength?.abbreviation ?? null,

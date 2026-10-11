@@ -1,7 +1,7 @@
 // The rink's animations in a real browser: screenshots for docs/design/rink-animations, and a
 // report of what was on the ice at each step, which is how #141's acceptance was checked.
 //
-//   node scripts/rink-shots.ts [baseURL] [outDir] [shots|goal]
+//   node scripts/rink-shots.ts [baseURL] [outDir] [shots|goal|penalties]
 //
 // Needs a dev server in fixture mode (ESPN_FIXTURES=1) and TMPDIR set (see the build notes). The
 // Replay is the recorded shootout (401803652); the Game Stream is the same plays sent to the one
@@ -17,8 +17,8 @@ import {
 
 const [baseURL = "http://localhost:5313", outDir = "docs/design/rink-animations", only] =
   process.argv.slice(2);
-/** A third argument runs one part: "shots" (#141's) or "goal" (the goal sequence, #142). */
-const wants = (part: "shots" | "goal") => only == null || only === part;
+/** A third argument runs one part: "shots" (#141's), "goal" (#142's) or "penalties" (#143's). */
+const wants = (part: "shots" | "goal" | "penalties") => only == null || only === part;
 
 const game = await recordedGame(baseURL);
 type Located = RecordedPlay & { coordinate: { x: number; y: number } | null; scoring: boolean };
@@ -123,6 +123,11 @@ const goalIce = (page: Page) =>
       tints: all('[data-slot="rink-tint"]')
         .filter((tint) => opacity(tint) > 0)
         .map((tint) => `${tint.dataset.end} ${opacity(tint)} ${getComputedStyle(tint).fill}`),
+      // The power play beside it: the ends ruled (and how strongly), and how many sit in the box.
+      ruled: all('[data-slot="rink-power-play-zone"][data-on]').map(
+        (zone) => `${zone.dataset.end} ${opacity(zone)}`,
+      ),
+      boxed: all('[data-slot="boxed-penalty"]').length,
       kicker: all('[data-fx="goal-kicker"]').map(opacity),
       liveMarker: all('[data-slot="rink-status"] [data-slot="live-marker"]').map(opacity),
       scores: all('[data-fx="score-roll"]').map((roll) => {
@@ -394,6 +399,83 @@ async function goalSequence() {
     await page.close();
   }
 
+  // A save and a goal in one poll: the goal waits its turn, and its score with it.
+  {
+    const { page, errors, driver, at, state } = await stream(powerPlay, 2);
+    driver.message({ type: "cf_agent_state", state: state(at + 1) });
+    driver.message({ type: "play-added", index: at, play: { ...save, id: "save-first" } });
+    driver.message({ type: "play-added", index: at + 1, play: plays[at] });
+    await page.waitForTimeout(500);
+    const waiting = await goalIce(page);
+    await page.waitForTimeout(2 * played);
+    report["goal, waiting behind a save from the same poll"] = {
+      waiting: waiting.scores,
+      after: await goalIce(page),
+      scoresSeen: await scoresSeen(page),
+      errors,
+    };
+    await page.close();
+  }
+
+  // Two goals for one side in one poll: the score stops at the first before rolling to the second.
+  {
+    const { page, errors, driver, at, state } = await stream(powerPlay, 2);
+    const first = plays[at] as Located & { homeScore: number; awayScore: number };
+    const before = plays[at - 1] as typeof first;
+    const side = first.homeScore > before.homeScore ? "home" : "away";
+    const second = { ...first, id: "second-goal", [`${side}Score`]: first[`${side}Score`] + 1 };
+    const { header, ...rest } = state(at + 1);
+    const scored = header as unknown as Record<string, { score: number | string }>;
+    const now = scored[side]?.score;
+    const counted = {
+      ...header,
+      [side]: {
+        ...scored[side],
+        score: typeof now === "string" ? String(+now + 1) : Number(now) + 1,
+      },
+    };
+    driver.message({ type: "cf_agent_state", state: { ...rest, header: counted } });
+    driver.message({ type: "play-added", index: at, play: first });
+    driver.message({ type: "play-added", index: at + 1, play: second });
+    await page.waitForTimeout(3 * played);
+    report["goal, two for one side in one poll"] = {
+      after: await goalIce(page),
+      scoresSeen: await scoresSeen(page),
+      errors,
+    };
+    await page.close();
+  }
+
+  // A goal on a major's power play: the advantage outlasts the goal, and the scoring end is the
+  // ruled one. The tint has the end to itself while the goal is on the ice.
+  {
+    const { page, errors, driver, at, arrives } = await stream(powerPlay, 2);
+    const called = plays.findLastIndex((play, index) => index < at && play.penalty === true);
+    // The Scoreboard's clock is what is left of the period: 15:36 is the goal's 4:24.
+    await driver.scoreboard({ status: "live", period: 2, clock: "15:36" });
+    driver.message({
+      type: "play-changed",
+      index: called,
+      play: { ...plays[called], penaltyMinutes: 5, typeText: "Major" },
+    });
+    await page.waitForTimeout(900);
+    const before = await goalIce(page);
+    arrives();
+    await page.waitForTimeout(played);
+    await rinkShot(page, "goal-on-a-major-power-play");
+    const scored = await goalIce(page);
+    // The game goes on: the goal is cleared and the ruling comes back.
+    driver.message({ type: "play-added", index: at + 1, play: plays[at + 1] });
+    await page.waitForTimeout(1200);
+    report["goal, on a major's power play"] = {
+      before: { ruled: before.ruled, boxed: before.boxed, tints: before.tints },
+      scored: { ruled: scored.ruled, boxed: scored.boxed, tints: scored.tints },
+      movedOn: await goalIce(page),
+      errors,
+    };
+    await page.close();
+  }
+
   // A shootout's goal: the whole sequence but the roll, and the score where it was.
   {
     const { page, errors, arrives } = await stream(shootout, 5);
@@ -418,6 +500,148 @@ const faceoff = located((play) => play.type === "faceoff", 60);
 const nowhere = { ...save, id: "nowhere", coordinate: null };
 
 if (wants("goal")) await goalSequence();
+
+// Penalties and the power play (#143), in docs/design/penalties: a Game Stream given one penalty,
+// the goal that ends it, two to one team and then one to the other; and a Replay stepped across
+// the recorded game's penalties. `node scripts/rink-shots.ts <url> <outDir> penalties` runs only this.
+if (wants("penalties")) {
+  const penaltyShot = (page: Page, name: string) =>
+    page
+      .locator('[data-slot="game-rink"]')
+      .screenshot({ path: `docs/design/penalties/${name}.png` });
+  /** Who is in the box and what the ice is ruled with, read from the page. */
+  const box = (page: Page) =>
+    page.evaluate(() => {
+      const text = (selector: string) =>
+        [...document.querySelectorAll(selector)].map((each) =>
+          (each.textContent ?? "").replace(/\s+/g, " ").trim(),
+        );
+      const zone = document.querySelector('[data-slot="rink-power-play-zone"][data-on]');
+      return {
+        status: text('[data-slot="rink-status"]')[0],
+        box: text('[data-slot="boxed-penalty"]'),
+        strength: text('[data-slot="power-play"], [data-slot="strength"]')[0] ?? null,
+        ruledEnd: zone?.getAttribute("data-end") ?? null,
+        // A goal's sequence beside it: the lamps lit and the ends tinted.
+        litLamps: document.querySelectorAll('[data-slot="rink-lamp"][data-lit]').length,
+        tinted: document.querySelectorAll('[data-slot="rink-tint"][data-lit]').length,
+        boxHeight: document.querySelector('[data-slot="penalty-box"]')?.getBoundingClientRect()
+          .height,
+      };
+    });
+  const first = plays.findIndex((play) => play.penalty === true && play.period === 2);
+  const called = plays[first] as Located;
+  const powerPlayGoal = plays.find(
+    (play, at) => at > first && play.scoring && play.teamId !== called.teamId,
+  ) as Located;
+  const other = plays.find((play) => play.penalty === true && play.teamId !== called.teamId);
+  const penalty = (id: string, from: Located, clock: string, name: string, over = {}) => ({
+    ...from,
+    id,
+    period: 2,
+    periodText: "2nd",
+    clock,
+    participants: [{ athleteId: name, name, shortName: name, role: null }],
+    ...over,
+    text: `${name} ${(over as { typeText?: string }).typeText ?? from.typeText}`,
+  });
+  const scenes = [
+    { name: "single", add: [called], clock: "17:00" },
+    { name: "cleared-by-goal", add: [{ ...powerPlayGoal, id: "pp-goal", clock: "3:10" }] },
+    {
+      name: "two-to-one-team",
+      add: [
+        penalty("second", called, "5:00", "T. Thompson"),
+        penalty("third", called, "5:30", "R. Dahlin", {
+          typeText: "Delaying Game - Puck over Glass",
+        }),
+      ],
+    },
+    {
+      name: "both-teams",
+      add: [
+        penalty("fourth", other as Located, "5:40", "J. Robertson"),
+        penalty("fifth", other as Located, "5:40", "J. Robertson", {
+          typeText: "Misconduct",
+          penaltyMinutes: 10,
+        }),
+      ],
+    },
+  ];
+  for (const scheme of ["light", "dark"] as const) {
+    for (const width of [1440, 390]) {
+      const { page, errors } = await open(scheme, width);
+      const driver = await driveGame(page, SCHEDULED_GAME);
+      await page.goto(`${baseURL}/nhl/games/${SCHEDULED_GAME}`, { waitUntil: "networkidle" });
+      driver.agent(
+        { header: game.liveAfter(first, 2), delayed: false, archived: false },
+        plays.slice(0, first),
+      );
+      await driver.scoreboard({ status: "live", period: 2, clock: "17:40" });
+      await page.locator('[data-slot="game-view"]').waitFor();
+      await page.waitForTimeout(500);
+      await watchShift(page);
+      const seen: unknown[] = [{ scene: "before any penalty of the 2nd", ...(await box(page)) }];
+      let at = first;
+      for (const scene of scenes) {
+        for (const play of scene.add) {
+          driver.message({ type: "play-added", index: at++, play });
+        }
+        if (scene.clock) {
+          await driver.scoreboard({ status: "live", period: 2, clock: scene.clock });
+        }
+        await page.waitForTimeout(3200);
+        await penaltyShot(page, `${scene.name}-${width}-${scheme}`);
+        seen.push({ scene: scene.name, ...(await box(page)) });
+      }
+      report[`penalties, stream ${scheme} ${width}`] = seen;
+      report[`penalties, stream layout shift ${scheme} ${width}`] = await shiftSeen(page);
+      if (errors.length > 0) report[`penalties, errors ${scheme} ${width}`] = errors;
+      await page.close();
+    }
+  }
+
+  // A Replay: the state at each play stepped to, forwards and backwards.
+  const { page, errors } = await open("dark", 1440);
+  await openReplay(page);
+  const recordedPenalties = plays.filter((play) => play.penalty === true);
+  const stepped: unknown[] = [{ step: "the whole game", ...(await box(page)) }];
+  const steps = [
+    ...recordedPenalties.map((play) => plays[plays.indexOf(play) + 2] as Located),
+    powerPlayGoal,
+    plays[plays.indexOf(recordedPenalties[0] as Located) - 1] as Located,
+  ];
+  for (const play of steps) {
+    await stepTo(page, play);
+    await page.waitForTimeout(900);
+    stepped.push({ step: label(play), ...(await box(page)) });
+  }
+  await stepTo(page, plays[first + 1] as Located);
+  await page.waitForTimeout(2200);
+  await penaltyShot(page, "replay-1440-dark");
+  report["penalties, replay"] = stepped;
+  if (errors.length > 0) report["penalties, replay errors"] = errors;
+  await page.close();
+
+  // Reduced motion: the box and the ruled zone are there at once, with no fade.
+  const reduced = await open("light", 390, true);
+  await openReplay(reduced.page);
+  await stepTo(reduced.page, plays[first + 1] as Located);
+  await reduced.page.locator('[data-slot="boxed-penalty"]').waitFor();
+  report["penalties, reduced motion"] = {
+    ...(await box(reduced.page)),
+    zoneOpacity: await reduced.page
+      .locator('[data-slot="rink-power-play-zone"][data-on]')
+      .evaluate((zone) => getComputedStyle(zone).opacity),
+    rowAnimation: await reduced.page
+      .locator('[data-slot="boxed-penalty"]')
+      .first()
+      .evaluate((row) => getComputedStyle(row).animationName),
+  };
+  await penaltyShot(reduced.page, "reduced-motion-390-light");
+  await reduced.page.close();
+}
+
 if (!wants("shots")) {
   await browser.close();
   console.log(JSON.stringify(report, null, 2));

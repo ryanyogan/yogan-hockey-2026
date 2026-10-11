@@ -6,7 +6,7 @@ export function EmptyLedger({
   ...props
 }: { children: ReactNode } & Pick<ComponentProps<"p">, "role">) {
   return (
-    <p className="border-foreground/20 border-t px-2 py-1.5 text-foreground/70" {...props}>
+    <p className="border-rule-head border-t px-2 py-row text-note" {...props}>
       {children}
     </p>
   );

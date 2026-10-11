@@ -1,5 +1,5 @@
-import { cn } from "cn";
 import type { ComponentProps, ReactNode } from "react";
+import { cn } from "../cn";
 
 /** One subject on a page: a `SectionHeader` and, usually, one `Ledger`. */
 function Section({ className, ...props }: ComponentProps<"section">) {
@@ -20,16 +20,25 @@ function SectionHeader({
   return (
     <div
       data-slot="section-header"
-      className={cn("mb-1 flex flex-wrap items-baseline justify-between gap-x-4", className)}
+      className={cn("mb-2 flex flex-wrap items-baseline justify-between gap-x-4", className)}
       {...props}
     >
-      <h2 className="font-bold uppercase">
+      <h2 className="font-strong uppercase">
         {title}
         {count != null && (
-          <span className="font-normal text-foreground/50 normal-case"> {count}</span>
+          <>
+            {" "}
+            <span data-slot="section-count" className="font-quiet text-label normal-case">
+              {count}
+            </span>
+          </>
         )}
       </h2>
-      {children != null && <div className="text-foreground/50">{children}</div>}
+      {children != null && (
+        <div data-slot="section-aside" className="flex flex-wrap gap-x-4 text-label">
+          {children}
+        </div>
+      )}
     </div>
   );
 }

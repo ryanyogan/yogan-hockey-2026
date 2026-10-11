@@ -1,5 +1,5 @@
-import { cn } from "cn";
 import type { ComponentProps } from "react";
+import { cn } from "../cn";
 
 /**
  * The ledger: the one dense table every subject on the site is drawn with (tonight's games,
@@ -18,23 +18,12 @@ import type { ComponentProps } from "react";
  *     </LedgerBody>
  *   </Ledger>
  */
-function Ledger({
-  className,
-  density = "default",
-  ...props
-}: ComponentProps<"table"> & {
-  /** `compact` is for long reference tables such as standings: 4px less per row. */
-  density?: "default" | "compact";
-}) {
+function Ledger({ className, ...props }: ComponentProps<"table">) {
   return (
     // A table wider than a phone scrolls sideways inside its own box; the page never does.
     // Positioned, so a `ledgerRowLink` can never stretch past its own table.
     <div data-slot="ledger" className="relative w-full overflow-x-auto">
-      <table
-        data-density={density}
-        className={cn("group/ledger w-full border-collapse", className)}
-        {...props}
-      />
+      <table className={cn("w-full border-collapse", className)} {...props} />
     </div>
   );
 }
@@ -63,7 +52,7 @@ function LedgerColumn({
       data-slot="ledger-column"
       scope={Cell === "th" ? "col" : undefined}
       className={cn(
-        "border-foreground/20 border-b px-2 py-1 font-normal text-[10px] text-foreground/50 uppercase tracking-wider",
+        "whitespace-nowrap border-rule-head border-b px-2 py-1 font-label text-label text-small uppercase tracking-label",
         numeric ? "text-right" : "text-left",
         className,
       )}
@@ -99,7 +88,7 @@ function LedgerRow({
         "relative border-b",
         live && "bg-live-tint",
         interactive && "hover:bg-highlight",
-        cutoff && "border-b-foreground/50",
+        cutoff && "border-b-aside",
         className,
       )}
       {...props}
@@ -110,13 +99,13 @@ function LedgerRow({
 const cellTone = {
   default: "",
   /** The row's key figure, such as points. */
-  strong: "font-bold",
+  strong: "font-strong",
   /** A score: larger than the row's text, and it does not add to the row's height. */
-  score: "py-0! text-base font-bold",
+  score: "py-0! font-score text-score",
   /** A note column, such as the pick. */
-  note: "text-foreground/70",
+  note: "text-note",
   /** An aside, such as a rank. */
-  aside: "text-foreground/40",
+  aside: "text-aside",
   /** A figure above zero, and one below it: a goal difference. */
   positive: "text-positive",
   negative: "text-negative",
@@ -131,8 +120,9 @@ function LedgerCell({
   return (
     <td
       data-slot="ledger-cell"
+      data-tone={tone === "default" ? undefined : tone}
       className={cn(
-        "px-2 py-1.5 group-data-[density=compact]/ledger:py-1",
+        "px-2 py-row",
         (numeric || tone === "score") && "text-right tabular-nums",
         cellTone[tone],
         className,
@@ -147,7 +137,7 @@ function LedgerAside({ className, ...props }: ComponentProps<"span">) {
   return (
     <span
       data-slot="ledger-aside"
-      className={cn("whitespace-nowrap text-foreground/40", className)}
+      className={cn("whitespace-nowrap font-quiet text-aside", className)}
       {...props}
     />
   );
@@ -155,8 +145,8 @@ function LedgerAside({ className, ...props }: ComponentProps<"span">) {
 
 /**
  * A second line under a cell's main value: a Tracked Player's next game under his team. `fine` is
- * small print for a narrow column, such as a game's venue under its status on a phone: it wraps,
- * and it keeps the room of two lines whatever it holds, so the rows of a table stay one height.
+ * small print for a narrow column, such as a game's pick under its status on a phone: one line,
+ * cut short, so the rows of a table stay one height.
  */
 function LedgerDetail({
   className,
@@ -166,12 +156,7 @@ function LedgerDetail({
   return (
     <div
       data-slot="ledger-detail"
-      className={cn(
-        fine
-          ? "line-clamp-2 h-6 whitespace-normal text-[10px] text-foreground/50 leading-3"
-          : "text-foreground/60",
-        className,
-      )}
+      className={cn(fine ? "truncate font-quiet text-label text-small" : "text-note", className)}
       {...props}
     />
   );

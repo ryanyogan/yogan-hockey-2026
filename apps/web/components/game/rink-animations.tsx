@@ -2,6 +2,7 @@
 
 import { type RefObject, useEffect, useLayoutEffect, useReducer, useRef } from "react";
 import {
+  heldScores,
   queuePace,
   RINK_QUEUE_OPENED,
   type RinkScene,
@@ -101,6 +102,24 @@ export function RinkAnimations({
       stop();
     };
   }, [current, rink]);
+
+  // After the cue's effect, and again for each cue: starting one wipes the ice, holds included.
+  const { home, away } = heldScores(queue);
+  useLayoutEffect(() => {
+    const root = rink.current;
+    // With nothing on the ice nothing waits behind it.
+    if (root == null || current == null || player === undefined) return;
+    let left = false;
+    player.then(
+      (loaded) => {
+        if (!left) loaded.holdScores(root, { home, away });
+      },
+      () => {},
+    );
+    return () => {
+      left = true;
+    };
+  }, [current, home, away, rink]);
 
   return null;
 }

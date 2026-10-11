@@ -1,0 +1,1779 @@
+{
+ "base": "http://localhost:5301",
+ "measuredAt": "2026-10-11T19:47:28.914Z",
+ "runs": 3,
+ "profile": {
+  "name": "Lighthouse mobile: Moto G Power, 4x CPU slowdown, Slow 4G",
+  "viewport": {
+   "width": 412,
+   "height": 823
+  },
+  "deviceScaleFactor": 1.75,
+  "userAgent": "Mozilla/5.0 (Linux; Android 11; moto g power (2022)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36",
+  "cpuSlowdown": 4,
+  "network": {
+   "latencyMs": 562.5,
+   "downloadKbps": 1474.56,
+   "uploadKbps": 675
+  },
+  "timezone": "America/Chicago"
+ },
+ "budgets": {
+  "layoutShiftBelow": 0.0005,
+  "largestPaintCachedMs": 1500,
+  "largestPaintRenderedMs": 2500,
+  "interactionMs": 200,
+  "shellMs": 200
+ },
+ "machine": "Intel(R) Core(TM) i7-7700 CPU @ 3.60GHz x 8, linux",
+ "chromium": "153.0.8010.12",
+ "subjects": {
+  "team": "21",
+  "player": "4024123",
+  "goalie": "3067313",
+  "finishedGame": "401803652",
+  "scheduledGame": "401892449",
+  "search": "mar"
+ },
+ "failures": [],
+ "results": [
+  {
+   "route": "/",
+   "path": "/",
+   "mode": "rendered",
+   "cacheStatus": [
+    "none",
+    "none",
+    "none"
+   ],
+   "ttfbMs": 100.90000000596046,
+   "firstPaintMs": 1560,
+   "largestPaintMs": 8312,
+   "largestPaintElement": "div[ledger-detail] \"3 GP · 1 G · 0 A · 1 PTS\"",
+   "hydratedMs": 6988.799999982119,
+   "loadShift": 0.003781286136104542,
+   "loadShifts": [
+    {
+     "value": 0.0029520007679507887,
+     "atMs": 7113,
+     "nodes": "li[score-ticker] \"★ favorite team, NSH@atTOR6:00 P\""
+    },
+    {
+     "value": 0.0008292853681537534,
+     "atMs": 8293,
+     "nodes": "div \"Standings eastern conferencefull\""
+    }
+   ],
+   "liveShift": 0,
+   "liveShifts": [],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 72
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 72
+    },
+    {
+     "name": "open the menu",
+     "ms": 64
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/games/401891815",
+    "shellMs": 661.2000000178814,
+    "contentMs": 661.2000000178814,
+    "blankFrames": 0,
+    "viewTransition": false,
+    "requestsAfterTap": 1,
+    "documentLoad": false
+   },
+   "script": {
+    "files": 39,
+    "rawBytes": 817667,
+    "gzipBytes": 257286
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 131695,
+    "gzipBytes": 13529
+   },
+   "stylesheet": {
+    "files": 2,
+    "rawBytes": 79110,
+    "gzipBytes": 16600
+   }
+  },
+  {
+   "route": "/nhl",
+   "path": "/nhl",
+   "mode": "cached",
+   "cacheStatus": [
+    "hit",
+    "hit",
+    "hit"
+   ],
+   "ttfbMs": 23.899999976158142,
+   "firstPaintMs": 1580,
+   "largestPaintMs": 1580,
+   "largestPaintElement": "h2[section-header] \"Metropolitan Division East\"",
+   "hydratedMs": 6037.5,
+   "loadShift": 0,
+   "loadShifts": [],
+   "liveShift": 0,
+   "liveShifts": [],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 72
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 72
+    },
+    {
+     "name": "open the menu",
+     "ms": 56
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/teams/14",
+    "shellMs": 820.0999999940395,
+    "contentMs": 820.0999999940395,
+    "blankFrames": 0,
+    "viewTransition": false,
+    "requestsAfterTap": 1,
+    "documentLoad": false
+   },
+   "script": {
+    "files": 29,
+    "rawBytes": 801929,
+    "gzipBytes": 249815
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 172998,
+    "gzipBytes": 13447
+   },
+   "stylesheet": {
+    "files": 2,
+    "rawBytes": 79110,
+    "gzipBytes": 16600
+   }
+  },
+  {
+   "route": "/nhl",
+   "path": "/nhl",
+   "mode": "rendered",
+   "cacheStatus": [
+    "bypass",
+    "bypass",
+    "bypass"
+   ],
+   "ttfbMs": 53.900000005960464,
+   "firstPaintMs": 1580,
+   "largestPaintMs": 1580,
+   "largestPaintElement": "h2[section-header] \"Metropolitan Division East\"",
+   "hydratedMs": 6039.699999988079,
+   "loadShift": 0,
+   "loadShifts": [],
+   "liveShift": 0,
+   "liveShifts": [],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 72
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 72
+    },
+    {
+     "name": "open the menu",
+     "ms": 64
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/teams/14",
+    "shellMs": 815.1999999880791,
+    "contentMs": 815.1999999880791,
+    "blankFrames": 0,
+    "viewTransition": false,
+    "requestsAfterTap": 1,
+    "documentLoad": false
+   },
+   "script": {
+    "files": 29,
+    "rawBytes": 801929,
+    "gzipBytes": 249815
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 173014,
+    "gzipBytes": 13463
+   },
+   "stylesheet": {
+    "files": 2,
+    "rawBytes": 79110,
+    "gzipBytes": 16600
+   }
+  },
+  {
+   "route": "/nhl?tab=teams",
+   "path": "/nhl?tab=teams",
+   "mode": "cached",
+   "cacheStatus": [
+    "hit",
+    "hit",
+    "stale"
+   ],
+   "ttfbMs": 36.30000001192093,
+   "firstPaintMs": 1572,
+   "largestPaintMs": 1572,
+   "largestPaintElement": "td[ledger-cell] \"Columbus Blue Jackets\"",
+   "hydratedMs": 6605.5,
+   "loadShift": 0,
+   "loadShifts": [],
+   "liveShift": 0,
+   "liveShifts": [],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 56
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 72
+    },
+    {
+     "name": "open the menu",
+     "ms": 56
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/teams/25",
+    "shellMs": 828.5999999940395,
+    "contentMs": 828.5999999940395,
+    "blankFrames": 0,
+    "viewTransition": false,
+    "requestsAfterTap": 1,
+    "documentLoad": false
+   },
+   "script": {
+    "files": 29,
+    "rawBytes": 801929,
+    "gzipBytes": 249815
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 90696,
+    "gzipBytes": 11162
+   },
+   "stylesheet": {
+    "files": 2,
+    "rawBytes": 79110,
+    "gzipBytes": 16600
+   }
+  },
+  {
+   "route": "/nhl?tab=teams",
+   "path": "/nhl?tab=teams",
+   "mode": "rendered",
+   "cacheStatus": [
+    "bypass",
+    "bypass",
+    "bypass"
+   ],
+   "ttfbMs": 50.29999998211861,
+   "firstPaintMs": 1584,
+   "largestPaintMs": 1584,
+   "largestPaintElement": "td[ledger-cell] \"Columbus Blue Jackets\"",
+   "hydratedMs": 6611.399999976158,
+   "loadShift": 0,
+   "loadShifts": [],
+   "liveShift": 0,
+   "liveShifts": [],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 56
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 64
+    },
+    {
+     "name": "open the menu",
+     "ms": 64
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/teams/25",
+    "shellMs": 809.9000000059605,
+    "contentMs": 809.9000000059605,
+    "blankFrames": 0,
+    "viewTransition": false,
+    "requestsAfterTap": 1,
+    "documentLoad": false
+   },
+   "script": {
+    "files": 29,
+    "rawBytes": 801929,
+    "gzipBytes": 249815
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 90713,
+    "gzipBytes": 11175
+   },
+   "stylesheet": {
+    "files": 2,
+    "rawBytes": 79110,
+    "gzipBytes": 16600
+   }
+  },
+  {
+   "route": "/nhl/live",
+   "path": "/nhl/live",
+   "mode": "rendered",
+   "cacheStatus": [
+    "none",
+    "none",
+    "none"
+   ],
+   "ttfbMs": 96,
+   "firstPaintMs": 1532,
+   "largestPaintMs": 1532,
+   "largestPaintElement": "footer \"Scores and stats from ESPN. Yoga\"",
+   "hydratedMs": 6100.699999988079,
+   "loadShift": 0.0029520007679507887,
+   "loadShifts": [
+    {
+     "value": 0.0029520007679507887,
+     "atMs": 6343,
+     "nodes": "li[score-ticker] \"★ favorite team, NSH@atTOR6:00 P\""
+    }
+   ],
+   "liveShift": 0.13509595450215522,
+   "liveShifts": [
+    {
+     "value": 0.13509595450215522,
+     "atMs": 9934,
+     "nodes": "section[section] \"Upcoming 7statusawayhomenoteOTT \"; tr[ledger-row] \"STL at CHI, 7:00 PMCHI 56%STL 1-\"; footer \"Scores and stats from ESPN. Yoga\"; tr[ledger-row] \"VGK at SEA, 8:40 PMSEA 59%VGK 2-\"; tr[ledger-row] \"FLA at LA, 9:00 PMLA 62%FLA 1-0-\""
+    }
+   ],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 56
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 64
+    },
+    {
+     "name": "open the menu",
+     "ms": 56
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/games/401892449",
+    "shellMs": 692.7999999821186,
+    "contentMs": 1277.4000000059605,
+    "blankFrames": 0,
+    "viewTransition": false,
+    "requestsAfterTap": 1,
+    "documentLoad": false
+   },
+   "script": {
+    "files": 33,
+    "rawBytes": 808689,
+    "gzipBytes": 252755
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 137848,
+    "gzipBytes": 11833
+   },
+   "stylesheet": {
+    "files": 2,
+    "rawBytes": 79110,
+    "gzipBytes": 16600
+   }
+  },
+  {
+   "route": "/nhl/teams/:id",
+   "path": "/nhl/teams/21",
+   "mode": "cached",
+   "cacheStatus": [
+    "hit",
+    "hit",
+    "stale"
+   ],
+   "ttfbMs": 27.099999994039536,
+   "firstPaintMs": 1628,
+   "largestPaintMs": 1628,
+   "largestPaintElement": "h2[section-header] \"Toronto Maple Leafs Toronto · Ea\"",
+   "hydratedMs": 6420.4000000059605,
+   "loadShift": 0.00480608533057611,
+   "loadShifts": [
+    {
+     "value": 0.00480608533057611,
+     "atMs": 6906,
+     "nodes": "td[ledger-cell] \"6:00 PM\"; td[ledger-cell] \"9:00 PM\"; td[ledger-cell] \"8:00 PM\""
+    }
+   ],
+   "liveShift": 0,
+   "liveShifts": [],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 104
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 80
+    },
+    {
+     "name": "favorite heart",
+     "ms": 56
+    },
+    {
+     "name": "open the menu",
+     "ms": 64
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/teams/21/roster",
+    "shellMs": 716.9000000059605,
+    "contentMs": 716.9000000059605,
+    "blankFrames": 0,
+    "viewTransition": false,
+    "requestsAfterTap": 1,
+    "documentLoad": false
+   },
+   "script": {
+    "files": 36,
+    "rawBytes": 812252,
+    "gzipBytes": 254526
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 393368,
+    "gzipBytes": 22845
+   },
+   "stylesheet": {
+    "files": 2,
+    "rawBytes": 79110,
+    "gzipBytes": 16600
+   }
+  },
+  {
+   "route": "/nhl/teams/:id",
+   "path": "/nhl/teams/21",
+   "mode": "rendered",
+   "cacheStatus": [
+    "bypass",
+    "bypass",
+    "bypass"
+   ],
+   "ttfbMs": 95.40000000596046,
+   "firstPaintMs": 1620,
+   "largestPaintMs": 1620,
+   "largestPaintElement": "h2[section-header] \"Toronto Maple Leafs Toronto · Ea\"",
+   "hydratedMs": 6415.200000017881,
+   "loadShift": 0.00480608533057611,
+   "loadShifts": [
+    {
+     "value": 0.00480608533057611,
+     "atMs": 6993,
+     "nodes": "td[ledger-cell] \"6:00 PM\"; td[ledger-cell] \"9:00 PM\"; td[ledger-cell] \"8:00 PM\""
+    }
+   ],
+   "liveShift": 0,
+   "liveShifts": [],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 104
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 80
+    },
+    {
+     "name": "favorite heart",
+     "ms": 56
+    },
+    {
+     "name": "open the menu",
+     "ms": 56
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/teams/21/roster",
+    "shellMs": 710.5,
+    "contentMs": 710.5,
+    "blankFrames": 0,
+    "viewTransition": false,
+    "requestsAfterTap": 1,
+    "documentLoad": false
+   },
+   "script": {
+    "files": 36,
+    "rawBytes": 812252,
+    "gzipBytes": 254526
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 393384,
+    "gzipBytes": 22860
+   },
+   "stylesheet": {
+    "files": 2,
+    "rawBytes": 79110,
+    "gzipBytes": 16600
+   }
+  },
+  {
+   "route": "/nhl/teams/:id/roster",
+   "path": "/nhl/teams/21/roster",
+   "mode": "cached",
+   "cacheStatus": [
+    "hit",
+    "hit",
+    "stale"
+   ],
+   "ttfbMs": 29.400000005960464,
+   "firstPaintMs": 1572,
+   "largestPaintMs": 1572,
+   "largestPaintElement": "h2[section-header] \"Toronto Maple Leafs Toronto · Ea\"",
+   "hydratedMs": 5201.300000011921,
+   "loadShift": 0,
+   "loadShifts": [],
+   "liveShift": 0,
+   "liveShifts": [],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 64
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 64
+    },
+    {
+     "name": "favorite heart",
+     "ms": 48
+    },
+    {
+     "name": "open the menu",
+     "ms": 64
+    }
+   ],
+   "navigation": {
+    "to": "/players/4781550",
+    "shellMs": 827.9000000059605,
+    "contentMs": 827.9000000059605,
+    "blankFrames": 0,
+    "viewTransition": false,
+    "requestsAfterTap": 1,
+    "documentLoad": false
+   },
+   "script": {
+    "files": 36,
+    "rawBytes": 812252,
+    "gzipBytes": 254526
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 151871,
+    "gzipBytes": 12973
+   },
+   "stylesheet": {
+    "files": 2,
+    "rawBytes": 79110,
+    "gzipBytes": 16600
+   }
+  },
+  {
+   "route": "/nhl/teams/:id/roster",
+   "path": "/nhl/teams/21/roster",
+   "mode": "rendered",
+   "cacheStatus": [
+    "bypass",
+    "bypass",
+    "bypass"
+   ],
+   "ttfbMs": 65.5,
+   "firstPaintMs": 1576,
+   "largestPaintMs": 1576,
+   "largestPaintElement": "h2[section-header] \"Toronto Maple Leafs Toronto · Ea\"",
+   "hydratedMs": 5191.200000017881,
+   "loadShift": 0,
+   "loadShifts": [],
+   "liveShift": 0,
+   "liveShifts": [],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 72
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 72
+    },
+    {
+     "name": "favorite heart",
+     "ms": 48
+    },
+    {
+     "name": "open the menu",
+     "ms": 64
+    }
+   ],
+   "navigation": {
+    "to": "/players/4781550",
+    "shellMs": 825.4000000059605,
+    "contentMs": 825.4000000059605,
+    "blankFrames": 0,
+    "viewTransition": false,
+    "requestsAfterTap": 1,
+    "documentLoad": false
+   },
+   "script": {
+    "files": 36,
+    "rawBytes": 812252,
+    "gzipBytes": 254526
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 151887,
+    "gzipBytes": 12988
+   },
+   "stylesheet": {
+    "files": 2,
+    "rawBytes": 79110,
+    "gzipBytes": 16600
+   }
+  },
+  {
+   "route": "/nhl/teams/:id/stats",
+   "path": "/nhl/teams/21/stats",
+   "mode": "cached",
+   "cacheStatus": [
+    "hit",
+    "hit",
+    "stale"
+   ],
+   "ttfbMs": 46,
+   "firstPaintMs": 1564,
+   "largestPaintMs": 1564,
+   "largestPaintElement": "h2[section-header] \"Toronto Maple Leafs Toronto · Ea\"",
+   "hydratedMs": 5207.800000011921,
+   "loadShift": 0,
+   "loadShifts": [],
+   "liveShift": 0,
+   "liveShifts": [],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 56
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 64
+    },
+    {
+     "name": "favorite heart",
+     "ms": 56
+    },
+    {
+     "name": "open the menu",
+     "ms": 64
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/teams/21",
+    "shellMs": 739.4000000059605,
+    "contentMs": 1069.800000011921,
+    "blankFrames": 0,
+    "viewTransition": false,
+    "requestsAfterTap": 1,
+    "documentLoad": false
+   },
+   "script": {
+    "files": 36,
+    "rawBytes": 812252,
+    "gzipBytes": 254526
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 74873,
+    "gzipBytes": 9912
+   },
+   "stylesheet": {
+    "files": 2,
+    "rawBytes": 79110,
+    "gzipBytes": 16600
+   }
+  },
+  {
+   "route": "/nhl/teams/:id/stats",
+   "path": "/nhl/teams/21/stats",
+   "mode": "rendered",
+   "cacheStatus": [
+    "bypass",
+    "bypass",
+    "bypass"
+   ],
+   "ttfbMs": 69.2999999821186,
+   "firstPaintMs": 1584,
+   "largestPaintMs": 1584,
+   "largestPaintElement": "h2[section-header] \"Toronto Maple Leafs Toronto · Ea\"",
+   "hydratedMs": 5200,
+   "loadShift": 0,
+   "loadShifts": [],
+   "liveShift": 0,
+   "liveShifts": [],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 56
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 64
+    },
+    {
+     "name": "favorite heart",
+     "ms": 56
+    },
+    {
+     "name": "open the menu",
+     "ms": 64
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/teams/21",
+    "shellMs": 748.1999999880791,
+    "contentMs": 1120.5,
+    "blankFrames": 0,
+    "viewTransition": false,
+    "requestsAfterTap": 1,
+    "documentLoad": false
+   },
+   "script": {
+    "files": 36,
+    "rawBytes": 812252,
+    "gzipBytes": 254526
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 74889,
+    "gzipBytes": 9926
+   },
+   "stylesheet": {
+    "files": 2,
+    "rawBytes": 79110,
+    "gzipBytes": 16600
+   }
+  },
+  {
+   "route": "/nhl/games/:id (finished)",
+   "path": "/nhl/games/401803652",
+   "mode": "cached",
+   "cacheStatus": [
+    "stale",
+    "hit",
+    "hit"
+   ],
+   "ttfbMs": 26.200000017881393,
+   "firstPaintMs": 1512,
+   "largestPaintMs": 1512,
+   "largestPaintElement": "span[play-row] \"Josh Doan Backhand saved by Jake\"",
+   "hydratedMs": 4301.200000017881,
+   "loadShift": 0,
+   "loadShifts": [],
+   "liveShift": 0,
+   "liveShifts": [],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 80
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 64
+    },
+    {
+     "name": "select a goal on the timeline",
+     "ms": 48
+    },
+    {
+     "name": "open the menu",
+     "ms": 64
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/games/401803652/scoring",
+    "shellMs": 737.2000000178814,
+    "contentMs": 737.2000000178814,
+    "blankFrames": 0,
+    "viewTransition": false,
+    "requestsAfterTap": 1,
+    "documentLoad": false
+   },
+   "script": {
+    "files": 33,
+    "rawBytes": 827048,
+    "gzipBytes": 258662
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 301394,
+    "gzipBytes": 28506
+   },
+   "stylesheet": {
+    "files": 2,
+    "rawBytes": 79110,
+    "gzipBytes": 16600
+   }
+  },
+  {
+   "route": "/nhl/games/:id (finished)",
+   "path": "/nhl/games/401803652",
+   "mode": "rendered",
+   "cacheStatus": [
+    "bypass",
+    "bypass",
+    "bypass"
+   ],
+   "ttfbMs": 171,
+   "firstPaintMs": 1548,
+   "largestPaintMs": 1548,
+   "largestPaintElement": "span[play-row] \"Josh Doan Backhand saved by Jake\"",
+   "hydratedMs": 4444.5,
+   "loadShift": 0,
+   "loadShifts": [],
+   "liveShift": 0,
+   "liveShifts": [],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 80
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 64
+    },
+    {
+     "name": "select a goal on the timeline",
+     "ms": 56
+    },
+    {
+     "name": "open the menu",
+     "ms": 64
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/games/401803652/scoring",
+    "shellMs": 742.8000000119209,
+    "contentMs": 742.8000000119209,
+    "blankFrames": 0,
+    "viewTransition": false,
+    "requestsAfterTap": 1,
+    "documentLoad": false
+   },
+   "script": {
+    "files": 33,
+    "rawBytes": 827048,
+    "gzipBytes": 258662
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 301410,
+    "gzipBytes": 28520
+   },
+   "stylesheet": {
+    "files": 2,
+    "rawBytes": 79110,
+    "gzipBytes": 16600
+   }
+  },
+  {
+   "route": "/nhl/games/:id/scoring",
+   "path": "/nhl/games/401803652/scoring",
+   "mode": "cached",
+   "cacheStatus": [
+    "hit",
+    "hit",
+    "hit"
+   ],
+   "ttfbMs": 36,
+   "firstPaintMs": 1528,
+   "largestPaintMs": 1528,
+   "largestPaintElement": "span[play-row] \"Josh Norris Goal (13) Wrist Shot\"",
+   "hydratedMs": 4451.199999988079,
+   "loadShift": 0,
+   "loadShifts": [],
+   "liveShift": 0,
+   "liveShifts": [],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 72
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 64
+    },
+    {
+     "name": "select a goal on the timeline",
+     "ms": 48
+    },
+    {
+     "name": "open the menu",
+     "ms": 56
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/games/401803652",
+    "shellMs": 758.4000000059605,
+    "contentMs": 758.4000000059605,
+    "blankFrames": 0,
+    "viewTransition": false,
+    "requestsAfterTap": 1,
+    "documentLoad": false
+   },
+   "script": {
+    "files": 33,
+    "rawBytes": 827048,
+    "gzipBytes": 258662
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 274824,
+    "gzipBytes": 27580
+   },
+   "stylesheet": {
+    "files": 2,
+    "rawBytes": 79110,
+    "gzipBytes": 16600
+   }
+  },
+  {
+   "route": "/nhl/games/:id/scoring",
+   "path": "/nhl/games/401803652/scoring",
+   "mode": "rendered",
+   "cacheStatus": [
+    "bypass",
+    "bypass",
+    "bypass"
+   ],
+   "ttfbMs": 184.60000002384186,
+   "firstPaintMs": 1528,
+   "largestPaintMs": 1528,
+   "largestPaintElement": "span[play-row] \"Josh Norris Goal (13) Wrist Shot\"",
+   "hydratedMs": 4443.5999999940395,
+   "loadShift": 0,
+   "loadShifts": [],
+   "liveShift": 0,
+   "liveShifts": [],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 80
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 72
+    },
+    {
+     "name": "select a goal on the timeline",
+     "ms": 48
+    },
+    {
+     "name": "open the menu",
+     "ms": 56
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/games/401803652",
+    "shellMs": 756.4000000059605,
+    "contentMs": 756.4000000059605,
+    "blankFrames": 0,
+    "viewTransition": false,
+    "requestsAfterTap": 1,
+    "documentLoad": false
+   },
+   "script": {
+    "files": 33,
+    "rawBytes": 827048,
+    "gzipBytes": 258662
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 274840,
+    "gzipBytes": 27595
+   },
+   "stylesheet": {
+    "files": 2,
+    "rawBytes": 79110,
+    "gzipBytes": 16600
+   }
+  },
+  {
+   "route": "/nhl/games/:id/pick",
+   "path": "/nhl/games/401803652/pick",
+   "mode": "cached",
+   "cacheStatus": [
+    "hit",
+    "hit",
+    "hit"
+   ],
+   "ttfbMs": 30.19999998807907,
+   "firstPaintMs": 1568,
+   "largestPaintMs": 1568,
+   "largestPaintElement": "p[game-pick-full] \"Dallas Stars 55%. They have the \"",
+   "hydratedMs": 4342.4000000059605,
+   "loadShift": 0.00865587476691534,
+   "loadShifts": [
+    {
+     "value": 0.00432793738345767,
+     "atMs": 5040,
+     "nodes": "footer \"Scores and stats from ESPN. Yoga\""
+    },
+    {
+     "value": 0.00432793738345767,
+     "atMs": 5134,
+     "nodes": "footer \"Scores and stats from ESPN. Yoga\""
+    }
+   ],
+   "liveShift": 0,
+   "liveShifts": [],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 80
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 72
+    },
+    {
+     "name": "select a goal on the timeline",
+     "ms": 48
+    },
+    {
+     "name": "open the menu",
+     "ms": 64
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/games/401803652",
+    "shellMs": 758.5999999940395,
+    "contentMs": 758.5999999940395,
+    "blankFrames": 0,
+    "viewTransition": false,
+    "requestsAfterTap": 1,
+    "documentLoad": false
+   },
+   "script": {
+    "files": 33,
+    "rawBytes": 827048,
+    "gzipBytes": 258662
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 270608,
+    "gzipBytes": 27673
+   },
+   "stylesheet": {
+    "files": 2,
+    "rawBytes": 79110,
+    "gzipBytes": 16600
+   }
+  },
+  {
+   "route": "/nhl/games/:id/pick",
+   "path": "/nhl/games/401803652/pick",
+   "mode": "rendered",
+   "cacheStatus": [
+    "bypass",
+    "bypass",
+    "bypass"
+   ],
+   "ttfbMs": 165.5,
+   "firstPaintMs": 1540,
+   "largestPaintMs": 1540,
+   "largestPaintElement": "p[game-pick-full] \"Dallas Stars 55%. They have the \"",
+   "hydratedMs": 4358.699999988079,
+   "loadShift": 0.0012092042806576895,
+   "loadShifts": [
+    {
+     "value": 0.0012092042806576895,
+     "atMs": 5037,
+     "nodes": "text"
+    }
+   ],
+   "liveShift": 0,
+   "liveShifts": [],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 72
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 64
+    },
+    {
+     "name": "select a goal on the timeline",
+     "ms": 48
+    },
+    {
+     "name": "open the menu",
+     "ms": 64
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/games/401803652",
+    "shellMs": 781.9000000059605,
+    "contentMs": 781.9000000059605,
+    "blankFrames": 0,
+    "viewTransition": false,
+    "requestsAfterTap": 1,
+    "documentLoad": false
+   },
+   "script": {
+    "files": 33,
+    "rawBytes": 827048,
+    "gzipBytes": 258662
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 270624,
+    "gzipBytes": 27687
+   },
+   "stylesheet": {
+    "files": 2,
+    "rawBytes": 79110,
+    "gzipBytes": 16600
+   }
+  },
+  {
+   "route": "/nhl/games/:id (scheduled)",
+   "path": "/nhl/games/401892449",
+   "mode": "rendered",
+   "cacheStatus": [
+    "miss",
+    "miss",
+    "miss"
+   ],
+   "ttfbMs": 181.60000002384186,
+   "firstPaintMs": 1524,
+   "largestPaintMs": 1524,
+   "largestPaintElement": "p[game-pick-full] \"Toronto Maple Leafs 58%. They ha\"",
+   "hydratedMs": 4322.100000023842,
+   "loadShift": 0.0014191379683593554,
+   "loadShifts": [
+    {
+     "value": 0.0014191379683593554,
+     "atMs": 4881,
+     "nodes": "text"
+    }
+   ],
+   "liveShift": 0,
+   "liveShifts": [],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 72
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 88
+    },
+    {
+     "name": "open the menu",
+     "ms": 88
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/teams/27",
+    "shellMs": 841.6999999880791,
+    "contentMs": 841.6999999880791,
+    "blankFrames": 0,
+    "viewTransition": false,
+    "requestsAfterTap": 1,
+    "documentLoad": false
+   },
+   "script": {
+    "files": 32,
+    "rawBytes": 826169,
+    "gzipBytes": 258158
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 103279,
+    "gzipBytes": 12765
+   },
+   "stylesheet": {
+    "files": 2,
+    "rawBytes": 79110,
+    "gzipBytes": 16600
+   }
+  },
+  {
+   "route": "/players",
+   "path": "/players",
+   "mode": "cached",
+   "cacheStatus": [
+    "hit",
+    "hit",
+    "stale"
+   ],
+   "ttfbMs": 24.80000001192093,
+   "firstPaintMs": 1572,
+   "largestPaintMs": 1572,
+   "largestPaintElement": "footer \"Scores and stats from ESPN. Yoga\"",
+   "hydratedMs": 5089.0999999940395,
+   "loadShift": 0,
+   "loadShifts": [],
+   "liveShift": 0,
+   "liveShifts": [],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 48
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 72
+    },
+    {
+     "name": "type in the search",
+     "ms": 16
+    },
+    {
+     "name": "open the menu",
+     "ms": 56
+    }
+   ],
+   "navigation": {
+    "to": "/nhl?tab=teams",
+    "shellMs": 701.4000000059605,
+    "contentMs": 701.4000000059605,
+    "blankFrames": 0,
+    "viewTransition": false,
+    "requestsAfterTap": 1,
+    "documentLoad": false
+   },
+   "script": {
+    "files": 36,
+    "rawBytes": 817308,
+    "gzipBytes": 256941
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 21022,
+    "gzipBytes": 5335
+   },
+   "stylesheet": {
+    "files": 2,
+    "rawBytes": 79110,
+    "gzipBytes": 16600
+   }
+  },
+  {
+   "route": "/players",
+   "path": "/players",
+   "mode": "rendered",
+   "cacheStatus": [
+    "bypass",
+    "bypass",
+    "bypass"
+   ],
+   "ttfbMs": 53.80000001192093,
+   "firstPaintMs": 1556,
+   "largestPaintMs": 1556,
+   "largestPaintElement": "footer \"Scores and stats from ESPN. Yoga\"",
+   "hydratedMs": 5078.699999988079,
+   "loadShift": 0,
+   "loadShifts": [],
+   "liveShift": 0,
+   "liveShifts": [],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 48
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 64
+    },
+    {
+     "name": "type in the search",
+     "ms": 24
+    },
+    {
+     "name": "open the menu",
+     "ms": 64
+    }
+   ],
+   "navigation": {
+    "to": "/nhl?tab=teams",
+    "shellMs": 706.0999999940395,
+    "contentMs": 706.0999999940395,
+    "blankFrames": 0,
+    "viewTransition": false,
+    "requestsAfterTap": 1,
+    "documentLoad": false
+   },
+   "script": {
+    "files": 36,
+    "rawBytes": 817308,
+    "gzipBytes": 256941
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 21038,
+    "gzipBytes": 5349
+   },
+   "stylesheet": {
+    "files": 2,
+    "rawBytes": 79110,
+    "gzipBytes": 16600
+   }
+  },
+  {
+   "route": "/players?q=",
+   "path": "/players?q=mar",
+   "mode": "rendered",
+   "cacheStatus": [
+    "bypass",
+    "bypass",
+    "bypass"
+   ],
+   "ttfbMs": 61.10000002384186,
+   "firstPaintMs": 1572,
+   "largestPaintMs": 1572,
+   "largestPaintElement": "footer \"Scores and stats from ESPN. Yoga\"",
+   "hydratedMs": 5721.300000011921,
+   "loadShift": 0,
+   "loadShifts": [],
+   "liveShift": 0,
+   "liveShifts": [],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 56
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 64
+    },
+    {
+     "name": "favorite heart",
+     "ms": 32
+    },
+    {
+     "name": "open the menu",
+     "ms": 64
+    }
+   ],
+   "navigation": {
+    "to": "/players/3852",
+    "shellMs": 821.7000000178814,
+    "contentMs": 821.7000000178814,
+    "blankFrames": 0,
+    "viewTransition": false,
+    "requestsAfterTap": 1,
+    "documentLoad": false
+   },
+   "script": {
+    "files": 36,
+    "rawBytes": 817308,
+    "gzipBytes": 256941
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 45163,
+    "gzipBytes": 7832
+   },
+   "stylesheet": {
+    "files": 2,
+    "rawBytes": 79110,
+    "gzipBytes": 16600
+   }
+  },
+  {
+   "route": "/players/:id (skater)",
+   "path": "/players/4024123",
+   "mode": "cached",
+   "cacheStatus": [
+    "hit",
+    "hit",
+    "hit"
+   ],
+   "ttfbMs": 17.100000023841858,
+   "firstPaintMs": 1588,
+   "largestPaintMs": 1588,
+   "largestPaintElement": "div[section-header] \"692 GP · 429 G · 352 A · 781 PTS\"",
+   "hydratedMs": 4674.5,
+   "loadShift": 0,
+   "loadShifts": [],
+   "liveShift": 0,
+   "liveShifts": [],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 88
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 64
+    },
+    {
+     "name": "favorite heart",
+     "ms": 32
+    },
+    {
+     "name": "open the menu",
+     "ms": 64
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/teams/21",
+    "shellMs": 1613.8999999761581,
+    "contentMs": 1613.8999999761581,
+    "blankFrames": 0,
+    "viewTransition": false,
+    "requestsAfterTap": 1,
+    "documentLoad": false
+   },
+   "script": {
+    "files": 30,
+    "rawBytes": 803183,
+    "gzipBytes": 250512
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 146021,
+    "gzipBytes": 13086
+   },
+   "stylesheet": {
+    "files": 2,
+    "rawBytes": 79110,
+    "gzipBytes": 16600
+   }
+  },
+  {
+   "route": "/players/:id (skater)",
+   "path": "/players/4024123",
+   "mode": "rendered",
+   "cacheStatus": [
+    "bypass",
+    "bypass",
+    "bypass"
+   ],
+   "ttfbMs": 62.400000005960464,
+   "firstPaintMs": 1588,
+   "largestPaintMs": 1588,
+   "largestPaintElement": "div[section-header] \"692 GP · 429 G · 352 A · 781 PTS\"",
+   "hydratedMs": 4666.199999988079,
+   "loadShift": 0,
+   "loadShifts": [],
+   "liveShift": 0,
+   "liveShifts": [],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 64
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 72
+    },
+    {
+     "name": "favorite heart",
+     "ms": 32
+    },
+    {
+     "name": "open the menu",
+     "ms": 64
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/teams/21",
+    "shellMs": 1637.199999988079,
+    "contentMs": 1637.199999988079,
+    "blankFrames": 0,
+    "viewTransition": false,
+    "requestsAfterTap": 1,
+    "documentLoad": false
+   },
+   "script": {
+    "files": 30,
+    "rawBytes": 803183,
+    "gzipBytes": 250512
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 146037,
+    "gzipBytes": 13100
+   },
+   "stylesheet": {
+    "files": 2,
+    "rawBytes": 79110,
+    "gzipBytes": 16600
+   }
+  },
+  {
+   "route": "/players/:id/games",
+   "path": "/players/4024123/games",
+   "mode": "cached",
+   "cacheStatus": [
+    "hit",
+    "hit",
+    "hit"
+   ],
+   "ttfbMs": 28.19999998807907,
+   "firstPaintMs": 1584,
+   "largestPaintMs": 1584,
+   "largestPaintElement": "div[section-header] \"692 GP · 429 G · 352 A · 781 PTS\"",
+   "hydratedMs": 4683.899999976158,
+   "loadShift": 0,
+   "loadShifts": [],
+   "liveShift": 0,
+   "liveShifts": [],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 72
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 72
+    },
+    {
+     "name": "favorite heart",
+     "ms": 32
+    },
+    {
+     "name": "open the menu",
+     "ms": 64
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/games/401892434",
+    "shellMs": 666,
+    "contentMs": 666,
+    "blankFrames": 0,
+    "viewTransition": false,
+    "requestsAfterTap": 1,
+    "documentLoad": false
+   },
+   "script": {
+    "files": 30,
+    "rawBytes": 803183,
+    "gzipBytes": 250512
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 146354,
+    "gzipBytes": 13172
+   },
+   "stylesheet": {
+    "files": 2,
+    "rawBytes": 79110,
+    "gzipBytes": 16600
+   }
+  },
+  {
+   "route": "/players/:id/games",
+   "path": "/players/4024123/games",
+   "mode": "rendered",
+   "cacheStatus": [
+    "bypass",
+    "bypass",
+    "bypass"
+   ],
+   "ttfbMs": 57.29999998211861,
+   "firstPaintMs": 1592,
+   "largestPaintMs": 1592,
+   "largestPaintElement": "div[section-header] \"692 GP · 429 G · 352 A · 781 PTS\"",
+   "hydratedMs": 4698.899999976158,
+   "loadShift": 0,
+   "loadShifts": [],
+   "liveShift": 0,
+   "liveShifts": [],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 80
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 72
+    },
+    {
+     "name": "favorite heart",
+     "ms": 32
+    },
+    {
+     "name": "open the menu",
+     "ms": 64
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/games/401892434",
+    "shellMs": 679.6999999880791,
+    "contentMs": 679.6999999880791,
+    "blankFrames": 0,
+    "viewTransition": false,
+    "requestsAfterTap": 1,
+    "documentLoad": false
+   },
+   "script": {
+    "files": 30,
+    "rawBytes": 803183,
+    "gzipBytes": 250512
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 146370,
+    "gzipBytes": 13186
+   },
+   "stylesheet": {
+    "files": 2,
+    "rawBytes": 79110,
+    "gzipBytes": 16600
+   }
+  },
+  {
+   "route": "/players/:id (goalie)",
+   "path": "/players/3067313",
+   "mode": "cached",
+   "cacheStatus": [
+    "hit",
+    "hit",
+    "hit"
+   ],
+   "ttfbMs": 86.2999999821186,
+   "firstPaintMs": 1588,
+   "largestPaintMs": 1588,
+   "largestPaintElement": "span[player-header] \"Goaltender · #41 · Toronto Maple\"",
+   "hydratedMs": 4678.799999982119,
+   "loadShift": 0,
+   "loadShifts": [],
+   "liveShift": 0,
+   "liveShifts": [],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 72
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 64
+    },
+    {
+     "name": "favorite heart",
+     "ms": 32
+    },
+    {
+     "name": "open the menu",
+     "ms": 64
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/teams/21",
+    "shellMs": 1646.5,
+    "contentMs": 1749.9000000059605,
+    "blankFrames": 0,
+    "viewTransition": false,
+    "requestsAfterTap": 1,
+    "documentLoad": false
+   },
+   "script": {
+    "files": 30,
+    "rawBytes": 803183,
+    "gzipBytes": 250512
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 131713,
+    "gzipBytes": 12634
+   },
+   "stylesheet": {
+    "files": 2,
+    "rawBytes": 79110,
+    "gzipBytes": 16600
+   }
+  },
+  {
+   "route": "/players/:id (goalie)",
+   "path": "/players/3067313",
+   "mode": "rendered",
+   "cacheStatus": [
+    "bypass",
+    "bypass",
+    "bypass"
+   ],
+   "ttfbMs": 84.59999999403954,
+   "firstPaintMs": 1600,
+   "largestPaintMs": 1600,
+   "largestPaintElement": "span[player-header] \"Goaltender · #41 · Toronto Maple\"",
+   "hydratedMs": 4675.800000011921,
+   "loadShift": 0,
+   "loadShifts": [],
+   "liveShift": 0,
+   "liveShifts": [],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 80
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 72
+    },
+    {
+     "name": "favorite heart",
+     "ms": 32
+    },
+    {
+     "name": "open the menu",
+     "ms": 64
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/teams/21",
+    "shellMs": 1604.1000000238419,
+    "contentMs": 1604.1000000238419,
+    "blankFrames": 0,
+    "viewTransition": false,
+    "requestsAfterTap": 1,
+    "documentLoad": false
+   },
+   "script": {
+    "files": 30,
+    "rawBytes": 803183,
+    "gzipBytes": 250512
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 131729,
+    "gzipBytes": 12649
+   },
+   "stylesheet": {
+    "files": 2,
+    "rawBytes": 79110,
+    "gzipBytes": 16600
+   }
+  }
+ ]
+}

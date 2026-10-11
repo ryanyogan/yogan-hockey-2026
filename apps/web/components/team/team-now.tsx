@@ -83,7 +83,7 @@ function NextGame({ teamId, game, pick }: { teamId: string; game: Game; pick?: s
             <LedgerCell className="whitespace-nowrap">
               {/* A phone's row has no room for it: the longest ends 2px inside the ledger as it is. */}
               <Versus home={home} />{" "}
-              <TeamMark teamId={opponent.id} className="mr-1.5 max-sm:hidden" />
+              <TeamMark teamId={opponent.id} className="mr-[0.45em] max-sm:hidden" />
               <TeamName team={opponent} />
             </LedgerCell>
             <LedgerCell className="whitespace-nowrap">

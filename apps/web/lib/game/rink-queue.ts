@@ -60,6 +60,23 @@ export function queuePace(queue: RinkQueue): number {
   return 1 + queue.waiting.length;
 }
 
+/** The figure each side's score is held at, or null for a side showing the header's own. */
+export type HeldScores = { home: number | null; away: number | null };
+
+/**
+ * The score a goal holds back while it waits its turn. The header already counts a goal that
+ * arrived behind another cue (a save in the same poll), so until its sequence plays its side
+ * stays on the score before it: the earliest of that side's goals waiting, each of which rolls
+ * the score on when its turn comes.
+ */
+export function heldScores(queue: RinkQueue): HeldScores {
+  const held: HeldScores = { home: null, away: null };
+  for (const cue of queue.waiting) {
+    if (cue.kind === "goal" && cue.score != null) held[cue.side] ??= cue.score.from;
+  }
+  return held;
+}
+
 export type RinkQueueAction =
   /** The page rendered: what it shows now. */
   | { type: "scene"; scene: RinkScene }

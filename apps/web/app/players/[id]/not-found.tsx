@@ -9,9 +9,9 @@ export default function PlayerNotFound() {
   return (
     <Section>
       <SectionHeader title="Player not found" count="404" />
-      <p className="border-foreground/20 border-t px-2 py-1.5">
+      <p className="border-rule-head border-t px-2 py-row">
         No player is kept at this address.{" "}
-        <Link href="/players" className="font-bold underline">
+        <Link href="/players" className="font-strong underline">
           Back to players
         </Link>
       </p>

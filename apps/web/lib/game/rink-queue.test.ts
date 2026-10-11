@@ -1,6 +1,7 @@
 import type { Play } from "@yogan-hockey/schemas";
 import { describe, expect, test } from "vitest";
 import {
+  heldScores,
   MAX_WAITING,
   queuePace,
   RINK_QUEUE_OPENED,
@@ -335,5 +336,85 @@ describe("a revised game", () => {
     const rewritten = game.filter((each) => each.id !== "faceoff");
     const queue = run([live("miss", rewritten)], shown);
     expect(playedOut(queue)).toEqual(["miss:miss"]);
+  });
+});
+
+describe("the score a goal waiting its turn holds back", () => {
+  /** A game where Dallas, away, scores after a save, and then again. */
+  const scored: Play[] = [
+    play({ id: "start", type: "period-start", teamId: null }),
+    play({ id: "save", type: "shot-on-goal", coordinate: { x: 60, y: 0 } }),
+    play({
+      id: "first",
+      type: "goal",
+      scoring: true,
+      teamId: DALLAS,
+      coordinate: { x: -80, y: 3 },
+      awayScore: 1,
+    }),
+    play({
+      id: "second",
+      type: "goal",
+      scoring: true,
+      teamId: DALLAS,
+      coordinate: { x: -70, y: -9 },
+      awayScore: 2,
+    }),
+    play({
+      id: "answer",
+      type: "goal",
+      scoring: true,
+      teamId: BUFFALO,
+      coordinate: { x: 75, y: 4 },
+      awayScore: 2,
+      homeScore: 1,
+    }),
+  ];
+
+  test("nothing is held with no goal waiting", () => {
+    expect(heldScores(RINK_QUEUE_OPENED)).toEqual({ home: null, away: null });
+    expect(heldScores(run([live("start", scored), live("save", scored)]))).toEqual({
+      home: null,
+      away: null,
+    });
+  });
+
+  test("a goal behind a save in the same poll: its side stays on the score before it", () => {
+    const burst = run([live("start", scored), live("first", scored)]);
+    expect(named(burst.current)).toBe("save:save");
+    expect(heldScores(burst)).toEqual({ home: null, away: 0 });
+  });
+
+  test("the goal's own turn holds nothing: its sequence rolls the score", () => {
+    const burst = run([live("start", scored), live("first", scored), "finished"]);
+    expect(named(burst.current)).toBe("goal:first");
+    expect(heldScores(burst)).toEqual({ home: null, away: null });
+  });
+
+  test("two goals for one side in one poll: the score waits at the first while the second waits", () => {
+    const burst = run([live("save", scored), live("second", scored)]);
+    expect(named(burst.current)).toBe("goal:first");
+    expect(heldScores(burst)).toEqual({ home: null, away: 1 });
+  });
+
+  test("each side holds the score before the earliest of its own goals waiting", () => {
+    const burst = run([live("start", scored), live("answer", scored)]);
+    expect(named(burst.current)).toBe("save:save");
+    expect(heldScores(burst)).toEqual({ home: 0, away: 0 });
+  });
+
+  test("a waiting goal that is overturned holds nothing any longer", () => {
+    const burst = run([live("start", scored), live("first", scored)]);
+    const without = scored.filter((each) => each.id !== "first");
+    expect(heldScores(run([live("save", without)], burst))).toEqual({ home: null, away: null });
+  });
+
+  test("a shootout's goal holds nothing: it changes no score", () => {
+    const shootout = scored.map((each) =>
+      each.id === "first" ? { ...each, period: 5, periodText: "SO", awayScore: 0 } : each,
+    );
+    const burst = run([live("start", shootout), live("first", shootout)]);
+    expect(waiting(burst)).toEqual(["goal:first"]);
+    expect(heldScores(burst)).toEqual({ home: null, away: null });
   });
 });

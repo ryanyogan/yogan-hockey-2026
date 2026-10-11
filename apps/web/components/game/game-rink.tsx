@@ -3,11 +3,13 @@
 import type { GameHeader, GameHeaderSide, Play } from "@yogan-hockey/schemas";
 import { LiveMarker } from "@yogan-hockey/ui/components/marker";
 import { type ReactNode, useRef } from "react";
+import { type GameClock, penaltyState } from "../../lib/game/penalties";
 import { gameStatus, markKind, playTime } from "../../lib/game/plays";
 import { attackedEnd, type RinkEnd } from "../../lib/game/rink";
 import { periodLabel } from "../../lib/game/timeline";
 import { LocalTime } from "../local-time";
 import { TeamMark } from "../team-mark";
+import { PenaltyBox, PenaltyBoxSpace, teamColour } from "./penalty-box";
 import { Rink } from "./rink";
 import { RinkAnimations } from "./rink-animations";
 
@@ -139,6 +141,7 @@ export function MatchupRink({ header, status }: { header: GameHeader; status?: s
           )}
         </div>
       </div>
+      <PenaltyBoxSpace />
       <p data-slot="rink-caption" className={CAPTION_UNDER_ICE}>
         {where}
       </p>
@@ -179,8 +182,9 @@ function Caption({ play }: { play: Play }) {
 
 /**
  * The rink as the page: the ice filling the width, the score, shots and clock laid over it, and
- * the play in focus ringed and captioned. Shots, saves and misses are played on the ice as they
- * arrive, and when a play is picked (`RinkAnimations`).
+ * the play in focus ringed and captioned. Shots, saves, misses and penalties are played on the
+ * ice as they arrive, and when a play is picked (`RinkAnimations`). Under it is the penalty box,
+ * and while a team has the advantage the zone it attacks is ruled in its colour.
  */
 export function GameRink({
   header,
@@ -191,6 +195,7 @@ export function GameRink({
   picked = false,
   status,
   notice,
+  clock = null,
 }: {
   /** Its score, shots, period and clock are what is laid over the ice. */
   header: GameHeader;
@@ -208,6 +213,11 @@ export function GameRink({
   status?: string;
   /** A warning under the clock: "Updates delayed". */
   notice?: string;
+  /**
+   * A live game's clock as last heard, which the penalties count down on between plays. Without
+   * one they stand as of the latest play: a Replay's playhead.
+   */
+  clock?: GameClock | null;
 }) {
   const { live, text } = gameStatus(header);
   // The ends are those of the period in focus, since the teams change ends each period.
@@ -215,10 +225,22 @@ export function GameRink({
   const periodText = focus?.periodText || periodLabel(period, header.seasonType);
   const ends = { header, plays, period, periodText };
   const rink = useRef<SVGSVGElement>(null);
+
+  // The box and the advantage are the game's as it stands (a Replay's at its playhead), not the
+  // picked play's: like the score, they do not move when a tick is clicked.
+  const penalties = penaltyState(
+    played,
+    { homeTeamId: header.home.id, awayTeamId: header.away.id, seasonType: header.seasonType },
+    clock,
+  );
+  const ahead = [header.away, header.home].find((s) => s.id === penalties.advantage?.teamId);
+  const now = clock?.period ?? played.at(-1)?.period ?? 1;
+  const attacked = ahead && attackedEnd(plays, header.home.id, ahead.id, now);
+  const powerPlay = ahead && attacked ? { end: attacked, style: teamColour(ahead) } : null;
   return (
     <div data-slot="game-rink" className="@container">
       <div className="relative">
-        <Rink ref={rink} plays={drawn} focus={focus} />
+        <Rink ref={rink} plays={drawn} focus={focus} powerPlay={powerPlay} />
         <RinkAnimations
           rink={rink}
           game={plays}
@@ -250,6 +272,7 @@ export function GameRink({
           )}
         </div>
       </div>
+      <PenaltyBox header={header} state={penalties} />
       <p data-slot="rink-caption" className={CAPTION_UNDER_ICE}>
         {focus != null && <Caption play={focus} />}
       </p>

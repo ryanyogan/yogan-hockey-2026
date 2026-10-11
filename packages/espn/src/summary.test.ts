@@ -157,6 +157,7 @@ describe("the plays of a finished game", () => {
     ]);
     expect(plays.find((play) => play.penalty)).toMatchObject({
       type: "High-sticking",
+      penaltyMinutes: 2,
       text: "Radek Faksa High-sticking against Josh Norris",
       teamId: "9",
       participants: [

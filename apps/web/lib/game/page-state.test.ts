@@ -124,13 +124,14 @@ describe("streamReading", () => {
     const header = live({ clock: "6:51" });
     expect(
       streamReading({ header, plays: [shot], delayed: false, scoreboard: onScoreboard() }),
-    ).toEqual({});
+      // 6:51 left of the 2nd is 13:09 played: what the penalty box counts down on.
+    ).toEqual({ clock: { period: 2, elapsed: 13 * 60 + 9 } });
   });
 
   it("takes the Scoreboard's clock when the header has none", () => {
     expect(
       streamReading({ header: live(), plays: [shot], delayed: false, scoreboard: onScoreboard() }),
-    ).toEqual({ status: "2nd 12:34" });
+    ).toEqual({ status: "2nd 12:34", clock: { period: 2, elapsed: 7 * 60 + 26 } });
   });
 
   it("shows the period alone when no clock can be trusted", () => {

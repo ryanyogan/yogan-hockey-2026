@@ -20,7 +20,7 @@ type ShotLine = {
  * (`components/game/rink-player.ts`) turns into a GSAP timeline.
  *
  * One member per kind of thing seen. The goal sequence (#142) adds what a goal says besides its
- * line to the `goal` member; penalties (#143) add a member of their own, with no line.
+ * line to the `goal` member.
  */
 export type RinkAnimation =
   /** Into the net. */
@@ -28,7 +28,15 @@ export type RinkAnimation =
   /** Stopped at the edge of the crease. */
   | ({ kind: "save" } & ShotLine)
   /** Wide of the post, to the end boards. */
-  | ({ kind: "miss" } & ShotLine);
+  | ({ kind: "miss" } & ShotLine)
+  /**
+   * The whistle, where ESPN records the infraction. No line: who sits and for how long is not a
+   * moment but a state, which `penaltyState` (`./penalties.ts`) works out and the page draws.
+   */
+  | { kind: "penalty"; playId: string; at: RinkPoint };
+
+/** The kinds that are a shot's line. */
+type ShotKind = Extract<RinkAnimation, ShotLine>["kind"];
 
 /** How far past the goal line a goal's line runs, into the net. */
 const INTO_NET = 1.6;
@@ -53,7 +61,8 @@ export function describePlay(
   attacks: RinkEnd | null = null,
 ): RinkAnimation | null {
   if (play.coordinate == null) return null;
-  const kind = play.scoring
+  if (play.penalty) return { kind: "penalty", playId: play.id, at: rinkPoint(play.coordinate) };
+  const kind: ShotKind | null = play.scoring
     ? "goal"
     : play.type === "shot-on-goal"
       ? "save"
@@ -69,12 +78,7 @@ export function describePlay(
   return { kind, playId: play.id, end, from, to: stopsAt(kind, from, side, distance), distance };
 }
 
-function stopsAt(
-  kind: RinkAnimation["kind"],
-  from: RinkPoint,
-  side: 1 | -1,
-  distance: number,
-): RinkPoint {
+function stopsAt(kind: ShotKind, from: RinkPoint, side: 1 | -1, distance: number): RinkPoint {
   const netX = side * RINK.goalLine;
   switch (kind) {
     case "goal":

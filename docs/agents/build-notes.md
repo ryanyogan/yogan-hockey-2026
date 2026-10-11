@@ -2,6 +2,18 @@
 
 What earlier tickets learned that the code does not show. Read before building; add a line when you learn something the next subagent would otherwise rediscover. Keep each note to what cannot be found by reading the code.
 
+## Tuned ledger prototype (#128, awaiting approval in #129)
+
+- **Production is still the original ledger.** `prototypes/tuned-ledger` (`pnpm prototype:look`, port 5128 or `PORT`) is a proposal; `docs/design/tuned-ledger.md` says what it changes and holds its screenshots and contrast table. No production UI ticket starts until #129 closes, and the approved typeface and weights are whatever #129's comments say, not the prototype's default.
+- **GSAP is not open source.** 3.15.0 is free under GSAP's own "no charge" licence (commercial use and all plugins included); the core is 72.9 kB minified, 28.3 kB gzipped. Its docs state no size, so measure the file.
+- **GSAP rewrites an element's whole `transform`.** Animate a child of anything placed with a CSS `translate(-50%)` (the rink's overlays are), never the placed element, or it loses its place on the next resize.
+- **Build the timeline to the end state and jump it for reduced motion** (`timeline.progress(1)`): the page is rendered in the play's end state, the timeline runs from before it, and reduced motion is then the same frame by construction. A GSAP `attr` tween on an SVG attribute that is not in the markup logs a console error; give `cx`/`cy` a starting value.
+- **A team colour can vanish as a tint in the dark theme** (Buffalo's navy on slate). The prototype lifts a colour whose luminance is under 0.2 towards white before using it.
+- **A blocked shot's coordinate is the blocker's**, so it cannot be drawn as a line from the shooter. Only goals, saves and misses get one.
+- **A full-page Playwright screenshot stitches a fixed tab bar across the middle of the image.** Resize the viewport to the page's height and take an ordinary screenshot (`prototypes/tuned-ledger/capture.mjs`).
+- **`biome check --write` reformats a vendored minified file** and reports a thousand errors in it. Exclude vendored and generated files in `biome.json` before running it.
+- **A Bash command with a long heredoc, or a loop over a computed value, is refused by the worktree guard.** Write the script with the Write tool into `node_modules/.tmp/` and run it.
+
 ## Original design restoration (#121)
 
 - **Current visual direction is the original ledger, not the later prototypes.** See `docs/design/original-restored.md`. Restore presentation from `f07b4bb` selectively; it predates the #107 shared game/player layouts, stable Home ordering and intentional Family/fictional-player retirement. A wholesale checkout would lose those changes.

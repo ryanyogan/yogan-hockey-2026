@@ -74,12 +74,13 @@ export type RinkQueueAction =
  * - A picked play (a Replay's playhead, a clicked tick) is played at once in place of whatever
  *   was on the ice, whether it is later or earlier in the game than the last.
  * - A picked play with nothing to draw clears the ice, and so does letting go of a picked play.
- *   Following a game, the last shot stays on the ice as it ended until the next one arrives.
+ *   Following a game, the last shot stays on the ice as it ended until the next one arrives; a
+ *   goal stays only until the game has gone on to another play.
  * - A play taken back or revised by ESPN leaves nothing stale.
  */
 export function rinkQueueReducer(queue: RinkQueue, action: RinkQueueAction): RinkQueue {
   if (action.type === "finished") {
-    return queue.playing && queue.current === action.cue ? advance(queue) : queue;
+    return queue.playing && queue.current === action.cue ? movedOn(advance(queue)) : queue;
   }
   const before = queue.scene;
   const after = action.scene;
@@ -101,7 +102,23 @@ export function rinkQueueReducer(queue: RinkQueue, action: RinkQueueAction): Rin
     const cue = cueFor(after, play.id);
     if (cue) cues.push(cue);
   }
-  return enqueue(revised, cues);
+  return movedOn(enqueue(revised, cues));
+}
+
+/**
+ * A goal that has played out is taken off the ice once the game has gone on to another play:
+ * its lamp, its tint and "GOAL" over the clock are news, not a mark to leave through an
+ * intermission. (A shot's line says nothing that goes stale, so the last shot stays.)
+ */
+function movedOn(queue: RinkQueue): RinkQueue {
+  const { current, scene } = queue;
+  const stale =
+    !queue.playing &&
+    current?.kind === "goal" &&
+    scene != null &&
+    !scene.picked &&
+    scene.focusId !== current.playId;
+  return stale ? { ...queue, current: CLEAR } : queue;
 }
 
 function sameScene(a: RinkScene, b: RinkScene): boolean {

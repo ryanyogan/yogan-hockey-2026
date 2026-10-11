@@ -5,12 +5,15 @@ import type { RinkCue } from "../../lib/game/rink-queue";
 
 /*
  * GSAP plays a cue on the drawn rink (`rink.tsx`). This file is the only one that imports GSAP,
- * and `RinkAnimations` imports it lazily, so GSAP is fetched when a game page first has something
- * to play and by no other page.
+ * and `RinkAnimations` imports it lazily, so GSAP is fetched by a game page (as a live one opens,
+ * or when a Replay first has something to play) and by no other page.
  *
- * It draws only in the effects layer and on the creases, which React renders once and never
- * changes, and scales a play's dot through its `transform`, which React does not set. So a render
- * in the middle of a timeline cannot fight it, and `clearRink` puts everything back.
+ * It never sets what React sets. In the drawing that is the effects layer, the creases, the lamps
+ * and the end zones, which React renders once and never changes, and a play's dot, scaled through
+ * its `transform`. Outside it (a goal's sequence reaches the score, the clock and the caption) it
+ * sets only `opacity` and `transform` on elements whose text and colours are React's, and data
+ * attributes on elements React gives none. So a render in the middle of a timeline cannot fight
+ * it, and `clearRink` puts everything back.
  */
 
 /** Seconds a cue stays on the ice after it has played out before the next may take its place. */
@@ -24,9 +27,12 @@ function setAttributes(element: Element, attributes: Record<string, number>) {
   }
 }
 
+/** The rink and everything laid over it (`GameRink`): the score and the clock are outside the `<svg>`. */
+const gameRink = (root: SVGSVGElement) => root.closest('[data-slot="game-rink"]') ?? root;
+
 /** The play's words, on the ice and under it (`game-rink.tsx`). */
 const captions = (root: SVGSVGElement) =>
-  root.closest('[data-slot="game-rink"]')?.querySelectorAll('[data-slot="rink-caption"]') ?? [];
+  gameRink(root).querySelectorAll('[data-slot="rink-caption"]');
 
 /** The ice as React drew it: nothing of any animation left on it. */
 export function clearRink(root: SVGSVGElement): void {
@@ -38,9 +44,6 @@ export function clearRink(root: SVGSVGElement): void {
   }
   clearGoal(root);
 }
-
-/** The rink and everything laid over it (`GameRink`): the score and the clock are outside the `<svg>`. */
-const page = (root: SVGSVGElement) => root.closest('[data-slot="game-rink"]') ?? root;
 
 /** Everything a goal's sequence touches, put back: no lamp, no tint, no score but the header's. */
 function clearGoal(root: SVGSVGElement) {
@@ -58,7 +61,7 @@ function clearGoal(root: SVGSVGElement) {
   }
   // One at a time: GSAP warns in the console when it is handed a list with nothing in it, and a
   // Replay has no live marker, as a play that is no goal has no flag.
-  const over = page(root);
+  const over = gameRink(root);
   for (const moved of over.querySelectorAll(
     `[data-fx="goal-kicker"], [data-fx="caption-part"], [data-fx="score-roll"], ${LIVE_MARKER}`,
   )) {
@@ -130,7 +133,7 @@ function goal(
   const net = root.querySelector(
     `[data-slot="rink-goal"][data-end="${end}"] [data-slot="rink-net"]`,
   );
-  const over = page(root);
+  const over = gameRink(root);
   const scored = travelTime(distance);
 
   timeline.call(

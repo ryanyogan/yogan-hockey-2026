@@ -44,9 +44,7 @@ export type GoalSequence = {
   shootout: boolean;
 };
 
-const STRENGTHS: readonly string[] = ["power-play", "short-handed"] satisfies GoalStrength[];
-
-/** What `strength` adds to a caption: " · power play". */
+/** What `strength` says in a caption: "power play · Wrist Shot". */
 export const STRENGTH_WORDS: Record<GoalStrength, string> = {
   "power-play": "power play",
   "short-handed": "short-handed",
@@ -65,14 +63,19 @@ export function goalCall(play: Play): GoalCall {
     tally: words?.[2] ?? null,
     how: words ? (words[3] ?? "") : play.text,
     // ESPN gives a shootout's goals a strength too, which means nothing there.
-    strength:
-      !shootout && play.strength != null && STRENGTHS.includes(play.strength)
-        ? (play.strength as GoalStrength)
-        : null,
+    strength: !shootout && isStrength(play.strength) ? play.strength : null,
     shootout,
   };
 }
 
+const isStrength = (strength: string | null): strength is GoalStrength =>
+  strength != null && Object.hasOwn(STRENGTH_WORDS, strength);
+
+/*
+ * The colour arithmetic is the approved prototype's own, kept to the digit so the tints match it
+ * (`prototypes/tuned-ledger/app.js`). It is twenty lines; a colour package would put more than
+ * that in every game page's chunk for the same two functions.
+ */
 const channels = (hex: string) => [1, 3, 5].map((at) => Number.parseInt(hex.slice(at, at + 2), 16));
 
 /** WCAG's relative luminance of a `#rrggbb` colour: 0 for black, 1 for white. */
@@ -105,6 +108,19 @@ export function goalTint(colour: string | null | undefined): GoalTint | null {
       .join("")}`;
   }
   return { light, dark };
+}
+
+/** Above this a colour is light enough that black reads on it better than white (Nashville's gold). */
+const TAKES_BLACK = 0.4;
+
+/** A goal's flag in its caption: the team's colour, with whichever of black and white reads on it. */
+export function goalFlag(colour: string | null | undefined) {
+  const tint = goalTint(colour);
+  if (tint == null) return undefined;
+  return {
+    backgroundColor: tint.light,
+    color: luminance(tint.light) > TAKES_BLACK ? "#000" : "#fff",
+  };
 }
 
 /**

@@ -349,10 +349,13 @@ async function goalSequence() {
     }
     await page.waitForTimeout(played);
     await rinkShot(page, "goal-live-with-later-plays");
+    const playing = { ...(await ice(page)), ...(await goalIce(page)) };
+    // Played out, with the game already past it: the goal is taken off the ice.
+    await page.waitForTimeout(2500);
     report["goal, arriving with the plays after it"] = {
       later: [plays[at + 1]?.text, plays[at + 2]?.text],
-      ...(await ice(page)),
-      ...(await goalIce(page)),
+      playing,
+      playedOut: await goalIce(page),
       scoresSeen: await scoresSeen(page),
     };
     await page.close();

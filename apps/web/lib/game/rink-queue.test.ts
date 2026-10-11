@@ -109,7 +109,8 @@ describe("a Game Stream", () => {
   test("a play with no coordinate, or no shot to draw, is never put on the ice", () => {
     // The miss, a shot ESPN gave no place, a goal, a blocked shot: two of the four are drawn.
     const queue = run([live("faceoff"), live("blocked")]);
-    expect(playedOut(queue)).toEqual(["miss:miss", "goal:goal"]);
+    // The goal is then taken off: the blocked shot after it is where the game is.
+    expect(playedOut(queue)).toEqual(["miss:miss", "goal:goal", "clear"]);
     // Arriving alone, the shot with no place changes nothing.
     const quiet = run([live("miss"), live("nowhere")]);
     expect(quiet.current).toBeNull();
@@ -220,6 +221,32 @@ describe("a picked play", () => {
   test("the same play in focus on another render plays nothing again", () => {
     const shown = run([wholeGame, replayAt("save"), "finished"]);
     expect(run([{ ...replayAt("save") }], shown).playing).toBe(false);
+  });
+});
+
+describe("a goal the game has moved on from", () => {
+  test("stays while it is the latest play", () => {
+    const scored = run([live("nowhere"), live("goal"), "finished"]);
+    expect(named(scored.current)).toBe("goal:goal");
+  });
+
+  test("is cleared when a play with nothing to draw follows it: no lamp left through an intermission", () => {
+    const scored = run([live("nowhere"), live("goal"), "finished"]);
+    const on = run([live("blocked")], scored);
+    expect(named(on.current)).toBe("clear");
+    expect(on.playing).toBe(false);
+  });
+
+  test("plays out first when the plays after it came in the same poll", () => {
+    const burst = run([live("nowhere"), live("blocked")]);
+    expect(named(burst.current)).toBe("goal:goal");
+    expect(burst.playing).toBe(true);
+    expect(named(run(["finished"], burst).current)).toBe("clear");
+  });
+
+  test("a save is not: the last shot stays as it ended", () => {
+    const saved = run([live("start"), live("save"), "finished", live("faceoff")]);
+    expect(named(saved.current)).toBe("save:save");
   });
 });
 

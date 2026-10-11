@@ -3,7 +3,7 @@
 import type { GameHeader, GameHeaderSide, Play } from "@yogan-hockey/schemas";
 import { LiveMarker } from "@yogan-hockey/ui/components/marker";
 import { type ReactNode, useRef, useState } from "react";
-import { goalCall, goalTint, luminance, STRENGTH_WORDS } from "../../lib/game/goal";
+import { goalCall, goalFlag, STRENGTH_WORDS } from "../../lib/game/goal";
 import { gameStatus, markKind, playTime } from "../../lib/game/plays";
 import { attackedEnd, type RinkEnd } from "../../lib/game/rink";
 import { periodLabel } from "../../lib/game/timeline";
@@ -204,13 +204,6 @@ function GoalKicker({ live }: { live: boolean }) {
   );
 }
 
-/** A goal's flag is its team's colour, with whichever of black and white reads on it. */
-function flagColours(colour: string | null | undefined) {
-  const tint = goalTint(colour);
-  if (tint == null) return undefined;
-  return { backgroundColor: tint.light, color: luminance(tint.light) > 0.4 ? "#000" : "#fff" };
-}
-
 /**
  * The play in focus, in words. A goal's are laid out as the approved prototype has them: a flag
  * in the team's colour, the scorer, and how it was scored, led by the strength so that a long
@@ -235,7 +228,7 @@ function Caption({ play, team }: { play: Play; team: GameHeaderSide | undefined 
       <span
         data-fx="caption-part"
         data-slot="goal-flag"
-        style={flagColours(team?.color)}
+        style={goalFlag(team?.color)}
         className="flex flex-none items-center bg-live px-3 font-bold text-white tracking-wider"
       >
         GOAL

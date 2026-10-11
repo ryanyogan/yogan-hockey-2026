@@ -73,7 +73,9 @@ export function RinkAnimations({
   const { current } = queue;
   // Before the cue is played, so the caption it brings in is already the goal's.
   const goalOnIce = current?.kind === "goal" ? current.playId : null;
-  useLayoutEffect(() => onGoal(goalOnIce), [goalOnIce, onGoal]);
+  useLayoutEffect(() => {
+    onGoal(goalOnIce);
+  }, [goalOnIce, onGoal]);
   useLayoutEffect(() => {
     const root = rink.current;
     if (current == null || root == null) return;

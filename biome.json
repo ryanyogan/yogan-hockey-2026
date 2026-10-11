@@ -2,7 +2,13 @@
   "$schema": "https://biomejs.dev/schemas/2.5.15/schema.json",
   "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
   "files": {
-    "includes": ["**", "!packages/db/migrations", "!packages/espn/fixtures"]
+    "includes": [
+      "**",
+      "!packages/db/migrations",
+      "!packages/espn/fixtures",
+      "!prototypes/tuned-ledger/vendor",
+      "!prototypes/tuned-ledger/data.js"
+    ]
   },
   "formatter": { "indentStyle": "space", "indentWidth": 2, "lineWidth": 100 },
   "css": { "parser": { "tailwindDirectives": true } },

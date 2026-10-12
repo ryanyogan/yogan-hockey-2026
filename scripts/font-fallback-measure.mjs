@@ -12,7 +12,7 @@
 // group's ratio is its real width over its local width, taken over the lines long enough to wrap
 // (150px), since a short label only moves sideways. `packages/ui/src/font-fallbacks.css` carries
 // these numbers beside the ones `@capsizecss/metrics` gives from letter frequencies
-// (`scripts/font-fallbacks.mjs`).
+// (`scripts/font-fallbacks.ts`).
 //
 // A local face that this machine does not have is "absent": only a face that is there can be
 // measured. Liberation Serif, Liberation Sans and Nimbus Sans Narrow are letter for letter as wide

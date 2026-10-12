@@ -157,9 +157,9 @@ export function ScoringSummary({
       ))}
       {shootout.length > 0 && (
         <>
-          <h3 className="mt-6 border-rule border-b pb-1.5 font-strong text-kicker text-tag uppercase tracking-label">
+          <h2 className="mt-6 border-rule border-b pb-1.5 font-strong text-kicker text-tag uppercase tracking-label">
             Shootout
-          </h3>
+          </h2>
           {shootout.map((play) => (
             <PlayRow
               key={play.id}

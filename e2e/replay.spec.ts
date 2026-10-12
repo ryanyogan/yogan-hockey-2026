@@ -27,7 +27,7 @@ test("the Replay opens laid out, plays, pauses, jumps to a tick, and follows the
   await expect(position).toContainText("The whole game");
 
   // Goals stand taller on the timeline, and a penalty has its own mark.
-  const firstGoal = ticks.and(page.locator('[aria-label^="1st 2:19 Mavrik Bourque Goal"]'));
+  const firstGoal = ticks.and(page.locator('[data-label^="1st 2:19 Mavrik Bourque Goal"]'));
   const plainTick = ticks.and(page.locator('[data-kind="save"]')).first();
   const goalHeight = (await firstGoal.boundingBox())?.height ?? 0;
   expect(goalHeight).toBeGreaterThan((await plainTick.boundingBox())?.height ?? 0);
@@ -59,7 +59,7 @@ test("the Replay opens laid out, plays, pauses, jumps to a tick, and follows the
 
   // The penalty before it puts its player in the box, and Dallas on the power play.
   const box = page.locator('[data-slot="penalty-box"]');
-  await ticks.and(page.locator('[aria-label^="2nd 2:24 Jordan Greenway"]')).click();
+  await ticks.and(page.locator('[data-label^="2nd 2:24 Jordan Greenway"]')).click();
   await expect(box.locator('[data-slot="boxed-penalty"]')).toHaveText(
     /BUF\s*J\. Greenway\s*Interference.*2:00/,
   );
@@ -69,7 +69,7 @@ test("the Replay opens laid out, plays, pauses, jumps to a tick, and follows the
   await expect(rink.locator('[data-slot="rink-power-play-zone"][data-on]')).toHaveCount(1);
 
   // Clicking a tick moves the playhead there: Dallas's tying goal in the 2nd, not yet reached.
-  const tyingGoal = ticks.and(page.locator('[aria-label^="2nd 4:24 "]'));
+  const tyingGoal = ticks.and(page.locator('[data-label^="2nd 4:24 "]'));
   await expect(tyingGoal).toHaveAttribute("data-upcoming", "true");
   await tyingGoal.click();
   // Scored as the penalty ran out: nobody is left in the box and the ice is clear.

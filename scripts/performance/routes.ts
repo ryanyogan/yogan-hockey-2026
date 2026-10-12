@@ -58,7 +58,7 @@ export function measuredRoutes(subjects: Subjects): MeasuredRoute[] {
   const player = `/players/${subjects.player}`;
   const goal: Interaction = {
     name: "select a goal on the timeline",
-    selector: 'main [data-slot="timeline-tick"][aria-label*="Goal"]',
+    selector: 'main [data-slot="timeline-tick"][data-label*="Goal"]',
   };
   const routes: MeasuredRoute[] = [
     {

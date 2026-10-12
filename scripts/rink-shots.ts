@@ -105,7 +105,7 @@ async function openReplay(page: Page) {
 }
 const stepTo = (page: Page, play: RecordedPlay) =>
   page
-    .locator(`[data-slot="timeline-tick"][aria-label=${JSON.stringify(label(play))}]`)
+    .locator(`[data-slot="timeline-tick"][data-label=${JSON.stringify(label(play))}]`)
     .first()
     .dispatchEvent("click");
 const rinkShot = (page: Page, name: string) =>

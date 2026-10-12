@@ -83,3 +83,49 @@ export function layoutTimeline(
     positions,
   };
 }
+
+/**
+ * The play whose tick is nearest `at` (0 at the line's start, 1 at its end), of the plays drawn
+ * there, and the later of two at the same place. Null when no tick is drawn.
+ */
+export function nearestPlay(
+  drawn: readonly Pick<Play, "id">[],
+  positions: Timeline["positions"],
+  at: number,
+): string | null {
+  let nearest: string | null = null;
+  let reach = Number.POSITIVE_INFINITY;
+  for (const { id } of drawn) {
+    const away = Math.abs((positions.get(id) ?? 0) - at);
+    if (away <= reach) [nearest, reach] = [id, away];
+  }
+  return nearest;
+}
+
+/**
+ * The play a press on the bare line picks: the nearest. Null when that is the play already
+ * picked: picking the picked play again lets go of it (`toggleSelection`), which is what a press
+ * on its own tick means and not what a press somewhere near it does.
+ */
+export function pressedPlay(
+  drawn: readonly Pick<Play, "id">[],
+  positions: Timeline["positions"],
+  at: number,
+  selectedId: string | null,
+): string | null {
+  const nearest = nearestPlay(drawn, positions, at);
+  return nearest === selectedId ? null : nearest;
+}
+
+/**
+ * The plays drawn, in the order of their ticks from the line's start, which is the order the
+ * line's slider steps them in. They are not always handed over so: the play in focus is drawn
+ * after the Key plays when it is not one of them. Plays at the same place keep their order.
+ */
+export function alongTheLine<P extends Pick<Play, "id">>(
+  drawn: readonly P[],
+  positions: Timeline["positions"],
+): P[] {
+  const place = (play: P) => positions.get(play.id) ?? 0;
+  return drawn.toSorted((a, b) => place(a) - place(b));
+}

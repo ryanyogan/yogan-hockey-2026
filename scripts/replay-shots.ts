@@ -21,7 +21,7 @@ for (const scheme of ["light", "dark"] as const) {
       page.locator(`[data-slot="replay-transport"][data-playing="${value}"]`).waitFor();
     // Ticks crowd each other at phone width, so a click goes to the tick itself.
     const jumpTo = (label: string) =>
-      page.locator(`[data-slot="timeline-tick"][aria-label^="${label}"]`).dispatchEvent("click");
+      page.locator(`[data-slot="timeline-tick"][data-label^="${label}"]`).dispatchEvent("click");
 
     await page.goto(`${baseURL}/nhl/games/401803652`, { waitUntil: "networkidle" });
     await page.evaluate(() => document.fonts.ready);

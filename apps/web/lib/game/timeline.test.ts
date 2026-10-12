@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { play, recordedShootout } from "./test-plays";
-import { layoutTimeline } from "./timeline";
+import { alongTheLine, layoutTimeline, nearestPlay, pressedPlay } from "./timeline";
 
 const REGULAR_SEASON = 2;
 const PLAYOFFS = 3;
@@ -102,5 +102,75 @@ describe("layoutTimeline", () => {
     const odd = play({ period: 1, clock: "21:15" });
     const { positions } = layoutTimeline([odd], { period: 1, seasonType: REGULAR_SEASON });
     expect(positions.get(odd.id)).toBe(1 / 3);
+  });
+});
+
+describe("nearestPlay", () => {
+  const early = play({ period: 1, clock: "5:00" });
+  const middle = play({ period: 2, periodText: "2nd", clock: "10:00" });
+  const late = play({ period: 3, periodText: "3rd", clock: "15:00" });
+  const { positions } = layoutTimeline([early, middle, late], {
+    period: 3,
+    seasonType: REGULAR_SEASON,
+  });
+
+  test("a tap anywhere on the line is the play whose tick is nearest", () => {
+    const drawn = [early, middle, late];
+    expect(nearestPlay(drawn, positions, 0)).toBe(early.id);
+    expect(nearestPlay(drawn, positions, 0.45)).toBe(middle.id);
+    expect(nearestPlay(drawn, positions, 1)).toBe(late.id);
+  });
+
+  test("only a play with a tick can be picked", () => {
+    // Nearest the middle play, which has no tick here; of the two that have, the later is nearer.
+    expect(nearestPlay([early, late], positions, 0.55)).toBe(late.id);
+    expect(nearestPlay([early, late], positions, 0.45)).toBe(early.id);
+  });
+
+  test("of two ticks at the same place, the later play's", () => {
+    const again = play({ period: 2, periodText: "2nd", clock: "10:00" });
+    const both = layoutTimeline([early, middle, again], { period: 3, seasonType: REGULAR_SEASON });
+    expect(nearestPlay([early, middle, again], both.positions, 0.5)).toBe(again.id);
+  });
+
+  test("a line with no ticks picks nothing", () => {
+    expect(nearestPlay([], positions, 0.5)).toBeNull();
+  });
+});
+
+describe("pressedPlay", () => {
+  const early = play({ period: 1, clock: "5:00" });
+  const late = play({ period: 3, periodText: "3rd", clock: "15:00" });
+  const drawn = [early, late];
+  const { positions } = layoutTimeline(drawn, { period: 3, seasonType: REGULAR_SEASON });
+
+  test("a press on the bare line is the nearest play's", () => {
+    expect(pressedPlay(drawn, positions, 0.2, null)).toBe(early.id);
+    expect(pressedPlay(drawn, positions, 0.2, late.id)).toBe(early.id);
+  });
+
+  test("a press on the bare line nearest the picked play picks nothing, so it cannot unpick it", () => {
+    expect(pressedPlay(drawn, positions, 0.2, early.id)).toBeNull();
+  });
+});
+
+describe("alongTheLine", () => {
+  const first = play({ period: 1, clock: "5:00" });
+  const second = play({ period: 2, periodText: "2nd", clock: "10:00" });
+  const third = play({ period: 3, periodText: "3rd", clock: "15:00" });
+  const { positions } = layoutTimeline([first, second, third], {
+    period: 3,
+    seasonType: REGULAR_SEASON,
+  });
+
+  test("the plays drawn are in the order of their ticks, wherever the list had them", () => {
+    // The play in focus is drawn after the Key plays when it is not one of them.
+    expect(alongTheLine([first, third, second], positions)).toEqual([first, second, third]);
+  });
+
+  test("plays at the same place keep the order they were drawn in", () => {
+    const again = play({ period: 2, periodText: "2nd", clock: "10:00" });
+    const both = layoutTimeline([first, second, again], { period: 3, seasonType: REGULAR_SEASON });
+    expect(alongTheLine([again, first, second], both.positions)).toEqual([first, again, second]);
   });
 });

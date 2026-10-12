@@ -9,7 +9,7 @@ import {
   TeamSection,
 } from "../../../../components/players/player-sections";
 import { readPlayer } from "../../../functions/players";
-import { pageTitle, titled } from "../../../head";
+import { titled } from "../../../head";
 
 /**
  * A player: who he is, his season, his career and his team, around the games of whichever tab is
@@ -18,11 +18,8 @@ import { pageTitle, titled } from "../../../head";
  */
 export const Route = createFileRoute("/players/$id")({
   loader: ({ params }) => readPlayer({ data: { id: params.id } }),
-  head: ({ match, loaderData }) =>
-    // An id that is nobody's is titled by its own not-found page.
-    match.status === "notFound"
-      ? { meta: [{ title: pageTitle("Player not found") }] }
-      : titled(match, loaderData?.profile.name),
+  // An id that is nobody's is titled by its own not-found page.
+  head: ({ match, loaderData }) => titled(match, loaderData?.profile.name, "Player not found"),
   component: PlayerPage,
   notFoundComponent: PlayerNotFound,
 });

@@ -28,9 +28,8 @@ export const ROUTES = [
   // A team with no recording: the read fails as it does when ESPN is down. The dev server lays
   // its overlay over this one; the page under it is what is measured.
   { name: "error", path: "/nhl/teams/1", status: 503, overlay: true, place: "Teams" },
-  // Sample pages: a slate with games in progress, and every route's placeholders held still.
+  // A sample page: a slate with games in progress.
   { name: "sample-live", path: "/skeleton/live" },
-  { name: "sample-loading", path: "/skeleton/loading" },
 ];
 
 /** The sample picks, so a slate's rows and a game's pick tab have something to show. */

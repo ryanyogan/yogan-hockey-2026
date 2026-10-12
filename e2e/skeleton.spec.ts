@@ -1,7 +1,5 @@
 import { expect, test } from "@playwright/test";
 
-test.skip(true, "/skeleton/* is not ported to TanStack Start yet: #192 restores this spec.");
-
 /** The dev server's own view of the simulated KV namespaces. */
 const LOCAL_KV = "/cdn-cgi/local/explorer/api/storage/kv/namespaces";
 
@@ -23,12 +21,17 @@ test("the walking skeleton page exercises all four joins", async ({ page, reques
   await expect(bump).toHaveCSS("background-color", themePrimary);
   expect(themePrimary).not.toBe("rgba(0, 0, 0, 0)");
 
-  // 2. The reading comes from the cache: a reload shows the same one.
-  const serialBefore = await serial.innerText();
-  await page.reload();
-  await expect(serial).toHaveText(serialBefore);
+  // 2. The reading comes from the cache: a reload shows the same one. A reading left by an
+  // earlier run, past its time limit, is answered once more and replaced behind that answer, so
+  // the first pair of loads may differ.
+  let serialBefore = "";
+  await expect(async () => {
+    serialBefore = await serial.innerText();
+    await page.reload();
+    await expect(serial).toHaveText(serialBefore, { timeout: 2_000 });
+  }).toPass();
 
-  // 2. The cache is the local KV namespace, and the entry carries its tag and time limit.
+  // 2. The cache is the local KV namespace, and the entry carries its time limit.
   const kv = `${LOCAL_KV}/CACHE-yogan-hockey`;
   const keys = await (await request.get(`${kv}/keys`)).json();
   const entryKey = keys.result
@@ -36,7 +39,7 @@ test("the walking skeleton page exercises all four joins", async ({ page, reques
     .find((name: string) => name.includes("skeleton-reading"));
   expect(entryKey).toBeDefined();
   const entry = await (await request.get(`${kv}/values/${encodeURIComponent(entryKey)}`)).json();
-  expect(entry).toMatchObject({ tags: ["skeleton"], cacheControl: { revalidate: 60 } });
+  expect(entry).toMatchObject({ metadata: { ttl: 60_000 } });
   expect(JSON.stringify(entry.value)).toContain(serialBefore);
 
   // 4. First paint is the Agent's state over RPC, and the socket opens.
@@ -51,9 +54,9 @@ test("the walking skeleton page exercises all four joins", async ({ page, reques
   // 4. The Agent pushes its new state over the socket...
   await expect(count).toHaveText(String(countBefore + 1));
   await expect(pushes).toHaveText(String(pushesBefore + 1));
-  // ...and invalidated the cache tag, so the page's next render has a fresh reading.
+  // ...and forgot the cached reading, so the loader's next read is a fresh one.
   await expect(serial).not.toHaveText(serialBefore);
-  // 3. The row the Agent wrote to D1 is read back by the server component.
+  // 3. The row the Agent wrote to D1 is read back by the page's server function.
   await expect(page.getByTestId("bump-rows")).toContainText(`bump ${countBefore + 1} at`);
 
   // The fresh reading is cached in its turn.

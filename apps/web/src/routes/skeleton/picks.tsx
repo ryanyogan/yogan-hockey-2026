@@ -1,24 +1,36 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { Button } from "@yogan-hockey/ui/components/button";
 import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
-import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { seedPicks } from "../actions";
-
-export const metadata: Metadata = { title: "Sample picks" };
-export const dynamic = "force-dynamic";
+import type { FormEvent } from "react";
+import { readSamplePicksPage, seedPicks } from "../../functions/skeleton";
+import { titled } from "../../head";
 
 /*
  * Scaffolding for #53, in fixture mode only (anywhere else it is not found): writes sample
  * picks to the local D1, where no model can make one. The Playwright setup and
  * `scripts/picks-shots.ts` press these buttons; `?seeded=` says the rows are in.
  */
-export default async function SamplePicksPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ seeded?: string }>;
-}) {
-  if (process.env.ESPN_FIXTURES !== "1") notFound();
-  const { seeded } = await searchParams;
+export const Route = createFileRoute("/skeleton/picks")({
+  validateSearch: (search: Record<string, unknown>): { seeded?: string } =>
+    typeof search.seeded === "string" && search.seeded !== "" ? { seeded: search.seeded } : {},
+  loader: () => readSamplePicksPage(),
+  head: ({ match }) => titled(match, "Sample picks"),
+  component: SamplePicksPage,
+});
+
+function SamplePicksPage() {
+  const { seeded } = Route.useSearch();
+  const seed = useServerFn(seedPicks);
+
+  // The button pressed says which way the final's pick goes, as a form's submitter does.
+  function seedFromButton(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const { submitter } = event.nativeEvent as SubmitEvent;
+    const wrong = submitter instanceof HTMLButtonElement && submitter.value === "wrong";
+    void seed({ data: { final: wrong ? "wrong" : "right" } });
+  }
+
   return (
     <Section>
       <SectionHeader title="Sample picks" count="fixture mode" />
@@ -27,7 +39,7 @@ export default async function SamplePicksPage({
         recorded final, Dallas 4 at Buffalo 3, right or wrong; and five decided games for the season
         record.
       </p>
-      <form action={seedPicks} className="flex flex-wrap gap-2">
+      <form onSubmit={seedFromButton} className="flex flex-wrap gap-2">
         <Button type="submit" name="final" value="right">
           Seed picks, the final's right
         </Button>

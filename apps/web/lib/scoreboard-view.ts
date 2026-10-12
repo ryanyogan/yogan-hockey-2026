@@ -22,13 +22,25 @@ const RUN_OUT = /^[0:.]+$/;
 const inShootout = (game: ScoreboardGame) =>
   game.period === SHOOTOUT_PERIOD && game.seasonType !== PLAYOFFS;
 
-/** "1st", "2nd", "3rd", "OT", "SO"; a playoff game plays overtimes until someone scores. */
-function periodLabel(game: ScoreboardGame): string {
+/**
+ * "1st", "2nd", "3rd", "OT", "SO"; a playoff game plays overtimes until someone scores ("2OT").
+ * Empty before the first period.
+ */
+export function periodLabel(game: ScoreboardGame): string {
   const { period } = game;
   if (period <= REGULATION_PERIODS) return ["", "1st", "2nd", "3rd"][period] ?? "";
   if (inShootout(game)) return "SO";
   const overtime = period - REGULATION_PERIODS;
   return overtime === 1 ? "OT" : `${overtime}OT`;
+}
+
+/**
+ * Whether a live game is between periods: the clock counts down, so at zero the period is over.
+ * A shootout has no clock, and a game in its warm-up no period, so neither is.
+ */
+export function betweenPeriods(game: ScoreboardGame): boolean {
+  if (game.status !== "live" || periodLabel(game) === "" || inShootout(game)) return false;
+  return RUN_OUT.test(game.clock);
 }
 
 function liveLine(game: ScoreboardGame): string {
@@ -37,8 +49,7 @@ function liveLine(game: ScoreboardGame): string {
   if (period === "") return "live";
   // A shootout has no clock.
   if (inShootout(game)) return period;
-  // The clock counts down, so at zero the period is over: an intermission.
-  if (RUN_OUT.test(game.clock)) return `end ${period}`;
+  if (betweenPeriods(game)) return `end ${period}`;
   return `${period} ${game.clock}`;
 }
 

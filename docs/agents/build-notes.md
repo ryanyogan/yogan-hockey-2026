@@ -2,6 +2,18 @@
 
 What earlier tickets learned that the code does not show. Read before building; add a line when you learn something the next subagent would otherwise rediscover. Keep each note to what cannot be found by reading the code.
 
+## Agate copy and the names on the Scoreboard (#169)
+
+Every sentence the Agate look prints is in `apps/web/lib/agate-copy.ts`, the port of `prototypes/agate/copy.js`. Components print what it returns and write no sentence of their own.
+
+- **A Scoreboard side carries `location` and `shortName`, and both are optional in the type.** Nothing parses the Scoreboard's state at run time: the Durable Object's stored state and what the socket sends are trusted as `ScoreboardState`. State stored before the fields existed lacks them, so the type says so and the copy goes by the abbreviation ("SEA 5, WSH 3"). The old shape does not last: the poll compares `JSON.stringify(games)`, so the first poll after a deploy finds a difference in the names alone and writes the whole state again (tested in `scoreboard-agent.test.ts`). The same rule covers the next field added to a side: optional, with a fallback, and the next poll fills it.
+- **The prototype's `detail` is not the site's `detail`.** The prototype's is "Final/OT" or "3rd 18:44"; the site's is ESPN's wording ("12:34 - 2nd"). The copy is written from `period`, `clock` and `seasonType` through `gameStatusLine` and `periodLabel` (`lib/scoreboard-view.ts`), never from `detail`, except for a postponed game, whose word (postponed, canceled, suspended) is ESPN's.
+- **States the prototype's data never had, and what was decided**: an intermission reads "after the 2nd" ("Live · End 2nd"); a playoff's second overtime is still "in overtime"; a game ESPN calls live before the puck drops (period 0) has the kicker "Live" and the headline and deck of a game to come; a pick for a club not in the game is no pick, so it is never marked; a record ESPN did not send is left out with the words leading to it; nothing right tonight is "None of two tonight." (the prototype's word list would have printed "No of two"); a day with no games is "Tonight: no games"; a postponed game is counted in the desktop dateline only.
+- **`rec()` puts word joiners (U+2060) around a record's hyphens**, so a deck is not equal to the string you read. A test compares after stripping them (`read()` in `agate-copy.test.ts`); a Playwright `toHaveText` with a record in it will need the same, or a regular expression.
+- **`leadsAndBriefs` sorts for itself** (`tonightGames`: start time, then id), so it can be handed the socket's games as they come. Leads are returned in the slate's order, not in order of importance.
+- **A start time takes a time zone argument**, as `gameTime` does: none is the zone of whatever runs the code. The server knows only the NHL's zone, so a kicker or a brief drawn on the server with a time in it differs from the browser's; draw the time with `LocalTime`, or the sentence in a client component after hydration, as `GameStatus` does today.
+- **The copy takes a `StoredPrediction`**, because `pickOutcome` does. A whole row has its reasoning and inputs in it, which is a lot to send to the browser for nine games; a Home that works the tally out in the browser may want to send less, and `pickOutcome`'s parameter would have to narrow first.
+
 ## The desktop sidebar (#153)
 
 What it is and why: `docs/design/sidebar/README.md`.

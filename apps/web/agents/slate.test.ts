@@ -1,4 +1,5 @@
 import { getScoreboard } from "@yogan-hockey/espn";
+import { ScoreboardGameSchema, ScoreboardSideSchema } from "@yogan-hockey/schemas";
 import { beforeAll, expect, test, vi } from "vitest";
 import { dayAfter, missedDates, scoreboardGame, slateTransitions } from "./slate";
 
@@ -7,6 +8,36 @@ const FINALS = "2026-10-03";
 
 beforeAll(() => {
   vi.stubEnv("ESPN_FIXTURES", "1");
+});
+
+test("a game is cut down to what a page draws, each side with its location and nickname", async () => {
+  const slate = await getScoreboard();
+
+  const games = slate.games.map(scoreboardGame);
+
+  expect(games.map((game) => ScoreboardGameSchema.parse(game))).toEqual(games);
+  for (const [index, game] of games.entries()) {
+    const whole = slate.games[index];
+    expect(game.home).toMatchObject({
+      location: whole?.home.location,
+      shortName: whole?.home.shortName,
+    });
+    expect(game.away).toMatchObject({
+      location: whole?.away.location,
+      shortName: whole?.away.shortName,
+    });
+    expect(game.home).not.toHaveProperty("name");
+  }
+  expect(games[0]?.home).toMatchObject({ location: "Montreal", shortName: "Canadiens" });
+});
+
+test("a side stored before it carried its names is still a side", async () => {
+  const [game] = (await getScoreboard()).games.map(scoreboardGame);
+  if (!game) throw new Error("The recorded slate has no games");
+  const { location: _location, shortName: _shortName, ...stored } = game.home;
+
+  expect(ScoreboardSideSchema.parse(stored)).toEqual(stored);
+  expect(ScoreboardGameSchema.safeParse({ ...game, home: stored }).success).toBe(true);
 });
 
 test("a game seen for the first time already final is both first seen and gone final", async () => {

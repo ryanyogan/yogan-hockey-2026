@@ -336,6 +336,8 @@ describe("first paint", () => {
       home: {
         id: "10",
         abbreviation: "MTL",
+        location: "Montreal",
+        shortName: "Canadiens",
         logo: "https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/mtl.png",
         logoDark: null,
         score: 2,
@@ -345,12 +347,47 @@ describe("first paint", () => {
       away: {
         id: "7",
         abbreviation: "CAR",
+        location: "Carolina",
+        shortName: "Hurricanes",
         logo: "https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/car.png",
         logoDark: null,
         score: 0,
         winner: false,
         record: "1-1-1",
       },
+    });
+  });
+
+  test("state stored before the sides carried their names is written again by the next poll", async () => {
+    const { agent, connect, later } = await scoreboard();
+    const viewer = await connect();
+    await later(0);
+    const current = await agent.getScoreboard();
+    // What a Scoreboard deployed before the names existed has in storage: the same games, each
+    // side without its location and nickname.
+    const stored = await runInDurableObject(agent, (instance) => {
+      const old = {
+        ...instance.state,
+        games: instance.state.games.map((game) => {
+          const { location: _homeLocation, shortName: _homeShortName, ...home } = game.home;
+          const { location: _awayLocation, shortName: _awayShortName, ...away } = game.away;
+          return { ...game, home, away };
+        }),
+      };
+      instance.setState(old);
+      return old;
+    });
+    // A page that asks before the next poll is given the old shape, which the copy can write.
+    expect((await agent.getScoreboard()).games).toEqual(stored.games);
+    expect(stored.games[0]?.home).not.toHaveProperty("location");
+
+    // ESPN has nothing new to say, and still the state is sent whole: the names are a difference.
+    await later(SLOW);
+
+    expect((await agent.getScoreboard()).games).toEqual(current.games);
+    expect(viewer.states().at(-1)?.games[0]?.home).toMatchObject({
+      location: "Montreal",
+      shortName: "Canadiens",
     });
   });
 

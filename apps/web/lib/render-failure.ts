@@ -60,10 +60,10 @@ const LAST_RESORT_PAGE = `<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Not answering · Yogan Hockey</title>
 <style>
-:root { color-scheme: light dark; --background: #fbfaf7; --foreground: #171717; }
-@media (prefers-color-scheme: dark) { :root { --background: #0f172a; --foreground: #f1f5f9; } }
+:root { color-scheme: light dark; --background: #fafaf8; --foreground: #111111; }
+@media (prefers-color-scheme: dark) { :root { --background: #121212; --foreground: #eceae4; } }
 body { margin: 0; padding: 16px; background: var(--background); color: var(--foreground);
-  font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  font: 13px/1.5 "Arial Narrow", "Helvetica Neue", Arial, sans-serif; }
 a { color: inherit; font-weight: bold; }
 .wordmark { display: block; margin-bottom: 32px; font-size: 14px; text-decoration: none; }
 h1 { margin: 0 0 4px; font-size: inherit; text-transform: uppercase; }

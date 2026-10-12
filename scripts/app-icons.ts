@@ -109,7 +109,7 @@ const assets = await instructions({
 async function finished(image: Buffer, page: string): Promise<Buffer> {
   const flat = await sharp(image).flatten({ background: page }).png().toBuffer();
   // The generator's resizing leaves the margin around the mark a shade off the page (#f9f9f9 on
-  // #fbfaf7), a faint box on a splash screen. Anything that close to the page is the page.
+  // #fafaf8), a faint box on a splash screen. Anything that close to the page is the page.
   const exact = magick(["png:-", "-fuzz", "2%", "-fill", page, "-opaque", page, "png:-"], flat);
   return sharp(exact)
     .png({ compressionLevel: 9, palette: true, colours: 32, dither: 0 })

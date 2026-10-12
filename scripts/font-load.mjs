@@ -80,7 +80,9 @@ for (const path of PATHS) {
       if (held) {
         await page.waitForTimeout(HOLD_MS / 2);
         before = await page.evaluate(geometry);
-        before.loaded = await page.evaluate(() => document.fonts.check('13px "Geist Mono"'));
+        before.loaded = await page.evaluate(() =>
+          document.fonts.check('13px "IBM Plex Sans Condensed"'),
+        );
       }
       await page.waitForLoadState("networkidle");
       await page.evaluate(() => document.fonts.ready);

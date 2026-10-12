@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
-const DARK_BACKGROUND = "rgb(15, 23, 42)";
-const LIGHT_BACKGROUND = "rgb(251, 250, 247)";
+const DARK_BACKGROUND = "rgb(18, 18, 18)";
+const LIGHT_BACKGROUND = "rgb(250, 250, 248)";
 
 test("the shell renders, switches theme, and a phone gets the tab bar in place of a menu", async ({
   page,
@@ -44,7 +44,7 @@ test("the shell renders, switches theme, and a phone gets the tab bar in place o
   await expect(barColors).toHaveCount(2);
   await expect(page.locator('meta[name="theme-color"][media*="dark"]')).toHaveAttribute(
     "content",
-    "#0f172a",
+    "#121212",
   );
   // A press before the page has hydrated does nothing, so press until one lands.
   await expect(async () => {
@@ -65,7 +65,7 @@ test("the shell renders, switches theme, and a phone gets the tab bar in place o
   await page.reload();
   await expect(body).toHaveCSS("background-color", LIGHT_BACKGROUND);
   for (const color of await barColors.all())
-    await expect(color).toHaveAttribute("content", "#fbfaf7");
+    await expect(color).toHaveAttribute("content", "#fafaf8");
 
   // The home screen: a manifest Chrome can read, and every icon it and the page name.
   await expect(page.locator('meta[name="viewport"]')).toHaveAttribute(

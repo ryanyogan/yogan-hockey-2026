@@ -28,8 +28,8 @@ describe("the web app manifest", () => {
   });
 
   it("paints the splash and the bars in the paper theme, the one colour a manifest can hold", () => {
-    expect(manifest.background_color).toBe("#fbfaf7");
-    expect(manifest.theme_color).toBe("#fbfaf7");
+    expect(manifest.background_color).toBe("#fafaf8");
+    expect(manifest.theme_color).toBe("#fafaf8");
   });
 });
 
@@ -62,11 +62,11 @@ describe("the drawn icons and splash images", () => {
 // holds them against what the stylesheet draws.
 describe("the colour of the browser's own bars", () => {
   it("follows the operating system until the theme shown is known", () => {
-    expect(shownThemeColors(undefined)).toEqual({ light: "#fbfaf7", dark: "#0f172a" });
+    expect(shownThemeColors(undefined)).toEqual({ light: "#fafaf8", dark: "#121212" });
   });
 
   it("is the shown theme's whatever the operating system prefers", () => {
-    expect(shownThemeColors("dark")).toEqual({ light: "#0f172a", dark: "#0f172a" });
-    expect(shownThemeColors("light")).toEqual({ light: "#fbfaf7", dark: "#fbfaf7" });
+    expect(shownThemeColors("dark")).toEqual({ light: "#121212", dark: "#121212" });
+    expect(shownThemeColors("light")).toEqual({ light: "#fafaf8", dark: "#fafaf8" });
   });
 });

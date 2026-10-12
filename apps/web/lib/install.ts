@@ -11,9 +11,9 @@ export const APP_NAME = "Yogan Hockey";
 export const APP_SHORT_NAME = "Hockey";
 
 /** Each theme's page background (`--background` in the UI package's `theme.css`). */
-export const THEME_COLORS = { light: "#fbfaf7", dark: "#0f172a" } as const;
+export const THEME_COLORS = { light: "#fafaf8", dark: "#121212" } as const;
 /** The ink of each theme (`--foreground`), which the mark is drawn in. */
-export const INK_COLORS = { light: "#171717", dark: "#f1f5f9" } as const;
+export const INK_COLORS = { light: "#111111", dark: "#eceae4" } as const;
 
 export type ShownTheme = keyof typeof THEME_COLORS;
 

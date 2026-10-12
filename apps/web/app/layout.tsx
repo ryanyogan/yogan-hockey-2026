@@ -1,6 +1,6 @@
 import type { ScoreboardReading } from "@yogan-hockey/schemas";
 import type { Metadata, Viewport } from "next";
-import { Geist_Mono } from "next/font/google";
+import { IBM_Plex_Sans_Condensed, Newsreader } from "next/font/google";
 import { headers } from "next/headers";
 import { ThemeProvider } from "next-themes";
 import type { ReactNode } from "react";
@@ -13,17 +13,37 @@ import { PAGE_CACHE_REQUEST_HEADER } from "../lib/page-cache";
 import { readScoreboard } from "../lib/scoreboard";
 import "./globals.css";
 
-// One variable file holds every weight the theme uses (400, 500 and 700). vinext downloads it at
-// build time and serves it from this site, with the Latin file preloaded in every page's head.
-// Until it arrives the text is drawn in a monospace face the device has ("Geist Mono Fallback",
-// `theme.css`): the same advance and the same line, so nothing moves when it is swapped in. The
-// fallback vinext would generate is Arial resized, whose letters are not one width.
-const mono = Geist_Mono({
+// Agate's two voices (`docs/design/agate.md`), which `theme.css` reads as `font-serif` and
+// `font-agate`. vinext downloads the files at build time and serves them from this site, the
+// Latin ones preloaded in every page's head; until one arrives its text is drawn in the fallback
+// vinext sizes to the face (Times New Roman for the serif, Arial for the agate).
+
+// What is read: the masthead, a headline, a deck, a big number. A variable file a style, holding
+// every weight (the theme uses 400 to 700) and the optical sizes 6 to 72, which `axes` asks for:
+// without it the file is cut at the 16px design and a headline is drawn in text letterforms.
+const serif = Newsreader({
   subsets: ["latin"],
-  variable: "--font-geist-mono",
+  axes: ["opsz"],
+  variable: "--font-newsreader",
   display: "swap",
-  adjustFontFallback: false,
-  fallback: ["Geist Mono Fallback"],
+});
+
+// Its italic is the pick line's alone, so it is a second request that is not preloaded (the Latin
+// file is 147 KB): the same family, which the browser fetches when a page first sets italic serif.
+Newsreader({
+  style: "italic",
+  axes: ["opsz"],
+  preload: false,
+  display: "swap",
+});
+
+// What is looked up, and the page's default: a table, a label, the nav. It has no variable file,
+// so each weight is its own.
+const agate = IBM_Plex_Sans_Condensed({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-plex-condensed",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -82,7 +102,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const scoreboard = cached ? null : scoreboardForFirstPaint();
   return (
     // next-themes sets the class on <html> before first paint, which React must not undo.
-    <html lang="en" className={mono.variable} suppressHydrationWarning>
+    <html lang="en" className={`${serif.variable} ${agate.variable}`} suppressHydrationWarning>
       <body>
         <ThemeProvider
           attribute="class"

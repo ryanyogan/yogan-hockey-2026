@@ -75,6 +75,14 @@ test("a team's page shows each tab from a pasted URL, titled with the team's nam
         "6th in Atlantic Division",
       ]);
 
+      // It is the site's own file, loaded, and drawn at the capitals' height: 0.72 of 40px.
+      const mark = header.locator("h1 [data-slot=team-mark] img").first();
+      await expect(mark).toHaveJSProperty("complete", true);
+      expect(await mark.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBe(28);
+      const box = await mark.boundingBox();
+      expect(box?.width).toBeCloseTo(28.8, 1);
+      expect(box?.height).toBeCloseTo(28.8, 1);
+
       // The Next Game card links to the scheduled game's page, at the visitor's own time.
       const next = rows(page, /^Next game/);
       await expect(next.getByRole("link")).toHaveAttribute("href", `/nhl/games/${GAME_ID}`);

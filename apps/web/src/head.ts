@@ -26,13 +26,25 @@ type Outcome = { status: string; _notFound?: boolean };
  * `notFound()` no route beneath catches (router-core 1.171: `load-server.ts`, `load-client.ts`).
  * It has no public name, so a router upgrade is checked against `e2e/shell.spec.ts`.
  */
-export function titled(match: Outcome, title?: string) {
-  return { meta: [{ title: pageTitle(outcomeTitle(match) ?? title) }] };
+export function titled(match: Outcome, title?: string, failure: FailureTitles = {}) {
+  return { meta: [{ title: pageTitle(outcomeTitle(match, failure) ?? title) }] };
 }
 
-function outcomeTitle(match: Outcome): string | undefined {
+/**
+ * The `head` of a route beneath the one that titles the page (a tab under its subject): nothing
+ * while its read answers, so the parent's title stands, and the failure's title when it does not.
+ */
+export function failureTitled(match: Outcome) {
+  const title = outcomeTitle(match, {});
+  return { meta: title == null ? [] : [{ title: pageTitle(title) }] };
+}
+
+/** A route's own words for a read that found nothing, where its not-found page has its own. */
+type FailureTitles = { notFound?: string };
+
+function outcomeTitle(match: Outcome, failure: FailureTitles): string | undefined {
   if (match.status === "error") return "Not answering";
-  if (match.status === "notFound" || match._notFound) return "Not found";
+  if (match.status === "notFound" || match._notFound) return failure.notFound ?? "Not found";
   return undefined;
 }
 

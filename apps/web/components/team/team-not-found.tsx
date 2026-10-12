@@ -1,13 +1,10 @@
 import { PageHeader } from "@yogan-hockey/ui/components/section";
-import type { Metadata } from "next";
-import { Link } from "../../../../components/link";
-import { emptyProse } from "../../../../components/story/type";
-import { nhlHref } from "../../../../lib/nhl-page";
-
-export const metadata: Metadata = { title: "Team not found" };
+import { nhlHref } from "../../lib/nhl-page";
+import { Link } from "../link";
+import { emptyProse } from "../story/type";
 
 /** An id that is no team's: the same shell, and a way back to the teams. */
-export default function TeamNotFound() {
+export function TeamNotFound() {
   return (
     <div>
       <PageHeader title="Team not found" count="404" />

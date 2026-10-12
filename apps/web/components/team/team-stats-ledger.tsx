@@ -18,7 +18,11 @@ const percent = (value: number | null) => (value == null ? "-" : value.toFixed(1
  * A team's season in figures: games played, goals for and against and their difference, the
  * power play and the penalty kill, and the record at home and on the road.
  */
-export function TeamStatsLedger({ detail: { stats, record } }: { detail: TeamDetail }) {
+export function TeamStatsLedger({
+  detail: { stats, record },
+}: {
+  detail: Pick<TeamDetail, "stats" | "record">;
+}) {
   return (
     <Section>
       <SectionHeader title="Season stats" />

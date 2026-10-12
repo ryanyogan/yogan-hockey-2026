@@ -1,7 +1,5 @@
 import { expect, test } from "@playwright/test";
 
-test.skip(true, "/nhl/live is not ported to TanStack Start yet: #191 restores this spec.");
-
 // Nashville at Toronto, on the recorded slate of nine games still to be played.
 const GAME_ID = "401892449";
 

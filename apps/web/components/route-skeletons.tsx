@@ -1,11 +1,8 @@
-import {
-  PageHeaderSkeleton,
-  SectionSkeleton,
-  SkeletonBar,
-} from "@yogan-hockey/ui/components/skeleton";
+import { SectionSkeleton, SkeletonBar } from "@yogan-hockey/ui/components/skeleton";
 import { PenaltyBoxSpace } from "./game/penalty-box";
 import { Rink } from "./game/rink";
 import { FIXED_GAME_COLUMNS, GAME_SCORE_CELL, GAME_TEXT_CELL } from "./scoreboard/game-ledger";
+import { ScoresTitle } from "./scoreboard/live-scores";
 
 /**
  * The placeholders of the live page and a game's page (#95), each drawn by its
@@ -42,7 +39,7 @@ export const SLATE_TABLE = "[&_[data-slot=ledger-detail]]:xl:hidden";
 export function LiveSkeleton() {
   return (
     <>
-      <PageHeaderSkeleton title="Live scores" />
+      <ScoresTitle />
       <SectionSkeleton
         label="Today's games"
         rows={SLATE_ROWS}

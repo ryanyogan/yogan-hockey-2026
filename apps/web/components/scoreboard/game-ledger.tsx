@@ -131,8 +131,7 @@ export function GameLedger({
           const hasPick = picked != null && picked !== false;
           const final = game.status === "final";
           return (
-            // Marked live and not tinted: the prototype says "live" in the one red and fills nothing.
-            <LedgerRow key={game.id} live={game.status === "live"} className="bg-transparent">
+            <LedgerRow key={game.id} live={game.status === "live"}>
               <LedgerCell className={GAME_TEXT_CELL}>
                 <Link href={gameHref(game)} className={ledgerRowLink}>
                   <span className="sr-only">

@@ -80,11 +80,14 @@ function LedgerRow({
   cutoff = false,
   ...props
 }: ComponentProps<"tr"> & {
-  /** Tints the row: a game in progress. */
+  /**
+   * A game in progress (`data-live`). It draws nothing: the prototype never tints a live row,
+   * whose status says so in the one red (a `LiveMarker`).
+   */
   live?: boolean;
   /**
-   * Set it when the row holds a `ledgerRowLink`. It draws nothing more: every row is tinted
-   * under the pointer and is 44px tall on a phone, since a row that is not a link often has
+   * Does nothing, and is kept for the callers that still pass it: every row is tinted under the
+   * pointer and is 44px tall on a phone, a link or not, since a row that is not a link often has
    * one in a cell.
    */
   interactive?: boolean;
@@ -99,7 +102,6 @@ function LedgerRow({
       className={cn(
         "relative border-b last:border-b-0 hover:bg-highlight max-md:h-11",
         cutoff ? "border-rule border-solid" : "border-border border-dotted",
-        live && "bg-live-tint",
         className,
       )}
       {...props}
@@ -175,7 +177,7 @@ function LedgerDetail({
 
 /**
  * Classes for the link that makes a whole row clickable: put them on the link in the row's first
- * cell and set `interactive` on the `LedgerRow`. The link's own text stays the accessible name.
+ * cell. The row needs nothing set. The link's own text stays the accessible name.
  */
 const ledgerRowLink = "after:absolute after:inset-0 after:content-['']";
 

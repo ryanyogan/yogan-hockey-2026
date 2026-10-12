@@ -83,10 +83,10 @@ describe("Ledger, an agate table", () => {
     expect(table(<LedgerRow />).slot("ledger-row").classes).toContain("max-md:h-11");
   });
 
-  it("marks a live row", () => {
+  it("marks a live row and does not tint it", () => {
     const row = table(<LedgerRow live />).slot("ledger-row");
     expect(row.attributes["data-live"]).toBe("");
-    expect(row.classes).toContain("bg-live-tint");
+    expect(row.classes.filter((name) => name.startsWith("bg-"))).toEqual([]);
   });
 
   it("sets a cell in the row's size, its numbers tabular and to the right, the key one bold", () => {

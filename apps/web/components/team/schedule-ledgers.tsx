@@ -76,12 +76,7 @@ export function UpcomingLedger({
           </LedgerHead>
           <LedgerBody>
             {rows.map((row) => (
-              <LedgerRow
-                key={row.game.id}
-                live={row.game.status === "live"}
-                // As a slate's row: the red marker says it, and nothing is filled.
-                className="bg-transparent"
-              >
+              <LedgerRow key={row.game.id} live={row.game.status === "live"}>
                 <GameCells row={row} />
                 <LedgerCell numeric className="whitespace-nowrap">
                   {row.game.status === "live" ? (

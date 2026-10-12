@@ -52,9 +52,10 @@ export default async function NhlPage({ searchParams }: Props) {
           {page.tab === "standings" && (
             <UrlTabs
               label="Standings view"
-              // Four views in a phone's width: each cell gives up most of its padding and a little tracking, or the last
-              // is off the edge of a strip nobody knows to scroll.
-              className="max-md:[&>a]:px-1 max-md:[&>a]:tracking-head"
+              // Four views in a phone's width: each cell gives up most of its padding and half its
+              // tracking, or the last is off the edge of a strip nobody knows to scroll. They fit
+              // a 360px phone with 18px over.
+              className="max-md:[&>a]:px-1 max-md:[&>a]:tracking-wider"
               link={Link}
               current={page.view}
               tabs={STANDINGS_VIEWS.map((view) => ({

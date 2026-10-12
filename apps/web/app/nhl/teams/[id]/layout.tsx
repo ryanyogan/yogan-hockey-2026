@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { MORE } from "../../../../components/agate-type";
 import { FavoriteHeart } from "../../../../components/favorites/favorite-heart";
 import { Link } from "../../../../components/link";
 import { ScoreboardGate } from "../../../../components/scoreboard/scoreboard-provider";
@@ -59,14 +58,15 @@ export default async function TeamLayout({ params, children }: Props) {
         <TeamHeader
           detail={detail}
           standing={standing}
-          // Not squeezed by a long name, which would cost its reach a pixel, and 8px in from the
-          // column's edge.
+          // Not squeezed by a long name, which would cost its reach a pixel. It ends on the
+          // column's edge, where the rules end and a roster's hearts are; its reach runs 8px
+          // into the gutter.
           action={
             <FavoriteHeart
               kind="team"
               id={detail.team.id}
               name={detail.team.name}
-              className="mr-2 shrink-0"
+              className="shrink-0"
             />
           }
         />
@@ -82,7 +82,7 @@ export default async function TeamLayout({ params, children }: Props) {
         {children}
       </div>
       {/* The foot of the page on every tab, as the player page has "back to players". */}
-      <p className={MORE}>
+      <p className="font-label text-small uppercase tracking-head">
         <Link href="/nhl" className="tap-target underline">
           back to NHL
         </Link>

@@ -17,9 +17,10 @@ type MarkFileSize = (typeof MARK_SIZES)[number];
 /**
  * How large a mark is drawn. `row` and `line` are 1.2 times the type they stand in: 15.6px beside
  * 13px type in a ledger row or the ticker, 18px beside a phone's 15px. `header` is 20px, beside a
- * page's title.
+ * page's title. `headline` stands in a serif headline (a team's name on its page) at the height
+ * of its capitals: 0.72 of the type, 24.5 to 28.8px.
  */
-export type TeamMarkSize = "row" | "line" | "header";
+export type TeamMarkSize = "row" | "line" | "header" | "headline";
 
 /**
  * Which file serves which pixel density, the first being the plain `src`. One list for every

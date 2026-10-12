@@ -1,6 +1,5 @@
 import { PageHeader } from "@yogan-hockey/ui/components/section";
 import type { Metadata } from "next";
-import { PROSE } from "../../../../components/agate-type";
 import { Link } from "../../../../components/link";
 import { nhlHref } from "../../../../lib/nhl-page";
 
@@ -11,7 +10,7 @@ export default function TeamNotFound() {
   return (
     <div>
       <PageHeader title="Team not found" count="404" />
-      <p className={`max-md:mt-3 ${PROSE}`}>
+      <p className="font-serif text-note text-prose max-md:mt-3">
         No team is kept at this address.{" "}
         <Link href={nhlHref({ tab: "teams", view: "division" })} className="font-strong underline">
           All teams

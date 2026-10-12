@@ -3,20 +3,46 @@
 // colours of the tokens and no others, no radius or shadow, no fill but the row under the
 // pointer, the four rules, tabular figures, and no sideways scroll.
 //
-//   node scripts/agate-routes.mjs [baseURL] [outDir] [name-prefix]
+//   node scripts/agate-routes.mjs [baseURL] [scratchDir] [name-prefix]
 //
 // Needs a dev server in fixture mode (ESPN_FIXTURES=1) and TMPDIR set (see the build notes). It
 // writes `<route>-<width>-<theme>.png` and prints each page's type roles (face, size, weight and
 // how many elements) to be read against agate.md § Type; it exits 1 on anything outside the
 // system. A shot is the top of its page: MAX_HEIGHT px of it, since a schedule is 81 rows.
+//
+// Every shot is taken and meant to be looked at; only the ones in KEPT are the repository's
+// (`docs/design/agate/`), one or two of each route across the widths and themes. The rest go to
+// the scratch directory. Each route is also checked, not shot, at 360px: no sideways scroll, and
+// no strip of tabs that scrolls.
 import { mkdir } from "node:fs/promises";
 import { chromium } from "@playwright/test";
 import { seedPicks, TEAM } from "./look-routes.mjs";
 
-const [baseURL = "http://localhost:5173", outDir = "docs/design/agate", only] =
+const [baseURL = "http://localhost:5173", scratchDir = "node_modules/.tmp/agate-routes", only] =
   process.argv.slice(2);
+const KEPT_DIR = "docs/design/agate";
+const KEPT = new Set([
+  "scores-live-390-light",
+  "scores-live-1440-light",
+  "scores-live-1440-dark",
+  "scores-390-dark",
+  "standings-390-light",
+  "standings-1440-light",
+  "standings-1440-dark",
+  "standings-wildcard-390-dark",
+  "teams-390-light",
+  "teams-1440-dark",
+  "team-390-light",
+  "team-390-dark",
+  "team-1440-light",
+  "team-roster-1440-light",
+  "team-stats-390-dark",
+  "team-not-found-390-light",
+]);
 const MAX_HEIGHT = Number(process.env.MAX_HEIGHT ?? 1500);
 const WIDTHS = [390, 1440];
+/** The narrowest phone the site is laid out for. */
+const NARROW = 360;
 const THEMES = ["light", "dark"];
 
 const ROUTES = [
@@ -24,7 +50,9 @@ const ROUTES = [
   // The sample slate: games in progress, finished and to come.
   { name: "scores-live", path: "/skeleton/live" },
   { name: "standings", path: "/nhl" },
+  { name: "standings-conference", path: "/nhl?view=conference" },
   { name: "standings-wildcard", path: "/nhl?view=wildcard" },
+  { name: "standings-league", path: "/nhl?view=league" },
   { name: "teams", path: "/nhl?tab=teams" },
   { name: "team", path: `/nhl/teams/${TEAM}` },
   { name: "team-roster", path: `/nhl/teams/${TEAM}/roster` },
@@ -102,11 +130,17 @@ function audit() {
       if (!(colour in RULE) && !(colour in TEXT)) say(el, `rule colour ${colour}`);
     }
   }
+  // A strip of tabs that scrolls hides its last tab where nobody knows to look for it.
+  for (const strip of document.querySelectorAll("main [data-slot=url-tabs]")) {
+    if (strip.scrollWidth > strip.clientWidth) {
+      say(strip, `tabs scroll: ${strip.scrollWidth} in ${strip.clientWidth}`);
+    }
+  }
   const page = document.documentElement;
   return { faults: [...new Set(faults)], roles, rules, scrollWidth: page.scrollWidth };
 }
 
-await mkdir(outDir, { recursive: true });
+await mkdir(scratchDir, { recursive: true });
 const browser = await chromium.launch();
 await seedPicks(browser, baseURL);
 let failed = 0;
@@ -127,8 +161,9 @@ for (const route of ROUTES) {
       await page.evaluate(() => document.fonts.ready);
       const found = await page.evaluate(audit);
       const height = await page.evaluate(() => document.documentElement.scrollHeight);
+      const shot = `${route.name}-${width}-${theme}`;
       await page.screenshot({
-        path: `${outDir}/${route.name}-${width}-${theme}.png`,
+        path: `${KEPT.has(shot) ? KEPT_DIR : scratchDir}/${shot}.png`,
         fullPage: true,
         clip: { x: 0, y: 0, width, height: Math.min(height, MAX_HEIGHT) },
       });
@@ -144,6 +179,17 @@ for (const route of ROUTES) {
       await context.close();
     }
   }
+  const context = await browser.newContext({ viewport: { width: NARROW, height: 800 } });
+  const page = await context.newPage();
+  await page.goto(baseURL + route.path, { waitUntil: "networkidle" });
+  await page.evaluate(() => document.fonts.ready);
+  const found = await page.evaluate(audit);
+  const faults = found.faults.filter((fault) => fault.startsWith("tabs scroll"));
+  if (found.scrollWidth !== NARROW) faults.push(`scrollWidth ${found.scrollWidth} at ${NARROW}`);
+  failed += faults.length;
+  console.log(`${faults.length === 0 ? "ok  " : "FAIL"} ${route.name} ${NARROW}`);
+  for (const fault of faults) console.log(`       ${fault}`);
+  await context.close();
 }
 await browser.close();
 process.exit(failed === 0 ? 0 : 1);

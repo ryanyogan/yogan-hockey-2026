@@ -1,5 +1,4 @@
 import type { ComponentProps, ReactNode } from "react";
-import { PROSE } from "../agate-type";
 
 /**
  * The line drawn where a ledger would be, when there is nothing yet to put in it: a sentence of
@@ -10,7 +9,7 @@ export function EmptyLedger({
   ...props
 }: { children: ReactNode } & Pick<ComponentProps<"p">, "role">) {
   return (
-    <p className={`py-2 ${PROSE}`} {...props}>
+    <p className="py-2 font-serif text-note text-prose" {...props}>
       {children}
     </p>
   );

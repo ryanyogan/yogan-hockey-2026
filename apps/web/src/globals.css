@@ -8,9 +8,6 @@
  */
 @import "./fonts.css";
 
-/* Vinext's routes, still to be ported (#188 to #192), are not pages of this build. */
-@source not "../app";
-
 /*
  * How far the notch, the rounded corners and the home bar reach into the page. All zero in a
  * browser tab; in a site opened from the home screen the page covers the whole screen

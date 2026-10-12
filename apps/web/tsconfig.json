@@ -7,6 +7,5 @@
     "types": ["vite/client", "node", "@cloudflare/vitest-pool-workers/types"]
   },
   "include": ["**/*.ts", "**/*.tsx", ".cloudflare/types"],
-  // `app` is vinext's routes, kept to be read by the tickets that port them (#188 to #192).
-  "exclude": ["node_modules", "dist", "app"]
+  "exclude": ["node_modules", "dist"]
 }

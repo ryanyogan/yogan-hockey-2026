@@ -2,8 +2,13 @@ import type { ComponentProps } from "react";
 import { cn } from "../cn";
 
 /**
- * The ledger: the one dense table every subject on the site is drawn with (tonight's games,
- * standings, rosters, career stats). No cards and no team logos.
+ * The ledger: the one agate table every subject on the site is looked up in (standings, rosters,
+ * schedules, career stats). Small bold capitals head each column over a hairline, a dotted rule
+ * parts the rows, numbers are tabular and set to the right, and the row's key number is bold
+ * (docs/design/agate.md § Other pages; `.agate` in prototypes/agate/style.css).
+ *
+ * The first and last columns have no padding outside them, so the table's text and its rules
+ * start and end on the same lines as the label above it.
  *
  *   <Ledger>
  *     <LedgerHead>
@@ -21,8 +26,11 @@ import { cn } from "../cn";
 function Ledger({ className, ...props }: ComponentProps<"table">) {
   return (
     // A table wider than a phone scrolls sideways inside its own box; the page never does.
-    // Positioned, so a `ledgerRowLink` can never stretch past its own table.
-    <div data-slot="ledger" className="relative w-full overflow-x-auto">
+    // Positioned, so a `ledgerRowLink` can never stretch past its own table. The box is 8px
+    // wider than the table on each side, and the table is where it was: the reach of a link or a
+    // heart in the first or last column (`tap-target`) runs past the table's edge, and would
+    // otherwise be cut off on the left and scroll the box on the right.
+    <div data-slot="ledger" className="relative -mx-2 overflow-x-auto px-2">
       <table className={cn("w-full border-collapse", className)} {...props} />
     </div>
   );
@@ -52,7 +60,7 @@ function LedgerColumn({
       data-slot="ledger-column"
       scope={Cell === "th" ? "col" : undefined}
       className={cn(
-        "whitespace-nowrap border-rule-head border-b px-2 py-1 font-label text-label text-small uppercase tracking-label",
+        "whitespace-nowrap border-rule-head border-b px-2 py-[5px] font-strong text-head text-label uppercase tracking-head first:pl-0 last:pr-0",
         numeric ? "text-right" : "text-left",
         className,
       )}
@@ -68,15 +76,19 @@ function LedgerBody(props: ComponentProps<"tbody">) {
 function LedgerRow({
   className,
   live = false,
-  interactive = false,
+  interactive: _interactive = false,
   cutoff = false,
   ...props
 }: ComponentProps<"tr"> & {
   /** Tints the row: a game in progress. */
   live?: boolean;
-  /** Highlights the row under the pointer: set it when the row holds a `ledgerRowLink`. */
+  /**
+   * Set it when the row holds a `ledgerRowLink`. It draws nothing more: every row is tinted
+   * under the pointer and is 44px tall on a phone, since a row that is not a link often has
+   * one in a cell.
+   */
   interactive?: boolean;
-  /** Draws a heavier rule under the row: the last playoff place in the standings. */
+  /** Draws a plain ink rule under the row: the last playoff place in the standings. */
   cutoff?: boolean;
 }) {
   return (
@@ -85,10 +97,9 @@ function LedgerRow({
       data-live={live ? "" : undefined}
       data-cutoff={cutoff ? "" : undefined}
       className={cn(
-        "relative border-b",
+        "relative border-b last:border-b-0 hover:bg-highlight max-md:h-11",
+        cutoff ? "border-rule border-solid" : "border-border border-dotted",
         live && "bg-live-tint",
-        interactive && "hover:bg-highlight",
-        cutoff && "border-b-aside",
         className,
       )}
       {...props}
@@ -122,7 +133,7 @@ function LedgerCell({
       data-slot="ledger-cell"
       data-tone={tone === "default" ? undefined : tone}
       className={cn(
-        "px-2 py-row",
+        "px-2 py-row text-row first:pl-0 last:pr-0",
         (numeric || tone === "score") && "text-right tabular-nums",
         cellTone[tone],
         className,
@@ -145,7 +156,7 @@ function LedgerAside({ className, ...props }: ComponentProps<"span">) {
 
 /**
  * A second line under a cell's main value: a Tracked Player's next game under his team. `fine` is
- * small print for a narrow column, such as a game's pick under its status on a phone: one line,
+ * the small size for a narrow column, such as a game's pick under its status on a phone: one line,
  * cut short, so the rows of a table stay one height.
  */
 function LedgerDetail({

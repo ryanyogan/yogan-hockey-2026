@@ -7,8 +7,9 @@ function Section({ className, ...props }: ComponentProps<"section">) {
 }
 
 /**
- * The line above a ledger: the subject in bold capitals, then a count or a view in quiet text
- * ("TONIGHT 6 games, 2 live", "STANDINGS league"). Children sit at the right end of the line.
+ * The label above a ledger: the subject in the one red's bold capitals over a plain ink rule,
+ * then a count or a view in quiet text ("TONIGHT 6 games, 2 live", "STANDINGS league"). Children
+ * sit at the right end of the line, set as the prototype's "more" links are.
  */
 function SectionHeader({
   className,
@@ -20,22 +21,31 @@ function SectionHeader({
   return (
     <div
       data-slot="section-header"
-      className={cn("mb-2 flex flex-wrap items-baseline justify-between gap-x-4", className)}
+      className={cn(
+        "flex flex-wrap items-baseline justify-between gap-x-4 border-rule border-b pb-1.5",
+        className,
+      )}
       {...props}
     >
-      <h2 className="font-strong uppercase">
+      <h2 className="font-strong text-kicker text-tag uppercase tracking-label">
         {title}
         {count != null && (
           <>
             {" "}
-            <span data-slot="section-count" className="font-quiet text-label normal-case">
+            <span
+              data-slot="section-count"
+              className="font-quiet text-label text-small normal-case tracking-normal"
+            >
               {count}
             </span>
           </>
         )}
       </h2>
       {children != null && (
-        <div data-slot="section-aside" className="flex flex-wrap gap-x-4 text-label">
+        <div
+          data-slot="section-aside"
+          className="flex flex-wrap gap-x-4 font-label text-small uppercase tracking-head"
+        >
           {children}
         </div>
       )}
@@ -43,4 +53,55 @@ function SectionHeader({
   );
 }
 
-export { Section, SectionHeader };
+/**
+ * A page's title: a serif section title over a heavy ink rule, the page's first heading
+ * ("Standings", a team's name). A count sits beside it in quiet agate, and children at the right
+ * end of the line, as in a `SectionHeader`.
+ *
+ *   <PageHeader title="Standings" count="league">
+ *     <Link href="/nhl?tab=teams">Teams</Link>
+ *   </PageHeader>
+ */
+function PageHeader({
+  className,
+  title,
+  count,
+  children,
+  ...props
+}: Omit<ComponentProps<"header">, "title"> & { title: ReactNode; count?: ReactNode }) {
+  return (
+    <header
+      data-slot="page-header"
+      className={cn(
+        "flex flex-wrap items-baseline justify-between gap-x-4 border-rule border-b-3 pb-2",
+        className,
+      )}
+      {...props}
+    >
+      <h1 className="font-serif font-strong text-title tracking-[-0.01em]">
+        {title}
+        {count != null && (
+          <>
+            {" "}
+            <span
+              data-slot="page-count"
+              className="font-agate font-quiet text-label text-small tracking-normal"
+            >
+              {count}
+            </span>
+          </>
+        )}
+      </h1>
+      {children != null && (
+        <div
+          data-slot="page-aside"
+          className="flex flex-wrap gap-x-4 font-label text-small uppercase tracking-head"
+        >
+          {children}
+        </div>
+      )}
+    </header>
+  );
+}
+
+export { PageHeader, Section, SectionHeader };

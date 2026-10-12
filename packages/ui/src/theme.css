@@ -19,10 +19,16 @@
  * Rules are three colours: `border-border` between agate rows (dotted), `border-rule-head` the
  * hairline under a column header, `border-rule` the ink of a heavy or plain rule.
  *
- * The sizes, the row's padding and the spacing scale below are still the tuned ledger's
- * (docs/design/tuned-ledger.md) until the shell, Home and the primitives are redrawn (#170 to
- * #172). Spacing is one scale, 4, 8, 12, 16, 24, 32 and 48px: Tailwind's steps 1, 2, 3, 4, 6, 8
- * and 12. A ledger row's own padding is `py-row` (6px; 11px on a phone).
+ * The agate sizes, each with its line (agate.md § Type): `text-head` 11px, a column header;
+ * `text-tag` 12px, a label, a kicker, a mark or a button; `text-small` 13px, the nav, meta and
+ * the footer; `text-body` 15px, the default; `text-row` a table's row, 15px and 16px on a phone;
+ * `text-score` 16px, a score; `text-title` a serif section title, 32px and 30px on a phone.
+ * Capitals are tracked by what they are: `tracking-head` a column header and the nav,
+ * `tracking-mark` a mark, a button or a tab, `tracking-label` a red label.
+ *
+ * Spacing is one scale, 4, 8, 12, 16, 24, 32 and 48px: Tailwind's steps 1, 2, 3, 4, 6, 8 and 12.
+ * An agate row's own padding is `py-row` (5px; 8px on a phone). `text-wordmark` is still the
+ * tuned ledger's until the shell is redrawn (#170).
  */
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -77,26 +83,29 @@
   --positive: #166534;
   --negative: #c81e1e;
 
-  /* Type: a body size, a small size and a score. A phone gets the larger set below. */
-  --fs: 13px;
-  --lh: 20px;
-  --fs-small: 11px;
-  --lh-small: 16px;
+  /* Type: the body, a table's row, the small size, a score and a serif section title. */
+  --fs: 15px;
+  --lh: 1.45;
+  --fs-row: 15px;
+  --fs-small: 13px;
+  --lh-small: 1.3;
   --fs-score: 16px;
+  --fs-title: 32px;
   --fs-wordmark: 14px;
-  /* A ledger row is its line and this above and below: 33px with its rule. */
-  --row-pad: 6px;
+  /* An agate row is its line and this above and below: 32.75px with its rule. */
+  --row-pad: 5px;
 }
 
-/* A phone: larger type, and a ledger row is 45px, a thumb's height. Below Tailwind's `md`. */
+/*
+ * A phone, below Tailwind's `md`: a table's row is set a size larger. Its line and padding are
+ * the prototype's 40.2px with the rule; `LedgerRow` makes it 44px, a thumb's height.
+ */
 @media (max-width: 767.98px) {
   :root {
-    --fs: 15px;
-    --lh: 22px;
-    --fs-small: 12px;
-    --fs-score: 20px;
+    --fs-row: 16px;
+    --fs-title: 30px;
     --fs-wordmark: 15px;
-    --row-pad: 11px;
+    --row-pad: 8px;
   }
 }
 
@@ -167,7 +176,15 @@
   --color-highlight: var(--highlight);
   --color-positive: var(--positive);
   --color-negative: var(--negative);
-  /* `text-body`, `text-small`, `text-score`, `text-wordmark`: each with its line. */
+  /* The sizes, each with its line. */
+  --text-head: 11px;
+  --text-head--line-height: 1.2;
+  --text-tag: 12px;
+  --text-tag--line-height: 1.3;
+  --text-row: var(--fs-row);
+  --text-row--line-height: var(--lh);
+  --text-title: var(--fs-title);
+  --text-title--line-height: 1.1;
   --text-body: var(--fs);
   --text-body--line-height: var(--lh);
   --text-small: var(--fs-small);
@@ -188,8 +205,17 @@
   --font-weight-score: 700;
   /* `py-row`: a ledger row's padding above and below. */
   --spacing-row: var(--row-pad);
-  /* `tracking-label`: capitals in the small size. */
-  --tracking-label: 0.06em;
+  /* Capitals: a column header or the nav, a mark or a button, a red label. */
+  --tracking-head: 0.1em;
+  --tracking-mark: 0.12em;
+  --tracking-label: 0.16em;
+  /* `animate-live`: the live dot's pulse (`.live-dot` in the prototype). */
+  --animate-live: live-pulse 1.6s ease-in-out infinite;
+  @keyframes live-pulse {
+    50% {
+      opacity: 0.35;
+    }
+  }
   --radius-sm: var(--radius);
   --radius-md: var(--radius);
   --radius-lg: var(--radius);

@@ -102,7 +102,7 @@ export function PlayerSearch({ initial }: { initial: Search }) {
             spellCheck={false}
             placeholder="two letters or more"
             // 16px on a phone, where a smaller field makes Safari zoom the page on focus.
-            className="w-full max-w-md border border-rule-head bg-transparent px-2 py-row text-base outline-none placeholder:text-muted-foreground focus-visible:border-foreground md:text-body"
+            className="w-full max-w-md border border-rule-head bg-transparent px-2 py-row text-base outline-none max-md:min-h-11 placeholder:text-muted-foreground focus-visible:border-foreground md:text-body"
           />
         </form>
       </search>

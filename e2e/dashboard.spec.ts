@@ -47,7 +47,7 @@ test("the dashboard keeps games in start order while favorites and live details 
   await expect(toronto).toContainText("favorite team");
   await expect(toronto.locator('[data-slot="game-pick"]')).toHaveText("TOR 58%");
   await expect(toronto.getByRole("cell").last()).toHaveText(
-    "★ favorite teamTOR 58%Scotiabank Arena · ESPN+, Scripps Sports",
+    "favorite teamTOR 58%Scotiabank Arena · ESPN+, Scripps Sports",
   );
   await expect(toronto.getByRole("link")).toHaveAttribute("href", `/nhl/games/${GAME_ID}`);
   await expect(toronto.locator("time")).toBeVisible();

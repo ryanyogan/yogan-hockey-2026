@@ -1,6 +1,7 @@
 import { env, exports } from "cloudflare:workers";
 import { createDb, latestSkeletonBumps } from "@yogan-hockey/db";
 import { PulseSchema } from "@yogan-hockey/schemas";
+import { Badge } from "@yogan-hockey/ui/components/badge";
 import { Button } from "@yogan-hockey/ui/components/button";
 import {
   Ledger,
@@ -10,7 +11,8 @@ import {
   LedgerHead,
   LedgerRow,
 } from "@yogan-hockey/ui/components/ledger";
-import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
+import { FavoriteMarker, LiveMarker } from "@yogan-hockey/ui/components/marker";
+import { PageHeader, Section, SectionHeader } from "@yogan-hockey/ui/components/section";
 import { getAgentByName } from "agents";
 import type { Metadata } from "next";
 import { cachedSkeletonReading, SKELETON_AGENT_NAME } from "../../lib/skeleton";
@@ -33,19 +35,34 @@ export default async function SkeletonPage() {
 
   return (
     <>
+      <PageHeader title="Walking skeleton" count="one page, each join" />
+
       <Section data-testid="join-ui">
         <SectionHeader title="1. Shared UI package" count="packages/ui" />
-        <p className="mb-2 text-muted-foreground">
-          The ledgers and the button come from packages/ui, styled by its Tailwind theme.
+        <p className="my-2 text-muted-foreground">
+          The title, the labels, the ledgers, the marks and the button come from packages/ui, styled
+          by its Tailwind theme.
         </p>
-        <form action={bumpSkeleton}>
+        {/* Every mark the package draws, side by side: the sample page is where they are seen. */}
+        <p data-testid="marks" className="mb-2 flex flex-wrap items-center gap-2">
+          <Badge>right</Badge>
+          <Badge variant="outline">wrong</Badge>
+          <Badge variant="secondary">no pick</Badge>
+          <Badge variant="live">live</Badge>
+          <FavoriteMarker>favorite team</FavoriteMarker>
+          <LiveMarker>2nd 12:34</LiveMarker>
+        </p>
+        <form action={bumpSkeleton} className="flex flex-wrap gap-2">
           <Button type="submit">Bump the Agent</Button>
+          <Button type="button" variant="outline" size="sm">
+            outline, small
+          </Button>
         </form>
       </Section>
 
       <Section data-testid="join-cache">
         <SectionHeader title="2. Data cache on KV" count='60 seconds, tag "skeleton"' />
-        <p className="mb-2 text-muted-foreground">
+        <p className="my-2 text-muted-foreground">
           A reload shows the same reading until the Agent invalidates the tag.
         </p>
         <Ledger>

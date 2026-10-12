@@ -1,6 +1,5 @@
 import type { GameHeader, Play } from "@yogan-hockey/schemas";
-import { navItemVariants } from "@yogan-hockey/ui/components/nav-item";
-import { tabCell, tabStrip } from "@yogan-hockey/ui/components/url-tabs";
+import { tabCellHoldsFocus, tabCellVariants, tabStrip } from "@yogan-hockey/ui/components/url-tabs";
 import type { ReactNode } from "react";
 import { markKind, playTime, scoringPlays, teamAbbreviation } from "../../lib/game/plays";
 
@@ -28,7 +27,7 @@ function PlayRow({
       data-play={play.id}
       aria-pressed={picked}
       onClick={() => onSelect(play.id)}
-      className={`flex w-full cursor-pointer gap-2 border-border border-b px-2 py-row text-left outline-none hover:bg-highlight focus-visible:ring-2 focus-visible:ring-ring ${
+      className={`flex w-full cursor-pointer gap-2 border-border border-b px-2 py-row text-left outline-none max-md:min-h-11 max-md:items-center hover:bg-highlight focus-visible:ring-2 focus-visible:ring-ring ${
         focused ? "bg-highlight" : ""
       }`}
     >
@@ -103,9 +102,9 @@ export function KeyPlaysToggle({
       {choices.map((choice) => (
         <label
           key={choice.label}
-          className={`cursor-pointer has-focus-visible:ring-2 has-focus-visible:ring-ring ${tabCell} ${navItemVariants(
-            { current: choice.value === everyPlay },
-          )}`}
+          className={`${tabCellHoldsFocus} ${tabCellVariants({
+            current: choice.value === everyPlay,
+          })}`}
         >
           <input
             type="radio"

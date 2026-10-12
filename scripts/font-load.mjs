@@ -73,20 +73,27 @@ for (const path of PATHS) {
       }
       await page.addInitScript(() => {
         window.__cls = 0;
-        window.__atSwap = 0;
-        window.__fontAt = null;
-        document.fonts.addEventListener("loadingdone", () => {
-          window.__fontAt ??= performance.now();
-        });
+        window.__shifts = [];
         new PerformanceObserver((list) => {
           for (const entry of list.getEntries()) {
             if (entry.hadRecentInput) continue;
             window.__cls += entry.value;
-            // A shift in the frames after the face arrived is the swap's.
-            if (window.__fontAt != null && entry.startTime >= window.__fontAt - 50)
-              window.__atSwap += entry.value;
+            window.__shifts.push([entry.startTime, entry.value]);
           }
         }).observe({ type: "layout-shift", buffered: true });
+        // A shift from the moment the first font file arrived is the swap's. Not `loadingdone`:
+        // that waits for the last of the files, and the first has redrawn the page by then.
+        window.__atSwap = () => {
+          const arrived = performance
+            .getEntriesByType("resource")
+            .filter((entry) => /\.woff2(\?|$)/.test(entry.name))
+            .map((entry) => entry.responseEnd);
+          if (arrived.length === 0) return 0;
+          const first = Math.min(...arrived);
+          return window.__shifts
+            .filter(([at]) => at >= first - 50)
+            .reduce((sum, [, value]) => sum + value, 0);
+        };
       });
       await page.goto(`${baseURL}${path}`, { waitUntil: "domcontentloaded" });
       let before = null;
@@ -109,7 +116,7 @@ for (const path of PATHS) {
           .map((face) => face.display)
           .filter((value, at, all) => all.indexOf(value) === at),
         cls: Math.round(window.__cls * 100000) / 100000,
-        atSwap: Math.round(window.__atSwap * 100000) / 100000,
+        atSwap: Math.round(window.__atSwap() * 100000) / 100000,
       }));
       const moved =
         before == null
@@ -161,7 +168,7 @@ if (out)
   );
 for (const result of results) {
   console.log(
-    `${result.path} ${result.width} held ${result.fontHeldBackMs}ms: CLS ${result.cls}, moved ${result.movedAtSwapPx ?? "-"}px, ${result.fontFiles.length} font file(s)${result.failed.length ? ` FAILED ${result.failed.join("; ")}` : ""}`,
+    `${result.path} ${result.width} held ${result.fontHeldBackMs}ms: CLS ${result.cls}${result.clsAtSwap == null ? "" : ` (${result.clsAtSwap} at the swap)`}, moved ${result.movedAtSwapPx ?? "-"}px, ${result.fontFiles.length} font file(s)${result.failed.length ? ` FAILED ${result.failed.join("; ")}` : ""}`,
   );
 }
 process.exit(results.some((result) => result.failed.length > 0) ? 1 : 0);

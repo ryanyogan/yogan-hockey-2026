@@ -12,9 +12,9 @@ import {
   forgetGame,
   forgetPlayers,
   forgetStandings,
-  forgetTeamList,
   forgetTeams,
 } from "./espn";
+import { forget } from "./kv-cache";
 
 const TORONTO = "21";
 const MATTHEWS = "4024123";
@@ -54,16 +54,13 @@ test("standings are served from the cache until they are forgotten", async () =>
   await expect(cachedStandings()).rejects.toMatchObject({ endpoint: "standings", status: 503 });
 });
 
-test("the team list is served from the cache until it is forgotten", async () => {
+test("the team list is served from the cache: nothing forgets it but its time limit", async () => {
   const first = await cachedTeams();
   expect(first).toHaveLength(32);
 
   leaveFixtureMode();
   expect(await cachedTeams()).toEqual(first);
   expect(fetchMock).not.toHaveBeenCalled();
-
-  await forgetTeamList();
-  await expect(cachedTeams()).rejects.toMatchObject({ endpoint: "teams" });
 });
 
 test("forgetting a team makes the next read of its page and of its schedule a fresh one", async () => {
@@ -164,7 +161,8 @@ test("a read inside its time limit does not ask ESPN again", async () => {
 
 test("a read past its time limit is answered from the cache at once and refreshed behind", async () => {
   vi.useFakeTimers({ toFake: ["Date"] });
-  await forgetTeamList();
+  // The team list's key (`TEAM_LIST_KEY` in `espn.ts`), which the site itself never forgets.
+  await forget(["espn-teams"]);
   const first = await cachedTeams();
   expect(first.length).toBeGreaterThan(30);
 

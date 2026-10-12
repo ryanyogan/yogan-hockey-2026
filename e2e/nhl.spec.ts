@@ -53,15 +53,15 @@ const VIEWS = [
         "6",
       ]);
       await expect(leader.getByRole("link")).toHaveAttribute("href", "/nhl/teams/13");
-      // Every row has its team's mark: a file of the site's own, drawn 1.2 times its 13px type.
+      // Every row has its team's mark: a file of the site's own, drawn 1.2 times its 15px type.
       await expect(page.locator("main [data-slot=team-mark]")).toHaveCount(32);
       const mark = leader.locator("[data-slot=team-mark] img");
       await expect(mark).toHaveAttribute("src", /^\/team-marks\/13-28\.[0-9a-f]{8}\.webp$/);
       await expect(mark).toHaveJSProperty("complete", true);
       expect(await mark.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBe(28);
       const box = await mark.boundingBox();
-      expect(box?.width).toBeCloseTo(15.6, 1);
-      expect(box?.height).toBeCloseTo(15.6, 1);
+      expect(box?.width).toBeCloseTo(18, 1);
+      expect(box?.height).toBeCloseTo(18, 1);
     },
   },
 ];

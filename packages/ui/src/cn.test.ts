@@ -4,6 +4,8 @@ import { cn } from "./cn";
 describe("cn", () => {
   it("keeps a size token beside a colour token", () => {
     expect(cn("text-small text-label")).toBe("text-small text-label");
+    expect(cn("text-head text-label", "text-tag text-kicker")).toBe("text-tag text-kicker");
+    expect(cn("tracking-label", "tracking-head")).toBe("tracking-head");
     expect(cn("font-score text-score", "text-note")).toBe("font-score text-score text-note");
   });
 

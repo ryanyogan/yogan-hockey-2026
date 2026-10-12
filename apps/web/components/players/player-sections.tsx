@@ -124,7 +124,7 @@ export function HeaderLine({
         <dl className="flex flex-wrap gap-x-6 gap-y-1 border-rule-head border-t px-2 py-1">
           {facts.map((fact) => (
             <div key={fact.label}>
-              <dt className="text-small text-label uppercase tracking-label">{fact.label}</dt>
+              <dt className="text-small text-label uppercase tracking-head">{fact.label}</dt>
               <dd>{fact.value}</dd>
             </div>
           ))}

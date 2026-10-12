@@ -9,10 +9,10 @@ import { createCn } from "cn/config";
 export const cn = createCn({
   extend: {
     theme: {
-      text: ["body", "small", "score", "wordmark"],
+      text: ["head", "tag", "small", "body", "row", "score", "title", "wordmark"],
       "font-weight": ["quiet", "body", "label", "strong", "score"],
       spacing: ["row"],
-      tracking: ["label"],
+      tracking: ["head", "mark", "label"],
     },
   },
 });

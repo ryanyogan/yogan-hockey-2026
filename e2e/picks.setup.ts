@@ -1,7 +1,5 @@
 import { expect, test as setup } from "@playwright/test";
 
-setup.skip(true, "/skeleton/picks is not ported to TanStack Start yet: #192 restores this setup.");
-
 // Runs before every spec (the `setup` project in playwright.config.ts). Locally no model can make
 // a pick, so each game of the recorded slate would say "pick pending" and then, once its
 // Prediction had failed, nothing: the note of a game row would depend on when a spec looked.

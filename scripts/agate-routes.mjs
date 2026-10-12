@@ -142,10 +142,7 @@ function audit() {
 
 await mkdir(scratchDir, { recursive: true });
 const browser = await chromium.launch();
-// The sample picks are written by `/skeleton/picks`, which the port to TanStack Start has not
-// reached (#192). Until it is back the dateline is shot without its record of the picks.
-if ((await fetch(`${baseURL}/skeleton/picks`)).ok) await seedPicks(browser, baseURL);
-else console.log("no /skeleton/picks on this site: shot without the sample picks");
+await seedPicks(browser, baseURL);
 let failed = 0;
 for (const route of ROUTES) {
   for (const width of WIDTHS) {

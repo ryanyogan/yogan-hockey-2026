@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Agate prototype · Yogan Hockey</title>
+<meta name="theme-color" content="#fafaf8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..800;1,6..72,400..700&amp;family=IBM+Plex+Sans+Condensed:wght@400;500;600;700&amp;display=swap">
+<link rel="stylesheet" href="./style.css">
+<script>
+  // Before paint, like next-themes: ?theme= wins, then the stored choice, then the system.
+  (() => {
+    var q = new URLSearchParams(location.search).get("theme");
+    var t = q;
+    if (!t) { try { t = localStorage.getItem("theme"); } catch (e) {} }
+    if (!t || t === "system") t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    if (t === "dark") document.documentElement.classList.add("dark");
+  })();
+</script>
+</head>
+<body>
+<a class="skip-link" href="#content">Skip to content</a>
+<div id="app"></div>
+<script type="module" src="./app.js"></script>
+</body>
+</html>

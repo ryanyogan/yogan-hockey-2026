@@ -12,6 +12,8 @@ import {
   kicker,
   leadsAndBriefs,
   nickname,
+  noGames,
+  noStandings,
   pickSentence,
   picksNote,
   picksScore,
@@ -656,5 +658,27 @@ describe("the dateline", () => {
     });
     expect(dateline(TONIGHT, { right: 0, wrong: 0 }).wide).toHaveLength(2);
     expect(dateline({ date: null, games: [] }, null)).toEqual({ wide: [], narrow: "" });
+  });
+});
+
+describe("a time the server writes", () => {
+  test("is marked with its zone, and nothing else is", () => {
+    expect(kicker(SEA, EASTERN, " ET")).toBe("8:40 PM ET · Climate Pledge Arena");
+    expect(statusText(SEA, EASTERN, " ET")).toBe("8:40 PM ET");
+    expect(kicker(WSH, EASTERN, " ET")).toBe("Final · Capital One Arena");
+  });
+});
+
+describe("nothing to draw", () => {
+  test("a slate that was not read is not a day off", () => {
+    expect(noGames(null)).toBe(
+      "Today's games could not be read. They appear here as soon as they can be.",
+    );
+    expect(noGames("2026-10-06")).toBe("No games scheduled today.");
+  });
+
+  test("standings that were not read are not a season yet to start", () => {
+    expect(noStandings(false)).toBe("The standings could not be read just now.");
+    expect(noStandings(true)).toBe("No standings yet this season.");
   });
 });

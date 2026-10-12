@@ -1,5 +1,5 @@
-import { expect, test } from "@playwright/test";
 import { driveGame, recordedGame, SCHEDULED_GAME } from "./game-driver";
+import { expect, test } from "./test";
 
 // A visitor outside Eastern time: the start is shown in his own zone.
 test.use({ timezoneId: "America/Chicago" });

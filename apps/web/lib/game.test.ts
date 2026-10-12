@@ -12,7 +12,7 @@ beforeAll(async () => {
 const COLD_START = 30_000;
 
 test(
-  "first paint is the game as a plain object a client component can be given",
+  "first paint is the game as a plain object the browser can be given",
   async () => {
     vi.stubEnv("ESPN_FIXTURES", "1");
 

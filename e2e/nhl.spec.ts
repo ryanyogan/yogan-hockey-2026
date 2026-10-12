@@ -1,4 +1,5 @@
-import { expect, type Page, test } from "@playwright/test";
+import type { Page } from "@playwright/test";
+import { expect, shellHydrated, test } from "./test";
 
 const tabs = (page: Page) => page.getByRole("navigation", { name: "NHL", exact: true });
 const views = (page: Page) => page.getByRole("navigation", { name: "Standings view" });
@@ -62,7 +63,51 @@ const VIEWS = [
   },
 ];
 
-test("/nhl shows each standings view and the teams from a pasted URL", async ({ browser }) => {
+test("/nhl shows each standings view and the teams from a pasted URL, and reads again when the Scoreboard reports a final", async ({
+  browser,
+  page,
+}) => {
+  // The page's own Scoreboard socket, with a way to say on it what the Agent would.
+  let say: (message: unknown) => void = () => {};
+  let state: Record<string, unknown> | null = null;
+  await page.routeWebSocket(/\/agents\/scoreboard-agent\/main/, (socket) => {
+    const agent = socket.connectToServer();
+    socket.onMessage((message) => agent.send(message));
+    agent.onMessage((message) => {
+      try {
+        const parsed = JSON.parse(String(message));
+        if (parsed.type === "cf_agent_state") state = parsed.state;
+      } catch {
+        // Not JSON: the Agents SDK's own business.
+      }
+      socket.send(message);
+    });
+    say = (message) => socket.send(JSON.stringify(message));
+  });
+  // What a loader asks the server for: its server function.
+  const reads: string[] = [];
+  page.on("request", (request) => {
+    if (new URL(request.url()).pathname.startsWith("/_serverFn/")) reads.push(request.url());
+  });
+  await page.goto("/nhl");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Standings by division");
+  // Today's games came with the page, and the socket has spoken: neither made a loader run.
+  await expect.poll(() => state).not.toBeNull();
+  await shellHydrated(page);
+  expect(reads).toEqual([]);
+  // The state again changes nothing: its `invalidatedAt` is the one the page was drawn with.
+  say({ type: "cf_agent_state", state });
+  // A final: cached data was forgotten later than this page was read.
+  say({
+    type: "cf_agent_state",
+    state: { ...(state ?? {}), invalidatedAt: "2099-01-01T00:00:00.000Z" },
+  });
+  // The root's read and `/nhl`'s, once each, and the page is whole all the while.
+  await expect.poll(() => reads.length).toBe(2);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Standings by division");
+  await page.waitForTimeout(500);
+  expect(reads).toHaveLength(2);
+
   // Each address is opened in a browser of its own, as a pasted link is, which also keeps to one
   // hard navigation per page (see the build notes).
   const paste = async (url: string, check: (page: Page) => Promise<void>) => {

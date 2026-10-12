@@ -1,5 +1,3 @@
-"use client";
-
 import type { ScoreboardGame } from "@yogan-hockey/schemas";
 import { PageHeader, Section, SectionHeader } from "@yogan-hockey/ui/components/section";
 import { favoritesFirst } from "../../lib/favorites";
@@ -15,7 +13,7 @@ import { useScoreboard } from "./scoreboard-provider";
 
 const plural = (count: number, noun: string) => `${count} ${noun}${count === 1 ? "" : "s"}`;
 
-/** Each game's pick in one line, by game id, as the page's server component read them. */
+/** Each game's pick in one line, by game id, as the route's loader read them. */
 type Picks = Readonly<Record<string, string>>;
 
 function Games({ title, games, picks }: { title: string; games: ScoreboardGame[]; picks: Picks }) {
@@ -51,10 +49,9 @@ function Games({ title, games, picks }: { title: string; games: ScoreboardGame[]
 /**
  * The page's title, with the day's count and when the Scoreboard last heard from ESPN. On a phone
  * the "updated" stamp has a line of its own under the title, and the line is there before there
- * is anything to put on it: the placeholder (`LiveSkeleton`) draws this with nothing given, so
- * the page does not move when the socket first speaks.
+ * is anything to put on it, so the page does not move when the socket first speaks.
  */
-export function ScoresTitle({ count, heardAt }: { count?: string; heardAt?: string | null }) {
+function ScoresTitle({ count, heardAt }: { count?: string; heardAt?: string | null }) {
   return (
     <PageHeader
       title="Live scores"
@@ -75,7 +72,7 @@ export function ScoresTitle({ count, heardAt }: { count?: string; heardAt?: stri
 
 /**
  * `/nhl/live`: today's games by where each stands, kept current by the Scoreboard socket. `picks`
- * is as old as the page's last render, so a "pick pending" is checked against the game's status.
+ * is as old as the loader's last read, so a "pick pending" is checked against the game's status.
  */
 export function LiveScores({ picks = {} }: { picks?: Picks }) {
   const { date, games, heardAt } = useScoreboard();

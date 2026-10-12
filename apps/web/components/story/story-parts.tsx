@@ -1,5 +1,3 @@
-"use client";
-
 import { badgeVariants } from "@yogan-hockey/ui/components/badge";
 import {
   Ledger,

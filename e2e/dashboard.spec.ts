@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./test";
 
 // Fixture mode: nine games still to be played, Nashville at Toronto the second of them by start,
 // so it is one of the three leads. Toronto (21) is the recorded team and Auston Matthews

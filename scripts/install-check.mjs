@@ -95,7 +95,6 @@ async function installability() {
       status: response.status(),
       contentType: headers["content-type"],
       cacheControl: headers["cache-control"],
-      pageCache: headers["x-page-cache"] ?? null,
       bytes: (await response.body()).length,
     };
     files.push(file);

@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./test";
 
 // Nashville at Toronto, on the recorded slate of nine games still to be played.
 const GAME_ID = "401892449";
@@ -30,11 +30,12 @@ test("/nhl/live lists the slate in sections, links each game, and follows the so
     pushState = (state) => socket.send(JSON.stringify({ type: "cf_agent_state", state }));
     sayHeardAt = (at) => socket.send(JSON.stringify({ type: "scoreboard_heard", at }));
   });
-  // Every time the page asks the server to render it again.
-  let rerenders = 0;
+  // Every call of a server function. This page makes none of its own once it is drawn (it lists
+  // no favorite players), so each one is a loader reading: this page's again, or the page of a
+  // link the pointer rests on, read ahead (`defaultPreload` in `src/router.tsx`).
+  let rereads = 0;
   page.on("request", (request) => {
-    const again = request.headers().rsc === "1" && new URL(request.url()).pathname === "/nhl/live";
-    if (again) rerenders += 1;
+    if (new URL(request.url()).pathname.startsWith("/_serverFn/")) rereads += 1;
   });
 
   await page.goto("/nhl/live");
@@ -71,6 +72,9 @@ test("/nhl/live lists the slate in sections, links each game, and follows the so
   await expect(ticker.getByRole("link")).toHaveCount(10);
   const entry = ticker.locator(`a[href="/nhl/games/${GAME_ID}"]`);
   await expect(entry).toHaveText(/NSH.*TOR.*6:00 PM$/);
+  // Nothing has been read since the page was drawn. From here the pointer is on the strip, where
+  // resting on a game reads that game's page ahead, so the count starts again once it has left.
+  expect(rereads).toBe(0);
   // Nine games are wider than the strip, and a plain vertical wheel reaches the rest.
   const strip = ticker.getByRole("list");
   await expect(async () => {
@@ -113,6 +117,9 @@ test("/nhl/live lists the slate in sections, links each game, and follows the so
     ).toBe(0);
   }
   if (desktop != null) await page.setViewportSize(desktop);
+  // The pointer off every link, and what it read ahead on the way forgotten.
+  await page.getByRole("heading", { name: /Live scores/ }).hover();
+  rereads = 0;
 
   // The Scoreboard pushes a change: the game is on, and the page follows without a refresh.
   await expect.poll(() => slate, { message: "the socket delivered the slate" }).toBeDefined();
@@ -153,15 +160,17 @@ test("/nhl/live lists the slate in sections, links each game, and follows the so
   pushState(over);
   const final = page.getByRole("region", { name: "Final" });
   await expect(final.getByRole("link", { name: /NSH at TOR, Final/ })).toBeVisible();
-  expect(rerenders).toBe(0);
+  expect(rereads).toBe(0);
 
-  // The Scoreboard has recorded the final and invalidated what the server said about the game
-  // (standings, records): it moves `invalidatedAt`, and the page has the server render it again.
-  const rerender = page.waitForRequest((request) => request.headers().rsc === "1");
+  // The Scoreboard has recorded the final and forgotten what the server said about the game
+  // (standings, records): it moves `invalidatedAt`, and the page's loaders are run again, the
+  // root route's and this page's.
   pushState({ ...over, invalidatedAt: "2031-01-16T01:02:33.000Z" });
-  await (await rerender).response();
-  expect(rerenders).toBe(1);
-  // The server's first paint is older than the socket's news and does not replace it.
+  await expect.poll(() => rereads).toBe(2);
+  // And no more than those two.
+  await page.waitForTimeout(500);
+  expect(rereads).toBe(2);
+  // The root loader's read is older than the socket's news and does not replace it.
   await expect(final.getByRole("row")).toHaveCount(2);
   await expect(entry).toHaveText(/NSH 2.*TOR 1.*final/);
 

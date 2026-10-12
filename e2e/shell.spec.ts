@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, shellHydrated, test } from "./test";
 
 const DARK_BACKGROUND = "rgb(18, 18, 18)";
 const LIGHT_BACKGROUND = "rgb(250, 250, 248)";
@@ -111,27 +111,8 @@ test("the masthead renders, switches theme, and a phone gets its sections under 
   await expect(dateline.locator("span:visible")).toHaveText(/^9 games( · Picks \d+–\d+)?$/);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(phone.width);
 
-  await places.getByText("Home", { exact: true }).click();
-  await expect(page.getByRole("region", { name: "NHL Roundup" })).toBeVisible();
-  await expect(sectionNav.locator('[aria-current="page"]')).toHaveText("Home");
-  // Home's page is the scores: it has no strip.
-  await expect(strip).toHaveCount(0);
-  // Scrolled to the end, the sections are still at the top of the screen.
-  await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
-  await expect.poll(async () => (await sectionNav.boundingBox())?.y).toBe(0);
-  // The masthead is the layout's: a section followed changes the page under it and leaves it.
-  await masthead.evaluate((node) => node.setAttribute("data-persistence-check", "kept"));
-  await sectionNav.evaluate((node) => node.setAttribute("data-persistence-check", "kept"));
-  await places.getByText("Players", { exact: true }).click();
-  await expect(page).toHaveURL(/\/players$/);
-  await expect(sectionNav.locator('[aria-current="page"]')).toHaveText("Players");
-  await expect(masthead).toHaveAttribute("data-persistence-check", "kept");
-  await expect(sectionNav).toHaveAttribute("data-persistence-check", "kept");
-  await expect(strip).toBeAttached();
-
   // A phone has one theme button, which leads to the theme not shown: by day, to night.
   await expect(theme.getByRole("button")).toHaveCount(1);
-  // The dev server may have reloaded the page for the new route, so again press until one lands.
   await expect(async () => {
     // Whichever is drawn: a press that landed late has already swapped the button.
     if (await theme.getByRole("button", { name: "Night" }).isVisible())
@@ -148,4 +129,37 @@ test("the masthead renders, switches theme, and a phone gets its sections under 
     const response = await page.request.get(path, { maxRedirects: 0 });
     expect(response.status(), path).toBe(404);
   }
+});
+
+// This was the middle of the test above, and goes back there at the cutover if one hard
+// navigation a spec still matters.
+test("a section followed changes the page under the masthead and leaves it", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/no-such-page");
+  // A section pressed before the shell has hydrated is a new document, masthead and all, and the
+  // mark made on the old one is gone with it. The not-found page is the shell's own, so there is
+  // no page under the masthead still to hydrate.
+  await shellHydrated(page);
+  const masthead = page.getByRole("banner");
+  const strip = page.locator('[data-slot="score-ticker"]');
+  const sectionNav = page.locator('[data-slot="section-nav"]');
+  const places = sectionNav.getByRole("link");
+
+  await places.getByText("Home", { exact: true }).click();
+  await expect(page.getByRole("region", { name: "NHL Roundup" })).toBeVisible();
+  await expect(sectionNav.locator('[aria-current="page"]')).toHaveText("Home");
+  // Home's page is the scores: it has no strip.
+  await expect(strip).toHaveCount(0);
+  // Scrolled to the end, the sections are still at the top of the screen.
+  await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
+  await expect.poll(async () => (await sectionNav.boundingBox())?.y).toBe(0);
+  // The masthead is the root route's: a section followed changes the page under it and leaves it.
+  await masthead.evaluate((node) => node.setAttribute("data-persistence-check", "kept"));
+  await sectionNav.evaluate((node) => node.setAttribute("data-persistence-check", "kept"));
+  await places.getByText("Players", { exact: true }).click();
+  await expect(page).toHaveURL(/\/players$/);
+  await expect(sectionNav.locator('[aria-current="page"]')).toHaveText("Players");
+  await expect(masthead).toHaveAttribute("data-persistence-check", "kept");
+  await expect(sectionNav).toHaveAttribute("data-persistence-check", "kept");
+  await expect(strip).toBeAttached();
 });

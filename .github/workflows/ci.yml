@@ -36,6 +36,9 @@ jobs:
       - name: Production build
         working-directory: apps/web
         run: pnpm exec cf deploy --dry-run </dev/null
+      # A font the build names and does not hold is a 404 only a deployed site shows.
+      - name: The build holds every font it names
+        run: node scripts/built-fonts.mjs
 
   e2e:
     name: Playwright smoke tests

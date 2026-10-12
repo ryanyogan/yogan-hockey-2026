@@ -1,24 +1,5 @@
 import type { SeasonRecord } from "@yogan-hockey/schemas";
-import { Suspense } from "react";
-import { ScoreboardGate } from "../scoreboard/scoreboard-provider";
-import {
-  Dateline,
-  DatelineFrame,
-  SectionLinks,
-  ShortDate,
-  ThemeControl,
-  Wordmark,
-} from "./masthead-client";
-
-/** The dateline once the season's record has been read; the Scoreboard keeps the rest current. */
-async function DatelineWithRecord({ record }: { record: Promise<SeasonRecord | null> }) {
-  const known = await record;
-  return (
-    <ScoreboardGate fallback={<DatelineFrame />}>
-      <Dateline record={known} />
-    </ScoreboardGate>
-  );
-}
+import { Dateline, SectionLinks, ShortDate, ThemeControl, Wordmark } from "./masthead-client";
 
 /**
  * The top of every page, as a newspaper's (`docs/design/agate.md`): a utility bar, the wordmark,
@@ -35,20 +16,18 @@ async function DatelineWithRecord({ record }: { record: Promise<SeasonRecord | n
  * box travels no further than the box that holds it. So this returns the column's parts.
  *
  * The wordmark is Home's `h1`, where no page title is drawn, and a paragraph everywhere else,
- * where the page has its own: a client component for that alone.
+ * where the page has its own.
  *
- * Only what must know the path, the Scoreboard or the theme is a client component. `record` is
- * the season's picks, not waited for: the dateline's rules hold its place.
+ * `record` is the season's picks, read by the root route's loader with the Scoreboard, so the
+ * dateline is whole in the first HTML.
  */
-export function Masthead({ record }: { record: Promise<SeasonRecord | null> }) {
+export function Masthead({ record }: { record: SeasonRecord | null }) {
   return (
     <>
       <header data-slot="masthead" className="text-center">
         <div className="flex items-center justify-between gap-x-6 border-rule-head border-b max-md:min-h-12 md:py-2">
           <span className="font-semibold text-[12px] text-label uppercase leading-none tracking-[0.12em] md:hidden">
-            <ScoreboardGate fallback={null}>
-              <ShortDate />
-            </ScoreboardGate>
+            <ShortDate />
           </span>
           <nav aria-label="Site" className="hidden gap-x-5 md:flex">
             <SectionLinks />
@@ -82,9 +61,7 @@ export function Masthead({ record }: { record: Promise<SeasonRecord | null> }) {
           <SectionLinks />
         </nav>
       </div>
-      <Suspense fallback={<DatelineFrame />}>
-        <DatelineWithRecord record={record} />
-      </Suspense>
+      <Dateline record={record} />
     </>
   );
 }

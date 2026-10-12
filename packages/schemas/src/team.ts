@@ -2,7 +2,7 @@ import { z } from "zod";
 
 /** An NHL team, as it appears wherever a team is named: a game, a standings row, the team list. */
 export const TeamSchema = z.object({
-  /** ESPN's team id. It is the `:id` in `/nhl/teams/:id` and in the `team:{id}` cache tag. */
+  /** ESPN's team id. It is the `:id` in `/nhl/teams/:id` and in the team's cache keys. */
   id: z.string().min(1),
   /** "TOR" */
   abbreviation: z.string().min(1),
@@ -43,7 +43,7 @@ export type TeamStats = z.infer<typeof TeamStatsSchema>;
 
 /** One player on a team's roster. */
 export const RosterPlayerSchema = z.object({
-  /** ESPN's athlete id: the `:id` in `/players/:id` and in the `player:{id}` cache tag. */
+  /** ESPN's athlete id: the `:id` in `/players/:id` and in the player's cache keys. */
   id: z.string().min(1),
   name: z.string().min(1),
   /** A string because "00" is not 0. Null for a player not yet given a number. */

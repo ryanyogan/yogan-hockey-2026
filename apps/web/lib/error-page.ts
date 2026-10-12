@@ -17,7 +17,7 @@ const below = (pathname: string, root: string) => pathname.startsWith(`${root}/`
 
 /**
  * The error page's words for a path. A page with an id leads back to the list it came from, as
- * its not-found page does; anything else leads to tonight. Client-safe: `app/error.tsx` calls it.
+ * its not-found page does; anything else leads to tonight. Nothing here touches the server: `components/shell/error-page.tsx` calls it.
  */
 export function unreadPage(pathname: string): UnreadPage {
   if (below(pathname, "/nhl/teams")) {

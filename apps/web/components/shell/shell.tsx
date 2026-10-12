@@ -12,13 +12,7 @@ import { SiteFooter } from "./site-footer";
  * The column's own padding is the gutter and the room the notch and the home bar take, so a page
  * adds none: its sections run from gutter to gutter.
  */
-export function Shell({
-  record,
-  children,
-}: {
-  record: Promise<SeasonRecord | null>;
-  children: ReactNode;
-}) {
+export function Shell({ record, children }: { record: SeasonRecord | null; children: ReactNode }) {
   return (
     <div
       data-slot="page"

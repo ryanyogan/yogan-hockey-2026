@@ -7,7 +7,7 @@ const MIGRATIONS = fileURLToPath(new URL("../../packages/db/migrations", import.
 /**
  * Agent tests run inside the Workers runtime. The pool reads Wrangler config and
  * there is none, so the bindings from cloudflare.config.ts are repeated here.
- * The entry is the Agents and their routing alone: the site's entry needs vinext's build.
+ * The entry is the Agents and their routing alone: the site's entry needs Start's build.
  */
 export default defineConfig(async () => ({
   plugins: [
@@ -23,14 +23,16 @@ export default defineConfig(async () => ({
           SkeletonAgent: { className: "SkeletonAgent", useSQLite: true },
         },
         d1Databases: ["DB"],
-        kvNamespaces: ["VINEXT_KV_CACHE"],
+        kvNamespaces: ["CACHE"],
         bindings: { TEST_MIGRATIONS: await readD1Migrations(MIGRATIONS) },
       },
     }),
   ],
-  resolve: {
-    // vinext's plugin does this in the app; without it "next/cache" is not a module here.
-    alias: { "next/cache": "vinext/shims/cache" },
+  // The routes are tested as the router runs them, so their JSX is compiled; a package's tsconfig
+  // may ask for it to be left alone.
+  oxc: { jsx: { runtime: "automatic" as const } },
+  test: {
+    name: "web",
+    include: ["agents/**/*.test.ts", "lib/**/*.test.ts", "src/**/*.test.ts"],
   },
-  test: { name: "web", include: ["agents/**/*.test.ts", "lib/**/*.test.ts"] },
 }));

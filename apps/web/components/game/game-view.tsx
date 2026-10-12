@@ -1,13 +1,11 @@
-"use client";
-
 import type { GameHeader, Play } from "@yogan-hockey/schemas";
 import { Button } from "@yogan-hockey/ui/components/button";
 import { UrlTabs } from "@yogan-hockey/ui/components/url-tabs";
-import { usePathname } from "next/navigation";
 import { type ReactNode, useState } from "react";
 import type { GameClock } from "../../lib/game/penalties";
 import { focusedPlay, toggleSelection, visiblePlays } from "../../lib/game/plays";
 import { type GameTab, gameTabLinks, gameTabOfPath, shownGameTab } from "../../lib/game/tabs";
+import { usePathname } from "../../lib/use-page-address";
 import { Link } from "../link";
 import { GameRink } from "./game-rink";
 import { PeriodTimeline } from "./period-timeline";
@@ -47,7 +45,7 @@ export function GameView({
   header: GameHeader;
   /** Every play so far, in the game's order. */
   plays: readonly Play[];
-  /** The open tab, which the page reads from `?tab=` with `gameTabFrom`. */
+  /** The open tab, which the page reads from its address with `gameTabOfPath`. */
   tab: GameTab;
   /** The page's own path, which the tabs link back to. */
   pathname: string;

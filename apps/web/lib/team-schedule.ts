@@ -9,7 +9,7 @@ import { NHL_TIME_ZONE } from "./game-time";
 
 /*
  * What a team page works out from a team's games before drawing them. Nothing here touches the
- * server, so client components use it.
+ * server, so components use it.
  */
 
 /** One game as the team's own schedule lists it: against an opponent, at home or away. */

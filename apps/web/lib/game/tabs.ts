@@ -7,8 +7,8 @@ export const GAME_TABS = [
 
 export type GameTab = (typeof GAME_TABS)[number]["value"];
 
-/** The tab a `?tab=` names; the plays for anything else. */
-export function gameTabFrom(value: string | string[] | undefined): GameTab {
+/** The tab a path's last segment names; the plays for anything else. */
+function gameTabFrom(value: string | undefined): GameTab {
   return GAME_TABS.find((tab) => tab.value === value)?.value ?? "plays";
 }
 
@@ -28,7 +28,7 @@ export function gameTabLinks(pathname: string, hasPick = true) {
   }));
 }
 
-/** The nested route changes only the tab; the shared layout retains the game and replay. */
+/** The nested route changes only the tab; the game's route above it keeps the game and replay. */
 export function gameTabOfPath(pathname: string): GameTab {
   return gameTabFrom(pathname.split("/").filter(Boolean)[3]);
 }

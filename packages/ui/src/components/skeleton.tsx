@@ -9,28 +9,16 @@ import {
   LedgerHead,
   LedgerRow,
 } from "./ledger";
-import { PageHeader, Section, SectionHeader } from "./section";
 
 /**
- * Placeholders for content that is still being read, drawn from the ledger's own parts so that
- * each takes exactly the room of what replaces it: nothing on the page moves when it arrives.
+ * A ledger with a bar where each value would be, drawn from the ledger's own parts so that it
+ * takes exactly the room of the real one. No page waits behind one: a route's loader reads
+ * everything the page draws (ADR 0009). What is left is holding a ledger's place unseen, as the
+ * team page does for its game (`TeamNowFrame` in `apps/web`).
  *
- *   // In a `loading.tsx`, or as a `<Suspense fallback>`:
- *   <SectionSkeleton
- *     title="Roster"
- *     rows={24}
- *     columns={[{ width: "sm" }, { width: "lg", className: "w-full" }, { width: "sm", numeric: true }]}
- *   />
- *
- * The rule that keeps it exact: a skeleton is the real component's markup with a `SkeletonBar`
- * where each value would be. Give `columns` the real ledger's columns, with the same `numeric`
+ * The rule that keeps it exact: give `columns` the real ledger's columns, with the same `numeric`
  * and the same `className` (the `w-full` that takes the slack, a `max-sm:hidden`). A row is then
  * the real row's height by construction, whatever the tokens become.
- *
- * What a skeleton cannot know is how many rows are coming. Where the number is fixed (a team's
- * record, a Next Game card) say it. Where it is not (a schedule, a roster), give enough rows to
- * reach past the bottom of the window (24), so whatever follows the list starts off screen and
- * its move is never seen.
  */
 
 const barWidth = { xs: "w-4", sm: "w-8", md: "w-16", lg: "w-32", xl: "w-48" } as const;
@@ -71,10 +59,7 @@ type SkeletonColumn = {
   detail?: boolean | "fine";
 };
 
-/**
- * A ledger of placeholder rows. Hidden from a screen reader: the `SectionSkeleton` (or whatever
- * holds it) says that the content is loading, once.
- */
+/** A ledger of placeholder rows, hidden from a screen reader. */
 function LedgerSkeleton({
   columns,
   rows,
@@ -120,43 +105,4 @@ function LedgerSkeleton({
   );
 }
 
-/**
- * A whole section's placeholder: its header line and a `LedgerSkeleton`. Give `title` when the
- * heading is known before the data is (most are: "Upcoming", "Roster"), so the heading is
- * already the real one; leave it out for a heading that is data, such as a team's name.
- */
-function SectionSkeleton({
-  title,
-  label = typeof title === "string" ? title : "content",
-  children,
-  ...ledger
-}: ComponentProps<typeof LedgerSkeleton> & {
-  title?: ReactNode;
-  /** What is loading, for a screen reader: "Loading roster". Defaults to the title. */
-  label?: string;
-  /** Sits at the right end of the header line, as `SectionHeader`'s children do. */
-  children?: ReactNode;
-}) {
-  return (
-    <Section data-slot="section-skeleton" aria-busy="true">
-      <SectionHeader title={title ?? <SkeletonBar width="xl" />}>{children}</SectionHeader>
-      <span role="status" className="sr-only">
-        Loading {label.toLowerCase()}
-      </span>
-      <LedgerSkeleton {...ledger} />
-    </Section>
-  );
-}
-
-/**
- * A page title's placeholder: the real `PageHeader`, with the title when it is known before the
- * data is ("Live scores") and a bar in the title's own size when it is data (a team's name).
- */
-function PageHeaderSkeleton({
-  title,
-  ...props
-}: Omit<ComponentProps<typeof PageHeader>, "title"> & { title?: ReactNode }) {
-  return <PageHeader title={title ?? <SkeletonBar width="xl" />} {...props} />;
-}
-
-export { LedgerSkeleton, PageHeaderSkeleton, SectionSkeleton, SkeletonBar, type SkeletonColumn };
+export { LedgerSkeleton, SkeletonBar, type SkeletonColumn };

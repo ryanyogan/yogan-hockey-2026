@@ -1,20 +1,18 @@
-"use client";
-
-import { useRouter } from "next/navigation";
+import { useRouter } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
 import { refreshDue } from "./invalidation";
-import { INVALIDATED_COOKIE } from "./page-cache";
 
 /**
- * Re-renders the page's server components when the Scoreboard says cached data was invalidated:
- * a game went final, or a catch-up recorded games nobody saw end. Call it from the one client
- * component that holds the Scoreboard socket, with `invalidatedAt` as the server rendered the
- * page with and as the socket's latest state has it, each `undefined` until it is known. The rule
- * is `refreshDue` (`lib/invalidation.ts`): the render's own value refreshes nothing, and each
- * later one refreshes once.
+ * Runs the router's loaders again when the Scoreboard says cached data was forgotten: a game went
+ * final, or a catch-up recorded games nobody saw end. Call it from the one component that holds
+ * the Scoreboard socket, with `invalidatedAt` as the loaders read it and as the socket's latest
+ * state has it, the socket's `undefined` until it has spoken. The rule is `refreshDue`
+ * (`lib/invalidation.ts`): the loaders' own value refreshes nothing, and each later one refreshes
+ * once.
  *
- * `router.refresh()` also empties the router's caches, so a page prefetched or visited before
- * the invalidation is not drawn again from memory.
+ * `router.invalidate()` reads the drawn page's loaders again, the root route's with them, and
+ * marks everything else the router holds as stale, so a page preloaded or visited before the
+ * final is read again when it is next opened.
  */
 export function useRefreshOnInvalidation(
   rendered: string | null | undefined,
@@ -25,13 +23,6 @@ export function useRefreshOnInvalidation(
   useEffect(() => {
     if (!refreshDue({ rendered, heard, refreshedFor: refreshedFor.current })) return;
     refreshedFor.current = heard;
-    // The page cache serves this browser nothing stored before the invalidation
-    // (`lib/page-cache.ts`), for the two minutes its new key can take to be known everywhere.
-    const at = Date.parse(heard ?? "");
-    if (Number.isFinite(at)) {
-      // biome-ignore lint/suspicious/noDocumentCookie: the Cookie Store API is not in every browser the site supports.
-      document.cookie = `${INVALIDATED_COOKIE}=${at}; path=/; max-age=120; samesite=lax`;
-    }
-    router.refresh();
+    void router.invalidate();
   }, [rendered, heard, router]);
 }

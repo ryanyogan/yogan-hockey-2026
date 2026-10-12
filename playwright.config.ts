@@ -24,7 +24,9 @@ export default defineConfig({
     command: "pnpm dev",
     // Fixture mode: the smoke tests see ESPN's recorded responses, not tonight's games.
     env: { ESPN_FIXTURES: "1" },
-    url: `http://localhost:${PORT}`,
+    // A page that answers 200: Playwright does not take a 404 for a server that is up, and Home
+    // is one until it is ported (#191).
+    url: `http://localhost:${PORT}/nhl`,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
   },

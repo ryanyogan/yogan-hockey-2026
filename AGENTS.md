@@ -1,4 +1,4 @@
-The 2026 rebuild of Yogan Hockey: TypeScript on Cloudflare (a backend on the Agents SDK, a vinext UI), one pnpm monorepo. The Elixir app at `ryanyogan/yogan_hockey` (local clone: `../yogan_hockey`) is the parity reference.
+The 2026 rebuild of Yogan Hockey: TypeScript on Cloudflare (a backend on the Agents SDK, a TanStack Start UI rendered on the server with no server components: ADR 0009), one pnpm monorepo. The Elixir app at `ryanyogan/yogan_hockey` (local clone: `../yogan_hockey`) is the parity reference.
 
 ## How work is done
 
@@ -17,7 +17,8 @@ One ticket at a time, each by the `implement` skill (`~/.claude/skills/implement
 ## Preferences
 
 - Prefer an established npm package over hand-rolling.
-- In the vinext app, use server components and Server Actions wherever they apply.
+- In the TanStack Start app (`apps/web/src`), a page is a route whose loader waits for everything the page draws. A loader calls server functions and nothing else, one for each page-level read, each validating its input with the schemas in `packages/schemas`. Nothing is deferred, no route has a placeholder, and there is no TanStack Query (ADR 0009).
+- While the branch `tanstack-start` exists (it is merged to `main` at the cutover, #193, and then deleted), pull requests for the port are based on it, never on `main`.
 
 ## Agent skills
 

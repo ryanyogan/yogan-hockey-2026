@@ -6,7 +6,7 @@ import { loadPlayer, type Player } from "./players";
 /**
  * Favorite players, resolved: the browser holds ids, and this turns them into what a list shows.
  * It reads through `loadPlayer`, the players pages' own cached read, so a player who is not
- * ESPN's (Rylan) is found here as he is there. Server only: a client component takes the types.
+ * ESPN's (Rylan) is found here as he is there. Server only: a component takes the types.
  */
 
 /** One figure of a season line: "GP" and "3". */

@@ -49,7 +49,7 @@ export function pickLine(
 }
 
 /**
- * The one-line picks of a slate by game id, as plain data a server component hands to the
+ * The one-line picks of a slate by game id, as plain data a loader hands to the
  * browser. A game with nothing to say has no entry.
  */
 export function slatePicks(
@@ -67,7 +67,7 @@ export function slatePicks(
 
 /**
  * The made picks of a slate by game id, each cut down to who was picked and at what chance: what
- * Home's server component hands the browser, which writes the pick lines and marks them from the
+ * Home's loader hands the browser, which writes the pick lines and marks them from the
  * socket's scores (`lib/agate-copy.ts`). A failed Prediction has no entry: it is nothing shown.
  */
 export function madePicks(
@@ -112,7 +112,7 @@ export function pickLineOutcome(
 
 /**
  * The season under way: the slate's when its date is known, and otherwise that of the day it is
- * where the NHL keeps its days. For a page drawn without today's games (the page cache's).
+ * where the NHL keeps its days. The second is for when the Scoreboard could not be read, or has no slate yet.
  */
 export function seasonNow(slateDate: string | null, now: Date): number {
   // The Canadian form of a date is year-month-day.

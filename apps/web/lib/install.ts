@@ -1,5 +1,3 @@
-import type { MetadataRoute } from "next";
-
 /**
  * What a phone needs to put the site on its home screen: the manifest, and the colour of the
  * browser's own bars. The icons and splash images are files in `public/icons/`, drawn by
@@ -17,17 +15,6 @@ export const INK_COLORS = { light: "#111111", dark: "#eceae4" } as const;
 
 export type ShownTheme = keyof typeof THEME_COLORS;
 
-/**
- * The theme a visitor is shown, from what next-themes keeps of their choice (`localStorage`'s
- * "theme": "light", "dark", or "system" or nothing for a visitor who has not chosen) and what
- * their device prefers. For a page drawn without the layout, and so without next-themes
- * (`app/global-error.tsx`).
- */
-export function shownTheme(stored: string | null, prefersDark: boolean): ShownTheme {
-  if (stored === "dark" || stored === "light") return stored;
-  return prefersDark ? "dark" : "light";
-}
-
 /** Where the generated icons and splash images are served from. */
 export const ICONS_PATH = "/icons/";
 /** The sizes Chrome asks of an installable site, each drawn plain and maskable. */
@@ -35,7 +22,7 @@ export const ICON_SIZES = [192, 512] as const;
 export const APPLE_ICON = `${ICONS_PATH}apple-touch-icon-180x180.png`;
 export const FAVICON_PNG = `${ICONS_PATH}pwa-64x64.png`;
 
-export function webAppManifest(): MetadataRoute.Manifest {
+export function webAppManifest() {
   return {
     id: "/",
     name: APP_NAME,

@@ -1,9 +1,6 @@
-import { env } from "cloudflare:workers";
-import createKvDataCache from "@vinext/cloudflare/cache/kv-data-adapter.runtime";
-import { setDataCacheHandler } from "vinext/shims/cache-handler";
-import { createRequestContext, runWithRequestContext } from "vinext/shims/unified-request-context";
-import { afterEach, beforeAll, beforeEach, expect, test, vi } from "vitest";
+import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import {
+  cachedGamePregame,
   cachedPlayer,
   cachedPlayerCareer,
   cachedPlayerGameLog,
@@ -12,22 +9,21 @@ import {
   cachedTeam,
   cachedTeamSchedule,
   cachedTeams,
-  playerTag,
-  STANDINGS_TAG,
-  TEAMS_TAG,
-  teamTag,
+  forgetGame,
+  forgetPlayers,
+  forgetStandings,
+  forgetTeams,
 } from "./espn";
-import { invalidateTag } from "./invalidate-tag";
+import { forget } from "./kv-cache";
 
+/** The team list's key, as `espn.ts` has it. */
+const TEAM_LIST_KEY = "espn-teams";
 const TORONTO = "21";
 const MATTHEWS = "4024123";
 const STOLARZ = "3067313";
+const RECORDED_GAME = "401803652";
+const MINUTE = 60 * 1000;
 const fetchMock = vi.fn<typeof fetch>();
-
-beforeAll(() => {
-  // The site's entry registers the KV cache; this entry is the Agents alone, so the test does it.
-  setDataCacheHandler(createKvDataCache({ env: { ...env }, options: undefined }));
-});
 
 beforeEach(() => {
   // Fixture mode fills the cache; ESPN, stood in for by this mock, is asked only on a miss.
@@ -39,6 +35,7 @@ beforeEach(() => {
 afterEach(() => {
   vi.unstubAllEnvs();
   vi.unstubAllGlobals();
+  vi.useRealTimers();
   fetchMock.mockReset();
 });
 
@@ -47,14 +44,7 @@ function leaveFixtureMode() {
   vi.stubEnv("ESPN_FIXTURES", "");
 }
 
-test("the tags are the ones the spec's table names", () => {
-  expect(STANDINGS_TAG).toBe("standings");
-  expect(TEAMS_TAG).toBe("teams");
-  expect(teamTag(TORONTO)).toBe("team:21");
-  expect(playerTag(MATTHEWS)).toBe("player:4024123");
-});
-
-test("standings are served from the cache until their tag is invalidated", async () => {
+test("standings are served from the cache until they are forgotten", async () => {
   const first = await cachedStandings();
   expect(first.rows).toHaveLength(32);
 
@@ -62,23 +52,20 @@ test("standings are served from the cache until their tag is invalidated", async
   expect(await cachedStandings()).toEqual(first);
   expect(fetchMock).not.toHaveBeenCalled();
 
-  await invalidateTag(STANDINGS_TAG);
+  await forgetStandings();
   await expect(cachedStandings()).rejects.toMatchObject({ endpoint: "standings", status: 503 });
 });
 
-test("the team list is served from the cache until its tag is invalidated", async () => {
+test("the team list is served from the cache: nothing forgets it but its time limit", async () => {
   const first = await cachedTeams();
   expect(first).toHaveLength(32);
 
   leaveFixtureMode();
   expect(await cachedTeams()).toEqual(first);
   expect(fetchMock).not.toHaveBeenCalled();
-
-  await invalidateTag(TEAMS_TAG);
-  await expect(cachedTeams()).rejects.toMatchObject({ endpoint: "teams" });
 });
 
-test("a team's page and its schedule share the team's tag", async () => {
+test("forgetting a team makes the next read of its page and of its schedule a fresh one", async () => {
   const team = await cachedTeam(TORONTO);
   const schedule = await cachedTeamSchedule(TORONTO);
   expect(team.team.abbreviation).toBe("TOR");
@@ -89,7 +76,7 @@ test("a team's page and its schedule share the team's tag", async () => {
   expect(await cachedTeamSchedule(TORONTO)).toEqual(schedule);
   expect(fetchMock).not.toHaveBeenCalled();
 
-  await invalidateTag(teamTag(TORONTO));
+  await forgetTeams([TORONTO]);
   await expect(cachedTeam(TORONTO)).rejects.toMatchObject({ endpoint: "teams/21" });
   await expect(cachedTeamSchedule(TORONTO)).rejects.toMatchObject({
     endpoint: "teams/21/schedule",
@@ -98,12 +85,14 @@ test("a team's page and its schedule share the team's tag", async () => {
 
 test("one team's cache is not another's", async () => {
   await cachedTeam(TORONTO);
+  await forgetTeams(["10"]);
 
   leaveFixtureMode();
+  expect((await cachedTeam(TORONTO)).team.abbreviation).toBe("TOR");
   await expect(cachedTeam("10")).rejects.toMatchObject({ endpoint: "teams/10" });
 });
 
-test("a player's page, career and game log share the player's tag", async () => {
+test("forgetting a player makes the next read of his page, career and game log a fresh one", async () => {
   const player = await cachedPlayer(MATTHEWS);
   const career = await cachedPlayerCareer(MATTHEWS);
   const gameLog = await cachedPlayerGameLog(MATTHEWS);
@@ -117,7 +106,7 @@ test("a player's page, career and game log share the player's tag", async () => 
   expect(await cachedPlayerGameLog(MATTHEWS)).toEqual(gameLog);
   expect(fetchMock).not.toHaveBeenCalled();
 
-  await invalidateTag(playerTag(MATTHEWS));
+  await forgetPlayers([MATTHEWS]);
   await expect(cachedPlayer(MATTHEWS)).rejects.toMatchObject({ endpoint: "athletes/4024123" });
   await expect(cachedPlayerCareer(MATTHEWS)).rejects.toMatchObject({
     endpoint: "athletes/4024123/stats",
@@ -129,11 +118,24 @@ test("a player's page, career and game log share the player's tag", async () => 
 
 test("one player's cache is not another's", async () => {
   await cachedPlayer(STOLARZ);
-  await invalidateTag(playerTag(MATTHEWS));
+  await forgetPlayers([MATTHEWS]);
 
   leaveFixtureMode();
   expect((await cachedPlayer(STOLARZ)).name).toBe("Anthony Stolarz");
   expect(fetchMock).not.toHaveBeenCalled();
+});
+
+test("a game's pregame facts are served from the cache until the game is forgotten", async () => {
+  const first = await cachedGamePregame(RECORDED_GAME);
+
+  leaveFixtureMode();
+  expect(await cachedGamePregame(RECORDED_GAME)).toEqual(first);
+  expect(fetchMock).not.toHaveBeenCalled();
+
+  await forgetGame(RECORDED_GAME);
+  await expect(cachedGamePregame(RECORDED_GAME)).rejects.toMatchObject({
+    endpoint: "summary?event=401803652",
+  });
 });
 
 test("a player search is cached by what was searched for, whatever its case or spacing", async () => {
@@ -147,41 +149,48 @@ test("a player search is cached by what was searched for, whatever its case or s
   await expect(cachedPlayerSearch("marn")).rejects.toMatchObject({ endpoint: "search" });
 });
 
-/**
- * Runs a read as vinext runs a page's: inside a request, where a stale entry is answered at once
- * and refreshed in `waitUntil`. Outside one (an Agent, this test's other cases) a stale entry is
- * refreshed before it is answered. Returns what was handed to `waitUntil`.
- */
-async function inPageRequest<T>(read: () => Promise<T>): Promise<{ answer: T; behind: unknown[] }> {
-  const behind: unknown[] = [];
-  const context = createRequestContext({
-    executionContext: {
-      waitUntil: (work: Promise<unknown>) => void behind.push(work),
-      passThroughOnException: () => {},
-    },
-    unstableCacheRevalidation: "background",
-  });
-  return { answer: await runWithRequestContext(context, read), behind };
-}
-
-test("a page's read past its time limit is answered from the cache at once and refreshed behind", async () => {
+test("a read inside its time limit does not ask ESPN again", async () => {
   vi.useFakeTimers({ toFake: ["Date"] });
-  try {
-    const first = await cachedTeams();
-    expect(first.length).toBeGreaterThan(30);
+  await forgetStandings();
+  const first = await cachedStandings();
 
-    // A day and a minute on, the team list is past its time limit, and ESPN is down.
-    vi.setSystemTime(Date.now() + (24 * 60 + 1) * 60 * 1000);
-    leaveFixtureMode();
-
-    // The visitor does not wait on ESPN and is not shown its failure: the stale list answers.
-    const { answer, behind } = await inPageRequest(cachedTeams);
-    expect(answer).toEqual(first);
-    // ESPN is asked all the same, behind the answer, for whoever reads next.
-    expect(behind).toHaveLength(1);
-    await Promise.allSettled(behind);
-    expect(fetchMock).toHaveBeenCalled();
-  } finally {
-    vi.useRealTimers();
-  }
+  // Four minutes on, the standings are inside their five.
+  vi.setSystemTime(Date.now() + 4 * MINUTE);
+  leaveFixtureMode();
+  expect(await cachedStandings()).toEqual(first);
+  expect(fetchMock).not.toHaveBeenCalled();
 });
+
+test("a read past its time limit is answered from the cache at once and refreshed behind", async () => {
+  vi.useFakeTimers({ toFake: ["Date"] });
+  // The site itself never forgets the team list, so the test deletes its key.
+  await forget([TEAM_LIST_KEY]);
+  const first = await cachedTeams();
+  expect(first.length).toBeGreaterThan(30);
+
+  // A day and a minute on, the team list is past its time limit, and ESPN is down.
+  vi.setSystemTime(Date.now() + (24 * 60 + 1) * MINUTE);
+  leaveFixtureMode();
+
+  // The visitor does not wait on ESPN and is not shown its failure: the stale list answers.
+  expect(await cachedTeams()).toEqual(first);
+  // ESPN is asked all the same, behind the answer, for whoever reads next.
+  await vi.waitFor(() => expect(fetchMock).toHaveBeenCalled());
+
+  // ESPN answers again with one team: the read behind the next stale answer keeps it, and the
+  // read after that is given it.
+  fetchMock.mockReset();
+  fetchMock.mockImplementation(async () => Response.json(await oneTeam()));
+  expect(await cachedTeams()).toEqual(first);
+  await vi.waitFor(async () => expect(await cachedTeams()).toHaveLength(1));
+});
+
+/** ESPN's team list as recorded, cut down to its first team. */
+async function oneTeam(): Promise<unknown> {
+  const { default: recorded } = await import("../../../packages/espn/fixtures/teams.json");
+  const body = structuredClone(recorded);
+  const league = body.sports[0]?.leagues[0];
+  if (!league) throw new Error("The recorded team list has no league");
+  league.teams = league.teams.slice(0, 1);
+  return body;
+}

@@ -1,5 +1,3 @@
-"use client";
-
 import { DASHBOARD_FAVORITES, gamePlayingNow } from "../../lib/dashboard";
 import type { FavoritePlayer } from "../../lib/favorite-players";
 import { gameHref } from "../../lib/scoreboard-view";

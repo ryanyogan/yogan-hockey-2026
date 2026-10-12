@@ -14,7 +14,7 @@ import { betweenPeriods, gameStatusLine, periodLabel, slateCounts } from "./scor
  * Every sentence the Agate look prints, as pure functions of a game, its Prediction and the
  * season's record: the port of `prototypes/agate/copy.js`. Nothing here invents a fact: each word
  * comes from the score, the status, the records or the pick. Nothing touches the server, so
- * client components use it.
+ * the browser runs it as the server does.
  *
  * A time is written in the zone it is given, and in the zone of whatever runs the code when it is
  * given none (`lib/game-time.ts`): the server passes the NHL's, the browser the visitor's own.

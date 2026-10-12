@@ -1,5 +1,3 @@
-"use client";
-
 import { useCallback, useMemo } from "react";
 import useLocalStorageState from "use-local-storage-state";
 import { FAVORITE_KEYS, type FavoriteKind, readFavoriteIds, toggleFavorite } from "./favorites";

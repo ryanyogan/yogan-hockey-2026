@@ -4,10 +4,10 @@ import { getAgentByName } from "agents";
 import { gameConnection } from "./game-connection";
 
 /**
- * One game for first paint, read from its Game Agent by a server component: the header, every
+ * One game for first paint, read from its Game Agent on the server (`readGamePage`): the header, every
  * play so far, and `notFound` when ESPN has no such game. The Agent asks ESPN first when what it
- * has is old. The answer is copied to a plain object, so it can be passed to the client component
- * that then keeps it current with `useGameStream`.
+ * has is old. The answer is copied to a plain object, so it can go to the browser, where
+ * `useGameStream` then keeps it current.
  */
 export async function readGame(gameId: string): Promise<GameSnapshot> {
   const game = await gameAgent(gameId);

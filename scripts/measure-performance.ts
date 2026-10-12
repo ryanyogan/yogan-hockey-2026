@@ -4,7 +4,7 @@
 //   node scripts/measure-performance.ts <base> [--out=docs/performance/results/local]
 //        [--runs=3] [--only=<route>,<route>] [--team=21] [--player=4024123]
 //        [--goalie=3067313] [--finished-game=401803652] [--scheduled-game=<id>|auto|none]
-//        [--search=mar] [--favorites=off]
+//        [--search=mar] [--favorites=off] [--navigate=<selector>]
 //
 // Use scripts/performance-baseline.sh, which builds and serves the site first. Needs TMPDIR on
 // disk (see the build notes). It only reads: every request is a GET or the Scoreboard's socket.
@@ -22,6 +22,10 @@
 //      (the next shell), when the next page's content is whole, and whether `<main>` was ever empty.
 // A page the cache keeps is measured twice: answered from the cache (asked for once beforehand),
 // and rendered (`?uncached=<n>`, a query parameter the page does not read, which bypasses it).
+// A site with no page cache (TanStack Start, ADR 0009: no answer carries `x-page-cache`) renders
+// every page for its request, so each route is measured once, as rendered.
+// `--navigate` taps a link of your choosing in place of each route's own, for a build in which
+// the route's own link leads to a page not yet ported.
 // Times are the median run; a shift is the worst run.
 import { mkdirSync, writeFileSync } from "node:fs";
 import { cpus } from "node:os";
@@ -63,6 +67,7 @@ if (!Number.isInteger(runs) || runs < 1) {
 const out = flag("out", "docs/performance/results/local");
 const only = flag("only", "");
 const favorites = flag("favorites", "on") !== "off";
+const navigateOverride = flag("navigate", "");
 
 const SETTLE_MS = 3000;
 const SCOREBOARD_SOCKET = /\/agents\/scoreboard-agent\/main/;
@@ -128,11 +133,24 @@ const contentReady = () => {
   return (main?.textContent ?? "").trim() !== "" && main?.querySelector("[aria-busy=true]") == null;
 };
 
-/** vinext's own mark that the page has hydrated, and when (ms from the navigation's start). */
-const hydrated = () =>
-  (window as unknown as { __NEXT_HYDRATED?: boolean }).__NEXT_HYDRATED === true;
-const hydratedAt = () =>
-  (window as unknown as { __NEXT_HYDRATED_AT?: number }).__NEXT_HYDRATED_AT ?? null;
+/**
+ * The site's mark that the page has hydrated, and when (ms from the navigation's start): the
+ * root route's under TanStack Start (`apps/web/src/routes/__root.tsx`), vinext's own before it.
+ */
+type HydrationMarks = {
+  __APP_HYDRATED?: boolean;
+  __APP_HYDRATED_AT?: number;
+  __NEXT_HYDRATED?: boolean;
+  __NEXT_HYDRATED_AT?: number;
+};
+const hydrated = () => {
+  const marks = window as unknown as HydrationMarks;
+  return marks.__APP_HYDRATED === true || marks.__NEXT_HYDRATED === true;
+};
+const hydratedAt = () => {
+  const marks = window as unknown as HydrationMarks;
+  return marks.__APP_HYDRATED_AT ?? marks.__NEXT_HYDRATED_AT ?? null;
+};
 
 type Slate = { games: Record<string, unknown>[] } & Record<string, unknown>;
 type Visit = {
@@ -193,8 +211,11 @@ async function visit(browser: Browser): Promise<Visit> {
 
   const responses: Visit["responses"] = new Map();
   let rsc = 0;
+  // What a navigation asks the server for: an RSC answer under vinext, a loader's server
+  // function under TanStack Start.
   page.on("request", (request) => {
-    if (request.headers().rsc === "1") rsc += 1;
+    const serverFunction = new URL(request.url()).pathname.startsWith("/_serverFn/");
+    if (request.headers().rsc === "1" || serverFunction) rsc += 1;
   });
   page.on("response", async (response) => {
     const kind = response.request().resourceType();
@@ -496,7 +517,7 @@ async function measureOnce(browser: Browser, route: MeasuredRoute, path: string)
       loadShifts,
       liveShifts,
       interactions,
-      navigation: await measureNavigation(browser, path, route.navigate),
+      navigation: await measureNavigation(browser, path, navigateOverride || route.navigate),
       ...weights,
     };
   } finally {
@@ -602,11 +623,18 @@ if (routes.length === 0) {
   await browser.close();
   process.exit(1);
 }
+// Whether the site keeps whole pages at all: one that does says so on every page it answers.
+const probe = await fetch(base + (routes[0] as MeasuredRoute).path, {
+  headers: { "user-agent": PROFILE.userAgent },
+});
+await probe.arrayBuffer();
+const pageCache = probe.headers.has("x-page-cache");
 const results: RouteResult[] = [];
 const failures: { route: string; mode: string; error: string }[] = [];
 
 for (const route of routes) {
-  const modes: RouteResult["mode"][] = route.cacheable ? ["cached", "rendered"] : ["rendered"];
+  const cacheable = route.cacheable && pageCache;
+  const modes: RouteResult["mode"][] = cacheable ? ["cached", "rendered"] : ["rendered"];
   for (const mode of modes) {
     // Asked for once beforehand, so the measured answers come from the cache.
     if (mode === "cached") {
@@ -623,7 +651,7 @@ for (const route of routes) {
     try {
       for (let run = 0; run < runs; run++) {
         // A parameter no page reads: the Worker renders the request and keeps nothing.
-        if (mode === "rendered" && route.cacheable) {
+        if (mode === "rendered" && cacheable) {
           path = `${route.path}${route.path.includes("?") ? "&" : "?"}uncached=${run + 1}`;
         }
         all.push(await measureOnce(browser, route, path));

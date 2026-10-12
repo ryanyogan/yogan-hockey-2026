@@ -7,7 +7,7 @@
 # Anything after the target goes to scripts/measure-performance.ts: --runs=1 --only=/players
 # for a quick look at one route, --out=<path> to keep the committed results as they are.
 #
-# local: builds with ESPN_FIXTURES=1, serves the build with `vite preview` on PORT+10000, puts
+# local: builds with ESPN_FIXTURES=1, serves the build with `vite preview` on PORT+10000 (or INNER_PORT), puts
 # the compressing proxy in front of it on PORT (default 5173; both must be free), migrates the local database the
 # build reads, seeds the sample picks, measures, and stops both servers. About 50 minutes at the
 # default three runs. Run it on a machine doing nothing else: the CPU is slowed, not isolated.
@@ -37,7 +37,7 @@ if [ "$target" != "local" ]; then
 fi
 
 port=${PORT:-5173}
-inner=$((port + 10000))
+inner=${INNER_PORT:-$((port + 10000))}
 # Another worktree's server may be on either port, so nothing is killed by port: a port in use
 # stops the run, and only the two servers started here are stopped at the end.
 for taken in "$port" "$inner"; do
@@ -72,7 +72,7 @@ proxy=$!
 
 up=""
 for _ in $(seq 60); do
-  if curl -sf -o /dev/null "http://localhost:$port/players"; then
+  if curl -sf -o /dev/null "http://localhost:$port/nhl"; then
     up=yes
     break
   fi
@@ -82,6 +82,13 @@ if [ -z "$up" ]; then
   echo "the build never answered on $port: see $TMPDIR/performance-preview.log" >&2
   exit 1
 fi
-node scripts/performance/prepare-fixtures.ts "http://localhost:$port" 401803652
+# The sample picks and the archived game are for routes the port to TanStack Start has not reached
+# (#189 the game, #192 the sample pages): until `/skeleton/picks` is back there is nothing to
+# prepare, and only the routes that exist can be measured (--only='/nhl,/nhl?tab=teams').
+if curl -sf -o /dev/null "http://localhost:$port/skeleton/picks"; then
+  node scripts/performance/prepare-fixtures.ts "http://localhost:$port" 401803652
+else
+  echo "no /skeleton/picks on this build: fixtures not prepared, measure only the routes it has" >&2
+fi
 node scripts/measure-performance.ts "http://localhost:$port" \
   --out=docs/performance/results/local "$@"

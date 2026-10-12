@@ -19,9 +19,9 @@ export type HomePicks = {
 };
 
 /**
- * The one-line picks of today's slate, read from D1 by a page's server component. Prediction rows
- * are behind no cache tag, so this is read on every render; the Scoreboard moves `invalidatedAt`
- * when a row is written, which is what renders an open page again.
+ * The one-line picks of today's slate, read from D1 inside a page's read. Prediction rows are not
+ * cached, so this is read each time the page's is; the Scoreboard moves `invalidatedAt` when a
+ * row is written, which is what reads an open page again.
  *
  * The picks are an extra: when the Scoreboard or D1 cannot be read the page is drawn without them.
  */
@@ -43,7 +43,8 @@ export async function readSlatePicks(): Promise<SlatePicks> {
 /**
  * Home's picks and the season's record, read as `readSlatePicks` reads, and as much an extra. The
  * season is the slate's own (`seasonOfSlate`), not a year written down here; its record is the
- * read the layout makes for the dateline (`seasonRecord`), not a second one.
+ * one the root route reads for the dateline (`seasonRecord`), read a second time: the two are
+ * separate server functions, with nothing shared between them.
  */
 export async function readHomePicks(): Promise<HomePicks> {
   try {

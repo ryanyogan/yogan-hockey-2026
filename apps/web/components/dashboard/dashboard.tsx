@@ -9,10 +9,7 @@ import {
 } from "@yogan-hockey/ui/components/ledger";
 import { useId } from "react";
 import { agateName, noStandings } from "../../lib/agate-copy";
-import { topOfConferences } from "../../lib/dashboard";
-import { cachedStandings } from "../../lib/espn";
 import { nhlHref } from "../../lib/nhl-page";
-import { doNotKeepPage } from "../../lib/render-failure";
 import { Link } from "../link";
 import { emptyProse } from "../story/type";
 import { agate, link, more, ruledLabel } from "./agate";
@@ -83,16 +80,11 @@ function ConferenceStandings({ table }: { table: StandingsTable }) {
   );
 }
 
-/** Each conference's top eight under a serif title, with the way to the rest. */
-async function Standings() {
-  // The standings are ESPN's: when they cannot be read the block says so and the rest is drawn.
-  const tables = await cachedStandings()
-    .then(topOfConferences)
-    .catch(() => {
-      // Should Home come to be kept in the page cache, not with this in it.
-      doNotKeepPage();
-      return null;
-    });
+/**
+ * Each conference's top eight under a serif title, with the way to the rest. The standings are
+ * ESPN's: when they could not be read (`tables` null) the block says so and the rest is drawn.
+ */
+function Standings({ tables }: { tables: StandingsTable[] | null }) {
   return (
     <section
       aria-labelledby="standings-heading"
@@ -131,15 +123,19 @@ async function Standings() {
  * heavy rule, the standings beside The Picks, tonight at a glance and the favorites. On a phone
  * the lower band is one column in another order: the picks, the standings, the favorites.
  *
- * The page hands in what D1 holds: `picks`, the made picks of today's games by game id, and
- * `record`, the season's. Everything that follows the Scoreboard is a client component inside.
+ * The route hands in what its loader read: `picks`, the made picks of today's games by game id,
+ * `record`, the season's, and `standings`, each conference's top eight (`topOfConferences`), or
+ * null when they could not be read. The games are the Scoreboard's and the favorites the
+ * browser's.
  */
 export function Dashboard({
   picks = {},
   record = null,
+  standings,
 }: {
   picks?: Picks;
   record?: SeasonRecord | null;
+  standings: StandingsTable[] | null;
 }) {
   return (
     // One child of the shell's `<main>`, which would space several by its own measure.
@@ -149,7 +145,7 @@ export function Dashboard({
         data-slot="lower-band"
         className="mt-11 flex flex-wrap gap-10 border-rule border-t-3 pt-4 max-md:mt-8 max-md:flex-col max-md:gap-8 max-md:border-t-0 max-md:pt-0"
       >
-        <Standings />
+        <Standings tables={standings} />
         {/* On a phone its three parts are the column's own, in the column's order. */}
         <aside
           aria-label="Picks and favorites"

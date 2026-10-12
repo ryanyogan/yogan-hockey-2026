@@ -1,5 +1,3 @@
-"use client";
-
 import type { GameHeader, GameHeaderSide, Play } from "@yogan-hockey/schemas";
 import { LiveMarker } from "@yogan-hockey/ui/components/marker";
 import { type ReactNode, useRef, useState } from "react";

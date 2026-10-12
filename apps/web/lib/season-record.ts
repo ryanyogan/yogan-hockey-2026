@@ -1,21 +1,20 @@
 import { env } from "cloudflare:workers";
 import { createDb, getSeasonRecord } from "@yogan-hockey/db";
 import type { ScoreboardReading, SeasonRecord } from "@yogan-hockey/schemas";
-import { cache } from "react";
 import { seasonNow } from "./picks";
 
 /**
- * A season's record of the picks, read from D1 once a request: the layout wants it for the
- * dateline and Home for The Picks box, and both ask for the same season.
+ * A season's record of the picks, read from D1. The root route wants it for the dateline and Home
+ * for The Picks box: each is a server function of its own and reads it for itself, so Home's
+ * first load reads it twice.
  */
-export const seasonRecord = cache(
-  (season: number): Promise<SeasonRecord | null> => getSeasonRecord(createDb(env.DB), season),
-);
+export const seasonRecord = (season: number): Promise<SeasonRecord | null> =>
+  getSeasonRecord(createDb(env.DB), season);
 
 /**
  * The season's record of the picks, for the masthead's dateline on every page. It waits for the
- * layout's read of the Scoreboard only to know the season, and does without it on a page drawn
- * with no slate (`scoreboard` null: the page cache's), where the season is the calendar's.
+ * shell's read of the Scoreboard only to know the season; where that has no slate's date, the
+ * season is the calendar's.
  *
  * It never rejects: a dateline without its picks is still a dateline.
  */

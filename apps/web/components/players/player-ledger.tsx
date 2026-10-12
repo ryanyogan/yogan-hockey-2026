@@ -15,7 +15,7 @@ import { Link } from "../link";
 
 /**
  * A list of players, each row leading to his page: search results and favorite players. It has
- * no state, so a server component and a client component can both render it.
+ * no state.
  *
  * `action` draws something at the end of each row: the heart that makes him a favorite. The cell it
  * sits in is raised above the row's link, so a button there takes its own clicks.

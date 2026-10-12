@@ -2,22 +2,22 @@ import { AsyncLocalStorage } from "node:async_hooks";
 import { EspnFetchError, EspnParseError } from "@yogan-hockey/espn";
 
 /**
- * The status of a page whose render failed.
+ * The status of a page whose read failed.
  *
- * vinext answers 200 for a failed render that an `error.tsx` catches: the status is decided
- * before the boundary is drawn and nothing in a page can change it. So the Worker's entry runs
- * each request inside `answerWithRenderStatus`, `instrumentation.ts` reports each failed render
- * to `noteRenderFailure`, and the page that comes back is given the failure's status:
+ * TanStack Start answers 500 for a page whose loader threw, whatever threw, and draws the site's
+ * error page inside the shell. So the Worker's entry runs each request inside
+ * `answerWithRenderStatus`, a page's read reports its failure to `noteRenderFailure`
+ * (`pageRead` in `src/functions/page-read.ts`), and the page that comes back is given the
+ * failure's status:
  *
  * - 503 when the failed read was ESPN's (it did not answer, or answered what cannot be read):
  *   the page is unavailable for now and worth asking for again;
  * - 500 for anything else, which is a fault of this site's.
  *
- * Only a whole page is touched. A navigation inside the site (an RSC answer) keeps its 200, since
- * vinext's client draws the boundary from it; so does a failure that streams in after the
- * response has started, whose status has already gone.
+ * Only a whole page is touched: a navigation inside the site asks for a server function's answer,
+ * not a page, and the router draws the error page from it.
  */
-type Render = { status: number | null; keep: boolean };
+type Render = { status: number | null };
 
 const renders = new AsyncLocalStorage<Render>();
 
@@ -33,27 +33,11 @@ export function noteRenderFailure(error: unknown): void {
 }
 
 /**
- * The page being rendered must not be kept by the page cache (`lib/page-cache.ts`), though it
- * answers 200 and nothing failed. Call it wherever a render on a cacheable page draws something
- * in place of the page's own content:
- *
- * - a fallback for a read that failed and was caught (a header without its conference), which
- *   would otherwise be every visitor's page until the entry is rendered again;
- * - a not-found page (`pageNotFound` in `lib/page-not-found.ts`): beneath a `loading.tsx` the
- *   shell has been sent by the time `notFound()` is thrown, so it streams inside a 200.
- */
-export function doNotKeepPage(): void {
-  const render = renders.getStore();
-  if (render != null) render.keep = false;
-}
-
-/**
- * The page of last resort: for a request that vinext could not answer at all, which is a failure
- * of the root layout. There is then no shell and no stylesheet to count on (`app/error.tsx` is
- * drawn inside the layout, and with it present vinext does not turn to `app/global-error.tsx`
- * on the server), so this is whole in itself, in the Agate look as far as a page with no fonts
- * to load can be: the wordmark and the title in a device's serif, the rules and the colours the
- * theme's own.
+ * The page of last resort: for a request that Start could not answer at all, which is a failure
+ * outside any route (the error page of `components/shell/` is drawn inside the shell, by the
+ * router). There is then no shell and no stylesheet to count on, so this is whole in itself, in
+ * the Agate look as far as a page with no fonts to load can be: the wordmark and the title in a
+ * device's serif, the rules and the colours the theme's own.
  */
 const LAST_RESORT_PAGE = `<!doctype html>
 <html lang="en">
@@ -93,37 +77,23 @@ p { margin: 0; padding-top: 12px; }
  * A `handle` that throws is answered with the page of last resort, never the platform's own.
  */
 export async function answerWithRenderStatus(handle: () => Promise<Response>): Promise<Response> {
-  return (await watchRender(handle)).response;
-}
-
-/**
- * `answerWithRenderStatus`, and with the answer a way to ask later whether the page cache must
- * decline to keep it (`lib/page-cache.ts`): a render failed, or called `doNotKeepPage`. Either
- * can come after the response has started, when its status has gone, so it is asked once the
- * body has been read.
- */
-export async function watchRender(
-  handle: () => Promise<Response>,
-): Promise<{ response: Response; unstorable(): boolean }> {
-  const render: Render = { status: null, keep: true };
-  const unstorable = () => render.status != null || !render.keep;
+  const render: Render = { status: null };
   let response: Response;
   try {
     response = await renders.run(render, handle);
   } catch (error) {
     console.error("The site could not answer a request", error);
-    render.status = OWN_FAULT;
-    return {
-      response: new Response(LAST_RESORT_PAGE, {
-        status: OWN_FAULT,
-        headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" },
-      }),
-      unstorable,
-    };
+    return new Response(LAST_RESORT_PAGE, {
+      status: OWN_FAULT,
+      headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" },
+    });
   }
   const isPage = response.headers.get("content-type")?.startsWith("text/html") ?? false;
-  if (render.status == null || response.status !== 200 || !isPage) return { response, unstorable };
+  // TanStack Start answers a page whose loader failed with a 500 of its own, which the failure's
+  // status replaces.
+  const answered = response.status === 200 || response.status === OWN_FAULT;
+  if (render.status == null || !answered || !isPage) return response;
   const headers = new Headers(response.headers);
   headers.set("cache-control", "no-store");
-  return { response: new Response(response.body, { status: render.status, headers }), unstorable };
+  return new Response(response.body, { status: render.status, headers });
 }

@@ -1,14 +1,9 @@
-import { notFound } from "next/navigation";
-import { doNotKeepPage } from "./render-failure";
+import { notFound } from "@tanstack/react-router";
 
 /**
- * `notFound()` for a page the page cache keeps (`lib/page-cache.ts`). Beneath a `loading.tsx`
- * the not-found page streams inside a 200 (a team's three pages: the shell has gone by the time
- * the team is known to be missing), and a 200 is what the cache stores, so the render says not
- * to keep it. Where the status is still to be decided the answer is a 404 and is not stored
- * anyway.
+ * The page asked for does not exist: thrown from a server function or a loader, it is answered
+ * with a 404 and drawn by the root route's not-found page.
  */
 export function pageNotFound(): never {
-  doNotKeepPage();
-  notFound();
+  throw notFound();
 }

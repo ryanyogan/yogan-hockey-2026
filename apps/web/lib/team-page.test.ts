@@ -1,11 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  isTeamId,
-  legacyTeamTabRedirects,
-  teamPageHref,
-  teamPlace,
-  teamTabOfPath,
-} from "./team-page";
+import { isTeamId, teamPageHref, teamPlace, teamTabOfPath } from "./team-page";
 
 describe("where a team plays, for the line over its name", () => {
   const standing = {
@@ -48,27 +42,6 @@ describe("which tab a path is", () => {
     expect(teamTabOfPath("/nhl/teams/21/")).toBe("schedule");
     expect(teamTabOfPath("/nhl/teams/21/lines")).toBe("schedule");
     expect(teamTabOfPath("/nhl")).toBe("schedule");
-  });
-});
-
-describe("the addresses tabs had while they were in the query string", () => {
-  const redirects = legacyTeamTabRedirects();
-
-  it("send each tab but the schedule, which has not moved, to its new address", () => {
-    expect(redirects).toEqual([
-      {
-        source: "/nhl/teams/:id",
-        has: [{ type: "query", key: "tab", value: "roster" }],
-        destination: "/nhl/teams/:id/roster",
-        permanent: true,
-      },
-      {
-        source: "/nhl/teams/:id",
-        has: [{ type: "query", key: "tab", value: "stats" }],
-        destination: "/nhl/teams/:id/stats",
-        permanent: true,
-      },
-    ]);
   });
 });
 

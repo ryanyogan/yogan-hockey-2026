@@ -24,7 +24,6 @@ const SHOTS = [
   { name: "team", path: `/nhl/teams/${TEAM}` },
   { name: "players", path: "/players" },
   { name: "sample", path: "/skeleton" },
-  { name: "sample-loading", path: "/skeleton/loading" },
 ];
 
 const TYPE = ["fontFamily", "fontSize", "fontWeight", "lineHeight", "letterSpacing"];
@@ -61,13 +60,6 @@ const PARTS = [
     name: "row height",
     prototype: ".conf .agate tbody tr:first-child",
     site: ["/nhl", '[data-slot="ledger-body"] tr:first-child'],
-    styles: ["height"],
-  },
-  {
-    name: "row height (placeholder)",
-    prototype: ".conf .agate tbody tr:first-child",
-    // The plays' placeholder: six rows, none a link, each a bar on a line of the row's text.
-    site: ["/skeleton/loading", '[data-slot="game-skeleton"] [data-slot="ledger-body"] tr'],
     styles: ["height"],
   },
   {
@@ -165,8 +157,6 @@ const PARTS = [
 const KNOWN = {
   "row height|height|390":
     "A row is 44px on a phone, a thumb's height: it is a link, or has one in a cell. The prototype's rows are not links. Its line and its padding are the prototype's.",
-  "row height (placeholder)|height|390":
-    "As a row: a placeholder is the height of what replaces it.",
   "column head|borderBottomColor|390":
     "The prototype's phone has no label over its one table, so the column heads carry the ink rule. A Ledger sits under a SectionHeader, which carries it at every width.",
 };

@@ -1,5 +1,7 @@
 # The backend is TypeScript on Cloudflare Agents
 
+> The site is no longer vinext: [ADR 0009](0009-tanstack-start-with-plain-ssr.md) replaces what this says about vinext, server components and Server Actions. The backend decisions here stand.
+
 The site's backend is TypeScript on the Agents SDK (Durable Objects), in the same language and deploy as the vinext site. An Agent polls ESPN on its own schedule, keeps its state in its own storage, and pushes changes to viewers over WebSocket. The workload is polling a few ESPN endpoints and diffing JSON, so nothing about it needs more than that, and it runs inside the Workers Paid plan at about $5/month.
 
 ## Considered Options

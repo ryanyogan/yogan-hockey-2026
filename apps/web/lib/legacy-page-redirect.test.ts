@@ -16,6 +16,23 @@ test("old game and player links consume their selector and retain unrelated quer
   );
 });
 
+test("an old team tab link goes to the tab's own page, its query kept", () => {
+  expect(legacyPageLocation(new URL("https://hockey.test/nhl/teams/21?tab=roster"))).toBe(
+    "https://hockey.test/nhl/teams/21/roster?tab=roster",
+  );
+  expect(legacyPageLocation(new URL("https://hockey.test/nhl/teams/21?tab=stats&ref=mail"))).toBe(
+    "https://hockey.test/nhl/teams/21/stats?tab=stats&ref=mail",
+  );
+  for (const path of [
+    "/nhl/teams/21",
+    "/nhl/teams/21?tab=schedule",
+    "/nhl/teams/21?tab=bogus",
+    "/nhl/teams/21/roster?tab=roster",
+    "/nhl?tab=teams",
+  ])
+    expect(legacyPageLocation(new URL(`https://hockey.test${path}`))).toBeNull();
+});
+
 test("canonical, unknown and ambiguous selectors do not redirect", () => {
   for (const path of [
     "/nhl/games/1/scoring?tab=scoring",
@@ -29,11 +46,8 @@ test("canonical, unknown and ambiguous selectors do not redirect", () => {
     expect(legacyPageLocation(new URL(`https://hockey.test${path}`))).toBeNull();
 });
 
-test("RSC links retain their transport suffix and cache buster", () => {
-  expect(
-    legacyPageLocation(new URL("https://hockey.test/nhl/games/1.rsc?tab=scoring&_rsc=abc")),
-  ).toBe("https://hockey.test/nhl/games/1/scoring.rsc?_rsc=abc");
-  expect(legacyPageLocation(new URL("https://hockey.test/players/7?games=all&_rsc=abc"))).toBe(
-    "https://hockey.test/players/7/games?_rsc=abc",
+test("the rest of the query string is kept", () => {
+  expect(legacyPageLocation(new URL("https://hockey.test/players/7?games=all&from=home"))).toBe(
+    "https://hockey.test/players/7/games?from=home",
   );
 });

@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./test";
 
 // The rows are the sample picks `picks.setup.ts` seeded (`apps/web/lib/sample-picks.ts`):
 // Toronto at 58% over Nashville, a failed Prediction for 401892450, Dallas over Buffalo in the

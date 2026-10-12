@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import type { Standings, StandingsRow } from "./standings.ts";
-import { standingsView } from "./standings-views.ts";
+import { divisionRank, standingsView } from "./standings-views.ts";
 
 const EAST = { name: "Eastern Conference", abbreviation: "East" };
 const WEST = { name: "Western Conference", abbreviation: "West" };
@@ -118,6 +118,37 @@ describe("the Wild Card view", () => {
       ["Metropolitan Division", ["M1", "M2", "M3"], 3],
       ["Wild Card", ["M4", "A4", "M5", "A5"], 2],
     ]);
+  });
+});
+
+describe("a team's place in its division", () => {
+  test("is its row in the Division view's table, counted from one", () => {
+    const [atlantic, metro] = standingsView(standings, "division");
+
+    for (const table of [atlantic, metro]) {
+      for (const [index, entry] of (table?.rows ?? []).entries()) {
+        expect(divisionRank(standings, entry.team.id)).toBe(index + 1);
+      }
+    }
+    expect(divisionRank(standings, "A1")).toBe(1);
+    expect(divisionRank(standings, "M4")).toBe(4);
+    expect(divisionRank(standings, "C2")).toBe(2);
+  });
+
+  test("breaks a tie on points as the tables do, so no two teams share a place", () => {
+    const rows = [
+      row("MORE", EAST, ATLANTIC, 10, { gamesPlayed: 9 }),
+      row("FEWER", EAST, ATLANTIC, 10, { gamesPlayed: 8 }),
+      row("OTHER", EAST, METRO, 30),
+    ];
+
+    expect(divisionRank({ season: "2026-27", rows }, "FEWER")).toBe(1);
+    expect(divisionRank({ season: "2026-27", rows }, "MORE")).toBe(2);
+    expect(divisionRank({ season: "2026-27", rows }, "OTHER")).toBe(1);
+  });
+
+  test("is null for a team the standings do not list", () => {
+    expect(divisionRank(standings, "nobody")).toBeNull();
   });
 });
 

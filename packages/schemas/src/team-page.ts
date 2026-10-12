@@ -11,7 +11,11 @@ export const TeamDetailSchema = z.object({
     home: z.string().nullable(),
     road: z.string().nullable(),
   }),
-  /** "6th in Atlantic Division" */
+  /**
+   * ESPN's own line, which nothing prints: it was "6th in Atlantic Division" and has been "1st in
+   * Eastern Conference" or "1st in Western Conference" for every team since 2026-10-12 (#209). A
+   * team's place comes from the standings (`divisionRank`).
+   */
   standingSummary: z.string().nullable(),
   stats: TeamStatsSchema.nullable(),
   roster: z.array(RosterPlayerSchema),

@@ -1,8 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { readSlatePicks } from "../../lib/slate-picks";
 
-/** Start answers a method without a handler with the site's page; this address is not a page. */
-const notAllowed = () => new Response(null, { status: 405, headers: { allow: "GET, HEAD" } });
+/**
+ * Start answers a method a route has no handler for with the site's page. This address is not a
+ * page, so the others are answered here, as vinext answered them for a route with a GET alone.
+ */
+const notAllowed = () => new Response(null, { status: 405 });
+const allowed = () => new Response(null, { status: 204, headers: { allow: "GET, HEAD, OPTIONS" } });
 
 /**
  * `GET /picks`: today's slate's picks, each in one line by game id, as JSON. A page's client
@@ -22,6 +26,7 @@ export const Route = createFileRoute("/picks")({
       PUT: notAllowed,
       PATCH: notAllowed,
       DELETE: notAllowed,
+      OPTIONS: allowed,
     },
   },
 });

@@ -173,12 +173,7 @@ const read = ([selector, styles]) => {
       style === "height" || style === "width"
         ? `${Math.round(box[style] * 100) / 100}px`
         : style === "fontFamily"
-          ? // Fontsource names the variable file's family "Newsreader Variable": the same face.
-            computed.fontFamily
-              .split(",")[0]
-              .replaceAll('"', "")
-              .trim()
-              .replace(/ Variable$/, "")
+          ? computed.fontFamily.split(",")[0].replaceAll('"', "").trim()
           : style === "lineHeight"
             ? `${Math.round(Number.parseFloat(computed.lineHeight) * 100) / 100}px`
             : computed[style],

@@ -13,7 +13,8 @@ import { titled } from "../../head";
 export const Route = createFileRoute("/skeleton/dashboard")({
   loaderDeps: ({ search }: { search: Record<string, unknown> }) => ({
     slate: typeof search.slate === "string" ? search.slate : undefined,
-    picks: search.picks != null && search.picks !== "",
+    // Anything given for `picks` is yes, as it was when the address was read as text.
+    picks: "picks" in search && search.picks !== "",
   }),
   loader: ({ deps }) => readSampleDashboard({ data: deps }),
   head: ({ match }) => titled(match, "Sample dashboard"),

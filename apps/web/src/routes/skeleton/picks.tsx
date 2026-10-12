@@ -3,6 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { Button } from "@yogan-hockey/ui/components/button";
 import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
 import type { FormEvent } from "react";
+import { useFailure } from "../../../components/skeleton/use-failure";
 import { readSamplePicksPage, seedPicks } from "../../functions/skeleton";
 import { titled } from "../../head";
 
@@ -12,8 +13,9 @@ import { titled } from "../../head";
  * `scripts/picks-shots.ts` press these buttons; `?seeded=` says the rows are in.
  */
 export const Route = createFileRoute("/skeleton/picks")({
+  // The router reads `?seeded=1` as a number: the page prints whatever was given, as text.
   validateSearch: (search: Record<string, unknown>): { seeded?: string } =>
-    typeof search.seeded === "string" && search.seeded !== "" ? { seeded: search.seeded } : {},
+    search.seeded == null || search.seeded === "" ? {} : { seeded: String(search.seeded) },
   loader: () => readSamplePicksPage(),
   head: ({ match }) => titled(match, "Sample picks"),
   component: SamplePicksPage,
@@ -22,13 +24,14 @@ export const Route = createFileRoute("/skeleton/picks")({
 function SamplePicksPage() {
   const { seeded } = Route.useSearch();
   const seed = useServerFn(seedPicks);
+  const fail = useFailure();
 
   // The button pressed says which way the final's pick goes, as a form's submitter does.
   function seedFromButton(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const { submitter } = event.nativeEvent as SubmitEvent;
     const wrong = submitter instanceof HTMLButtonElement && submitter.value === "wrong";
-    void seed({ data: { final: wrong ? "wrong" : "right" } });
+    seed({ data: { final: wrong ? "wrong" : "right" } }).catch(fail);
   }
 
   return (

@@ -13,7 +13,11 @@ function ask(method: string): Response | Promise<Response> {
   return handler();
 }
 
-/** `app/picks/route.ts` as it is on `main`, word for word: the answer this route must give. */
+/**
+ * The route as it was under vinext (`app/picks/route.ts` on `main` before the port), word for
+ * word. vinext was not run for this test: what it answered to the other methods is read from its
+ * route handler dispatch, and written out in the cases below.
+ */
 async function mainsAnswer(): Promise<Response> {
   const { picks } = await readSlatePicks();
   return Response.json(picks, { headers: { "cache-control": "no-store" } });
@@ -60,10 +64,19 @@ describe("GET /picks", () => {
   }, 30_000);
 });
 
-it("answers 405 to a method that is not a read, not a page", async () => {
-  for (const method of ["POST", "PUT", "PATCH", "DELETE"]) {
-    const response = await ask(method);
-    expect(response.status).toBe(405);
-    expect(response.headers.get("allow")).toBe("GET, HEAD");
-  }
+describe("the other methods, as vinext answered a route with a GET alone", () => {
+  it("answers a bare 405 to a method that is not a read, not the site's page", async () => {
+    for (const method of ["POST", "PUT", "PATCH", "DELETE"]) {
+      const response = await ask(method);
+      expect(response.status).toBe(405);
+      expect(response.headers.get("allow")).toBeNull();
+      expect(await response.text()).toBe("");
+    }
+  });
+
+  it("answers OPTIONS with the methods it takes", async () => {
+    const response = await ask("OPTIONS");
+    expect(response.status).toBe(204);
+    expect(response.headers.get("allow")).toBe("GET, HEAD, OPTIONS");
+  });
 });

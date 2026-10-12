@@ -64,3 +64,30 @@ test("the walking skeleton page exercises all four joins", async ({ page, reques
   await page.reload();
   await expect(serial).toHaveText(serialAfter);
 });
+
+test("the sample dashboard is Home drawn from a slate that is not today's", async ({ page }) => {
+  // The Agate prototype's first slate, with its picks and its season's record.
+  await page.goto("/skeleton/dashboard?slate=tonight");
+  await expect(page).toHaveTitle("Sample dashboard · Yogan Hockey");
+  const home = page.locator('[data-slot="home"]');
+  await expect(home.getByRole("heading", { name: "Kraken 5, Capitals 3" })).toBeVisible();
+  await expect(home.locator('[data-slot="picks-record"]')).toHaveText("29–14");
+  // The standings are the recorded ones, read by the page's server function.
+  await expect(home.locator('[data-slot="standings"]').getByRole("row")).not.toHaveCount(0);
+});
+
+test("the sample live page is the ticker and the day's sections from an invented slate", async ({
+  page,
+}) => {
+  await page.goto("/skeleton/live");
+  await expect(page).toHaveTitle("Sample live scores · Yogan Hockey");
+  const strip = page.locator('[data-slot="sample-score-ticker"]').getByRole("list").first();
+  await expect(strip.getByRole("link")).toHaveCount(13);
+  for (const section of ["In progress", "Upcoming", "Final", "Postponed"]) {
+    await expect(page.getByRole("region", { name: section })).toBeVisible();
+  }
+
+  // A quiet day has two games.
+  await page.goto("/skeleton/live?slate=quiet");
+  await expect(strip.getByRole("link")).toHaveCount(2);
+});

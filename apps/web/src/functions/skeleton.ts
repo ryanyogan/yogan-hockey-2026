@@ -158,6 +158,6 @@ const LIVE_SLATES: Record<string, ScoreboardState> = { empty: EMPTY_SLATE, quiet
  */
 export const readSampleLive = createServerFn({ method: "GET" })
   .validator(SampleLiveSchema)
-  .handler(
-    async ({ data }): Promise<ScoreboardState> => LIVE_SLATES[data.slate ?? ""] ?? SAMPLE_SLATE,
+  .handler(({ data }) =>
+    pageRead<ScoreboardState>(async () => LIVE_SLATES[data.slate ?? ""] ?? SAMPLE_SLATE),
   );

@@ -14,6 +14,7 @@ import { FavoriteMarker, LiveMarker } from "@yogan-hockey/ui/components/marker";
 import { PageHeader, Section, SectionHeader } from "@yogan-hockey/ui/components/section";
 import type { FormEvent } from "react";
 import { PulseLive } from "../../../components/skeleton/pulse-live";
+import { useFailure } from "../../../components/skeleton/use-failure";
 import { bumpSkeleton, readSkeleton } from "../../functions/skeleton";
 import { titled } from "../../head";
 
@@ -28,12 +29,14 @@ function SkeletonPage() {
   const { reading, bumps, pulse, agentName } = Route.useLoaderData();
   const router = useRouter();
   const bump = useServerFn(bumpSkeleton);
+  const fail = useFailure();
 
-  async function bumpAndReadAgain(event: FormEvent) {
+  function bumpAndReadAgain(event: FormEvent) {
     event.preventDefault();
-    await bump();
     // The Agent forgot the cached reading and wrote a row: the loader reads both again.
-    await router.invalidate();
+    bump()
+      .then(() => router.invalidate())
+      .catch(fail);
   }
 
   return (

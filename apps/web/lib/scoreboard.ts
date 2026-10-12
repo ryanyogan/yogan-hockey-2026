@@ -1,7 +1,6 @@
 import { exports } from "cloudflare:workers";
 import type { ScoreboardReading } from "@yogan-hockey/schemas";
 import { getAgentByName } from "agents";
-import { perRequest } from "./per-request";
 import { SCOREBOARD_CONNECTION } from "./scoreboard-connection";
 
 /**

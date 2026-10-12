@@ -1,10 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  isTeamId,
-  teamPageHref,
-  teamPlace,
-  teamTabOfPath,
-} from "./team-page";
+import { isTeamId, teamPageHref, teamPlace, teamTabOfPath } from "./team-page";
 
 describe("where a team plays, for the line over its name", () => {
   const standing = {

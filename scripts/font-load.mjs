@@ -21,6 +21,9 @@
 // - anything measured moved more than SWAP_PX (32px; the worst measured in #168 was 24px, a
 //   ledger cell on the player's page);
 // - there was nothing to measure.
+// Run on #174 it exits 1: Home at 390 shifts 0.054 and grows 104px (three headlines take a
+// second line in Newsreader), and the game page at 390 moves 66px. The other eight loads pass.
+// The bar stands; see the build notes.
 // A page shifts for reasons that are not the fonts (a time rewritten in the visitor's zone,
 // favorites read from the browser), so the fonts are judged at the swap alone.
 import { writeFile } from "node:fs/promises";
@@ -82,7 +85,8 @@ for (const path of PATHS) {
           }
         }).observe({ type: "layout-shift", buffered: true });
         // A shift from the moment the first font file arrived is the swap's. Not `loadingdone`:
-        // that waits for the last of the files, and the first has redrawn the page by then.
+        // that waits for the last of the files, and the first has redrawn the page by then. The
+        // 50ms is slack between the two clocks: a shift is stamped with its frame's start.
         window.__atSwap = () => {
           const arrived = performance
             .getEntriesByType("resource")

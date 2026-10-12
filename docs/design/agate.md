@@ -156,7 +156,7 @@ Calls made while building:
 - **The NHL routes.** Scores is an agate ledger, not briefs. Teams is a CSS-column list. Wins are bold and losses grey. A standings row's link is named by the agate name.
 - **A cached page's dateline** can show a picks record up to about ten minutes old.
 - **No live row is tinted**, and `--live-tint` was removed.
-- **The font swap may move a word, not the page**: `scripts/font-load.mjs` allows 0.05 of layout shift and 32px at the swap.
+- **The font swap may move a word, not the page**: `scripts/font-load.mjs` allows 0.05 of layout shift and 32px at the swap. Not yet met on a phone: with the fonts held two seconds Home at 390 shifts 0.054 and grows 104px (three headlines take a second line) and the game page moves 66px; the other eight loads measured pass.
 - **The standings' four view tabs on a phone** are tracked at Tailwind's `tracking-wider` (.05em), not a theme token: at `tracking-head` (.1em) the strip is 3px wider than a 360px phone (measured: 329 in 326).
 
 ## Accessibility
@@ -165,6 +165,6 @@ Calls made while building:
 - Tap targets are at least 44px on a phone, on every route (`node scripts/tap-targets.mjs`): nav items, the theme control, the conference control, rows that are links and "more" links.
 - The theme and conference controls are real `<button>`s with `aria-pressed` inside a labelled `role="group"`.
 - Tables are real `<table>`s. The line score has a caption naming the game and uses `<th scope="row">` for team names.
-- Every page has exactly one `h1`: the wordmark on Home, the page's title everywhere else.
+- Every page has exactly one `h1`: the wordmark on Home, the page's title everywhere else. Two cases are known not to: Home's own error page (`app/error.tsx` at `/`) has the wordmark and its title, and the scaffolding routes `/skeleton/dashboard` and `/skeleton/picks` have none.
 - There's a skip link to `#content`. The live dot is `aria-hidden`, because "Live" is in the text.
 - At 390px nothing scrolls sideways, on any route; the prototype is measured at a `scrollWidth` of 390.

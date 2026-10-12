@@ -35,7 +35,7 @@ export function pickedSide<Game extends { home: Side; away: Side }>(
  * The pick in one line, as a game row or card says it: "TOR 58%", the picked team and its win
  * probability. "pick pending" for a game still to start that has no row yet. Null, which is
  * nothing shown, for a failed Prediction and for a game that started without one. A live or
- * finished game keeps the line as it was made: right or wrong is the game page's to say.
+ * finished game keeps the line as it was made: right or wrong is said beside it (`pickLineOutcome`).
  */
 export function pickLine(
   prediction: StoredPrediction | null | undefined,

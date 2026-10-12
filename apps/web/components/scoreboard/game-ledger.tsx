@@ -66,22 +66,10 @@ export const FIXED_GAME_COLUMNS = {
 };
 
 /**
- * Column widths for a ledger on its own. From `xl` they are the shares the Reference UI's table
- * comes to at 1440 (249, 211 and 62 of 1200px, the note having the other 403).
- */
-const FITTED_GAME_COLUMNS = {
-  status: "max-sm:w-28 xl:w-[20.78%]",
-  team: "xl:w-[17.61%]",
-  score: "max-sm:w-8 xl:w-[5.2%]",
-  note: "max-xl:hidden xl:w-auto",
-};
-
-/**
  * Games as agate rows: status, away, home, each team with its record, then the note: the
  * favorite-team marker, the pick, and where the game is played and shown. Each row links to the
  * game's page, a game in progress has its status in the one red, the scores are bold and the
- * winner of a finished game is in bold. No row has a team's mark (agate.md, Decisions). The columns are fixed widths, so one ledger under another lines up;
- * `fitted` is for a ledger that stands alone.
+ * winner of a finished game is in bold. No row has a team's mark (agate.md, Decisions). The columns are fixed widths, so one ledger under another lines up.
  *
  * A phone has no room for the last column or for a record beside its team, so there a row has a
  * second line: the pick, or "No pick", in small print under the status, and each record
@@ -91,7 +79,6 @@ export function GameLedger({
   games,
   favoriteTeamIds = [],
   pick,
-  fitted = false,
 }: {
   games: ScoreboardGame[];
   /**
@@ -100,21 +87,15 @@ export function GameLedger({
    */
   pick?: (game: ScoreboardGame) => ReactNode;
   /**
-   * For a ledger that stands alone, the dashboard's: from `sm` up each column is as wide as what
-   * is in it and the note has the rest, and on a wide page the columns take the shares of the
-   * Reference UI's "tonight" table. Ledgers stacked under one another want the fixed widths.
-   */
-  fitted?: boolean;
-  /**
    * The visitor's favorite teams: a game of theirs says "★ favorite team" in the last column,
    * ahead of the venue, as the Reference UI's note column does. A phone has no room for the
    * words and puts the star beside the favorite team.
    */
   favoriteTeamIds?: readonly string[];
 }) {
-  const widths = fitted ? FITTED_GAME_COLUMNS : FIXED_GAME_COLUMNS;
+  const widths = FIXED_GAME_COLUMNS;
   return (
-    <Ledger className={fitted ? "max-sm:table-fixed" : "table-fixed"}>
+    <Ledger className="table-fixed">
       <LedgerHead>
         <LedgerColumn className={widths.status}>status</LedgerColumn>
         <LedgerColumn className={widths.team}>away</LedgerColumn>

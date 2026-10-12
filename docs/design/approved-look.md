@@ -1,5 +1,7 @@
 # The approved look in production (#138)
 
+> **Superseded by [agate.md](agate.md) on 2026-10-11.** The Agate look replaced this in #168 to #174; this page and its screenshots are kept as history.
+
 Ryan approved the tuned ledger prototype in #129 on 2026-10-11. He named no typeface, so its opening recommendation stands: Geist Mono at the Medium treatment (500 body, 700 bold). [tuned-ledger.md](tuned-ledger.md) describes the prototype and holds its screenshots; this page records how production was brought to it and what was measured.
 
 ## What changed

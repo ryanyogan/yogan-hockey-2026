@@ -1,6 +1,5 @@
 import type { SeasonRecord } from "@yogan-hockey/schemas";
 import { Suspense } from "react";
-import { Link } from "../link";
 import { ScoreboardGate } from "../scoreboard/scoreboard-provider";
 import {
   Dateline,

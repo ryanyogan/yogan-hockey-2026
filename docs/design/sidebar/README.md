@@ -1,5 +1,7 @@
 # The desktop sidebar (#153)
 
+> **Superseded by [agate.md](../agate.md) on 2026-10-11.** The Agate look replaced this in #168 to #174; this page and its screenshots are kept as history.
+
 Ryan, 2026-10-11: "can you give me a more consistent and cool looking sidebar that matches the rest of the site?"
 
 ## What was wrong with it

@@ -12,8 +12,8 @@
  * One red, `--kicker` (`text-kicker`): a section label, a kicker, the current place and anything
  * live. Nothing else is coloured.
  *
- * Secondary text is solid colours, each passing WCAG AA on the page, the row under the pointer
- * and a live row's tint:
+ * Secondary text is solid colours, each passing WCAG AA on the page and on the row under
+ * the pointer:
  *   `text-note` a serif deck or a line of prose; `text-label` a column header or a count;
  *   `text-aside` an aside (a team's record, a rank, the footer). Label and aside are one grey.
  * Rules are three colours: `border-border` between agate rows (dotted), `border-rule-head` the

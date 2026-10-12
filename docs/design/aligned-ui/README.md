@@ -1,5 +1,7 @@
 # Aligned UI implementation — issue #99
 
+> **Superseded by [agate.md](../agate.md) on 2026-10-11.** The Agate look replaced this in #168 to #174; this page and its screenshots are kept as history.
+
 The visual target is the [direction Ryan approved on 2026-10-10](../navigation-direction.md), saved before production implementation. It supersedes variant C for this pass. The original app is the before baseline, not the current visual target.
 
 ## Capture coverage

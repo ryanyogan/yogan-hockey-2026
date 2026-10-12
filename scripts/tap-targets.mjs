@@ -1,5 +1,5 @@
 // Measures everything that can be tapped on every route at a phone's width, and checks the
-// phone's shell on each: the tab bar's five places, the one marked, no menu, nothing under the bar.
+// phone's shell on each: the section nav's five places, the one marked, no menu, the nav kept at the top of the screen.
 //
 //   node scripts/tap-targets.mjs [baseURL] [out.json] [name-prefix]
 //
@@ -35,7 +35,8 @@ const EXEMPT = {
  * as well as the page as it loads.
  */
 const STATES = {
-  home: [
+  // Home has no score strip; any other page has, and its slate opens.
+  scores: [
     {
       name: "the whole slate open",
       act: (page) => page.getByRole("button", { name: /^All \d+ games$/ }).click(),
@@ -130,24 +131,21 @@ const measureTargets = async ([minimum, exempt]) => {
 const measureShell = async () => {
   scrollTo(0, document.documentElement.scrollHeight);
   await new Promise((resolve) => requestAnimationFrame(resolve));
-  const bar = document.querySelector('[data-slot="tab-bar"]');
+  const bar = document.querySelector('[data-slot="section-nav"]');
   const links = [...bar.querySelectorAll("a")];
-  const lastLine = document.createRange();
-  lastLine.selectNodeContents(document.querySelector("footer"));
   const shell = {
     places: links.map((link) => link.textContent),
     current: links
       .filter((link) => link.getAttribute("aria-current") === "page")
       .map((link) => link.textContent),
     barTop: bar.getBoundingClientRect().top,
-    barHeight: bar.getBoundingClientRect().height,
-    viewportHeight: innerHeight,
-    footerTextBottom: lastLine.getBoundingClientRect().bottom,
+    // Whether the wordmark above the nav has scrolled off the screen.
+    mastheadGone:
+      document.querySelector('[data-slot="masthead"]').getBoundingClientRect().bottom <= 0,
     menuButtons: [...document.querySelectorAll("button")].filter((button) =>
       /menu/i.test(`${button.textContent} ${button.getAttribute("aria-label") ?? ""}`),
     ).length,
     dialogs: document.querySelectorAll('[role="dialog"]').length,
-    sidebarShown: document.querySelector("aside").getClientRects().length > 0,
     overflow: document.documentElement.scrollWidth - innerWidth,
     // A reach that pokes out of a table would make the table scroll up and down in its own box.
     scrollingTables: [...document.querySelectorAll('[data-slot="ledger"]')].filter(
@@ -156,8 +154,7 @@ const measureShell = async () => {
   };
   scrollTo(0, 0);
   await new Promise((resolve) => requestAnimationFrame(resolve));
-  const strip = document.querySelector('[data-slot="score-ticker"]');
-  return { ...shell, stripBottom: strip.getBoundingClientRect().bottom };
+  return shell;
 };
 
 /** The rows of one page gathered by kind, so a table of thirty-two teams is one line. */
@@ -226,16 +223,13 @@ for (const route of ROUTES) {
     const targets = await page.evaluate(measureTargets, [MINIMUM, Object.keys(EXEMPT)]);
     const small = targets.filter((target) => !target.exempt && (target.small || target.covered));
     const failed = [];
-    if (shell.places.join() !== PLACES.join()) failed.push(`tab bar holds ${shell.places}`);
+    if (shell.places.join() !== PLACES.join()) failed.push(`section nav holds ${shell.places}`);
     if (shell.current.join() !== (route.place ?? ""))
-      failed.push(`tab bar marks "${shell.current}", not "${route.place ?? ""}"`);
+      failed.push(`section nav marks "${shell.current}", not "${route.place ?? ""}"`);
     if (shell.menuButtons > 0 || shell.dialogs > 0) failed.push("a menu is drawn");
-    if (shell.sidebarShown) failed.push("the sidebar is drawn");
-    if (shell.barTop + shell.barHeight !== shell.viewportHeight)
-      failed.push("the tab bar is not at the foot of the screen");
-    if (shell.footerTextBottom > shell.barTop)
-      failed.push(`the footer runs ${shell.footerTextBottom - shell.barTop}px under the tab bar`);
-    if (shell.stripBottom > shell.barTop) failed.push("the tab bar covers the score strip");
+    // Scrolled past the masthead, the sections are still at the top of the screen.
+    if (shell.barTop < 0 || (shell.mastheadGone && shell.barTop !== 0))
+      failed.push(`the section nav is ${shell.barTop}px from the top of the screen`);
     if (shell.overflow > 0) failed.push(`overflows by ${shell.overflow}px`);
     if (shell.scrollingTables > 0)
       failed.push(`${shell.scrollingTables} tables scroll in their own box`);

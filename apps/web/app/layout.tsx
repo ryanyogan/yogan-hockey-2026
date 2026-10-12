@@ -11,6 +11,7 @@ import { APPLE_SPLASH_IMAGES } from "../lib/app-splash.generated";
 import { APP_NAME, APP_SHORT_NAME, APPLE_ICON, FAVICON_PNG } from "../lib/install";
 import { PAGE_CACHE_REQUEST_HEADER } from "../lib/page-cache";
 import { readScoreboard } from "../lib/scoreboard";
+import { readSeasonRecord } from "../lib/season-record";
 import "./globals.css";
 
 // Agate's two voices (`docs/design/agate.md`), which `theme.css` reads as `font-serif` and
@@ -100,6 +101,12 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   // (spec section 2), so no page waits on the Scoreboard for its first byte. It never rejects.
   const cached = (await headers()).has(PAGE_CACHE_REQUEST_HEADER);
   const scoreboard = cached ? null : scoreboardForFirstPaint();
+  // The masthead's dateline says the season's record of the picks. Not awaited either: the
+  // dateline's rules hold its place. A cached page has it too, as old as the page is. A browser
+  // with the socket open draws the page again when a game ends; a later visitor to a cached page
+  // no final invalidates (the players, a finished game) reads the older record until it is
+  // rendered again.
+  const record = readSeasonRecord(scoreboard);
   return (
     // next-themes sets the class on <html> before first paint, which React must not undo.
     <html lang="en" className={`${serif.variable} ${agate.variable}`} suppressHydrationWarning>
@@ -111,9 +118,9 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           disableTransitionOnChange
         >
           <ThemeColor />
-          {/* The one Scoreboard socket: the ticker and every page read scores from it. */}
+          {/* The one Scoreboard socket: the masthead, the ticker and every page read scores from it. */}
           <ScoreboardProvider initial={scoreboard}>
-            <Shell>{children}</Shell>
+            <Shell record={record}>{children}</Shell>
           </ScoreboardProvider>
         </ThemeProvider>
       </body>

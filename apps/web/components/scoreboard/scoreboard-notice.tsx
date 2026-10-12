@@ -13,7 +13,7 @@ export function ScoreboardNotice() {
     <p
       role="status"
       data-slot="scoreboard-notice"
-      className="border-rule border-t px-4 py-1 text-small text-live leading-[15px] first:border-t-0 md:px-6"
+      className="border-rule-head border-b py-1 text-[13px] text-live leading-[15px]"
     >
       {RECONNECTING} to live scores
     </p>

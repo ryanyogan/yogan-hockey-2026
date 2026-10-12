@@ -104,7 +104,7 @@ export function slateSections(games: ScoreboardGame[]): SlateSections {
   return sections;
 }
 
-/** How many of a slate's games stand where: the sidebar's rows. */
+/** How many of a slate's games stand where: the dateline's counts. */
 export type SlateCounts = Record<keyof SlateSections, number>;
 
 export function slateCounts(games: ScoreboardGame[]): SlateCounts {

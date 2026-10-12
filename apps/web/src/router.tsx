@@ -11,6 +11,18 @@ const MINUTE = 60 * 1000;
 export const FRESH_FOR = 5 * MINUTE;
 
 /**
+ * How an address is matched, as the site matched before it was the router's (#211).
+ *
+ * - By case: `/NHL` is no page. The router's own way is to match without regard to it.
+ * - A slash at the end of an address is not the router's business: the Worker's entry has sent
+ *   every such request for the site to the address without it (a 308) before the site is asked, and puts one
+ *   there itself to carry an address that ends in a space past Start
+ *   (`lib/canonical-address.ts`). Under the router's own "never" that slash would be redirected
+ *   away again. No link of the site's ends in a slash.
+ */
+export const ADDRESS_RULES = { caseSensitive: true, trailingSlash: "preserve" } as const;
+
+/**
  * The rules of ADR 0009 that are the router's to keep.
  *
  * - What a loader read is fresh for five minutes, on every route: going back to a page costs
@@ -29,6 +41,7 @@ export function getRouter() {
   if (typeof document !== "undefined") quietSkippedTransitions(document);
   return createRouter({
     routeTree,
+    ...ADDRESS_RULES,
     scrollRestoration: true,
     defaultStaleTime: FRESH_FOR,
     defaultPreloadStaleTime: FRESH_FOR,

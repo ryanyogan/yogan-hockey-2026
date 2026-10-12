@@ -13,7 +13,7 @@ import { titled } from "../../head";
  * `scripts/picks-shots.ts` press these buttons; `?seeded=` says the rows are in.
  */
 export const Route = createFileRoute("/skeleton/picks")({
-  // The router reads `?seeded=1` as a number: the page prints whatever was given, as text.
+  // The page prints whatever was given, as text; a parameter given twice arrives as a list.
   validateSearch: (search: Record<string, unknown>): { seeded?: string } =>
     search.seeded == null || search.seeded === "" ? {} : { seeded: String(search.seeded) },
   loader: () => readSamplePicksPage(),

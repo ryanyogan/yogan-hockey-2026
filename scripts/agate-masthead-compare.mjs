@@ -1,7 +1,7 @@
 // Measures the masthead and the footer of the site against the Agate prototype
 // (`pnpm prototype:agate`), at phone and desktop widths in both themes, and says where they differ.
 //
-//   node scripts/agate-masthead-compare.mjs <site> [out-dir] [prototype]
+//   node scripts/agate-masthead-compare.mjs <site> [out-dir] [prototype] [site-path]
 //
 // <site> is the dev server ("http://localhost:5470"); the prototype defaults to port 5129. With
 // an out-dir it also saves a shot of the top of each page, the prototype's beside the site's
@@ -14,9 +14,11 @@
 import { mkdirSync } from "node:fs";
 import { chromium } from "@playwright/test";
 
-const [site, outDir, prototype = "http://localhost:5129"] = process.argv.slice(2);
+const [site, outDir, prototype = "http://localhost:5129", sitePath = "/"] = process.argv.slice(2);
 if (!site) {
-  console.error("usage: node scripts/agate-masthead-compare.mjs <site> [out-dir] [prototype]");
+  console.error(
+    "usage: node scripts/agate-masthead-compare.mjs <site> [out-dir] [prototype] [site-path]",
+  );
   process.exit(2);
 }
 if (outDir) mkdirSync(outDir, { recursive: true });
@@ -153,8 +155,16 @@ function measure({ selector, type, words }) {
   };
 }
 
-/** A family is the same when its first face is: the site's stack names vinext's fallback too. */
-const firstFace = (family) => family.split(",")[0].replaceAll(/['"]/g, "").trim();
+/**
+ * A family is the same when its first face is: the site's stack names its fallbacks too, and
+ * Fontsource names the variable file's family "Newsreader Variable".
+ */
+const firstFace = (family) =>
+  family
+    .split(",")[0]
+    .replaceAll(/['"]/g, "")
+    .trim()
+    .replace(/ Variable$/, "");
 const same = (name, a, b) => {
   if (name === "fontFamily") return firstFace(a) === firstFace(b);
   if (typeof a === "number") return Math.abs(a - b) <= 0.5;
@@ -169,7 +179,7 @@ for (const width of WIDTHS) {
     const pages = {};
     for (const [name, url] of [
       ["proto", `${prototype}/?slate=busy&theme=${theme}&chrome=0`],
-      ["site", `${site}/`],
+      ["site", site + sitePath],
     ]) {
       const context = await browser.newContext({
         viewport: { width, height: 900 },

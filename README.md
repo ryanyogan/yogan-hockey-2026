@@ -1,6 +1,6 @@
 # Yogan Hockey 2026
 
-The 2026 rebuild of [Yogan Hockey](https://github.com/ryanyogan/yogan_hockey): TypeScript on Cloudflare, with a backend on the Agents SDK and a vinext (shadcn + Tailwind) UI, in one pnpm monorepo.
+The 2026 rebuild of [Yogan Hockey](https://github.com/ryanyogan/yogan_hockey): TypeScript on Cloudflare, with a backend on the Agents SDK and a TanStack Start (shadcn + Tailwind) UI, in one pnpm monorepo.
 
 The design is decided and the build has started: the walking skeleton (#31) is in, and the site itself is not built yet.
 

@@ -102,7 +102,12 @@ function audit() {
     const style = getComputedStyle(el);
     const own = [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim() !== "");
     if (own) {
-      const face = style.fontFamily.split(",")[0].replaceAll(/['"]/g, "").trim();
+      // Fontsource names the variable file's family "Newsreader Variable": the same face.
+      const face = style.fontFamily
+        .split(",")[0]
+        .replaceAll(/['"]/g, "")
+        .trim()
+        .replace(/ Variable$/, "");
       const role = `${face} ${style.fontSize} ${style.fontWeight}${style.fontStyle === "italic" ? " italic" : ""}`;
       roles[role] = (roles[role] ?? 0) + 1;
       if (face !== "Newsreader" && face !== "IBM Plex Sans Condensed") say(el, `face ${face}`);
@@ -142,7 +147,10 @@ function audit() {
 
 await mkdir(scratchDir, { recursive: true });
 const browser = await chromium.launch();
-await seedPicks(browser, baseURL);
+// The sample picks are written by `/skeleton/picks`, which the port to TanStack Start has not
+// reached (#192). Until it is back the dateline is shot without its record of the picks.
+if ((await fetch(`${baseURL}/skeleton/picks`)).ok) await seedPicks(browser, baseURL);
+else console.log("no /skeleton/picks on this site: shot without the sample picks");
 let failed = 0;
 for (const route of ROUTES) {
   for (const width of WIDTHS) {

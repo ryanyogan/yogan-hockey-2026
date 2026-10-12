@@ -102,8 +102,10 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const cached = (await headers()).has(PAGE_CACHE_REQUEST_HEADER);
   const scoreboard = cached ? null : scoreboardForFirstPaint();
   // The masthead's dateline says the season's record of the picks. Not awaited either: the
-  // dateline's rules hold its place. A cached page has it too, as old as the page is: it moves
-  // only when a game ends, which is also when the browser draws the page again.
+  // dateline's rules hold its place. A cached page has it too, as old as the page is. A browser
+  // with the socket open draws the page again when a game ends; a later visitor to a cached page
+  // no final invalidates (the players, a finished game) reads the older record until it is
+  // rendered again.
   const record = readSeasonRecord(scoreboard);
   return (
     // next-themes sets the class on <html> before first paint, which React must not undo.

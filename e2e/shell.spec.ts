@@ -133,7 +133,9 @@ test("the masthead renders, switches theme, and a phone gets its sections under 
   await expect(theme.getByRole("button")).toHaveCount(1);
   // The dev server may have reloaded the page for the new route, so again press until one lands.
   await expect(async () => {
-    await theme.getByRole("button", { name: "Night" }).click();
+    // Whichever is drawn: a press that landed late has already swapped the button.
+    if (await theme.getByRole("button", { name: "Night" }).isVisible())
+      await theme.getByRole("button", { name: "Night" }).click();
     await expect(body).toHaveCSS("background-color", DARK_BACKGROUND, { timeout: 1000 });
   }).toPass();
   await expect(theme.getByRole("button")).toHaveAccessibleName("Day");

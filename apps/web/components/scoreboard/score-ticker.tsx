@@ -1,7 +1,5 @@
 import type { ScoreboardGame, ScoreboardSide } from "@yogan-hockey/schemas";
-import { FavoriteMarker } from "@yogan-hockey/ui/components/marker";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
-import { favoritesFirst, isFavoriteGame } from "../../lib/favorites";
 import {
   gameHref,
   gameStatusLine,
@@ -12,7 +10,6 @@ import {
   tickerGames,
   wheelScrollLeft,
 } from "../../lib/scoreboard-view";
-import { useFavorites } from "../../lib/use-favorites";
 import { usePathname } from "../../lib/use-page-address";
 import { Link } from "../link";
 import { TeamMark } from "../team-mark";
@@ -54,30 +51,19 @@ const LAYOUT = {
   cell: {
     // A phone's cell is the prototype's: 13px on an 18px line under a status of 11px on 14.
     link: "h-full max-md:grid max-md:w-22 max-md:grid-cols-[1fr_auto] max-md:content-center max-md:gap-x-1 max-md:px-2 max-md:text-[13px] max-md:leading-[18px] md:flex md:items-center md:gap-2 md:px-3",
-    // The star's box is tightened to the status's 14px line, or it is the tallest thing on it.
-    marker: "max-md:col-start-2 max-md:row-start-1 max-md:px-1 max-md:py-px max-md:text-[11px]",
     side: "max-md:col-span-2 max-md:flex max-md:justify-between max-md:gap-2",
     at: "max-md:sr-only",
     status: "max-md:col-start-1 max-md:row-start-1 max-md:text-[11px] max-md:leading-[14px]",
   },
   row: {
     link: "flex min-h-11 items-center gap-2 px-2 md:min-h-0 md:py-row",
-    marker: "",
     side: "",
     at: "",
     status: "ml-auto pl-2",
   },
 } as const;
 
-function Entry({
-  game,
-  favorite,
-  layout,
-}: {
-  game: ScoreboardGame;
-  favorite: boolean;
-  layout: keyof typeof LAYOUT;
-}) {
+function Entry({ game, layout }: { game: ScoreboardGame; layout: keyof typeof LAYOUT }) {
   const live = game.status === "live";
   const scored = hasScore(game);
   const status = gameStatusLine(game);
@@ -86,14 +72,8 @@ function Entry({
     <Link
       href={gameHref(game)}
       data-live={live ? "" : undefined}
-      data-favorite={favorite ? "" : undefined}
       className={`whitespace-nowrap hover:bg-highlight ${classes.link}`}
     >
-      {favorite && (
-        <FavoriteMarker className={classes.marker}>
-          <span className="sr-only">favorite team, </span>
-        </FavoriteMarker>
-      )}
       <Side side={game.away} scored={scored} live={live} className={classes.side} />
       <span className={`text-label ${classes.at}`}>
         <span aria-hidden="true">@</span>
@@ -133,7 +113,7 @@ const NOTHING_HIDDEN: StripReach = { before: false, after: false, hidden: 0 };
  * arriving, a window resized) and as its entries change. `order` is the entries, in order.
  *
  * A new order also sends the strip back to its start. A strip that snaps keeps hold of the entry
- * it had snapped to, so when a favorite or a game just begun took the lead it did so out of view,
+ * it had snapped to, so when a game just begun took the lead it did so out of view,
  * to the left of where the strip stood.
  */
 function useStripReach(order: string) {
@@ -204,12 +184,10 @@ function fadeOf({ before, after }: StripReach): string {
  */
 export function ScoreTicker() {
   const { date, games } = useScoreboard();
-  const favoriteTeamIds = useFavorites("team").ids;
   const pathname = usePathname();
   // Open on the page it was opened on: going anywhere else closes it.
   const [openOn, setOpenOn] = useState<string | null>(null);
-  // Favorite teams' games lead the whole strip, whatever their status.
-  const ordered = favoritesFirst(tickerGames(games), favoriteTeamIds);
+  const ordered = tickerGames(games);
   const { strip, reach } = useStripReach(ordered.map((game) => game.id).join());
   // One function for the strip's life, so the wheel's listener is added once.
   const stripRef = useCallback(
@@ -261,7 +239,7 @@ export function ScoreTicker() {
                 key={game.id}
                 className="shrink-0 snap-start border-rule-head border-r last:border-r-0"
               >
-                <Entry game={game} favorite={isFavoriteGame(game, favoriteTeamIds)} layout="cell" />
+                <Entry game={game} layout="cell" />
               </li>
             ))}
           </ul>
@@ -306,7 +284,7 @@ export function ScoreTicker() {
           >
             {ordered.map((game) => (
               <li key={game.id} className="border-border border-r border-b">
-                <Entry game={game} favorite={isFavoriteGame(game, favoriteTeamIds)} layout="row" />
+                <Entry game={game} layout="row" />
               </li>
             ))}
           </ul>

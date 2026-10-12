@@ -3,7 +3,7 @@ import { cn } from "../cn";
 
 /**
  * A mark (`.mark` in the prototype): 12px bold capitals in a 1px box, which takes its colour
- * from the ink unless it is told another. A `Badge` and a `FavoriteMarker` are both marks.
+ * from the ink unless it is told another. A `Badge` and a `LiveMarker` are both marks.
  */
 const mark =
   "inline-flex w-fit shrink-0 items-center gap-1 whitespace-nowrap border px-1.5 py-[3px] font-strong text-tag uppercase leading-none tracking-mark";
@@ -46,20 +46,4 @@ function LiveMarker({
   );
 }
 
-/**
- * "★ favorite team": a mark on a row that is one of the visitor's favorites. Give it children
- * that only a screen reader is given and the mark is the star alone.
- */
-function FavoriteMarker({ className, children = "favorite", ...props }: ComponentProps<"span">) {
-  return (
-    <span data-slot="favorite-marker" className={cn(mark, "border-rule", className)} {...props}>
-      {/* Drawn, not typed, as the live dot is: the face has no "★". */}
-      <svg viewBox="0 0 12 12" aria-hidden="true" className="size-[0.85em]" fill="currentColor">
-        <path d="M6 .6 7.6 4.3l4 .4-3 2.7.9 4L6 9.3l-3.5 2.1.9-4-3-2.7 4-.4z" />
-      </svg>
-      {children}
-    </span>
-  );
-}
-
-export { FavoriteMarker, LiveMarker, liveDot, mark };
+export { LiveMarker, liveDot, mark };

@@ -1,8 +1,8 @@
 // Takes one screenshot for a side-by-side comparison against the Reference UI.
 // Usage: node scripts/screenshot.mjs <url> <out.png> <width> [light|dark] [height]
 //          [--store=key=value ...] [--eval=expression]
-// --store puts a value in localStorage before the page loads, which is how a shot gets
-// favorites: --store='favorite_players=["4024123"]' --store='favorite_teams=["21"]'.
+// --store puts a value in localStorage before the page loads, which is how a shot gets a
+// theme the visitor chose: --store='theme=dark'.
 // --eval prints what an expression evaluates to in the page, as JSON: for measuring.
 import { chromium } from "@playwright/test";
 

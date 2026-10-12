@@ -156,7 +156,7 @@ function lower() {
       </div>
       <div class="confs">${confTable("east", "Eastern Conference")}${confTable("west", "Western Conference")}</div>
     </section>
-    <aside class="aside" aria-label="Picks and favorites">
+    <aside class="aside" aria-label="Picks">
       <section class="picks-box" aria-labelledby="picks-h">
         <div>
           <h2 class="label" id="picks-h">The Picks</h2>
@@ -171,13 +171,6 @@ function lower() {
           <div><div class="glance__n">${c.toCome}</div><div class="glance__k">To come</div></div>
           <div><div class="glance__n">${c.final}</div><div class="glance__k">Final</div></div>
         </div>
-      </section>
-      <section class="favorites" aria-labelledby="fav-h">
-        <div class="favorites__head">
-          <h2 class="label" id="fav-h">Favorites</h2>
-          <a class="more" href="#" style="font-size:12px">All players</a>
-        </div>
-        <p>No favorite players yet. <a href="#">Find a player</a> and press his heart to keep him here.</p>
       </section>
     </aside>
   </div>`;

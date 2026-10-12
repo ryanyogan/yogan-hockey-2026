@@ -22,10 +22,7 @@ export const ruledLabel = `${label} ${sectionRule}`;
 export const link = focusRing;
 
 /** The link at the right-hand end of a section's head: "Full standings". A thumb's height. */
-const moreLink = `inline-flex min-h-11 items-center font-label uppercase normal-nums leading-none tracking-head underline underline-offset-2 hover:text-label ${focusRing}`;
-export const more = `${moreLink} text-small`;
-/** The same beside a label, where it is the label's size. */
-export const smallMore = `${moreLink} text-tag`;
+export const more = `inline-flex min-h-11 items-center font-label text-small uppercase normal-nums leading-none tracking-head underline underline-offset-2 hover:text-label ${focusRing}`;
 
 /**
  * Beside a `Ledger`'s parts on Home: a story's own (`fitted`, which says why), and the standings'

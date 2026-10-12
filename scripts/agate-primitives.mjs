@@ -78,7 +78,8 @@ const PARTS = [
   },
   {
     name: "section label",
-    prototype: ".briefs > .label, .favorites__head .label",
+    // The glance's label on a slate with no briefs: both are `.label`, as the rule below reads.
+    prototype: ".glance h2, .briefs > .label",
     site: ["/nhl", '[data-slot="section-header"] h2'],
     styles: CAPS,
   },

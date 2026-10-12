@@ -35,8 +35,8 @@
 //   than 32px: the player's page at 1440 (37px) and the game page at 390 (62px) and 1440 (65px);
 // - no real iOS or Android device has been measured. The phones' numbers come from this desk.
 //
-// A page shifts for reasons that are not the fonts (a time rewritten in the visitor's zone,
-// favorites read from the browser), so the fonts are judged at the swap alone.
+// A page shifts for reasons that are not the fonts (a time rewritten in the visitor's zone), so
+// the fonts are judged at the swap alone.
 import { writeFile } from "node:fs/promises";
 import { chromium } from "@playwright/test";
 

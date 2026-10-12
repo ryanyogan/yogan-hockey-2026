@@ -13,7 +13,6 @@ import { nhlHref } from "../../lib/nhl-page";
 import { Link } from "../link";
 import { emptyProse } from "../story/type";
 import { agate, link, more, ruledLabel } from "./agate";
-import { DashboardFavorites } from "./dashboard-favorites";
 import { Conferences, Glance, PicksBox } from "./lower-band";
 import { type Picks, Roundup } from "./roundup";
 
@@ -120,13 +119,12 @@ function Standings({ tables }: { tables: StandingsTable[] | null }) {
 
 /**
  * Home (`docs/design/agate.md` § Page anatomy): the roundup's leads and briefs, then, under a
- * heavy rule, the standings beside The Picks, tonight at a glance and the favorites. On a phone
- * the lower band is one column in another order: the picks, the standings, the favorites.
+ * heavy rule, the standings beside The Picks and tonight at a glance. On a phone the lower band
+ * is one column in another order: the picks, then the standings.
  *
  * The route hands in what its loader read: `picks`, the made picks of today's games by game id,
  * `record`, the season's, and `standings`, each conference's top eight (`topOfConferences`), or
- * null when they could not be read. The games are the Scoreboard's and the favorites the
- * browser's.
+ * null when they could not be read. The games are the Scoreboard's.
  */
 export function Dashboard({
   picks = {},
@@ -146,14 +144,13 @@ export function Dashboard({
         className="mt-11 flex flex-wrap gap-10 border-rule border-t-3 pt-4 max-md:mt-8 max-md:flex-col max-md:gap-8 max-md:border-t-0 max-md:pt-0"
       >
         <Standings tables={standings} />
-        {/* On a phone its three parts are the column's own, in the column's order. */}
+        {/* On a phone its parts are the column's own, in the column's order. */}
         <aside
-          aria-label="Picks and favorites"
+          aria-label="Picks"
           className="flex min-w-0 flex-[1_1_300px] flex-col gap-7 max-md:contents"
         >
           <PicksBox picks={picks} record={record} />
           <Glance />
-          <DashboardFavorites />
         </aside>
       </div>
     </div>

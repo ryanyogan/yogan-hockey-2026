@@ -47,11 +47,6 @@ export const FIXTURE_SUBJECTS: Subjects = {
   search: "mar",
 };
 
-const heart: Interaction = {
-  name: "favorite heart",
-  selector: 'main button[aria-label^="Favorite"]',
-};
-
 export function measuredRoutes(subjects: Subjects): MeasuredRoute[] {
   const team = `/nhl/teams/${subjects.team}`;
   const game = `/nhl/games/${subjects.finishedGame}`;
@@ -94,21 +89,21 @@ export function measuredRoutes(subjects: Subjects): MeasuredRoute[] {
       path: team,
       cacheable: true,
       navigate: `main a[href="${team}/roster"]`,
-      interactions: [heart],
+      interactions: [],
     },
     {
       route: "/nhl/teams/:id/roster",
       path: `${team}/roster`,
       cacheable: true,
       navigate: 'main a[href^="/players/"]',
-      interactions: [heart],
+      interactions: [],
     },
     {
       route: "/nhl/teams/:id/stats",
       path: `${team}/stats`,
       cacheable: true,
       navigate: `main a[href="${team}"]`,
-      interactions: [heart],
+      interactions: [],
     },
     {
       route: "/nhl/games/:id (finished)",
@@ -143,28 +138,28 @@ export function measuredRoutes(subjects: Subjects): MeasuredRoute[] {
       path: `/players?q=${subjects.search}`,
       cacheable: false,
       navigate: 'main a[href^="/players/"]',
-      interactions: [heart],
+      interactions: [],
     },
     {
       route: "/players/:id (skater)",
       path: player,
       cacheable: true,
       navigate: 'main a[href^="/nhl/teams/"]',
-      interactions: [heart],
+      interactions: [],
     },
     {
       route: "/players/:id/games",
       path: `${player}/games`,
       cacheable: true,
       navigate: 'main a[href^="/nhl/games/"]',
-      interactions: [heart],
+      interactions: [],
     },
     {
       route: "/players/:id (goalie)",
       path: `/players/${subjects.goalie}`,
       cacheable: true,
       navigate: 'main a[href^="/nhl/teams/"]',
-      interactions: [heart],
+      interactions: [],
     },
   ];
   // An address no route answers. It has no script budget: the baseline did not measure it.

@@ -10,7 +10,7 @@ import {
   LedgerHead,
   LedgerRow,
 } from "@yogan-hockey/ui/components/ledger";
-import { FavoriteMarker, LiveMarker } from "@yogan-hockey/ui/components/marker";
+import { LiveMarker } from "@yogan-hockey/ui/components/marker";
 import { PageHeader, Section, SectionHeader } from "@yogan-hockey/ui/components/section";
 import type { FormEvent } from "react";
 import { PulseLive } from "../../../components/skeleton/pulse-live";
@@ -55,7 +55,6 @@ function SkeletonPage() {
           <Badge variant="outline">wrong</Badge>
           <Badge variant="secondary">no pick</Badge>
           <Badge variant="live">live</Badge>
-          <FavoriteMarker>favorite team</FavoriteMarker>
           <LiveMarker>2nd 12:34</LiveMarker>
         </p>
         <form onSubmit={bumpAndReadAgain} className="flex flex-wrap gap-2">

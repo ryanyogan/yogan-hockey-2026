@@ -6,26 +6,12 @@ import {
 } from "@yogan-hockey/schemas";
 
 /**
- * Keep each home row in scheduled-start order as status, scores and favorites change.
+ * Keep each home row in scheduled-start order as status and scores change.
  * Game ids break ties so an upstream array reorder does not move equal-start games.
  */
 export function tonightGames(games: readonly ScoreboardGame[]): ScoreboardGame[] {
   return games.toSorted(
     (a, b) => Date.parse(a.startTime) - Date.parse(b.startTime) || a.id.localeCompare(b.id),
-  );
-}
-
-/** How many favorite players the dashboard lists. */
-export const DASHBOARD_FAVORITES = 4;
-
-/** The game in progress a team is in, which is what puts "live" beside a favorite player. */
-export function gamePlayingNow(
-  teamId: string | undefined,
-  games: readonly ScoreboardGame[],
-): ScoreboardGame | undefined {
-  if (teamId == null) return undefined;
-  return games.find(
-    (game) => game.status === "live" && (game.away.id === teamId || game.home.id === teamId),
   );
 }
 

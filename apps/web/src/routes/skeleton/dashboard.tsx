@@ -6,7 +6,7 @@ import { titled } from "../../head";
 
 /*
  * Scaffolding: Home drawn from a slate that is not today's, because no recorded ESPN slate has a
- * game in progress. The favorite players and the standings are the real ones, and the masthead
+ * game in progress. The standings are the real ones, and the masthead
  * above still shows the real slate. `?slate=` and `?picks=1` choose the sample
  * (`readSampleDashboard`).
  */

@@ -1,4 +1,5 @@
 import { type BrowserContext, test as base, expect, type Page } from "@playwright/test";
+import { pageHydrated as everyControlIsReacts } from "../scripts/performance/hydration.ts";
 
 export { expect };
 
@@ -47,12 +48,19 @@ export const test = base.extend<{ hydrationErrors: string[] }>({
  *
  * The page under the masthead hydrates a moment later (the build notes, #203). A link followed
  * in between makes React report a hydration error, so a test that loads a route's page and then
- * follows a link first waits for something that page does only once it has hydrated:
- * `e2e/players.spec.ts` waits for Favorites. The not-found page of an address no route answers
- * is the shell's own and has hydrated with it.
+ * follows a link first waits for `pageHydrated`. The not-found page of an address no route
+ * answers is the shell's own and has hydrated with it.
  */
 export async function shellHydrated(page: Page): Promise<void> {
   await page.waitForFunction(
     () => (window as { __APP_HYDRATED?: boolean }).__APP_HYDRATED === true,
   );
+}
+
+/**
+ * Waits until the page under the masthead has hydrated as well: every link, button and field
+ * drawn is React's (`scripts/performance/hydration.ts`, which says why that is the test).
+ */
+export async function pageHydrated(page: Page): Promise<void> {
+  await page.waitForFunction(everyControlIsReacts);
 }

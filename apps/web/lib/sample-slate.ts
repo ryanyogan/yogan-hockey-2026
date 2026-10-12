@@ -39,9 +39,8 @@ const TEAMS: Record<string, [record: string, venue: string, location: string, sh
   };
 
 /**
- * ESPN's own team ids, so each team has its mark, and a favorite player of the recorded fixtures
- * (all Toronto's) is "live" on `/skeleton/dashboard`. A team not listed is known by its
- * abbreviation and has no mark.
+ * ESPN's own team ids, so each team has its mark. A team not listed is known by its abbreviation
+ * and has no mark.
  */
 const ESPN_IDS: Record<string, string> = {
   BOS: "1",

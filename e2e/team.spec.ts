@@ -172,8 +172,7 @@ test("a team's page shows each tab from a pasted URL, titled with the team's nam
       rows(page, /^Roster/)
         .first()
         .getByRole("cell"),
-      // The last cell is his heart (#45), which has a name and no text.
-    ).toHaveText(["3", "Nick Blankenburg", "D", ""]);
+    ).toHaveText(["3", "Nick Blankenburg", "D"]);
     await expect(page.getByRole("link", { name: "Auston Matthews" })).toHaveAttribute(
       "href",
       "/players/4024123",

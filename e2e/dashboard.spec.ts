@@ -1,11 +1,9 @@
 import { expect, test } from "./test";
 
 // Fixture mode: nine games still to be played, Nashville at Toronto the second of them by start,
-// so it is one of the three leads. Toronto (21) is the recorded team and Auston Matthews
-// (4024123) its recorded player. The picks are `picks.setup.ts`'s: Toronto at 58%, and a season
-// of 3 right, 2 wrong.
+// so it is one of the three leads. Toronto (21) is the recorded team. The picks are
+// `picks.setup.ts`'s: Toronto at 58%, and a season of 3 right, 2 wrong.
 const GAME_ID = "401892449";
-const MATTHEWS = "4024123";
 
 type Game = { id: string; home: object; away: object; [field: string]: unknown };
 type Slate = { games: Game[]; [field: string]: unknown };
@@ -13,10 +11,11 @@ type Slate = { games: Game[]; [field: string]: unknown };
 test("Home writes the slate up as leads and briefs, and follows the Scoreboard without a game changing place until its status does", async ({
   page,
 }) => {
-  // The visitor already has a favorite player.
-  await page.addInitScript((player) => {
-    localStorage.setItem("favorite_players", JSON.stringify([player]));
-  }, MATTHEWS);
+  // The browser still holds the favorites an earlier build of the site kept there (#223).
+  await page.addInitScript(() => {
+    localStorage.setItem("favorite_teams", '["21"]');
+    localStorage.setItem("favorite_players", '["4024123"]');
+  });
   // The test stands between the page and the Scoreboard, to send a state of its own later.
   let slate: Slate | undefined;
   let pushState: (state: Slate) => void = () => {};
@@ -84,19 +83,6 @@ test("Home writes the slate up as leads and briefs, and follows the Scoreboard w
   await expect(page.getByRole("region", { name: "Tonight at a glance" })).toHaveText(
     "Tonight at a glanceLive0To come9Final0",
   );
-  // Favorites: the favorite player with his club and his season, not playing yet.
-  const favorites = page.getByRole("region", { name: "Favorites" });
-  const matthews = favorites.getByRole("listitem").filter({ hasText: "Auston Matthews" });
-  await expect(matthews).toContainText(/\d+ GP · \d+ G · \d+ A · \d+ PTS/);
-  await expect(
-    matthews.getByRole("link", { name: "Auston Matthews", exact: true }),
-  ).toHaveAttribute("href", `/players/${MATTHEWS}`);
-  await expect(matthews.getByTitle("Toronto Maple Leafs")).toHaveText("TORToronto Maple Leafs");
-  await expect(matthews.getByRole("link", { name: /live now/ })).toHaveCount(0);
-  await expect(favorites.getByRole("link", { name: "All players" })).toHaveAttribute(
-    "href",
-    "/players",
-  );
 
   // The Scoreboard says Toronto's game is on: the story follows without a refresh, in its place.
   await expect.poll(() => slate, { message: "the socket delivered the slate" }).toBeDefined();
@@ -121,9 +107,9 @@ test("Home writes the slate up as leads and briefs, and follows the Scoreboard w
   await expect(page.getByRole("region", { name: "Tonight at a glance" })).toHaveText(
     "Tonight at a glanceLive1To come8Final0",
   );
-  await expect(
-    matthews.getByRole("link", { name: "Auston Matthews's game, live now" }),
-  ).toHaveAttribute("href", `/nhl/games/${GAME_ID}`);
+  // What an earlier build left in the browser is never read: no heart, no star, no Favorites.
+  await expect(page.getByRole("button", { name: /favorite/i })).toHaveCount(0);
+  await expect(page.getByText(/favorite/i)).toHaveCount(0);
 
   // The game ends, Toronto winning: its status changed, so it gives its place among the leads to
   // a game still to come and is a brief, its pick marked; The Picks counts it.

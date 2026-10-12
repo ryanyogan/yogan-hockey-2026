@@ -1,5 +1,4 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
-import { FavoriteHeart } from "../../../../components/favorites/favorite-heart";
 import { Link } from "../../../../components/link";
 import { PlayerNotFound } from "../../../../components/players/player-not-found";
 import {
@@ -28,10 +27,7 @@ function PlayerPage() {
   const { profile, season, career } = Route.useLoaderData();
   return (
     <>
-      <PlayerHeader
-        profile={profile}
-        action={<FavoriteHeart kind="player" id={profile.id} name={profile.name} />}
-      />
+      <PlayerHeader profile={profile} />
       {season && <SeasonSection season={season} />}
       <Outlet />
       {career ? (

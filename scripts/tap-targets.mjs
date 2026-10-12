@@ -193,14 +193,7 @@ for (const route of ROUTES) {
     timezoneId: "America/Chicago",
     reducedMotion: "reduce",
   });
-  await context.addInitScript(
-    ([team, player]) => {
-      localStorage.setItem("theme", "light");
-      localStorage.setItem("favorite_teams", JSON.stringify([team]));
-      localStorage.setItem("favorite_players", JSON.stringify([player]));
-    },
-    [TEAM, PLAYER],
-  );
+  await context.addInitScript(() => localStorage.setItem("theme", "light"));
   const page = await context.newPage();
   await watchHydration(page);
   await page.goto(`${baseURL}${route.path}`, { waitUntil: "networkidle" });

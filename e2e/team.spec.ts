@@ -205,6 +205,14 @@ test("a team's page shows each tab from a pasted URL, titled with the team's nam
       "/nhl?tab=teams",
     );
 
+    // An address under a team that no route answers is the site's own not-found page, alone.
+    const lost = await page.request.get("/nhl/teams/21/coaches");
+    expect(lost.status()).toBe(404);
+    const lostPage = await lost.text();
+    expect(lostPage).toContain("<title>Not found · Yogan Hockey</title>");
+    expect(lostPage).toContain("Nothing is kept at this address.");
+    expect(lostPage).not.toContain('data-slot="team-header"');
+
     // The title is in <head> for whoever reads the HTML alone, as a link preview does.
     const response = await page.request.get("/nhl/teams/21/stats", {
       headers: { "user-agent": "Twitterbot/1.0" },

@@ -1,5 +1,3 @@
-"use client";
-
 import { UrlTabs } from "@yogan-hockey/ui/components/url-tabs";
 import { TEAM_TABS, teamPageHref, teamTabOfPath } from "../../lib/team-page";
 import { usePathname } from "../../lib/use-page-address";

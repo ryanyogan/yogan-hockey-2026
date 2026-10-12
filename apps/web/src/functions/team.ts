@@ -3,7 +3,7 @@ import { TeamSchema } from "@yogan-hockey/schemas";
 import { readTeam, readTeamRoster, readTeamSchedule, readTeamStats } from "../../lib/team-read";
 import { pageRead } from "./page-read";
 
-/**
+/*
  * The reads of a team's pages (`lib/team-read.ts`), one for each route: the parent's, which the
  * header, the banner and the Next Game card are drawn from, and one for each tab. The ESPN reads
  * behind them are cached (`lib/espn.ts`).
@@ -11,6 +11,8 @@ import { pageRead } from "./page-read";
  * Each takes the `:id` of `/nhl/teams/:id` as the address has it. An id that could be no team's
  * is not refused here: it is the page's 404, which the read answers.
  */
+
+/** What each of them is asked with: the team's id. */
 const TeamIdSchema = TeamSchema.pick({ id: true });
 
 /** `/nhl/teams/:id`'s own read, shared by its tabs and made once for all of them. */

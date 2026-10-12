@@ -1,5 +1,6 @@
 import { createMemoryHistory, createRouter } from "@tanstack/react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { FRESH_FOR } from "./router";
 import { routeTree } from "./routeTree.gen";
 
 // The server functions are the routes' only way to the server: each call of one is a request.
@@ -28,7 +29,7 @@ async function open(path: string) {
   const router = createRouter({
     routeTree,
     history: createMemoryHistory({ initialEntries: [path] }),
-    defaultStaleTime: 5 * 60 * 1000,
+    defaultStaleTime: FRESH_FOR,
     // The browser's router, which keeps what it read; the server's reads everything each time.
     isServer: false,
     origin: "http://localhost",

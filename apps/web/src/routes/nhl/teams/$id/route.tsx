@@ -1,6 +1,7 @@
 import { createFileRoute, Outlet, useChildMatches } from "@tanstack/react-router";
 import { FavoriteHeart } from "../../../../../components/favorites/favorite-heart";
 import { Link } from "../../../../../components/link";
+import { NotFoundPage } from "../../../../../components/shell/not-found-page";
 import { TeamHeader } from "../../../../../components/team/team-header";
 import { TeamNotFound } from "../../../../../components/team/team-not-found";
 import { TeamNow } from "../../../../../components/team/team-now";
@@ -17,11 +18,20 @@ import { titled } from "../../../../head";
  */
 export const Route = createFileRoute("/nhl/teams/$id")({
   loader: ({ params }) => readTeamPage({ data: { id: params.id } }),
-  head: ({ match, loaderData }) =>
-    titled(match, loaderData?.team.name, { notFound: "Team not found" }),
+  head: ({ match, loaderData }) => titled(match, loaderData?.team.name, "Team not found"),
   component: TeamPage,
-  notFoundComponent: TeamNotFound,
+  notFoundComponent: NotFound,
 });
+
+/**
+ * Stands where the team's page would for either of two things the router sends here: a team that
+ * does not exist, which this route's own read found, and an address under a team that no route
+ * answers (`/nhl/teams/21/coaches`), which is the site's not-found page as anywhere else.
+ */
+function NotFound() {
+  const noSuchTeam = Route.useMatch({ select: (match) => match.status === "notFound" });
+  return noSuchTeam ? <TeamNotFound /> : <NotFoundPage />;
+}
 
 function TeamPage() {
   const read = Route.useLoaderData();
@@ -31,7 +41,10 @@ function TeamPage() {
   const tabFailed = useChildMatches({
     select: (matches) => matches.some((match) => match.status === "error"),
   });
-  if (tabFailed) return <Outlet />;
+  // So does the not-found page for an address under the team that no route answers, which the
+  // router draws in this route's outlet (`_notFound` is its mark for that: see `src/head.ts`).
+  const noSuchAddress = Route.useMatch({ select: (match) => match._notFound === true });
+  if (tabFailed || noSuchAddress) return <Outlet />;
 
   return (
     <>

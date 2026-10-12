@@ -19,9 +19,9 @@ export type HomePicks = {
 };
 
 /**
- * The one-line picks of today's slate, read from D1 by a page's server component. Prediction rows
- * are behind no cache tag, so this is read on every render; the Scoreboard moves `invalidatedAt`
- * when a row is written, which is what renders an open page again.
+ * The one-line picks of today's slate, read from D1 inside a page's read. Prediction rows are not
+ * cached, so this is read each time the page's is; the Scoreboard moves `invalidatedAt` when a
+ * row is written, which is what reads an open page again.
  *
  * The picks are an extra: when the Scoreboard or D1 cannot be read the page is drawn without them.
  */

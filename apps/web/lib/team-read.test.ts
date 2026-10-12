@@ -25,7 +25,8 @@ describe("what a team's header is read with", () => {
     expect(read.standing?.conference.name).toBe("Eastern Conference");
     expect(read.standing?.division.name).toBe("Atlantic Division");
     expect(read.nextGame?.id).toBe("401892449");
-    expect(read.picks).toEqual(expect.any(Object));
+    // No pick has been made in the test's database.
+    expect(read.picks).toEqual({});
   });
 
   it("is nothing a tab draws: the roster and the split records are the tabs' own reads", async () => {

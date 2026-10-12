@@ -34,8 +34,11 @@ async function team(id: string): Promise<TeamDetail> {
 
 /** The parent route's read: the team, where it plays, and the slate's picks. */
 export async function readTeam(id: string): Promise<TeamRead> {
-  const [detail, standings, { picks }] = await Promise.all([
-    team(id),
+  // Started with the others and asked last: neither of them fails, so a team that cannot be read
+  // is reported once both have finished and nothing is left reading behind the answer.
+  const found = team(id);
+  found.catch(() => {});
+  const [standings, { picks }] = await Promise.all([
     // The header can do without its conference and division.
     cachedStandings().catch((error: unknown) => {
       console.error("Team: the standings could not be read", error);
@@ -44,6 +47,7 @@ export async function readTeam(id: string): Promise<TeamRead> {
     // An extra: it answers no picks when they cannot be read.
     readSlatePicks(),
   ]);
+  const detail = await found;
   const row = standings?.rows.find((standing) => standing.team.id === id);
   return {
     team: detail.team,

@@ -1,5 +1,5 @@
 import {
-  divisionRank,
+  divisionPlace,
   type RosterPlayer,
   type Standings,
   type TeamDetail,
@@ -44,10 +44,10 @@ async function team(id: string): Promise<TeamDetail> {
 
 /** Where the standings have a team, or null when they do not list it. */
 function teamStanding(standings: Standings, id: string): TeamStanding | null {
-  const row = standings.rows.find((standing) => standing.team.id === id);
-  const place = divisionRank(standings, id);
-  if (row == null || place == null) return null;
-  return { conference: row.conference, division: row.division, divisionRank: place };
+  const place = divisionPlace(standings, id);
+  if (place == null) return null;
+  const { row, rank } = place;
+  return { conference: row.conference, division: row.division, divisionRank: rank };
 }
 
 /** The parent route's read: the team, where it plays, and the slate's picks. */

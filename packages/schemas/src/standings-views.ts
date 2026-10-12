@@ -66,14 +66,18 @@ function divisionTables(rows: StandingsRow[], keep?: number): StandingsTable[] {
 }
 
 /**
- * A team's place in its division, counted from one: its row in the Division view's table, ranked
- * as every table is. Null for a team the standings do not list.
+ * A team's row in the standings and its place in its division, counted from one: where the
+ * Division view's table has it, ranked as every table is. Null for a team the standings do not
+ * list.
  */
-export function divisionRank(standings: Standings, teamId: string): number | null {
-  const own = standings.rows.find((row) => row.team.id === teamId);
-  if (own == null) return null;
-  const division = standings.rows.filter((row) => row.division.name === own.division.name);
-  return ranked(division).indexOf(own) + 1;
+export function divisionPlace(
+  standings: Standings,
+  teamId: string,
+): { row: StandingsRow; rank: number } | null {
+  const row = standings.rows.find((entry) => entry.team.id === teamId);
+  if (row == null) return null;
+  const division = standings.rows.filter((entry) => entry.division.name === row.division.name);
+  return { row, rank: ranked(division).indexOf(row) + 1 };
 }
 
 /** Lays the standings out as one of the four views: the tables to draw, in order. */

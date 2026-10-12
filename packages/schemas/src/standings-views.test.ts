@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import type { Standings, StandingsRow } from "./standings.ts";
-import { divisionRank, standingsView } from "./standings-views.ts";
+import { divisionPlace, standingsView } from "./standings-views.ts";
 
 const EAST = { name: "Eastern Conference", abbreviation: "East" };
 const WEST = { name: "Western Conference", abbreviation: "West" };
@@ -122,6 +122,8 @@ describe("the Wild Card view", () => {
 });
 
 describe("a team's place in its division", () => {
+  const divisionRank = (from: Standings, teamId: string) => divisionPlace(from, teamId)?.rank;
+
   test("is its row in the Division view's table, counted from one", () => {
     const [atlantic, metro] = standingsView(standings, "division");
 
@@ -130,6 +132,7 @@ describe("a team's place in its division", () => {
         expect(divisionRank(standings, entry.team.id)).toBe(index + 1);
       }
     }
+    expect(divisionPlace(standings, "A1")?.row.team.abbreviation).toBe("A1");
     expect(divisionRank(standings, "A1")).toBe(1);
     expect(divisionRank(standings, "M4")).toBe(4);
     expect(divisionRank(standings, "C2")).toBe(2);
@@ -148,7 +151,7 @@ describe("a team's place in its division", () => {
   });
 
   test("is null for a team the standings do not list", () => {
-    expect(divisionRank(standings, "nobody")).toBeNull();
+    expect(divisionPlace(standings, "nobody")).toBeNull();
   });
 });
 

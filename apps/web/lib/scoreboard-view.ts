@@ -22,8 +22,11 @@ const RUN_OUT = /^[0:.]+$/;
 const inShootout = (game: ScoreboardGame) =>
   game.period === SHOOTOUT_PERIOD && game.seasonType !== PLAYOFFS;
 
-/** "1st", "2nd", "3rd", "OT", "SO"; a playoff game plays overtimes until someone scores. */
-function periodLabel(game: ScoreboardGame): string {
+/**
+ * "1st", "2nd", "3rd", "OT", "SO"; a playoff game plays overtimes until someone scores ("2OT").
+ * Empty before the first period.
+ */
+export function periodLabel(game: ScoreboardGame): string {
   const { period } = game;
   if (period <= REGULATION_PERIODS) return ["", "1st", "2nd", "3rd"][period] ?? "";
   if (inShootout(game)) return "SO";

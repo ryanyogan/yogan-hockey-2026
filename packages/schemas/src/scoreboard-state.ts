@@ -1,7 +1,12 @@
 import { z } from "zod";
 import { GameSchema, GameSideSchema } from "./game.ts";
+import { TeamSchema } from "./team.ts";
 
-/** One team's side of a game on the Scoreboard: enough to draw a ticker entry or a game row. */
+/**
+ * One team's side of a game on the Scoreboard: enough to draw a ticker entry or a game row, and
+ * to write the game up (`apps/web/lib/agate-copy.ts`): a headline names a club by its nickname
+ * ("Kraken"), agate type by its location ("Seattle").
+ */
 export const ScoreboardSideSchema = GameSideSchema.pick({
   id: true,
   abbreviation: true,
@@ -10,13 +15,21 @@ export const ScoreboardSideSchema = GameSideSchema.pick({
   score: true,
   winner: true,
   record: true,
+}).extend({
+  /**
+   * "Seattle". Absent from state stored before the field existed, which a page is given until the
+   * Scoreboard's next poll writes the state again; the copy then goes by the abbreviation.
+   */
+  location: TeamSchema.shape.location.optional(),
+  /** "Kraken". Absent from state stored before the field existed, as `location` is. */
+  shortName: TeamSchema.shape.shortName.optional(),
 });
 export type ScoreboardSide = z.infer<typeof ScoreboardSideSchema>;
 
 /**
  * One game as the Scoreboard Agent pushes it to every open page. It is a `Game` with what the
- * ticker and the game rows do not draw left out (the season, and of each team its names, location
- * and colours), because the whole state is sent again on every change. The logos are carried
+ * ticker, the game rows and the copy do not use left out (the season, and of each team its full
+ * name and colours), because the whole state is sent again on every change. The logos are carried
  * though nothing draws them: a team's mark is the site's own file, found by the team's id (#97).
  */
 export const ScoreboardGameSchema = GameSchema.pick({

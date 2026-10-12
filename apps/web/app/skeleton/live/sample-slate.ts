@@ -3,38 +3,40 @@ import type { ScoreboardGame, ScoreboardState } from "@yogan-hockey/schemas";
 type Team = [abbreviation: string, score?: number];
 
 /**
- * Each team's record and its building, by abbreviation. The records run from the shortest ESPN
+ * Each team's record, its building, its location and its nickname, by abbreviation. The names are
+ * ESPN's, as the Scoreboard carries them for the copy (`lib/agate-copy.ts`). The records run from the shortest ESPN
  * sends to the longest a season reaches, and Tampa's building has the longest name in the league,
  * so the rows show what happens when either is too long for its place.
  */
-const TEAMS: Record<string, [record: string, venue: string]> = {
-  FLA: ["48-26-8", "Amerant Bank Arena"],
-  TB: ["45-25-12", "Benchmark International Arena"],
-  COL: ["2-0-0", "Ball Arena"],
-  DAL: ["1-0-1", "American Airlines Center"],
-  BUF: ["0-2-0", "KeyBank Center"],
-  OTT: ["2-0-0", "Canadian Tire Centre"],
-  TOR: ["1-2-0", "Scotiabank Arena"],
-  MTL: ["1-0-1", "Bell Centre"],
-  CHI: ["0-3-0", "United Center"],
-  DET: ["0-2-0", "Little Caesars Arena"],
-  PIT: ["1-1-0", "PPG Paints Arena"],
-  WSH: ["2-0-0", "Capital One Arena"],
-  NJ: ["1-1-0", "Prudential Center"],
-  NYI: ["1-1-0", "UBS Arena"],
-  BOS: ["10-12-3", "TD Garden"],
-  NYR: ["3-1-0", "Madison Square Garden"],
-  EDM: ["2-1-0", "Rogers Place"],
-  VAN: ["1-1-1", "Rogers Arena"],
-  VGK: ["2-1-0", "T-Mobile Arena"],
-  LA: ["0-1-1", "crypto.com Arena"],
-  CAR: ["1-1-1", "Lenovo Center"],
-  CBJ: ["0-0-0", "Nationwide Arena"],
-  WPG: ["2-0-1", "Canada Life Centre"],
-  MIN: ["1-1-0", "Grand Casino Arena"],
-  SEA: ["1-1-0", "Climate Pledge Arena"],
-  SJ: ["0-2-1", "SAP Center at San Jose"],
-};
+const TEAMS: Record<string, [record: string, venue: string, location: string, shortName: string]> =
+  {
+    FLA: ["48-26-8", "Amerant Bank Arena", "Florida", "Panthers"],
+    TB: ["45-25-12", "Benchmark International Arena", "Tampa Bay", "Lightning"],
+    COL: ["2-0-0", "Ball Arena", "Colorado", "Avalanche"],
+    DAL: ["1-0-1", "American Airlines Center", "Dallas", "Stars"],
+    BUF: ["0-2-0", "KeyBank Center", "Buffalo", "Sabres"],
+    OTT: ["2-0-0", "Canadian Tire Centre", "Ottawa", "Senators"],
+    TOR: ["1-2-0", "Scotiabank Arena", "Toronto", "Maple Leafs"],
+    MTL: ["1-0-1", "Bell Centre", "Montreal", "Canadiens"],
+    CHI: ["0-3-0", "United Center", "Chicago", "Blackhawks"],
+    DET: ["0-2-0", "Little Caesars Arena", "Detroit", "Red Wings"],
+    PIT: ["1-1-0", "PPG Paints Arena", "Pittsburgh", "Penguins"],
+    WSH: ["2-0-0", "Capital One Arena", "Washington", "Capitals"],
+    NJ: ["1-1-0", "Prudential Center", "New Jersey", "Devils"],
+    NYI: ["1-1-0", "UBS Arena", "New York", "Islanders"],
+    BOS: ["10-12-3", "TD Garden", "Boston", "Bruins"],
+    NYR: ["3-1-0", "Madison Square Garden", "New York", "Rangers"],
+    EDM: ["2-1-0", "Rogers Place", "Edmonton", "Oilers"],
+    VAN: ["1-1-1", "Rogers Arena", "Vancouver", "Canucks"],
+    VGK: ["2-1-0", "T-Mobile Arena", "Vegas", "Golden Knights"],
+    LA: ["0-1-1", "crypto.com Arena", "Los Angeles", "Kings"],
+    CAR: ["1-1-1", "Lenovo Center", "Carolina", "Hurricanes"],
+    CBJ: ["0-0-0", "Nationwide Arena", "Columbus", "Blue Jackets"],
+    WPG: ["2-0-1", "Canada Life Centre", "Winnipeg", "Jets"],
+    MIN: ["1-1-0", "Grand Casino Arena", "Minnesota", "Wild"],
+    SEA: ["1-1-0", "Climate Pledge Arena", "Seattle", "Kraken"],
+    SJ: ["0-2-1", "SAP Center at San Jose", "San Jose", "Sharks"],
+  };
 
 /**
  * ESPN's own team ids, so each team has its mark, and a favorite player of the recorded fixtures
@@ -87,6 +89,8 @@ function game(
   const side = ([abbreviation, score = 0]: Team, other: Team) => ({
     id: ESPN_IDS[abbreviation] ?? abbreviation,
     abbreviation,
+    location: TEAMS[abbreviation]?.[2],
+    shortName: TEAMS[abbreviation]?.[3],
     logo: null,
     logoDark: null,
     score,

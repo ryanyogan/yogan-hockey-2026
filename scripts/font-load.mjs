@@ -56,7 +56,12 @@ const geometry = () => {
   };
 };
 
-const browser = await chromium.launch();
+// Letters at their designed widths, as iOS, Android and macOS set them (#183). Left to itself a
+// headless Chromium on Linux rounds every letter of a web font, and of a resized local face, to a
+// whole pixel: the same bold Plex line is 34.7 units to the em at 15px and 32.4 at 30px, and no
+// fallback can follow a width that changes with the size. The bar is the same; without this flag
+// three loads fail on that rounding alone (37 to 65px).
+const browser = await chromium.launch({ args: ["--font-render-hinting=none"] });
 const results = [];
 
 for (const path of PATHS) {

@@ -47,8 +47,8 @@ const READS: GamePageReads = {
 };
 
 /**
- * Reads a game page. The Game Agent is asked once: the title and the page are drawn from the one
- * answer, where vinext's metadata and layout each asked (#85).
+ * Reads a game page. The Game Agent is asked once, and the title and the page are both drawn
+ * from the one answer.
  */
 export async function readGamePage(
   id: string,

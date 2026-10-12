@@ -20,7 +20,7 @@ export type GameStream = GameStreamState & {
 };
 
 /**
- * A game page's socket to its Game Agent. It starts from the snapshot the server component read
+ * A game page's socket to its Game Agent. It starts from the snapshot the route's loader read
  * (`readGame`) and from then on follows the Agent: the header, `delayed` and `archived` arrive as
  * synced state, the plays as messages put through `applyGameStreamMessage`. On connect the Agent
  * sends every play so far, so nothing that happened between first paint and the socket is missed.

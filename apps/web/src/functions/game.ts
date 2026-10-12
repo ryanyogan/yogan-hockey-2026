@@ -1,7 +1,6 @@
 import { notFound } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
-import type { Play } from "@yogan-hockey/schemas";
-import { z } from "zod";
+import { GameSchema, type Play } from "@yogan-hockey/schemas";
 import { isGameId } from "../../lib/game/page-state";
 import { type GamePageRead, readGamePage } from "../../lib/game-page";
 import { replayPlays } from "../../lib/replay";
@@ -10,8 +9,11 @@ import { pageRead } from "./page-read";
 /** What `/nhl/games/:id` draws: a game, or the words for one that could not be read just now. */
 export type GameRead = Exclude<GamePageRead, { state: "missing" }>;
 
-/** A game's address as it arrives from outside. An id that is no game's is a 404, not a fault. */
-const GameRouteSchema = z.object({ id: z.string() });
+/**
+ * A game's id as it arrives from outside: the site's own schema for it, which asks only that it
+ * be there. One that is no game's is a 404 and not a fault, so `findGame` tells the two apart.
+ */
+const GameIdSchema = GameSchema.pick({ id: true });
 
 /**
  * `/nhl/games/:id`'s one read, for the page and all three of its tabs: the Game Agent's answer,
@@ -19,7 +21,7 @@ const GameRouteSchema = z.object({ id: z.string() });
  * (`lib/game-page.ts`). A game that does not exist is the route's not-found page.
  */
 export const readGameRoute = createServerFn({ method: "GET" })
-  .validator(GameRouteSchema)
+  .validator(GameIdSchema)
   .handler(({ data }) =>
     pageRead<GameRead>(async () => {
       const read = await readGamePage(data.id);
@@ -35,8 +37,8 @@ export const readGameRoute = createServerFn({ method: "GET" })
  * cannot serve.
  */
 export const readReplayPlays = createServerFn({ method: "GET" })
-  .validator(z.string())
-  .handler(async ({ data: gameId }): Promise<Play[] | null> => {
+  .validator(GameIdSchema)
+  .handler(async ({ data: { id: gameId } }): Promise<Play[] | null> => {
     if (!isGameId(gameId)) return null;
     try {
       return await replayPlays(gameId);

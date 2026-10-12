@@ -64,7 +64,7 @@ export function FinishedGame({
     let timer: ReturnType<typeof setTimeout> | undefined;
     const ask = async (asked: number) => {
       // The read answers null for anything it cannot serve; a throw is the call itself failing.
-      const fromD1 = await readReplayPlays({ data: gameId }).catch(() => null);
+      const fromD1 = await readReplayPlays({ data: { id: gameId } }).catch(() => null);
       if (stopped) return;
       if (fromD1 != null) setLoaded(fromD1);
       else if (asked < ASKS) timer = setTimeout(() => ask(asked + 1), ASK_AGAIN_MILLISECONDS);

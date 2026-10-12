@@ -1,4 +1,4 @@
-import { createMemoryHistory, createRouter } from "@tanstack/react-router";
+import { createMemoryHistory, createRouter, notFound } from "@tanstack/react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { routeTree } from "./routeTree.gen";
 
@@ -27,11 +27,11 @@ function gameReads(): number {
  * read again when entered, or when the same address is loaded again), which these tests hold a
  * router upgrade to.
  */
-async function open(path: string) {
+async function open(path: string, staleTime = 0) {
   const router = createRouter({
     routeTree,
     history: createMemoryHistory({ initialEntries: [path] }),
-    defaultStaleTime: 0,
+    defaultStaleTime: staleTime,
     // The browser's router, which keeps what it read; the server's reads everything each time.
     isServer: false,
     origin: "http://localhost",
@@ -80,6 +80,30 @@ describe("a game's page", () => {
     gameReads();
     await go(router, "/nhl");
     await go(router, "/nhl/games/401/scoring");
+    expect(gameReads()).toBe(1);
+  });
+
+  // The route draws one of two not-found pages by these marks (`routes/nhl/games/$id/route.tsx`),
+  // and the second is the router's own, with no public name.
+  it("marks a game that does not exist as its own read's not-found", async () => {
+    vi.mocked(readGameRoute).mockRejectedValueOnce(notFound());
+    const router = await open("/nhl/games/not-a-game");
+    const game = router.state.matches.find((match) => match.routeId === "/nhl/games/$id");
+    expect(game?.status).toBe("notFound");
+  });
+
+  it("marks an address under a game that no route answers, with the game read", async () => {
+    const router = await open("/nhl/games/401/coaches");
+    const game = router.state.matches.find((match) => match.routeId === "/nhl/games/$id");
+    expect(game).toMatchObject({ status: "success", _notFound: true });
+  });
+
+  it("keeps a game that was read for the site's five minutes", async () => {
+    const found = { state: "found" } as Awaited<ReturnType<typeof readGameRoute>>;
+    vi.mocked(readGameRoute).mockResolvedValueOnce(found);
+    const router = await open("/nhl/games/401", 5 * 60 * 1000);
+    await go(router, "/nhl");
+    await go(router, "/nhl/games/401");
     expect(gameReads()).toBe(1);
   });
 

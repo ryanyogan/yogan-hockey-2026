@@ -1,5 +1,6 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { PageHeader } from "@yogan-hockey/ui/components/section";
+import { useEffect } from "react";
 import { GameMatchup } from "../../../../../components/game/game-matchup";
 import { GamePage } from "../../../../../components/game/game-page";
 import { GamePick } from "../../../../../components/game/game-pick";
@@ -20,7 +21,14 @@ import { pageTitle, titled } from "../../../../head";
  * (`lib/use-refresh-on-invalidation.ts`). `src/game-routes.test.ts` keeps it to that.
  */
 export const Route = createFileRoute("/nhl/games/$id")({
-  loader: ({ params }) => readGameRoute({ data: { id: params.id } }),
+  loader: async ({ params: { id } }) => {
+    const read = await readGameRoute({ data: { id } });
+    if (read.state !== "unreadable") unread.delete(id);
+    return read;
+  },
+  // "Could not be read just now" is not kept: coming back to the game asks again, where any
+  // other read is good for five minutes (`src/router.tsx`).
+  shouldReload: ({ params, cause }) => (cause !== "stay" && unread.has(params.id)) || undefined,
   head: ({ match, loaderData }) =>
     // The page of a game that does not exist has a title of its own.
     match.status === "notFound"
@@ -29,6 +37,13 @@ export const Route = createFileRoute("/nhl/games/$id")({
   component: Game,
   notFoundComponent: NotFound,
 });
+
+/**
+ * The games this browser has drawn as "could not be read", by id, for `shouldReload`, which is
+ * not told what a route's last read was. The page that says so adds its game (the first one's
+ * read was the server's, so the loader cannot), and a game leaves when it is read.
+ */
+const unread = new Set<string>();
 
 function gameTitle(read: GameRead): string {
   if (read.state === "unreadable") return "Game";
@@ -45,7 +60,7 @@ function Game() {
   const noSuchAddress = Route.useMatch({ select: (match) => match._notFound === true });
   if (noSuchAddress) return <Outlet />;
   const pathname = gameHref({ id });
-  if (read.state === "unreadable") return <GameUnreadable pathname={pathname} />;
+  if (read.state === "unreadable") return <GameUnreadable id={id} pathname={pathname} />;
   const { game, pick, pregame } = read;
 
   return (
@@ -73,7 +88,8 @@ function Game() {
  * seen, or the Agent could not be reached. It is not "not found", and nothing is remembered: the
  * next request asks ESPN again.
  */
-function GameUnreadable({ pathname }: { pathname: string }) {
+function GameUnreadable({ id, pathname }: { id: string; pathname: string }) {
+  useEffect(() => void unread.add(id), [id]);
   return (
     <section data-slot="game-unreadable">
       <PageHeader title="Game" count="not read" />

@@ -9,7 +9,7 @@ export default function NotFound() {
   return (
     <section data-slot="not-found">
       <PageHeader title="Not found" count="404" />
-      <p className="pt-3 font-serif text-[17px] text-note leading-[1.4]">
+      <p className="pt-3 font-serif text-prose text-note leading-[1.4]">
         Nothing is kept at this address.{" "}
         <Link href="/" className="tap-target font-strong underline">
           Back to tonight

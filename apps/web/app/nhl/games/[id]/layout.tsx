@@ -54,7 +54,7 @@ function GameUnreadable({ pathname }: { pathname: string }) {
   return (
     <section data-slot="game-unreadable">
       <PageHeader title="Game" count="not read" />
-      <p className="pt-3 font-serif text-[17px] text-note leading-[1.4]">
+      <p className="pt-3 font-serif text-prose text-note leading-[1.4]">
         This game could not be read just now.{" "}
         {/* A plain link: the page is rendered again from nothing, which is the retry. */}
         <a href={pathname} className="tap-target font-strong underline">

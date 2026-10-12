@@ -33,16 +33,22 @@ const GOAL_LINE_REACH = 37;
  * A play's dot, in the page's own inks (`docs/design/agate.md`: one red, and nothing else
  * coloured). A goal is the red; a save is ink and a shot grey; a penalty and a hit are rings,
  * ink and grey; anything else is the faintest grey. The kinds are told apart by weight and by
- * whether they are filled, since they cannot be by hue.
+ * whether they are filled, since they cannot be by hue, and `RinkKey` says which is which.
  */
 const MARK_FILL: Record<MarkKind, string> = {
   goal: "fill-kicker",
-  penalty: "fill-background stroke-foreground [stroke-width:0.6]",
+  penalty: "fill-background",
   save: "fill-foreground",
   shot: "fill-label",
-  hit: "fill-background stroke-label [stroke-width:0.5]",
+  hit: "fill-background",
   other: "fill-border",
 };
+/** The ring of a kind that is one. The play in focus has an ink ring of its own instead. */
+const MARK_RING: Partial<Record<MarkKind, string>> = {
+  penalty: "stroke-foreground [stroke-width:0.6]",
+  hit: "stroke-label [stroke-width:0.5]",
+};
+const markClass = (kind: MarkKind) => `${MARK_FILL[kind]} ${MARK_RING[kind] ?? ""}`.trimEnd();
 
 /**
  * The colour of what an animation draws (`RinkAnimation`'s kinds), read from `data-kind` on the
@@ -71,7 +77,7 @@ function Mark({ play, focused }: { play: Play; focused: boolean }) {
       cx={x}
       cy={y}
       r={focused ? RADIUS.focus : kind === "goal" ? RADIUS.goal : RADIUS.play}
-      className={focused ? `stroke-foreground ${MARK_FILL[kind]}` : MARK_FILL[kind]}
+      className={focused ? `stroke-foreground ${MARK_FILL[kind]}` : markClass(kind)}
       strokeWidth={focused ? 1 : 0}
     >
       <title>{`${playTime(play)} ${play.text}`}</title>
@@ -93,7 +99,7 @@ export function RinkKey() {
       {MARK_WORDS.map(([kind, word]) => (
         <li key={kind} className="flex items-center gap-1.5 whitespace-nowrap">
           <svg viewBox="-4 -4 8 8" aria-hidden="true" className="size-3 shrink-0">
-            <circle r={kind === "goal" ? RADIUS.goal : RADIUS.play} className={MARK_FILL[kind]} />
+            <circle r={kind === "goal" ? RADIUS.goal : RADIUS.play} className={markClass(kind)} />
           </svg>
           {word}
         </li>

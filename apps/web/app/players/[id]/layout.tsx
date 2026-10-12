@@ -50,7 +50,7 @@ export default async function PlayerLayout({ params, children }: Props) {
       {career ? (
         <CareerSection career={career} />
       ) : (
-        <p className="font-serif text-[17px] text-note leading-[1.4]">
+        <p className="font-serif text-prose text-note leading-[1.4]">
           {profile.name} has yet to play in the NHL.
         </p>
       )}

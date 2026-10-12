@@ -3,9 +3,8 @@
 import { PageHeader } from "@yogan-hockey/ui/components/section";
 import { useSyncExternalStore } from "react";
 import { shownTheme } from "../lib/install";
+import { subscribeToNothing } from "../lib/use-hydrated";
 import "./globals.css";
-
-const subscribeToNothing = () => () => {};
 
 /** The visitor's theme is dark. Storage a browser refuses to open counts as no choice made. */
 function darkShown(): boolean {
@@ -46,7 +45,7 @@ export default function GlobalError() {
           <section>
             {/* The double rule is right above: a title's own heavy rule under it is a third. */}
             <PageHeader title="Page" count="not read" className="border-t-0 pt-0 md:pt-0" />
-            <p className="pt-3 font-serif text-[17px] text-note leading-[1.4]">
+            <p className="pt-3 font-serif text-prose text-note leading-[1.4]">
               The site could not draw this page just now.{" "}
               <button
                 type="button"

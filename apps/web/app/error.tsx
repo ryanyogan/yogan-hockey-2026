@@ -39,13 +39,13 @@ export default function ErrorPage({ reset }: { error: Error; reset?: () => void 
     <section data-slot="error-page">
       <title>Not answering · Yogan Hockey</title>
       <PageHeader title={title} count="not read" />
-      <p className="pt-3 font-serif text-[17px] text-note leading-[1.4]">
+      <p className="pt-3 font-serif text-prose text-note leading-[1.4]">
         ESPN is not answering just now, so {subject} could not be read.{" "}
         <button
           type="button"
           onClick={retry}
           disabled={retrying}
-          className="tap-target cursor-pointer font-strong underline disabled:cursor-default disabled:text-muted-foreground"
+          className="tap-target cursor-pointer font-strong underline disabled:cursor-default disabled:text-aside"
         >
           {retrying ? "Trying again" : "Try again"}
         </button>{" "}

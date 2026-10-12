@@ -2,6 +2,7 @@ import { SectionSkeleton, SkeletonBar } from "@yogan-hockey/ui/components/skelet
 import { PenaltyBoxSpace } from "./game/penalty-box";
 import { Rink } from "./game/rink";
 import { FIXED_GAME_COLUMNS, GAME_SCORE_CELL, GAME_TEXT_CELL } from "./scoreboard/game-ledger";
+import { storyDeck, storyHeadline, storyKicker, storyRule } from "./story/type";
 
 /**
  * The placeholders of the live page and a game's page (#95), each drawn by its
@@ -61,16 +62,16 @@ export function GameSkeleton() {
       {/* The story: its heavy rule, then the kicker's, the headline's and the deck's lines. */}
       <div
         aria-hidden="true"
-        className="mb-6 grid gap-x-8 gap-y-3 border-rule border-t-3 pt-[14px] lg:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]"
+        className={`mb-6 grid gap-x-8 gap-y-3 lg:grid-cols-[minmax(0,1fr)_minmax(320px,420px)] ${storyRule}`}
       >
         <div className="flex flex-col gap-3">
-          <p className="text-[12px] leading-[1.35]">
+          <p className={storyKicker}>
             <SkeletonBar width="lg" />
           </p>
-          <p className="text-[34px] leading-[1.02] md:text-[clamp(34px,3vw,40px)]">
+          <p className={storyHeadline}>
             <SkeletonBar width="xl" />
           </p>
-          <p className="text-[18px] leading-[1.4] md:text-[clamp(18px,1.4vw,19px)]">
+          <p className={storyDeck}>
             <SkeletonBar width="xl" />
           </p>
         </div>

@@ -94,9 +94,13 @@ export function StoryLineScore({ game, marks = false }: { game: StoryGame; marks
         )}
         {score != null && (
           <LedgerColumn numeric className={`${fitted.head} w-10`}>
-            <abbr title={score === "F" ? "Final" : "Score now"} className="no-underline">
-              {score}
-            </abbr>
+            {score === "F" ? (
+              <abbr title="Final" className="no-underline">
+                F
+              </abbr>
+            ) : (
+              score
+            )}
           </LedgerColumn>
         )}
       </LedgerHead>

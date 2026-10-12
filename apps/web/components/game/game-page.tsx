@@ -175,7 +175,7 @@ function GamePickPending() {
   return (
     <p
       data-slot="game-pick-pending"
-      className="mt-2 max-w-prose font-serif text-[17px] text-note leading-[1.4]"
+      className="mt-2 max-w-prose font-serif text-prose text-note leading-[1.4]"
     >
       {PICK_PENDING}
     </p>

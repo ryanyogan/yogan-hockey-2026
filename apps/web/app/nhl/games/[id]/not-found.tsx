@@ -9,7 +9,7 @@ export default function GameNotFound() {
   return (
     <section data-slot="not-found">
       <PageHeader title="Game not found" count="404" />
-      <p className="pt-3 font-serif text-[17px] text-note leading-[1.4]">
+      <p className="pt-3 font-serif text-prose text-note leading-[1.4]">
         No game is kept at this address.{" "}
         <Link href="/nhl/live" className="tap-target font-strong underline">
           Live scores

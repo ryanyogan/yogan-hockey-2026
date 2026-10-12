@@ -114,7 +114,7 @@ export function PlayerSearch({ initial }: { initial: Search }) {
           className={
             search.status === "found" && search.players.length > 0
               ? "sr-only"
-              : "font-serif text-[17px] text-note leading-[1.4]"
+              : "font-serif text-prose text-note leading-[1.4]"
           }
         >
           {searchSummary(search)}

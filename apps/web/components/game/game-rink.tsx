@@ -3,6 +3,7 @@
 import type { GameHeader, GameHeaderSide, Play } from "@yogan-hockey/schemas";
 import { LiveMarker } from "@yogan-hockey/ui/components/marker";
 import { type ReactNode, useRef, useState } from "react";
+import { shotsOnGoal } from "../../lib/agate-copy";
 import { goalCall, STRENGTH_WORDS } from "../../lib/game/goal";
 import { type GameClock, NO_PENALTIES, penaltyState } from "../../lib/game/penalties";
 import { gameStatus, markKind, playTime } from "../../lib/game/plays";
@@ -90,7 +91,7 @@ function Score({ side, place }: { side: GameHeaderSide; place: Place }) {
       slot="rink-score"
       place={place}
       line={side.abbreviation}
-      wide={`${side.shots} ${side.shots === 1 ? "shot" : "shots"}`}
+      wide={shotsOnGoal(side.shots)}
       figure={
         // A window one figure tall. A goal's sequence (`rink-player.ts`) writes the score before
         // the goal above the figure and rolls the two up through the window; the figure itself is

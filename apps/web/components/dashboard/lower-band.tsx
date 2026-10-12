@@ -1,6 +1,7 @@
 "use client";
 
 import type { SeasonRecord } from "@yogan-hockey/schemas";
+import { tabCellVariants, tabStrip } from "@yogan-hockey/ui/components/url-tabs";
 import { type ReactNode, useState } from "react";
 import { picksNote, picksScore, tonightPicks } from "../../lib/agate-copy";
 import { slateCounts } from "../../lib/scoreboard-view";
@@ -32,7 +33,7 @@ export function PicksBox({ picks, record }: { picks: Picks; record: SeasonRecord
         {score != null && (
           <p
             data-slot="picks-record"
-            className="mt-2 whitespace-nowrap font-bold font-serif text-[72px] lining-nums leading-[0.95] tracking-[-0.02em] max-md:mt-[2px] max-md:text-[52px]"
+            className="mt-2 whitespace-nowrap font-serif font-strong text-stat lining-nums max-md:mt-0.5"
           >
             {score}
           </p>
@@ -41,7 +42,7 @@ export function PicksBox({ picks, record }: { picks: Picks; record: SeasonRecord
       {note != null && (
         <p
           data-slot="picks-note"
-          className="mt-[6px] font-serif text-[17px] text-note normal-nums leading-[1.4] max-md:mt-0 max-md:text-[16px]"
+          className="mt-1.5 font-serif text-note text-prose normal-nums leading-[1.4] max-md:mt-0 max-md:text-[16px]"
         >
           {note}
         </p>
@@ -69,8 +70,8 @@ export function Glance() {
             key={word}
             className="flex flex-col-reverse border-rule-head py-[10px] not-first:border-l"
           >
-            <dt className="text-[12px] text-label uppercase tracking-[0.12em]">{word}</dt>
-            <dd className="font-bold font-serif text-[36px] normal-nums leading-[1.2]">{count}</dd>
+            <dt className="text-[12px] text-label uppercase tracking-mark">{word}</dt>
+            <dd className="font-serif font-strong text-figure normal-nums">{count}</dd>
           </div>
         ))}
       </dl>
@@ -91,18 +92,14 @@ export function Conferences({ conferences }: { conferences: ConferenceTable[] })
     <>
       {conferences.length > 1 && (
         // biome-ignore lint/a11y/useSemanticElements: a pair of toggle buttons, not a form's fieldset.
-        <div
-          role="group"
-          aria-label="Conference"
-          className="mt-2 mb-[10px] grid grid-flow-col auto-cols-fr border border-rule md:hidden"
-        >
+        <div role="group" aria-label="Conference" className={`${tabStrip} mt-2 mb-2.5 md:hidden`}>
           {conferences.map(({ name, short }, index) => (
             <button
               key={name}
               type="button"
               aria-pressed={index === shown}
               onClick={() => setShown(index)}
-              className="min-h-11 cursor-pointer border-rule px-[6px] py-px font-semibold text-[13px] uppercase normal-nums leading-none tracking-[0.12em] not-first:border-l aria-pressed:bg-foreground aria-pressed:text-background"
+              className={tabCellVariants({ current: index === shown, className: "normal-nums" })}
             >
               {short}
             </button>

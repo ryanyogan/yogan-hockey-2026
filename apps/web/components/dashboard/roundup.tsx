@@ -1,6 +1,16 @@
 "use client";
 
 import type { MadeSlatePick, ScoreboardGame } from "@yogan-hockey/schemas";
+import { badgeVariants } from "@yogan-hockey/ui/components/badge";
+import {
+  Ledger,
+  LedgerBody,
+  LedgerCell,
+  LedgerColumn,
+  LedgerHead,
+  LedgerRow,
+} from "@yogan-hockey/ui/components/ledger";
+import { liveDot } from "@yogan-hockey/ui/components/marker";
 import {
   briefGame,
   briefPick,
@@ -19,7 +29,7 @@ import { gameHref } from "../../lib/scoreboard-view";
 import { useHydrated } from "../../lib/use-hydrated";
 import { Link } from "../link";
 import { useScoreboard } from "../scoreboard/scoreboard-provider";
-import { agate, label, mark, ruledLabel } from "./agate";
+import { agate, label, link, ruledLabel } from "./agate";
 
 /** The made picks of today's games by game id, as the page's server component read them. */
 export type Picks = Readonly<Record<string, MadeSlatePick>>;
@@ -32,11 +42,21 @@ export type Picks = Readonly<Record<string, MadeSlatePick>>;
 type Zone = [timeZone: string | undefined, mark: string];
 const useZone = (): Zone => (useHydrated() ? [undefined, ""] : [NHL_TIME_ZONE, " ET"]);
 
-/** Right or Wrong beside a final's pick. Nothing before the game is final. */
+/**
+ * Right (filled) or Wrong (outlined) beside a final's pick: a `Badge`'s two marks, upright in an
+ * italic sentence. Nothing before the game is final.
+ */
 function PickMark({ outcome }: { outcome: "right" | "wrong" | null }) {
   if (outcome == null) return null;
   return (
-    <span data-slot="pick-outcome" data-outcome={outcome} className={mark}>
+    <span
+      data-slot="pick-outcome"
+      data-outcome={outcome}
+      className={badgeVariants({
+        variant: outcome === "right" ? "default" : "outline",
+        className: "ml-1 font-agate not-italic normal-nums",
+      })}
+    >
       {outcome === "right" ? "Right" : "Wrong"}
     </span>
   );
@@ -45,43 +65,48 @@ function PickMark({ outcome }: { outcome: "right" | "wrong" | null }) {
 /** Team, record and the score once there is one, the away side over the home side. */
 function LineScore({ game }: { game: ScoreboardGame }) {
   const { caption, score, sides } = lineScore(game);
-  const figure = `${agate.cell} py-[6px] text-[16px]`;
-  const record = "w-[72px] text-aside max-md:w-16";
+  // A line score's figures are a size larger than a table's, at every width.
+  const figure = `${agate.cell} py-1.5 text-score`;
+  const record = "w-[72px] max-md:w-16";
   return (
-    <table data-slot="line-score" className={`${agate.table} border-rule border-y`}>
+    <Ledger data-slot="line-score" className="border-rule border-y">
       <caption className="sr-only">{caption}</caption>
-      <thead>
-        <tr>
-          <th scope="col" className={agate.head}>
-            Team
-          </th>
-          <th scope="col" className={`${agate.head} ${record}`}>
-            Rec
-          </th>
-          {score != null && (
-            <th scope="col" className={`${agate.head} w-10`}>
-              {score}
-            </th>
-          )}
-        </tr>
-      </thead>
-      <tbody>
+      <LedgerHead>
+        <LedgerColumn className={agate.head}>Team</LedgerColumn>
+        <LedgerColumn numeric className={`${agate.head} ${record}`}>
+          Rec
+        </LedgerColumn>
+        {score != null && (
+          <LedgerColumn numeric className={`${agate.head} w-10`}>
+            {score}
+          </LedgerColumn>
+        )}
+      </LedgerHead>
+      <LedgerBody>
         {sides.map((side) => (
-          <tr key={side.id} className={agate.row}>
+          <LedgerRow key={side.id} className={agate.row}>
             <th
               scope="row"
-              className={`${agate.rowHead} ${side.winner ? "font-bold" : "font-normal"}`}
+              className={`py-1.5 text-left text-score normal-nums ${side.winner ? "font-strong" : "font-body"}`}
             >
               {side.name}
             </th>
-            <td className={`${figure} ${record}`}>{side.record == null ? "" : rec(side.record)}</td>
+            <LedgerCell numeric tone="aside" className={`${figure} ${record}`}>
+              {side.record == null ? "" : rec(side.record)}
+            </LedgerCell>
             {side.score != null && (
-              <td className={`${figure} w-10 ${side.winner ? "font-bold" : ""}`}>{side.score}</td>
+              <LedgerCell
+                numeric
+                tone={side.winner ? "strong" : "default"}
+                className={`${figure} w-10`}
+              >
+                {side.score}
+              </LedgerCell>
             )}
-          </tr>
+          </LedgerRow>
         ))}
-      </tbody>
-    </table>
+      </LedgerBody>
+    </Ledger>
   );
 }
 
@@ -106,34 +131,30 @@ function Story({
     >
       <p
         data-slot="kicker"
-        className="font-semibold text-[12px] text-kicker uppercase normal-nums leading-[1.35] tracking-[0.14em]"
+        className="font-label text-kicker text-tag uppercase normal-nums leading-[1.35] tracking-kicker"
       >
         {live && (
           // "Live" is in the words beside it.
-          <span
-            aria-hidden="true"
-            data-slot="live-dot"
-            className="mr-[6px] inline-block size-2 animate-[live-dot_1.6s_ease-in-out_infinite] rounded-[50%] bg-live align-[1px] motion-reduce:animate-none"
-          />
+          <span aria-hidden="true" data-slot="live-dot" className={liveDot} />
         )}
         {kicker(game, ...zone)}
       </p>
-      <h3 className="text-balance font-bold font-serif text-[34px] normal-nums leading-[1.02] tracking-[-0.015em] [font-variation-settings:'opsz'_60] md:text-[clamp(34px,3vw,40px)]">
-        <Link href={gameHref(game)} className="tap-target hover:underline hover:decoration-2">
+      <h3 className="text-balance font-serif font-strong text-headline normal-nums [font-variation-settings:'opsz'_60]">
+        <Link
+          href={gameHref(game)}
+          className={`${link} tap-target hover:underline hover:decoration-2`}
+        >
           {headline(game)}
         </Link>
       </h3>
-      <p
-        data-slot="deck"
-        className="font-serif text-[18px] text-note normal-nums leading-[1.4] md:text-[clamp(18px,1.4vw,19px)]"
-      >
+      <p data-slot="deck" className="font-serif text-deck text-note normal-nums">
         {deck(game)}
       </p>
       <LineScore game={game} />
       {sentence != null && (
         <p
           data-slot="story-pick"
-          className="font-serif text-[17px] normal-nums italic leading-[1.4]"
+          className="font-serif text-prose normal-nums italic leading-[1.4]"
         >
           {sentence} <PickMark outcome={gamePickOutcome(pick, game)} />
         </p>
@@ -165,14 +186,14 @@ function Brief({
     >
       <Link
         href={gameHref(game)}
-        className="tap-target col-span-full font-semibold text-[16px] hover:underline"
+        className={`${link} tap-target col-span-full font-label text-[16px] hover:underline`}
       >
         {briefGame(game)}
       </Link>
       <span
         data-slot="brief-status"
         data-live={game.status === "live" ? "" : undefined}
-        className="text-[14px] text-aside data-live:font-semibold data-live:text-live"
+        className="text-[14px] text-aside data-live:font-label data-live:text-live"
       >
         {statusText(game, ...zone)}
       </span>
@@ -216,7 +237,7 @@ export function Roundup({ picks }: { picks: Picks }) {
           </div>
         ) : (
           // Without a date the Scoreboard has not answered yet, which is not a day off.
-          <p className="border-rule border-t-[3px] pt-[14px] font-serif text-[18px] text-note normal-nums leading-[1.4]">
+          <p className="border-rule border-t-3 pt-3.5 font-serif text-deck text-note normal-nums">
             {date == null
               ? "Today's games could not be read. They appear here as soon as they can be."
               : "No games scheduled today."}

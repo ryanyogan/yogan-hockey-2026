@@ -1,42 +1,41 @@
 /*
- * Home's share of the Agate look (`docs/design/agate.md`), as class lists: the red label, the
- * "more" link, the mark, and an agate table's cells. Each is the prototype's rule of the same
- * name (`prototypes/agate/style.css`), measured against it by `scripts/agate-home-compare.mjs`.
+ * What Home adds to the Agate primitives (`packages/ui`) to be the prototype's Home to the pixel
+ * (`prototypes/agate/style.css`, measured by `scripts/agate-home-compare.mjs`). The label, the
+ * mark, the agate table, the conference control, the live dot and the focus ring are the
+ * primitives'; these are the few classes Home puts beside them.
  *
  * The prototype sets most of its type with the `font` shorthand, which puts the figures back to
  * proportional ones; only what inherits the page's type (a table's cells, a brief, the TV line)
  * has tabular figures. `normal-nums` says the same here.
  */
+import { focusRing } from "@yogan-hockey/ui/components/nav-item";
+import { sectionLabel, sectionRule } from "@yogan-hockey/ui/components/section";
 
 /** The red label over a section: "NHL Roundup", "The Picks". */
-export const label =
-  "font-bold text-[12px] text-kicker uppercase normal-nums leading-[1.3] tracking-[0.16em]";
+export const label = `${sectionLabel} normal-nums`;
 
 /** A label that is also its section's top line: an ink rule beneath it. */
-export const ruledLabel = `${label} border-rule border-b pb-[6px]`;
+export const ruledLabel = `${label} ${sectionRule}`;
+
+/** A link of Home's: the primitives' ring when the keyboard is on it. */
+export const link = focusRing;
 
 /** The link at the right-hand end of a section's head: "Full standings". A thumb's height. */
-const moreLink =
-  "inline-flex min-h-11 items-center font-semibold uppercase normal-nums leading-none tracking-[0.1em] underline underline-offset-2 hover:text-label";
-export const more = `${moreLink} text-[13px]`;
+const moreLink = `inline-flex min-h-11 items-center font-label uppercase normal-nums leading-none tracking-head underline underline-offset-2 hover:text-label ${focusRing}`;
+export const more = `${moreLink} text-small`;
 /** The same beside a label, where it is the label's size. */
-export const smallMore = `${moreLink} text-[12px]`;
+export const smallMore = `${moreLink} text-tag`;
 
-/** Right (filled) or Wrong (outlined), beside a pick. */
-export const mark =
-  "ml-1 inline-block whitespace-nowrap border border-rule px-[6px] py-[3px] font-agate font-bold text-[12px] uppercase not-italic normal-nums leading-none tracking-[0.12em] data-[outcome=right]:bg-foreground data-[outcome=right]:text-background";
-
-/** An agate table and its parts. A row is a `group`, so its cells can tell the last and the hovered. */
+/**
+ * Beside a `Ledger`'s parts on Home. The prototype's Home tables have no padding between their
+ * columns, which are fixed widths, and a phone's rows are 40.2px apart, not a `LedgerRow`'s 44px:
+ * no row here is a link on a phone.
+ */
 export const agate = {
-  table: "w-full border-collapse",
-  row: "group",
-  /** A column's head: 11px capitals over a hairline, to the right but for the first. */
-  head: "border-rule-head border-b py-[5px] text-right font-bold text-[11px] text-label uppercase normal-nums leading-[1.2] tracking-[0.1em] first:text-left",
-  /** A figure, or a name in the first column, over a dotted rule. */
-  cell: "border-border border-b border-dotted py-[5px] text-right text-[15px] first:text-left group-last:border-b-0 group-hover:bg-highlight",
-  /** The team a row is about, where the row has a header of its own. Give it a weight. */
-  rowHead:
-    "border-border border-b border-dotted py-[6px] text-left text-[16px] text-foreground normal-nums leading-[1.45] group-last:border-b-0",
+  /** A column's head, whose figures are proportional and whose words may wrap. */
+  head: "whitespace-normal px-0 normal-nums",
+  row: "max-md:h-auto",
+  cell: "px-0",
   /** A column of figures. */
   figure: "w-[34px]",
 };

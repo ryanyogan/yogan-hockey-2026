@@ -8,9 +8,9 @@ import { seasonLine } from "../favorites/favorite-players-ledger";
 import { useFavoritePlayers } from "../favorites/use-favorite-players";
 import { Link } from "../link";
 import { useScoreboard } from "../scoreboard/scoreboard-provider";
-import { label, smallMore } from "./agate";
+import { label, link, smallMore } from "./agate";
 
-const prose = "mt-[10px] font-serif text-[17px] text-note normal-nums leading-[1.45]";
+const prose = "mt-2.5 font-serif text-note text-prose normal-nums";
 
 /** A favorite as an agate row: his name and club, his season under them, his heart at the right. */
 function Favorite({ player }: { player: FavoritePlayer }) {
@@ -24,7 +24,10 @@ function Favorite({ player }: { player: FavoritePlayer }) {
     >
       <div className="min-w-0 flex-1">
         <p className="text-[16px]">
-          <Link href={`/players/${player.id}`} className="tap-target font-semibold hover:underline">
+          <Link
+            href={`/players/${player.id}`}
+            className={`${link} tap-target font-label hover:underline`}
+          >
             {player.name}
           </Link>{" "}
           {player.team && (
@@ -40,7 +43,7 @@ function Favorite({ player }: { player: FavoritePlayer }) {
         <Link
           href={gameHref(game)}
           aria-label={`${player.name}'s game, live now`}
-          className="tap-target font-semibold text-[12px] text-live uppercase tracking-[0.12em]"
+          className={`${link} tap-target font-label text-live text-tag uppercase tracking-mark`}
         >
           Live
         </Link>
@@ -85,7 +88,7 @@ export function DashboardFavorites() {
           No favorite players yet.{" "}
           <Link
             href="/players"
-            className="tap-target text-foreground underline underline-offset-2 hover:text-label"
+            className={`${link} tap-target text-foreground underline underline-offset-2 hover:text-label`}
           >
             Find a player
           </Link>{" "}

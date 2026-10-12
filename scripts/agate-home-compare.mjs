@@ -13,6 +13,15 @@
 // its type, its rules, paddings and margins, its grid, and its box (the place measured from the
 // top of `<main>`, since the mastheads above are not the same slate). The standings' clubs differ
 // (the site's are the recorded fixtures), which their fixed columns do not show.
+//
+// Home is built of the `packages/ui` primitives, which draw three things another way than the
+// prototype's CSS does, to the same picture; the script reads each as what is drawn:
+// - a table row's rule is the row's in a `Ledger` and each cell's in the prototype (collapsed
+//   borders draw both on the same line), so a cell with no rule under it is given its row's;
+// - a mark is a flex box with a gap for a star it may hold, and the conference control a flex row
+//   of equal cells where the prototype's is a grid: a gap is read only of a box holding more than
+//   one thing, and grid columns only where both are grids. The boxes are compared either way;
+// - a part's third entry names what is not compared, with the reason beside it.
 
 import { mkdirSync } from "node:fs";
 import { chromium } from "@playwright/test";
@@ -61,7 +70,15 @@ const PARTS = [
   ["standings title", ".band-title", "#standings-heading"],
   ["full standings", ".band-head .more", '[data-slot="standings"] > div:first-child a'],
   ["conference control", ".conf-tabs", '[role="group"][aria-label="Conference"]'],
-  ["conference button", ".conf-tabs button", '[role="group"][aria-label="Conference"] button'],
+  // The prototype's button has the browser's own padding (1px 6px) and a tab cell has 16px at
+  // its sides and does not wrap. The one word is centred in a cell half the screen wide, so
+  // none of it is seen.
+  [
+    "conference button",
+    ".conf-tabs button",
+    '[role="group"][aria-label="Conference"] button',
+    ["paddingTop", "paddingRight", "paddingBottom", "paddingLeft", "whiteSpace"],
+  ],
   ["conferences", ".confs", '[data-slot="standings"] > div:last-child'],
   ["conference label", ".conf h3", '[data-slot="conference"] h3'],
   ["conference table", ".conf table", '[data-slot="conference"] table'],
@@ -128,15 +145,23 @@ function measure({ selector, styles, sides }) {
       const style = getComputedStyle(node);
       const rect = node.getBoundingClientRect();
       const measured = Object.fromEntries(styles.map((name) => [name, style[name]]));
-      for (const side of sides) {
-        const width = style[`border${side}Width`];
-        measured[`border${side}`] =
-          width === "0px"
-            ? "none"
-            : `${width} ${style[`border${side}Style`]} ${style[`border${side}Color`]}`;
-      }
+      const rule = (of, side) => {
+        const width = of[`border${side}Width`];
+        return width === "0px"
+          ? "none"
+          : `${width} ${of[`border${side}Style`]} ${of[`border${side}Color`]}`;
+      };
+      for (const side of sides) measured[`border${side}`] = rule(style, side);
+      // In a table of collapsed borders a row's rule is drawn where its cells' would be.
+      const row = node.matches("td, th") ? node.parentElement : null;
+      if (row && measured.borderBottom === "none")
+        measured.borderBottom = rule(getComputedStyle(row), "Bottom");
       return {
         ...measured,
+        // How many things the box holds: elements, and runs of text that are not only space.
+        holds: [...node.childNodes].filter(
+          (child) => child.nodeType === 1 || (child.nodeType === 3 && child.textContent.trim()),
+        ).length,
         text: node.textContent.replaceAll("⁠", "").replaceAll(/\s+/g, " ").trim().slice(0, 60),
         x: rect.x,
         y: rect.y - top,
@@ -162,9 +187,12 @@ function same(name, a, b) {
   return a === b;
 }
 /** What says nothing about an element that has no such thing. */
-function idle(name, measured) {
-  // An inline box's margins, gaps and columns are not laid out; no animation has a duration.
-  if (name === "gridTemplateColumns") return !measured.display?.includes("grid");
+function idle(name, measured, other) {
+  // Columns are a grid's, and two boxes that are not both grids are compared by their places.
+  if (name === "gridTemplateColumns")
+    return !measured.display?.includes("grid") || !other.display?.includes("grid");
+  // A gap parts two things: a box holding one has none to show.
+  if (name === "rowGap" || name === "columnGap") return measured.holds <= 1 && other.holds <= 1;
   return false;
 }
 
@@ -228,7 +256,7 @@ for (const slate of SLATES) {
         if (pages[side].scrollWidth !== width)
           report(`${where}: ${side} scrolls sideways (scrollWidth ${pages[side].scrollWidth})`);
       }
-      for (const [part] of PARTS) {
+      for (const [part, , , unread = []] of PARTS) {
         const [proto, here] = [pages.proto[part], pages.site[part]];
         if (proto.length !== here.length) {
           report(`${where}: ${part}: prototype draws ${proto.length}, site ${here.length}`);
@@ -245,7 +273,7 @@ for (const slate of SLATES) {
         proto.forEach((expected, at) => {
           const found = here[at];
           for (const name of names) {
-            if (idle(name, expected) && idle(name, found)) continue;
+            if (unread.includes(name) || idle(name, expected, found)) continue;
             if (same(name, expected[name], found[name])) continue;
             report(
               `${where}: ${part} ${at + 1} "${expected.text.slice(0, 24)}": ${name}: prototype ${expected[name]}, site ${found[name]}`,

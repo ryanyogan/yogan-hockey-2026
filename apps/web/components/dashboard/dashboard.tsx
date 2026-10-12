@@ -8,7 +8,7 @@ import {
   LedgerRow,
 } from "@yogan-hockey/ui/components/ledger";
 import { useId } from "react";
-import { agateName } from "../../lib/agate-copy";
+import { agateName, noStandings } from "../../lib/agate-copy";
 import { topOfConferences } from "../../lib/dashboard";
 import { cachedStandings } from "../../lib/espn";
 import { nhlHref } from "../../lib/nhl-page";
@@ -96,7 +96,7 @@ async function Standings() {
     <section
       aria-labelledby="standings-heading"
       data-slot="standings"
-      className="min-w-0 flex-[999_1_560px] max-md:order-2 max-md:flex-none max-md:border-rule max-md:border-t-[3px] max-md:pt-3"
+      className="min-w-0 flex-[999_1_560px] max-md:order-2 max-md:flex-none max-md:border-rule max-md:border-t-3 max-md:pt-3"
     >
       <div className="mb-[14px] flex items-baseline justify-between gap-3 max-md:mb-0">
         <h2
@@ -110,11 +110,7 @@ async function Standings() {
         </Link>
       </div>
       {tables == null || tables.length === 0 ? (
-        <p className="font-serif text-note text-prose normal-nums">
-          {tables == null
-            ? "The standings could not be read just now."
-            : "No standings yet this season."}
-        </p>
+        <p className="font-serif text-note text-prose normal-nums">{noStandings(tables != null)}</p>
       ) : (
         <Conferences
           conferences={tables.map((table) => ({
@@ -150,7 +146,7 @@ export function Dashboard({
       <Roundup picks={picks} />
       <div
         data-slot="lower-band"
-        className="mt-11 flex flex-wrap gap-10 border-rule border-t-[3px] pt-4 max-md:mt-8 max-md:flex-col max-md:gap-8 max-md:border-t-0 max-md:pt-0"
+        className="mt-11 flex flex-wrap gap-10 border-rule border-t-3 pt-4 max-md:mt-8 max-md:flex-col max-md:gap-8 max-md:border-t-0 max-md:pt-0"
       >
         <Standings />
         {/* On a phone its three parts are the column's own, in the column's order. */}

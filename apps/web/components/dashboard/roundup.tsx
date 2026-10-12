@@ -19,6 +19,7 @@ import {
   headline,
   kicker,
   leadsAndBriefs,
+  noGames,
   pickSentence,
   rec,
   statusText,
@@ -127,7 +128,7 @@ function Story({
     <article
       data-slot="story"
       data-live={live ? "" : undefined}
-      className="flex min-w-0 flex-col gap-3 border-rule border-t-[3px] pt-[14px] data-live:border-live"
+      className="flex min-w-0 flex-col gap-3 border-rule border-t-3 pt-3.5 data-live:border-live"
     >
       <p
         data-slot="kicker"
@@ -236,11 +237,8 @@ export function Roundup({ picks }: { picks: Picks }) {
             ))}
           </div>
         ) : (
-          // Without a date the Scoreboard has not answered yet, which is not a day off.
           <p className="border-rule border-t-3 pt-3.5 font-serif text-deck text-note normal-nums">
-            {date == null
-              ? "Today's games could not be read. They appear here as soon as they can be."
-              : "No games scheduled today."}
+            {noGames(date)}
           </p>
         )}
       </section>

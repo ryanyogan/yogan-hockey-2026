@@ -54,7 +54,11 @@ export async function readHomePicks(): Promise<HomePicks> {
         createDb(env.DB),
         games.map((game) => game.id),
       ),
-      seasonRecord(seasonOfSlate(date)),
+      // The record is its own extra: the picks are drawn without it.
+      seasonRecord(seasonOfSlate(date)).catch((error) => {
+        console.error("Home: the season's record could not be read", error);
+        return null;
+      }),
     ]);
     return { picks: madePicks(predictions), record };
   } catch (error) {

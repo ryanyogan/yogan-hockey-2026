@@ -196,6 +196,19 @@ export function gamePickOutcome(
   return pickOutcome(prediction ?? null, game);
 }
 
+/**
+ * What the roundup says with no game to lead with. Without a date the Scoreboard has not
+ * answered, which is not a day off.
+ */
+export const noGames = (date: string | null): string =>
+  date == null
+    ? "Today's games could not be read. They appear here as soon as they can be."
+    : "No games scheduled today.";
+
+/** What Home's standings say with no table to draw: ESPN did not answer, or the season is new. */
+export const noStandings = (read: boolean): string =>
+  read ? "No standings yet this season." : "The standings could not be read just now.";
+
 /** How many games a slate leads with. */
 export const MAX_LEADS = 3;
 

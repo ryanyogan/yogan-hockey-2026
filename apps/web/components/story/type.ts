@@ -26,7 +26,7 @@ export const storyHeadline = `text-balance text-headline ${headlineFace}`;
  * different lines in the fallback face than in Newsreader, and no resizing of the fallback follows
  * 32 names letter for letter, so the page under it dropped a line when the font arrived (#225).
  */
-export const nameplate = `whitespace-nowrap text-nameplate ${headlineFace}`;
+export const clubName = `whitespace-nowrap text-clubname ${headlineFace}`;
 
 export const storyDeck = "font-serif text-deck text-note normal-nums";
 

@@ -2,21 +2,22 @@
 // fallback face the page is drawn in until Newsreader arrives (#225).
 //
 //   ESPN_FIXTURES=1 pnpm build && (cd apps/web && pnpm exec vite preview --port <PORT> --strictPort)
-//   node scripts/headline-lines.mjs [baseURL] [widths, "360,390,414"]
+//   node scripts/headline-lines.mjs [baseURL] [widths, "320,360,390,414"]
 //
 // A headline that takes one line in the fallback and two in Newsreader drops everything under it
 // by a line (35px at 34px) when the font arrives, which `font-load.mjs` fails; it opens one team's
 // page, and this sets all 32 names in that page's own `h1`, mark and all. For each name, at each
 // width, it prints the lines in each face and the name's width on one line against the column's.
 // It exits 1 when a name's lines differ between Newsreader and a fallback this machine has, or
-// when a name is wider than its column in any of them: the headline does not wrap (`nameplate` in
+// when a name is wider than its column in any of them: the headline does not wrap (`clubName` in
 // `components/story/type.ts`), so it is one line by rule and what could go wrong is its width.
+// The lines are still counted, for the day the rule is taken off.
 //
 // A fallback this machine lacks is "absent" and not judged. Unhinted, as `font-load.mjs` is and
 // for its reason: a phone sets letters at their designed widths.
 import { chromium } from "@playwright/test";
 
-const [baseURL = "http://localhost:5173", widthList = "360,390,414"] = process.argv.slice(2);
+const [baseURL = "http://localhost:5173", widthList = "320,360,390,414"] = process.argv.slice(2);
 const FACES = [
   "Newsreader",
   "Newsreader Fallback: Times New Roman",
@@ -79,6 +80,10 @@ for (const width of widthList.split(",").map(Number)) {
   const short = (face) => face.replace("Newsreader Fallback: ", "");
   console.log(`\n${width} wide: a ${size} headline in a ${column}px column`);
   for (const face of FACES) if (absent[face]) console.log(`  ${short(face)}: absent`);
+  // With Newsreader alone, or without it, nothing was compared.
+  if (absent.Newsreader || FACES.every((face) => face === "Newsreader" || absent[face])) {
+    throw new Error("Newsreader and at least one fallback face must be there to compare.");
+  }
   for (const { name, byFace } of rows) {
     const cells = Object.entries(byFace).map(
       ([face, { width: wide, lines }]) => `${short(face)} ${lines} (${wide}px)`,
@@ -95,8 +100,12 @@ for (const width of widthList.split(",").map(Number)) {
 await browser.close();
 console.log(
   changed === 0
-    ? "\nNo name's lines differ."
+    ? "\nNo name's lines differ between the faces."
     : `\n${changed} headline(s) change their lines at the swap.`,
 );
-if (overflowed > 0) console.log(`${overflowed} headline(s) are wider than their column.`);
+console.log(
+  overflowed === 0
+    ? "No name is wider than its column."
+    : `${overflowed} headline(s) are wider than their column.`,
+);
 process.exit(changed === 0 && overflowed === 0 ? 0 : 1);

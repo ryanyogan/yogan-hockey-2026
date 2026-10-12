@@ -1,7 +1,7 @@
 // Shoots the routes the Agate prototype does not draw (#173) at 390 and 1440 in both themes, and
 // checks each against the system by computed style (docs/design/agate.md): two faces, the
 // colours of the tokens and no others, no radius or shadow, no fill but the row under the
-// pointer, the four rules, tabular figures, and no sideways scroll.
+// pointer, ink (the current tab) and the live dot, the four rules, tabular figures, and no sideways scroll.
 //
 //   node scripts/agate-routes.mjs [baseURL] [scratchDir] [name-prefix]
 //
@@ -181,9 +181,12 @@ for (const route of ROUTES) {
   }
   const context = await browser.newContext({ viewport: { width: NARROW, height: 800 } });
   const page = await context.newPage();
-  await page.goto(baseURL + route.path, { waitUntil: "networkidle" });
+  const response = await page.goto(baseURL + route.path, { waitUntil: "networkidle" });
   await page.evaluate(() => document.fonts.ready);
   const found = await page.evaluate(audit);
+  // A page that did not load is as narrow as anyone could wish.
+  const loaded = response?.status() === (route.status ?? 200);
+  if (!loaded) found.faults.push(`tabs scroll unknown: status ${response?.status()}`);
   const faults = found.faults.filter((fault) => fault.startsWith("tabs scroll"));
   if (found.scrollWidth !== NARROW) faults.push(`scrollWidth ${found.scrollWidth} at ${NARROW}`);
   failed += faults.length;

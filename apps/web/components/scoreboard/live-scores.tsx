@@ -46,7 +46,8 @@ export function ScoresTitle({ count, heardAt }: { count?: string; heardAt?: stri
       count={count || undefined}
       className="max-md:[&>[data-slot=page-aside]]:w-full"
     >
-      <p className="font-quiet text-aside max-md:min-h-[1lh]">
+      {/* Meta, not a "more" link: the aside's capitals and tracking are put back. */}
+      <p className="font-quiet text-aside normal-case tracking-normal max-md:min-h-[1lh]">
         {heardAt && (
           <>
             updated <LocalTime at={heardAt} show="clock" />

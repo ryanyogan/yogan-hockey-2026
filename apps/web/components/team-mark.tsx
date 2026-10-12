@@ -13,7 +13,7 @@ const BOX: Record<TeamMarkSize, { px: number; className: string }> = {
   line: { px: 14, className: "size-[1.2em] align-[-0.24em]" },
   header: { px: 20, className: "-my-1 size-5 align-[-5px]" },
   // In a headline: as tall as its capitals and standing on their line, so it adds nothing to it.
-  headline: { px: 28, className: "size-[0.72em] align-[-0.04em]" },
+  headline: { px: 42, className: "size-[0.72em] align-[-0.04em]" },
 };
 
 /**
@@ -44,7 +44,7 @@ export function TeamMark({
   className?: string;
 }) {
   const box = BOX[size];
-  const images = teamId == null ? null : teamMarkImages(teamId, TEAM_MARKS);
+  const images = teamId == null ? null : teamMarkImages(teamId, TEAM_MARKS, size);
   const sized = { width: box.px, height: box.px, decoding: "async" } as const;
   return (
     <span

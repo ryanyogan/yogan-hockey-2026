@@ -25,6 +25,13 @@ describe("teamMarkImages", () => {
     expect(teamMarkImages("6", marks)?.dark).toBeNull();
   });
 
+  it("gives a headline's mark, which is larger, the larger files", () => {
+    expect(teamMarkImages("6", marks, "headline")?.light).toEqual({
+      src: "/team-marks/6-42.deadbeef.webp",
+      srcSet: "/team-marks/6-42.deadbeef.webp 1x, /team-marks/6-84.deadbeef.webp 2x",
+    });
+  });
+
   it("gives nothing for a team with no mark: an all-star side, a new club", () => {
     expect(teamMarkImages("99999", marks)).toBeNull();
     // An id is looked up as a key and nothing more: a name every object has is not a team.

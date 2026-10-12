@@ -65,7 +65,7 @@ test("a team's page shows each tab from a pasted URL, titled with the team's nam
       // Toronto has a logo for each theme; the first is the day's.
       await expect(header.locator("h1 [data-slot=team-mark] img").first()).toHaveAttribute(
         "src",
-        /^\/team-marks\/21-28\.[0-9a-f]{8}\.webp$/,
+        /^\/team-marks\/21-42\.[0-9a-f]{8}\.webp$/,
       );
       await expect(header.locator("tbody td")).toHaveText([
         "1",
@@ -79,7 +79,10 @@ test("a team's page shows each tab from a pasted URL, titled with the team's nam
       // headline's size, which grows with the window (34 to 40px).
       const mark = header.locator("h1 [data-slot=team-mark] img").first();
       await expect(mark).toHaveJSProperty("complete", true);
-      expect(await mark.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBe(28);
+      // Never a file smaller than the box it is drawn in.
+      expect(
+        await mark.evaluate((img: HTMLImageElement) => img.naturalWidth),
+      ).toBeGreaterThanOrEqual(42);
       const headline = await header
         .getByRole("heading", { level: 1 })
         .evaluate((h1) => Number.parseFloat(getComputedStyle(h1).fontSize));

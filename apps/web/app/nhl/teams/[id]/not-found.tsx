@@ -12,7 +12,10 @@ export default function TeamNotFound() {
       <PageHeader title="Team not found" count="404" />
       <p className="font-serif text-note text-prose max-md:mt-3">
         No team is kept at this address.{" "}
-        <Link href={nhlHref({ tab: "teams", view: "division" })} className="font-strong underline">
+        <Link
+          href={nhlHref({ tab: "teams", view: "division" })}
+          className="tap-target font-strong underline"
+        >
           All teams
         </Link>
       </p>

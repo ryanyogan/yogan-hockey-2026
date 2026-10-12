@@ -333,6 +333,17 @@ The numbers, the misses and their proposed fixes are `docs/performance/baseline.
 - **A bash script that is running must not be edited**: bash reads it as it goes, and an insertion above the running line makes it run a fragment when that line returns.
 - **`scripts/performance/` is typechecked and tested** (`pnpm exec vitest run --project scripts`); the other files in `scripts/` are still neither.
 
+## Measuring two sites side by side (#193)
+
+The cutover's numbers and what they rest on are `docs/performance/cutover.md`.
+
+- **A site's own hydration mark is early on both frameworks**, so the scripts ask the browser instead (`scripts/performance/hydration.ts`): the page has hydrated when every link, button and field carries a `__reactFiber$` key. vinext's `__NEXT_HYDRATED_AT` was early by up to 800 ms on a team's page, where boundaries hydrate after the root; the site's `__APP_HYDRATED_AT` is the shell's. React hangs the fiber during the render, a few ms before the commit, so the scripts take the later of the watch and the site's mark.
+- **TanStack's router changes the address at the tap and the page when the loader answers.** Anything that times a navigation by `location` times the tap. `measure-performance.ts` compares what `<main>` draws.
+- **`scripts/performance-compare.sh <checkout of main>`** measures two builds in turn, a route at a time, and `scripts/performance/serve-build.sh` serves one and leaves it up. **Do not edit a script the loop calls while it runs**: each run starts a new `node`, which reads the file as it then is.
+- **A preview's workerd takes ports near its own.** Twice the second site's port, two above the first's, was in use the moment the first had started. Give the two sites ports ten apart.
+- **`serve-build.sh restart-cold` empties KV** by deleting `.cloudflare/state/v3/kv` with the site stopped; the Agents' state and D1 stay. Nothing in an answer says whether a read came from KV, so "warm" and "cold" are what the script did beforehand, not something it saw.
+- **Node will not strip types from a file under `node_modules`**: a throwaway script in `node_modules/.tmp` that imports the `.ts` scripts must itself be `.mjs`.
+
 ## The animated rink (#141)
 
 - **Three parts.** `lib/game/rink-animation.ts` (`describePlay`: a play to a `RinkAnimation`, pure), `lib/game/rink-queue.ts` (a reducer: what the page shows to what the ice plays, pure) and `components/game/rink-player.ts` (GSAP draws one cue). `RinkAnimations` joins them and renders nothing. The goal sequence (#142) adds fields to the `goal` member and steps to its timeline; penalties (#143) added a member and a `case` in `timelineFor`, and reuse the save's ring.

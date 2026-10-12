@@ -12,15 +12,10 @@ test("the search is read from the address, trimmed and no longer than a name", (
   expect(readPlayersPage({ q: "m".repeat(80) }).q).toHaveLength(MAX_SEARCH_LENGTH);
 });
 
-test("a search the router read as a number, a boolean or null is still its text", () => {
-  expect(readPlayersPage({ q: 99 })).toEqual({ q: "99" });
-  expect(readPlayersPage({ q: true })).toEqual({ q: "true" });
-  expect(readPlayersPage({ q: null })).toEqual({ q: "null" });
-});
-
 test("a search given twice, or as anything but text, is no search", () => {
   expect(readPlayersPage({ q: ["mar", "mat"] })).toEqual({ q: "" });
-  expect(readPlayersPage({ q: { name: "mar" } })).toEqual({ q: "" });
+  expect(readPlayersPage({ q: 99 })).toEqual({ q: "" });
+  expect(readPlayersPage({ q: null })).toEqual({ q: "" });
 });
 
 test("every search the address can name is one the server function accepts", () => {

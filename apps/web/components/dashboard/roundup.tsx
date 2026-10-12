@@ -1,5 +1,3 @@
-"use client";
-
 import type { MadeSlatePick, ScoreboardGame } from "@yogan-hockey/schemas";
 import {
   briefGame,
@@ -26,7 +24,7 @@ import {
 import { storyDeck, storyHeadline, storyPick, storyRule } from "../story/type";
 import { label, link, ruledLabel } from "./agate";
 
-/** The made picks of today's games by game id, as the page's server component read them. */
+/** The made picks of today's games by game id, as Home's loader read them. */
 export type Picks = Readonly<Record<string, MadeSlatePick>>;
 
 /** A lead: one game written up in full, under a heavy rule that is red while the game is on. */

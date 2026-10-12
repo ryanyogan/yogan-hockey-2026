@@ -1,5 +1,3 @@
-"use client";
-
 import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
 import { FavoritePlayersLedger } from "../../components/favorites/favorite-players-ledger";
 import { useFavoritePlayers } from "../../components/favorites/use-favorite-players";

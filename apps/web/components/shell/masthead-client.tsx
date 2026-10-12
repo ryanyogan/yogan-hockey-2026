@@ -1,5 +1,3 @@
-"use client";
-
 import type { SeasonRecord } from "@yogan-hockey/schemas";
 import { useTheme } from "next-themes";
 import { type ReactNode, useRef } from "react";
@@ -68,7 +66,7 @@ const DATELINE_LINE =
  *
  * With no children it holds the line's height, so nothing under it moves when the words arrive.
  */
-export function DatelineFrame({ children }: { children?: ReactNode }) {
+function DatelineFrame({ children }: { children?: ReactNode }) {
   return (
     <div
       data-slot="dateline"

@@ -40,7 +40,7 @@ export function currentNavItem(pathname: string, tab: string | null): NavItem | 
 /**
  * The place a path belongs to whatever its query string says, or none where the query decides
  * (`/nhl`, which is Standings or Teams). It is what can be marked before the query is known:
- * the links' first paint, while the server has yet to hand a client component the query.
+ * the links' first paint, before the query has been read.
  */
 export function navItemByPathAlone(pathname: string): NavItem | undefined {
   const without = currentNavItem(pathname, null);

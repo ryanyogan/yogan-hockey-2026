@@ -1,5 +1,3 @@
-"use client";
-
 import type { SeasonRecord } from "@yogan-hockey/schemas";
 import { tabCellVariants, tabStrip } from "@yogan-hockey/ui/components/url-tabs";
 import { type ReactNode, useState } from "react";

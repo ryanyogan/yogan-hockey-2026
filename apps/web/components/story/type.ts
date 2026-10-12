@@ -3,9 +3,6 @@
  * `.pick`, `.tv` in `prototypes/agate/style.css`), from the theme's tokens. A lead on Home and a
  * game page's header are both stories, and both take these, so the two cannot drift apart.
  *
- * Plain strings in a module with no "use client": a server component (`game-pick.tsx`) reads them
- * as well as the client ones.
- *
  * The prototype sets each of these with the `font` shorthand, which puts the figures back to
  * proportional ones: `normal-nums`.
  */

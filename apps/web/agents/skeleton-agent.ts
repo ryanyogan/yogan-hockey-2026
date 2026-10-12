@@ -16,7 +16,7 @@ export class SkeletonAgent extends Agent<Env, Pulse> {
     return true;
   }
 
-  /** First paint, called by a server component over Durable Object RPC. */
+  /** First paint, called by a server function over Durable Object RPC. */
   getPulse(): Pulse {
     return this.state;
   }

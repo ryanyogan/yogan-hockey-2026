@@ -14,9 +14,9 @@ function ask(method: string): Response | Promise<Response> {
 }
 
 /**
- * The route as it was under vinext (`app/picks/route.ts` on `main` before the port), word for
- * word. vinext was not run for this test: what it answered to the other methods is read from its
- * route handler dispatch, and written out in the cases below.
+ * The route as it was before the site was TanStack Start (`app/picks/route.ts` at commit 304479b,
+ * under vinext), word for word. vinext was not run for this test: what it answered to the other
+ * methods is read from its route handler dispatch, and written out in the cases below.
  */
 async function mainsAnswer(): Promise<Response> {
   const { picks } = await readSlatePicks();
@@ -64,7 +64,7 @@ describe("GET /picks", () => {
   }, 30_000);
 });
 
-describe("the other methods, as vinext answered a route with a GET alone", () => {
+describe("the other methods, answered as before the port for a route with a GET alone", () => {
   it("answers a bare 405 to a method that is not a read, not the site's page", async () => {
     for (const method of ["POST", "PUT", "PATCH", "DELETE"]) {
       const response = await ask(method);

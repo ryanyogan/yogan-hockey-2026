@@ -54,7 +54,7 @@ function UrlTabs({
   label: string;
   tabs: readonly UrlTab[];
   current: string;
-  /** The app's link component (`next/link`), so a tab changes without a full page load. */
+  /** The app's link component (`apps/web/components/link.tsx`), so a tab changes without a full page load. */
   link?: ElementType;
   className?: string;
 }) {

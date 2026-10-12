@@ -1,5 +1,3 @@
-"use client";
-
 import type { Pulse } from "@yogan-hockey/schemas";
 import { Badge } from "@yogan-hockey/ui/components/badge";
 import { useAgent } from "agents/react";

@@ -1,5 +1,3 @@
-"use client";
-
 import type { GameHeader, Play } from "@yogan-hockey/schemas";
 import { Button } from "@yogan-hockey/ui/components/button";
 import { UrlTabs } from "@yogan-hockey/ui/components/url-tabs";
@@ -47,7 +45,7 @@ export function GameView({
   header: GameHeader;
   /** Every play so far, in the game's order. */
   plays: readonly Play[];
-  /** The open tab, which the page reads from `?tab=` with `gameTabFrom`. */
+  /** The open tab, which the page reads from its address with `gameTabOfPath`. */
   tab: GameTab;
   /** The page's own path, which the tabs link back to. */
   pathname: string;

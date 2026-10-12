@@ -1,5 +1,3 @@
-"use client";
-
 import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { focusRing } from "@yogan-hockey/ui/components/nav-item";
 import { type FormEvent, useEffect, useId, useRef, useState } from "react";

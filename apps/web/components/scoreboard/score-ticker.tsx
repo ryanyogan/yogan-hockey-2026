@@ -1,5 +1,3 @@
-"use client";
-
 import type { ScoreboardGame, ScoreboardSide } from "@yogan-hockey/schemas";
 import { FavoriteMarker } from "@yogan-hockey/ui/components/marker";
 import { useCallback, useEffect, useId, useRef, useState } from "react";

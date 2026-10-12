@@ -1,5 +1,3 @@
-"use client";
-
 import type { ScoreboardGame } from "@yogan-hockey/schemas";
 import { PageHeader, Section, SectionHeader } from "@yogan-hockey/ui/components/section";
 import { favoritesFirst } from "../../lib/favorites";
@@ -53,7 +51,7 @@ function Games({ title, games, picks }: { title: string; games: ScoreboardGame[]
  * the "updated" stamp has a line of its own under the title, and the line is there before there
  * is anything to put on it, so the page does not move when the socket first speaks.
  */
-export function ScoresTitle({ count, heardAt }: { count?: string; heardAt?: string | null }) {
+function ScoresTitle({ count, heardAt }: { count?: string; heardAt?: string | null }) {
   return (
     <PageHeader
       title="Live scores"

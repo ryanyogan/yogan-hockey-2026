@@ -1,5 +1,3 @@
-"use client";
-
 import type { GameHeader } from "@yogan-hockey/schemas";
 import { deck, headline } from "../../lib/agate-copy";
 import { OnTv, StoryKicker, StoryLineScore, useZone } from "../story/story-parts";

@@ -90,7 +90,7 @@ export function useScoreboardDropped(): boolean {
 
 /**
  * Supplies a fixed slate with no socket, to whatever is rendered inside it. For sample pages
- * (`/skeleton/live`); a real page is already inside the layout's `ScoreboardProvider`.
+ * (`/skeleton/live`); a real page is already inside the root route's `ScoreboardProvider`.
  */
 export function StaticScoreboard({
   scoreboard,

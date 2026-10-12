@@ -1,5 +1,3 @@
-"use client";
-
 import { useSyncExternalStore } from "react";
 import { clockTime, gameDay, gameTime, NHL_TIME_ZONE } from "../lib/game-time";
 

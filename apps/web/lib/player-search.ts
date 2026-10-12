@@ -2,7 +2,7 @@ import { z } from "zod";
 import type { PlayerSearch } from "./players";
 
 /**
- * The rules of the search box, apart from `lib/players.ts` so the client component can read them:
+ * The rules of the search box, apart from `lib/players.ts` so the search box can read them:
  * that file reaches the cache, which a browser cannot.
  */
 

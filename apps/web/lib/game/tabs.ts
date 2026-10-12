@@ -28,7 +28,7 @@ export function gameTabLinks(pathname: string, hasPick = true) {
   }));
 }
 
-/** The nested route changes only the tab; the shared layout retains the game and replay. */
+/** The nested route changes only the tab; the game's route above it keeps the game and replay. */
 export function gameTabOfPath(pathname: string): GameTab {
   return gameTabFrom(pathname.split("/").filter(Boolean)[3]);
 }

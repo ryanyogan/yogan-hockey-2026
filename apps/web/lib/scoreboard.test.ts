@@ -1,7 +1,7 @@
 import { expect, test, vi } from "vitest";
 import { readScoreboard } from "./scoreboard";
 
-test("first paint is today's games as a plain object a client component can be given", async () => {
+test("first paint is today's games as a plain object the browser can be given", async () => {
   vi.stubEnv("ESPN_FIXTURES", "1");
 
   const state = await readScoreboard();

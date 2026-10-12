@@ -36,7 +36,7 @@ type UrlTab = { value: string; label: ReactNode; href: string };
 
 /**
  * Tabs held in the URL: each tab is a link, so the choice survives a reload and can be shared.
- * The page reads the choice from `searchParams` and passes it back as `current`.
+ * The page reads the choice from its address and passes it back as `current`.
  *
  *   <UrlTabs label="Team" link={Link} current={tab} tabs={[
  *     { value: "schedule", label: "schedule", href: "?tab=schedule" },

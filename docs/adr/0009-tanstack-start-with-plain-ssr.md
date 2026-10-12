@@ -35,7 +35,7 @@ A note on the site as it stands at the cutover, not a change to the decision. Th
 | Server function | Called from | Why it is not a loader's |
 | --- | --- | --- |
 | `resolveFavoritePlayers` (`functions/favorites.ts`) | `useFavoritePlayers` (`components/favorites/use-favorite-players.ts`), in an effect, on Home and on `/players` | The favorites are ids in the browser's `localStorage`, which a first load's loader, running on the server, cannot see. Named by the rule. |
-| `readReplayPlays` (`functions/game.ts`) | `FinishedGame` (`components/game/finished-game.tsx`), in an effect | A game that ends on an open page: its plays are asked of D1 every ten seconds, for two minutes at most, until the Game Agent has archived them. A game already finished when the page was read has them from the loader. It was a Server Action before the port (#189). |
+| `readReplayPlays` (`functions/game.ts`) | `FinishedGame` (`components/game/finished-game.tsx`), in an effect | A finished game whose plays were not yet in D1 when the page was read (it ended on the open page, or the page opened before it was archived): they are asked of D1 every ten seconds, for two minutes at most. A game already archived when the page was read has them from the loader. It was a Server Action before the port (#189). |
 | `bumpSkeleton` (`functions/skeleton.ts`) | the form on `/skeleton` (`routes/skeleton/index.tsx`), through `useServerFn` | A write: it bumps the Skeleton Agent. A fixture page, not one a visitor is led to (#192). |
 | `seedPicks` (`functions/skeleton.ts`) | the form on `/skeleton/picks` (`routes/skeleton/picks.tsx`), through `useServerFn` | A write: it seeds sample picks into D1 for Playwright and the comparison scripts. A fixture page (#192). |
 

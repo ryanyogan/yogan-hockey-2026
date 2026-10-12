@@ -1,5 +1,7 @@
 # The original Tonight ledger restored (#121)
 
+> **Superseded by [agate.md](agate.md) on 2026-10-11.** The Agate look replaced this in #168 to #174; this page and its screenshots are kept as history.
+
 > **No longer the visual target.** Ryan approved the tuned ledger prototype in #129 on 2026-10-11: [tuned-ledger.md](tuned-ledger.md) and its screenshots are what the production UI is compared against, and [approved-look.md](approved-look.md) records production being brought to it (#138). This page stays as the record of what was restored and which behaviour was kept, all of which still holds; its colours, type sizes and spacing do not.
 
 Ryan's latest instruction in #121 is to return to the original design and retain the performance changes. This supersedes the October 10 navigation redesign (#99/#108), the canceled #119/#120 implementation directions, and the #117 broadcast prototype. Those saved prototypes are historical; they are not the current production target.

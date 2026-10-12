@@ -1,6 +1,7 @@
 import { PageHeader } from "@yogan-hockey/ui/components/section";
 import type { Metadata } from "next";
 import { Link } from "../../../../components/link";
+import { emptyProse } from "../../../../components/story/type";
 import { nhlHref } from "../../../../lib/nhl-page";
 
 export const metadata: Metadata = { title: "Team not found" };
@@ -10,7 +11,7 @@ export default function TeamNotFound() {
   return (
     <div>
       <PageHeader title="Team not found" count="404" />
-      <p className="font-serif text-note text-prose max-md:mt-3">
+      <p className={`${emptyProse} max-md:mt-3`}>
         No team is kept at this address.{" "}
         <Link
           href={nhlHref({ tab: "teams", view: "division" })}

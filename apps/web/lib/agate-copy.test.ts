@@ -236,7 +236,7 @@ const NYR = game(
   "Madison Square Garden",
 );
 
-describe("the HANDOFF's copy test cases", () => {
+describe("the copy test cases, the outputs of the prototype's copy.js on its own data", () => {
   const cases: [
     name: string,
     game: ScoreboardGame,

@@ -2,6 +2,7 @@
 
 import { PageHeader } from "@yogan-hockey/ui/components/section";
 import { useSyncExternalStore } from "react";
+import { wordmark } from "../components/shell/wordmark";
 import { shownTheme } from "../lib/install";
 import { subscribeToNothing } from "../lib/use-hydrated";
 import "./globals.css";
@@ -33,10 +34,7 @@ export default function GlobalError() {
         <title>Not answering · Yogan Hockey</title>
         <main data-slot="global-error" className="mx-auto max-w-[1320px] px-4 pb-12 md:px-6">
           {/* The masthead's wordmark and its double rule (`components/shell/masthead.tsx`). */}
-          <p
-            data-slot="wordmark"
-            className="mt-[18px] whitespace-nowrap text-center font-bold font-serif text-[min(54px,13.85vw)] leading-[0.95] tracking-[-0.025em] [font-variation-settings:'opsz'_72] md:mt-7 md:text-[clamp(54px,9vw,120px)] md:leading-[0.92]"
-          >
+          <p data-slot="wordmark" className={`mt-[18px] text-center md:mt-7 ${wordmark}`}>
             <a href="/">Yogan Hockey</a>
           </p>
           <div aria-hidden="true" className="mt-3 mb-4 border-rule border-t-3 pt-0.5">

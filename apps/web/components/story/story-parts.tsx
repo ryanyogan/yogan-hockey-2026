@@ -48,7 +48,13 @@ export function StoryKicker({ game, zone }: { game: StoryGame; zone: Zone }) {
  * Right (filled) or Wrong (outlined) beside a final's pick: a `Badge`'s two marks, upright in an
  * italic sentence. Nothing before the game is final.
  */
-export function PickMark({ outcome }: { outcome: "right" | "wrong" | null }) {
+export function PickMark({
+  outcome,
+  className = "",
+}: {
+  outcome: "right" | "wrong" | null;
+  className?: string;
+}) {
   if (outcome == null) return null;
   return (
     <span
@@ -56,7 +62,7 @@ export function PickMark({ outcome }: { outcome: "right" | "wrong" | null }) {
       data-outcome={outcome}
       className={badgeVariants({
         variant: outcome === "right" ? "default" : "outline",
-        className: "ml-1 font-agate not-italic normal-nums",
+        className: `ml-1 font-agate not-italic normal-nums ${className}`,
       })}
     >
       {outcome === "right" ? "Right" : "Wrong"}
@@ -67,7 +73,7 @@ export function PickMark({ outcome }: { outcome: "right" | "wrong" | null }) {
 /**
  * Team, record and, once there is a score, the shots (where the page knows them) and the score:
  * the away side over the home side. `marks` draws each club's mark before its name, which only a
- * game page's header does (HANDOFF.md, Q3).
+ * game page's header does (agate.md, Decisions).
  */
 export function StoryLineScore({ game, marks = false }: { game: StoryGame; marks?: boolean }) {
   const { caption, score, sides } = lineScore(game);

@@ -1,5 +1,7 @@
 # The phone's tab bar (#139)
 
+> **Superseded by [agate.md](../agate.md) on 2026-10-11.** The Agate look replaced this in #168 to #174; this page and its screenshots are kept as history.
+
 Below 768px the five places (Home, Scores, Standings, Teams, Players) are a bar fixed to the foot of the screen, as the approved prototype draws it ([tuned-ledger.md](../tuned-ledger.md)): words only, the current place a solid block like the sidebar's, each cell a fifth of the screen wide and 56px tall, ruled off from its neighbour. The menu and its button are gone; the top bar keeps the wordmark and the theme toggle, which is everything else the menu's bar held. From 768px up nothing changed.
 
 Everything here was taken against a dev server in fixture mode, the prototype beside it.

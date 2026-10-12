@@ -40,3 +40,9 @@ export const fitted = {
   row: "max-md:h-auto",
   cell: "px-0",
 };
+
+/**
+ * A sentence of serif prose where there is nothing to draw: an empty table, a day with no games, a
+ * page that is not there. A place adds its own spacing, and `normal-nums` beside Home's labels.
+ */
+export const emptyProse = "font-serif text-note text-prose";

@@ -35,7 +35,7 @@ export function pickedSide<Game extends { home: Side; away: Side }>(
  * The pick in one line, as a game row or card says it: "TOR 58%", the picked team and its win
  * probability. "pick pending" for a game still to start that has no row yet. Null, which is
  * nothing shown, for a failed Prediction and for a game that started without one. A live or
- * finished game keeps the line as it was made: right or wrong is the game page's to say.
+ * finished game keeps the line as it was made: right or wrong is said beside it (`pickLineOutcome`).
  */
 export function pickLine(
   prediction: StoredPrediction | null | undefined,
@@ -88,6 +88,26 @@ export function madePicks(
  */
 export function pickNote(line: string | undefined, status: GameStatus): string | undefined {
   return line === PICK_PENDING && status !== "scheduled" ? undefined : line;
+}
+
+/**
+ * Right or wrong for a pick known only by its line ("WSH 63%"), once its game is final: the line
+ * names the picked side by its abbreviation, and the side with more goals won. Null before the
+ * final, with no line, for "pick pending", and for a line that names neither side.
+ */
+export function pickLineOutcome(
+  line: string | undefined,
+  game: {
+    status: GameStatus;
+    home: Side & { score: number };
+    away: Side & { score: number };
+  },
+): "right" | "wrong" | null {
+  if (game.status !== "final" || line == null) return null;
+  const picked = [game.home, game.away].find((side) => line.startsWith(`${side.abbreviation} `));
+  if (picked == null || game.home.score === game.away.score) return null;
+  const winner = game.home.score > game.away.score ? game.home : game.away;
+  return picked.id === winner.id ? "right" : "wrong";
 }
 
 /**

@@ -4,10 +4,12 @@ import type { ScoreboardGame } from "@yogan-hockey/schemas";
 import { PageHeader, Section, SectionHeader } from "@yogan-hockey/ui/components/section";
 import { favoritesFirst } from "../../lib/favorites";
 import { slateDay } from "../../lib/game-time";
-import { pickNote } from "../../lib/picks";
+import { pickLineOutcome, pickNote } from "../../lib/picks";
 import { slateSections } from "../../lib/scoreboard-view";
 import { useFavorites } from "../../lib/use-favorites";
 import { LocalTime } from "../local-time";
+import { PickMark } from "../story/story-parts";
+import { emptyProse } from "../story/type";
 import { GameLedger } from "./game-ledger";
 import { useScoreboard } from "./scoreboard-provider";
 
@@ -27,7 +29,20 @@ function Games({ title, games, picks }: { title: string; games: ScoreboardGame[]
       <GameLedger
         games={favoritesFirst(games, favoriteTeamIds)}
         favoriteTeamIds={favoriteTeamIds}
-        pick={(game) => pickNote(picks[game.id], game.status)}
+        pick={(game) => {
+          const line = pickNote(picks[game.id], game.status);
+          // A final's pick says how it went, as a brief on Home does.
+          return line == null ? undefined : (
+            <>
+              {line}
+              {/*
+               * The mark's box is taller than a row's line, so it takes no more than the line has;
+               * under a status, where the line is small and cut to its own height, it is 16px.
+               */}
+              <PickMark outcome={pickLineOutcome(line, game)} className="-my-1 max-xl:py-px" />
+            </>
+          );
+        }}
       />
     </Section>
   );
@@ -82,7 +97,7 @@ export function LiveScores({ picks = {} }: { picks?: Picks }) {
         <Section>
           {/* Without a date the Scoreboard has not answered yet, which is not a day off. */}
           <SectionHeader title={date == null ? "Scores unavailable" : "No games today"} />
-          <p className="py-2 font-serif text-note text-prose">
+          <p className={`py-2 ${emptyProse}`}>
             {date == null
               ? "Today's games could not be read. They appear here as soon as they can be."
               : "Nothing is on the NHL's slate. Scores appear here as soon as there is a game."}

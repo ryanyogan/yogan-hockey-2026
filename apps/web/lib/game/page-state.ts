@@ -47,6 +47,12 @@ export const UPDATES_DELAYED = "Updates delayed";
 /** The clock of a header that has none: what the translation writes when ESPN sends no clock. */
 const NO_CLOCK = "0:00";
 
+/**
+ * A clock that says no time at all: the translation's "0:00", and ESPN's own ways of writing
+ * nothing left ("0.0", "0:00.0"), which a period's last second and a header with no clock share.
+ */
+const isNoClock = (clock: string): boolean => /^0*(:0+)?(\.0+)?$/.test(clock);
+
 /** What the Game Stream writes over centre ice in place of the header's own period and clock. */
 export type StreamReading = {
   /** Replaces the period and clock: "End of 2nd", "2nd 12:34", "2nd". */
@@ -96,9 +102,9 @@ export function streamReading({
   const last = plays.at(-1);
   if (last?.type === "period-end") {
     reading.status = `End of ${periodLabel(last.period, header.seasonType)}`;
-  } else if (period !== SHOOTOUT && header.clock === NO_CLOCK) {
+  } else if (period !== SHOOTOUT && isNoClock(header.clock)) {
     const agrees = scoreboard?.status === "live" && scoreboard.period === header.period;
-    const heard = agrees && scoreboard.clock !== NO_CLOCK ? scoreboard.clock : null;
+    const heard = agrees && !isNoClock(scoreboard.clock) ? scoreboard.clock : null;
     reading.status = heard == null ? period : `${period} ${heard}`;
     if (heard != null) reading.clock = timePlayed(header.period, heard, header.seasonType);
   } else if (period !== SHOOTOUT) {
@@ -131,7 +137,7 @@ export function storyHeader({
   if (header.status !== "live") return header;
   const last = plays.at(-1);
   if (last?.type === "period-end") return { ...header, period: last.period, clock: NO_CLOCK };
-  if (header.clock !== NO_CLOCK) return header;
+  if (!isNoClock(header.clock)) return header;
   const agrees = scoreboard?.status === "live" && scoreboard.period === header.period;
-  return { ...header, clock: agrees && scoreboard.clock !== NO_CLOCK ? scoreboard.clock : "" };
+  return { ...header, clock: agrees && !isNoClock(scoreboard.clock) ? scoreboard.clock : "" };
 }

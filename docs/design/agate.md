@@ -1,6 +1,6 @@
 # Agate — the approved look
 
-Yogan Hockey as the sports section of a newspaper. Ryan picked this direction ("B · Agate") out of three on Oct 11, 2026, after desktop and phone artboards. It **replaces the tuned ledger** (`tuned-ledger.md`) as the visual target. Features and behaviour stay the same; only the look and the page structure change.
+Yogan Hockey as the sports section of a newspaper. Ryan picked this direction ("B · Agate") out of three on Oct 11, 2026, after desktop and phone artboards. It is the visual target, and has been the whole site's look since #168 to #174; the tuned ledger (`tuned-ledger.md`) is superseded. Features and behaviour are the Parity Reference's; only the look and the page structure are Agate's.
 
 - Prototype: `prototypes/agate` (`pnpm prototype:agate`, port 5129). It is the pixel target.
 - Screenshots: `docs/design/agate/home-{tonight|busy}-{390|1440}-{light|dark}.png`.
@@ -15,35 +15,37 @@ Yogan Hockey as the sports section of a newspaper. Ryan picked this direction ("
 
 ## Tokens
 
-The names match `packages/ui/src/theme.css` roles, so the port is mostly a value swap. `.dark` is next-themes' class.
+These are the values in `packages/ui/src/theme.css`. `.dark` is next-themes' class. The contrast is WCAG 2's ratio against `--background`, and in brackets against `--highlight` (the row under the pointer), rounded down; `packages/ui/src/theme.test.ts` computes both from the stylesheet and fails under 4.5.
 
 | Token | Day | Night | Use | Contrast (day / night) |
 |---|---|---|---|---|
 | `--background` | `#fafaf8` | `#121212` | page | — |
-| `--foreground` | `#111111` | `#eceae4` | text, filled marks | 18.1 / 15.6 |
-| `--note` | `#2b2a27` | `#d6d3cc` | serif decks, sidebar prose | 13.7 / 12.5 |
-| `--label` | `#5c5a55` | `#a3a09a` | column heads, counts | 6.6 / 7.2 |
-| `--aside` | `#5c5a55` | `#a3a09a` | records, GP, TV line, footer | 6.6 / 7.2 |
-| `--kicker` **(new)** | `#c8102e` | `#ff5a5f` | labels, kickers, current nav, live | 5.6 / 6.1 |
-| `--live` | `= --kicker` | `= --kicker` | live dot, live rule, live status | 5.6 / 6.1 |
-| `--live-tint` | `#fbeeef` | `#2a1516` | (optional) live row tint | kicker on it 5.2 / 5.7 |
+| `--foreground` | `#111111` | `#eceae4` | text, filled marks | 18.0 (16.4) / 15.5 (13.7) |
+| `--note` | `#2b2a27` | `#d6d3cc` | serif decks, prose | 13.7 (12.4) / 12.5 (11.0) |
+| `--label` | `#5c5a55` | `#a3a09a` | column heads, counts | 6.5 (5.9) / 7.1 (6.3) |
+| `--aside` | `#5c5a55` | `#a3a09a` | records, GP, TV line, footer | 6.5 (5.9) / 7.1 (6.3) |
+| `--kicker` | `#c8102e` | `#ff5a5f` | labels, kickers, current nav, live | 5.6 (5.1) / 6.1 (5.4) |
+| `--live` | `= --kicker` | `= --kicker` | live dot, live rule, live status | 5.6 (5.1) / 6.1 (5.4) |
 | `--highlight` | `#f0efeb` | `#1f1f1e` | row under the pointer | — |
 | `--rule` | `#111111` | `#eceae4` | heavy and plain rules | — |
 | `--rule-head` | `#d5d3ce` | `#34332f` | hairline under column heads | decorative |
 | `--border` | `#c9c6bf` | `#4a4843` | **dotted** rule between agate rows | decorative |
-| `--positive` / `--negative` | keep | keep | goal difference | recheck on new grounds |
+| `--positive` | `#166534` | `#4ade80` | a goal difference above zero | 6.8 (6.1) / 10.7 (9.4) |
+| `--negative` | `#c81e1e` | `#f87171` | a goal difference below zero | 5.4 (4.9) / 6.7 (5.9) |
 
 shadcn roles (`--primary`, `--secondary`, `--muted`, `--accent`, `--popover`…) follow the same values: primary is ink on paper, secondary/muted/accent is `--highlight`.
 
-The PWA colors change with these: `THEME_COLORS = { light: "#fafaf8", dark: "#121212" }` and `INK_COLORS = { light: "#111111", dark: "#eceae4" }` in `apps/web/lib/install.ts`. Then regenerate icons and splash screens with `pnpm app-icons`.
+There is no tint for a live row: the prototype defined `--live-tint` and drew nothing with it, so the token is gone (#174).
+
+The installed site's colours are these too: `THEME_COLORS = { light: "#fafaf8", dark: "#121212" }` and `INK_COLORS = { light: "#111111", dark: "#eceae4" }` in `apps/web/lib/install.ts`, which the manifest, the `theme-color` meta and `pnpm app-icons` (the icons and splash screens in `apps/web/public/icons/`) all read.
 
 ## Type
 
-Load both fonts with `next/font/google`, as Geist Mono is loaded today, and expose them as `--font-serif` and `--font-agate`. Newsreader needs its `opsz` axis. If vinext's font shim can't pass `axes`, self-host the variable woff2.
+Both faces are self-hosted: `apps/web/app/layout.tsx` names them through `next/font/google`, and vinext downloads the files at build time and serves them from the site, so no page asks Google for anything. Newsreader is one variable file with its `opsz` axis (and a second, the italic, fetched only when a pick line is drawn); IBM Plex Sans Condensed is four files, 400, 500 (the dateline), 600 and 700, all drawn and all preloaded. `theme.css` exposes them as `--font-serif` and `--font-agate`. `node scripts/font-load.mjs` measures how they arrive.
 
 | Role | Face | Size desktop → phone | Weight / leading / tracking |
 |---|---|---|---|
-| Wordmark | Newsreader, opsz 72 | `clamp(54px, 9vw, 120px)` → 54px | 700 / .92 / -0.025em |
+| Wordmark (`text-wordmark`) | Newsreader, opsz 72 | `clamp(54px, 9vw, 120px)` → 54px, less under 390px | 700 / .92 / -0.025em |
 | Headline | Newsreader, opsz 60 | 40 → 34px | 700 / 1.02 / -0.015em, `text-wrap: balance` |
 | Section title ("Standings") | Newsreader | 32 → 30px | 700 / 1.1 / -0.01em |
 | Big stat ("29–14") | Newsreader | 72 → 52px | 700 / .95, lining nums, no wrap |
@@ -72,7 +74,7 @@ A live story swaps its heavy top rule to `--live`.
 **Masthead**
 - Utility bar: section nav (Home, Scores, Standings, Teams, Players; current item in `--kicker`) on the left, the Day/Night theme control on the right.
 - The wordmark sits centered below it.
-- Under the wordmark, a double rule (3px + 1px) carries the **dateline**: the long date, "Tonight: N games · X live · Y to come · Z final" (zero counts dropped), and "Picks this season: R right, W wrong". The dateline takes over from the sidebar's TONIGHT block and the old picks summary.
+- Under the wordmark, a double rule (3px + 1px) carries the **dateline**: the long date, "Tonight: N games · X live · Y to come · Z final" (zero counts dropped), and "Picks this season: R right, W wrong". On a page from the cache the record can be up to about ten minutes old.
 
 **NHL Roundup: leads.**
 - Up to three games are drawn as full stories in a `repeat(auto-fit, minmax(300px, 1fr))` grid. Each story, top to bottom:
@@ -118,22 +120,51 @@ A live story swaps its heavy top rule to `--live`.
 | East and West side by side | An Eastern/Western segmented control (`role="group"`, `aria-pressed`, 44px) shows one table at a time |
 | `--gutter` 24px | 16px |
 
-There is no sidebar, no top status bar and no bottom tab bar in this design (see open questions in HANDOFF.md).
+There is no sidebar, no top status bar and no bottom tab bar. The section nav row is `position: sticky` on a phone, below the status bar of an installed site (`--safe-top`), and above it the full double rule (3px, then 1px) is drawn, which the prototype's own screenshots clip to one line. Home's `h1` is the wordmark; every other page's is its own title.
 
-## Other pages (not drawn: extend the system)
+## Other pages (not drawn: the system extended)
 
-- `Ledger` becomes an agate table: 11px uppercase column heads over a hairline, dotted row rules and tabular nums. Numbers are right-aligned, and the key number (PTS, score, points) is bold.
-- `Section` becomes a red label over a 1px ink rule. A page title is a serif section title over a 3px rule.
-- Team and game page headers use a serif headline. The game page's line score and pick follow the story parts above.
-- The rink drawing is recolored from the tokens; ink on paper reads well.
-- Tabs (`url-tabs`) look like the phone conference control.
-- Badges and markers become the `mark` style: 12px uppercase, a 1px ink border, filled for the positive state.
+The prototype draws Home only. Every other route is built from the same tokens, type and rules, and the pictures kept in `docs/design/agate/` (`scores-*`, `standings-*`, `teams-*`, `team-*`, `game-*`, `player*`, `not-found-*`) are what was built.
+
+- **Every page but Home** has a slim score strip under the masthead (13px Plex Condensed over a hairline, live scores in `--kicker`, club marks beside the abbreviations) and opens with a page title: a serif section title under a 3px rule (`PageHeader`), which is the page's `h1`.
+- **Primitives.** `Ledger` is an agate table: 11px uppercase column heads over a hairline, dotted row rules, tabular figures, numbers right-aligned and the key number (PTS, a score) bold. A phone's row is 44px, not the prototype's 40.2px, so that a row can be pressed. `Section` is a red label over a 1px ink rule. Tabs (`UrlTabs`) are the phone's conference control: a ruled strip, the current cell filled. Badges and markers are the `mark`: 12px capitals in a 1px ink box, filled for the positive state.
+- **Scores** (`/nhl/live`) is an agate ledger in sections (In progress, Upcoming, Final, Postponed), not briefs: status, away, home, scores, and a note with the pick and the arena. A final's pick carries the Right or Wrong mark, as a brief's does.
+- **Standings** (`/nhl`) is one agate table per group in four views (league, conference, division, wild card). A team is its agate name and a link named by it; a won column is not coloured, and `--positive` / `--negative` are a goal difference's alone.
+- **Teams** (`/nhl?tab=teams`) is a list in CSS columns read down each column, not a table.
+- **A team's page** opens as a story does: the heavy rule, a red kicker (place, conference, division), the club's name as a serif headline with its mark, then Next Game, and Schedule, Roster and Stats as tabs. In a schedule a win is bold and a loss grey. An opponent is its agate name on a phone and its whole name from `sm` up, in the Next Game card and in the schedule alike.
+- **A game's page** opens with the same story a lead on Home is (kicker, headline, deck, line score with the club marks and the shots, pick line, TV), then the rink, the penalty box and the plays. The rink is ink on paper with the one red for a goal; saves, shots and hits are told apart by weight and filling, with a key under the ice, and no club's colour is used. The score is in the story's header and over the ice.
+- **Players** is a search and agate rows; a player's page is a serif title with his position and club, and ledgers for his season, games and career.
+- **Not found and error pages** are a page title and a sentence of serif prose with a way back; the page drawn when the layout itself fails repeats the wordmark and its double rule.
+- **An empty state** is a sentence of serif prose (`emptyProse`), never a box.
+
+## Decisions
+
+The answers to the six questions the design left open, and the calls made while building (#168 to #174). All shipped as written here.
+
+1. **No bottom tab bar on a phone.** The section nav sits under the wordmark and sticks to the top of the screen.
+2. **A slim score strip on every page but Home**, where the roundup and the briefs are the scores.
+3. **No team marks on Home, in the standings or in any row.** Marks are drawn only in a team's headline, a game page's line score, and the score strip. The assets are still generated.
+4. **The theme control says Day and Night**; next-themes' values stay `light` and `dark`.
+5. **Leads and briefs follow `copy.js`**: at most three leads, live first, then next to start, then the latest finals, each group in the slate's stable order. A lead that goes final drops to a brief while three others are live or to come.
+6. **Decks are data-derived only**: the sentences in `apps/web/lib/agate-copy.ts`, the port of `copy.js`. Standings places and streaks would be their own ticket.
+
+Calls made while building:
+
+- **The masthead on a phone draws the full double rule** (3px and 1px) above the nav, as the prototype's CSS means and its screenshots clip.
+- **Home.** The standings' team names are plain text on a phone (40px rows, as drawn) and links from `md` up. Home has no favorite-team marker, no "pick pending" and no "all scores" link. The Picks box is not drawn before any pick is decided. Day `--positive` is `#166534`, a step darker than the tuned ledger's green, for AA on the row under the pointer.
+- **The game page.** No club colours on the rink: goals are red, and saves, shots and hits differ by weight and fill, with a key. The score appears in the story header and over the rink.
+- **The NHL routes.** Scores is an agate ledger, not briefs. Teams is a CSS-column list. Wins are bold and losses grey. A standings row's link is named by the agate name.
+- **A cached page's dateline** can show a picks record up to about ten minutes old.
+- **No live row is tinted**, and `--live-tint` was removed.
+- **The font swap may move a word, not the page**: `scripts/font-load.mjs` allows 0.05 of layout shift and 32px at the swap. Not yet met on a phone: with the fonts held two seconds Home at 390 shifts 0.054 and grows 104px (three headlines take a second line) and the game page moves 66px; the other eight loads measured pass.
+- **The standings' four view tabs on a phone** are tracked at Tailwind's `tracking-wider` (.05em), not a theme token: at `tracking-head` (.1em) the strip is 3px wider than a 360px phone (measured: 329 in 326).
 
 ## Accessibility
 
-- All text roles pass AA in both themes (table above). Rules are decorative.
-- Tap targets are at least 44px: nav items, the theme control, the conference control and "more" links.
+- All text roles pass AA in both themes, on the page and on the row under the pointer (table above; held by `packages/ui/src/theme.test.ts`). Rules are decorative.
+- Tap targets are at least 44px on a phone, on every route (`node scripts/tap-targets.mjs`): nav items, the theme control, the conference control, rows that are links and "more" links.
 - The theme and conference controls are real `<button>`s with `aria-pressed` inside a labelled `role="group"`.
 - Tables are real `<table>`s. The line score has a caption naming the game and uses `<th scope="row">` for team names.
+- Every page has exactly one `h1`: the wordmark on Home, the page's title everywhere else. Two cases are known not to: Home's own error page (`app/error.tsx` at `/`) has the wordmark and its title, and the scaffolding routes `/skeleton/dashboard` and `/skeleton/picks` have none.
 - There's a skip link to `#content`. The live dot is `aria-hidden`, because "Live" is in the text.
-- At 390px nothing scrolls sideways; the prototype is measured at a `scrollWidth` of 390.
+- At 390px nothing scrolls sideways, on any route; the prototype is measured at a `scrollWidth` of 390.

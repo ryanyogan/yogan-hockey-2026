@@ -8,9 +8,10 @@ import { seasonLine } from "../favorites/favorite-players-ledger";
 import { useFavoritePlayers } from "../favorites/use-favorite-players";
 import { Link } from "../link";
 import { useScoreboard } from "../scoreboard/scoreboard-provider";
+import { emptyProse } from "../story/type";
 import { label, link, smallMore } from "./agate";
 
-const prose = "mt-2.5 font-serif text-note text-prose normal-nums";
+const prose = `mt-2.5 ${emptyProse} normal-nums`;
 
 /** A favorite as an agate row: his name and club, his season under them, his heart at the right. */
 function Favorite({ player }: { player: FavoritePlayer }) {

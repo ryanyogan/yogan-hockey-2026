@@ -22,7 +22,7 @@ import { teamHref } from "./team-name";
 /**
  * One table of a standings view (`standingsView` makes them): a ranked agate table whose rows link
  * to their teams, with a solid ink rule under the last playoff place where the table has one. A
- * team is its agate name ("Toronto", "N.Y. Rangers") and has no mark (HANDOFF.md, question 3);
+ * team is its agate name ("Toronto", "N.Y. Rangers") and has no mark (agate.md, Decisions);
  * games played step back and points are bold, as in the prototype's standings.
  */
 export function StandingsLedger({ table }: { table: StandingsTable }) {

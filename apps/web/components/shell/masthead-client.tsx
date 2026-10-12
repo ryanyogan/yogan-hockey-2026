@@ -15,6 +15,7 @@ import {
 import { useHydrated } from "../../lib/use-hydrated";
 import { Link } from "../link";
 import { useScoreboard } from "../scoreboard/scoreboard-provider";
+import { wordmark } from "./wordmark";
 
 /*
  * The parts of the masthead that the browser must draw: the sections (the path), the dateline and
@@ -46,6 +47,20 @@ function SectionsByQuery() {
 
 function SectionsByPath() {
   return <Sections current={navItemByPathAlone(usePathname())} />;
+}
+
+/**
+ * The wordmark, a link home. On Home it is the page's `h1`: Home draws no title of its own, and
+ * the paper's name is what that page is. Anywhere else the page's title is the `h1` and this is a
+ * paragraph, so every page has exactly one.
+ */
+export function Wordmark() {
+  const Tag = usePathname() === "/" ? "h1" : "p";
+  return (
+    <Tag data-slot="wordmark" className={`mt-[18px] md:mt-7 ${wordmark}`}>
+      <Link href="/">Yogan Hockey</Link>
+    </Tag>
+  );
 }
 
 /**

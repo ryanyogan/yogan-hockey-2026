@@ -4,7 +4,6 @@ import { Badge } from "./badge";
 import { Button } from "./button";
 import { HeartButton } from "./heart-button";
 import { FavoriteMarker, LiveMarker } from "./marker";
-import { navItemVariants } from "./nav-item";
 
 const MARK = ["border", "text-tag", "font-strong", "uppercase", "tracking-mark", "leading-none"];
 
@@ -114,26 +113,5 @@ describe("HeartButton", () => {
     expect(
       render(<HeartButton pressed={false} label="Favorite" />).tag("svg").attributes.fill,
     ).toBe("none");
-  });
-});
-
-describe("a place in the nav", () => {
-  it("is a thumb tall, in the nav's capitals, and red when it is the current place", () => {
-    const place = navItemVariants({ current: false }).split(" ");
-    expect(place).toEqual(
-      expect.arrayContaining([
-        "min-h-11",
-        "text-small",
-        "font-label",
-        "uppercase",
-        "tracking-head",
-      ]),
-    );
-    expect(place).not.toContain("text-kicker");
-    expect(navItemVariants({ current: true }).split(" ")).toContain("text-kicker");
-  });
-
-  it("has no radius or shadow", () => {
-    expect(navItemVariants({ current: true })).not.toMatch(/rounded|shadow/);
   });
 });

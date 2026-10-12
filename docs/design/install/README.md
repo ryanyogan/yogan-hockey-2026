@@ -1,5 +1,7 @@
 # Installing the site to a home screen (#130)
 
+> **The shell shown here is superseded by [agate.md](../agate.md) on 2026-10-11.** The Agate look replaced the top bar, tab bar, sidebar and colours in #168 to #174, so those results and the screenshots are kept as history; the manifest and icons are still what ships, and `scripts/install-check.mjs` still checks them.
+
 What was checked by machine, what it showed, and what only a real phone can confirm. The
 numbers are in `report.json` beside this file; `node scripts/install-check.mjs <baseURL> <outDir>`
 writes it and the seven shots again (see the build notes for the `TMPDIR` it needs).

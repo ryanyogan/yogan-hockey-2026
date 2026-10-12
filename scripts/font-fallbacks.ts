@@ -126,17 +126,15 @@ function fontFace(family: string, face: FontMetrics, cut: Cut, fontWeight: strin
   ].join("\n");
 }
 
-/** The stylesheet, and each voice's fallback families in the order `theme.css` names them. */
-export function fontFallbacks(): { css: string; families: string[][] } {
-  const faces: string[] = [];
-  const families = VOICES.map((voice) =>
-    voice.fallbacks.map((fallback) => {
+/** The stylesheet. `theme.css` names each family after its face, which a test in `packages/ui` holds. */
+export function fontFallbacks(): { css: string } {
+  const faces = VOICES.flatMap((voice) =>
+    voice.fallbacks.flatMap((fallback) => {
       const family = `${voice.regular.familyName} Fallback: ${fallback.regular.metrics.familyName}`;
-      faces.push(
+      return [
         fontFace(family, voice.regular, fallback.regular, "100 599"),
         fontFace(family, voice.bold, fallback.bold, "600 900"),
-      );
-      return family;
+      ];
     }),
   );
   const css = [
@@ -146,7 +144,7 @@ export function fontFallbacks(): { css: string; families: string[][] } {
     ...faces,
     "",
   ].join("\n");
-  return { css, families };
+  return { css };
 }
 
 export const FONT_FALLBACKS_CSS = new URL("../packages/ui/src/font-fallbacks.css", import.meta.url);

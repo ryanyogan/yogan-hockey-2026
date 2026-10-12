@@ -22,8 +22,9 @@
 //   ledger cell on the player's page);
 // - there was nothing to measure.
 // Run on #183 it exits 0: no load shifts more than 0.006 at the swap or moves more than 16px.
-// Before #183 (vinext's one regular-cut fallback) Home at 390 shifted 0.054 and grew 104px, and
-// the game page at 390 moved 66px.
+// Before #183 Home at 390 shifted 0.054 and grew 104px, and the game page at 390 moved 66px.
+// That was this Linux machine's unsized Liberation faces: vinext's fallback, one regular cut
+// over `local("Arial")` and `local("Times New Roman")`, found no face here and never applied.
 //
 // The browser is launched with `--font-render-hinting=none`, which Ryan accepted in #183.
 // Headless Chromium on Linux otherwise rounds each letter's advance to a whole pixel, so a face's

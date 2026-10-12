@@ -19,7 +19,8 @@ import "./globals.css";
 // Latin ones (but the italic) preloaded in every page's head. Until one arrives its text is drawn
 // in a local face sized to it, which is the theme's (`font-fallbacks.css` in `packages/ui`) and
 // not vinext's, so each call says `adjustFontFallback: false`: vinext's is one regular cut sized
-// by letter frequency, under which a bold headline wrapped a line early (#183).
+// by letter frequency, which draws a bold headline in a made-up bold sized for the regular, and
+// its `local("Arial")` finds no face at all on Linux (#183).
 
 // What is read: the masthead, a headline, a deck, a big number. One variable file, holding
 // every weight (the theme uses 400 to 700) and the optical sizes 6 to 72, which `axes` asks for:

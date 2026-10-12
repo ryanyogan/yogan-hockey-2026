@@ -12,6 +12,7 @@ import {
 } from "@yogan-hockey/schemas";
 import { z } from "zod";
 import { endpoints } from "./endpoints.ts";
+import { espnHeadshot } from "./espn-headshot.ts";
 import { EspnRecentGame, recentGameFrom } from "./espn-recent-game.ts";
 import { EspnTeam, teamFrom } from "./espn-team.ts";
 import { translateResponse } from "./translate.ts";
@@ -24,7 +25,7 @@ const EspnAthleteProfile = z.object({
     lastName: z.string().nullish(),
     jersey: z.string().nullish(),
     position: z.object({ abbreviation: z.string(), displayName: z.string().nullish() }),
-    headshot: z.object({ href: z.string() }).nullish(),
+    headshot: espnHeadshot,
     team: EspnTeam.nullish(),
     displayHeight: z.string().nullish(),
     displayWeight: z.string().nullish(),
@@ -75,7 +76,7 @@ export function translatePlayer(json: unknown, athleteId: string): PlayerProfile
       jersey: athlete.jersey ?? null,
       position: athlete.position.abbreviation,
       positionName: athlete.position.displayName ?? null,
-      headshot: athlete.headshot?.href ?? null,
+      headshot: athlete.headshot ?? null,
       team: athlete.team ? teamFrom(athlete.team) : null,
       height: athlete.displayHeight ?? null,
       weight: athlete.displayWeight ?? null,
@@ -219,7 +220,7 @@ const EspnSearch = z.object({
         displayName: z.string(),
         jersey: z.string().nullish(),
         position: z.object({ abbreviation: z.string() }).nullish(),
-        headshot: z.object({ href: z.string() }).nullish(),
+        headshot: espnHeadshot,
         teamRelationships: z
           .array(
             z.object({
@@ -254,7 +255,7 @@ export function translatePlayerSearch(json: unknown, query: string): PlayerSearc
             name: item.displayName,
             jersey: item.jersey ?? null,
             position: item.position?.abbreviation ?? null,
-            headshot: item.headshot?.href ?? null,
+            headshot: item.headshot ?? null,
             team: club
               ? { id: club.id, abbreviation: club.abbreviation, name: club.displayName }
               : null,

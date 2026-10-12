@@ -35,7 +35,10 @@ export const recordStats = {
   points: statValue,
   pointsFor: statValue,
   pointsAgainst: statValue,
-  pointDifferential: statValue,
+  // The goal difference under either of ESPN's names for it. Standings entries carry both; the
+  // team response carried both until 2026-10-12 and only `pointsDiff` since.
+  pointDifferential: statValue.optional(),
+  pointsDiff: statValue.optional(),
 };
 
 export function teamRecordFrom(stats: z.output<z.ZodObject<typeof recordStats>>): TeamRecord {
@@ -47,7 +50,8 @@ export function teamRecordFrom(stats: z.output<z.ZodObject<typeof recordStats>>)
     points: stats.points,
     goalsFor: stats.pointsFor,
     goalsAgainst: stats.pointsAgainst,
-    goalDifferential: stats.pointDifferential,
+    goalDifferential:
+      stats.pointDifferential ?? stats.pointsDiff ?? stats.pointsFor - stats.pointsAgainst,
   };
 }
 

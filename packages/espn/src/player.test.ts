@@ -18,6 +18,20 @@ describe("a player's profile", () => {
   const profile = async (id: string) =>
     translatePlayer(await loadFixture(endpoints.player(id)), id);
 
+  test("a headshot sent as the URL itself, as the team response sends one, is read the same", async () => {
+    const recorded = (await loadFixture(endpoints.player(SKATER))) as {
+      athlete: { headshot: { href: string } };
+    };
+    const response = {
+      ...recorded,
+      athlete: { ...recorded.athlete, headshot: recorded.athlete.headshot.href },
+    };
+
+    expect(translatePlayer(response, SKATER).headshot).toBe(
+      "https://a.espncdn.com/i/headshots/nhl/players/full/4024123.png",
+    );
+  });
+
   test("has who he is and the club he plays for", async () => {
     expect(await profile(SKATER)).toMatchObject({
       id: "4024123",
@@ -315,6 +329,15 @@ describe("a player search", () => {
       headshot: "https://a.espncdn.com/i/headshots/nhl/players/full/3852.png",
       team: { id: "26", abbreviation: "FLA", name: "Florida Panthers" },
     });
+  });
+
+  test("a headshot sent as the URL itself, as the team response sends one, is read the same", async () => {
+    const { items } = (await recorded()) as { items: { headshot: { href: string } }[] };
+    const response = { items: items.map((item) => ({ ...item, headshot: item.headshot.href })) };
+
+    expect(translatePlayerSearch(response, "mar")[0]?.headshot).toBe(
+      "https://a.espncdn.com/i/headshots/nhl/players/full/3852.png",
+    );
   });
 
   test("is never more than ten, and players of the NHL only", async () => {

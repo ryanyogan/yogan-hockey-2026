@@ -35,7 +35,11 @@ function Games({ title, games, picks }: { title: string; games: ScoreboardGame[]
           return line == null ? undefined : (
             <>
               {line}
-              <PickMark outcome={pickLineOutcome(line, game)} />
+              {/*
+               * The mark's box is taller than a row's line, so it takes no more than the line has;
+               * under a status, where the line is small and cut to its own height, it is 16px.
+               */}
+              <PickMark outcome={pickLineOutcome(line, game)} className="-my-1 max-xl:py-px" />
             </>
           );
         }}

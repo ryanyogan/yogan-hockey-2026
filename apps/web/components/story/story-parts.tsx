@@ -48,7 +48,13 @@ export function StoryKicker({ game, zone }: { game: StoryGame; zone: Zone }) {
  * Right (filled) or Wrong (outlined) beside a final's pick: a `Badge`'s two marks, upright in an
  * italic sentence. Nothing before the game is final.
  */
-export function PickMark({ outcome }: { outcome: "right" | "wrong" | null }) {
+export function PickMark({
+  outcome,
+  className = "",
+}: {
+  outcome: "right" | "wrong" | null;
+  className?: string;
+}) {
   if (outcome == null) return null;
   return (
     <span
@@ -56,7 +62,7 @@ export function PickMark({ outcome }: { outcome: "right" | "wrong" | null }) {
       data-outcome={outcome}
       className={badgeVariants({
         variant: outcome === "right" ? "default" : "outline",
-        className: "ml-1 font-agate not-italic normal-nums",
+        className: `ml-1 font-agate not-italic normal-nums ${className}`,
       })}
     >
       {outcome === "right" ? "Right" : "Wrong"}

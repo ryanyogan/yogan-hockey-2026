@@ -8,6 +8,7 @@ import { pickNote } from "../../lib/picks";
 import { slateSections } from "../../lib/scoreboard-view";
 import { useFavorites } from "../../lib/use-favorites";
 import { LocalTime } from "../local-time";
+import { emptyProse } from "../story/type";
 import { GameLedger } from "./game-ledger";
 import { useScoreboard } from "./scoreboard-provider";
 
@@ -82,7 +83,7 @@ export function LiveScores({ picks = {} }: { picks?: Picks }) {
         <Section>
           {/* Without a date the Scoreboard has not answered yet, which is not a day off. */}
           <SectionHeader title={date == null ? "Scores unavailable" : "No games today"} />
-          <p className="py-2 font-serif text-note text-prose">
+          <p className={`py-2 ${emptyProse}`}>
             {date == null
               ? "Today's games could not be read. They appear here as soon as they can be."
               : "Nothing is on the NHL's slate. Scores appear here as soon as there is a game."}

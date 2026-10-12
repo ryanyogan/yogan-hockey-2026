@@ -14,6 +14,7 @@ import { cachedStandings } from "../../lib/espn";
 import { nhlHref } from "../../lib/nhl-page";
 import { doNotKeepPage } from "../../lib/render-failure";
 import { Link } from "../link";
+import { emptyProse } from "../story/type";
 import { agate, link, more, ruledLabel } from "./agate";
 import { DashboardFavorites } from "./dashboard-favorites";
 import { Conferences, Glance, PicksBox } from "./lower-band";
@@ -110,7 +111,7 @@ async function Standings() {
         </Link>
       </div>
       {tables == null || tables.length === 0 ? (
-        <p className="font-serif text-note text-prose normal-nums">{noStandings(tables != null)}</p>
+        <p className={`${emptyProse} normal-nums`}>{noStandings(tables != null)}</p>
       ) : (
         <Conferences
           conferences={tables.map((table) => ({

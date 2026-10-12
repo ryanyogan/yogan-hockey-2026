@@ -1,4 +1,5 @@
 import type { ComponentProps, ReactNode } from "react";
+import { emptyProse } from "../story/type";
 
 /**
  * The line drawn where a ledger would be, when there is nothing yet to put in it: a sentence of
@@ -9,7 +10,7 @@ export function EmptyLedger({
   ...props
 }: { children: ReactNode } & Pick<ComponentProps<"p">, "role">) {
   return (
-    <p className="py-2 font-serif text-note text-prose" {...props}>
+    <p className={`py-2 ${emptyProse}`} {...props}>
       {children}
     </p>
   );

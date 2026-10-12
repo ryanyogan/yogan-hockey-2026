@@ -31,7 +31,9 @@ test("Home writes the slate up as leads and briefs, and follows the Scoreboard w
   });
 
   await page.goto("/");
-  await expect(page).toHaveTitle("Dashboard · Yogan Hockey");
+  // Home is the site: its title is the site's name, and the wordmark is its one `h1`.
+  await expect(page).toHaveTitle("Yogan Hockey");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Yogan Hockey");
 
   // The roundup: three leads, each a story, and the rest as briefs.
   const roundup = page.getByRole("region", { name: "NHL Roundup" });

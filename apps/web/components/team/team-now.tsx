@@ -12,13 +12,13 @@ import {
   ledgerRowLink,
 } from "@yogan-hockey/ui/components/ledger";
 import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
+import { agateName } from "../../lib/agate-copy";
 import { pickNote } from "../../lib/picks";
 import { gameHref } from "../../lib/scoreboard-view";
 import { liveGame, nextGame, nextGamePick, scheduleRow } from "../../lib/team-schedule";
 import { useSlatePicks } from "../../lib/use-slate-picks";
 import { Link } from "../link";
 import { LocalTime } from "../local-time";
-import { TeamName } from "../nhl/team-name";
 import { GameLedger } from "../scoreboard/game-ledger";
 import { useScoreboard } from "../scoreboard/scoreboard-provider";
 import { Versus } from "./versus";
@@ -80,7 +80,10 @@ function NextGame({ teamId, game, pick }: { teamId: string; game: Game; pick?: s
               </Link>
             </LedgerCell>
             <LedgerCell className="whitespace-nowrap">
-              <Versus home={home} /> <TeamName team={opponent} />
+              <Versus home={home} />{" "}
+              {/* As the schedule under it has it: the agate name on a phone, the whole name from `sm`. */}
+              <span className="sm:hidden">{agateName(opponent)}</span>
+              <span className="max-sm:hidden">{opponent.name}</span>
             </LedgerCell>
             <LedgerCell className="whitespace-nowrap">
               <LocalTime at={game.startTime} show="time" />

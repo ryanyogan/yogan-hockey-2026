@@ -2,7 +2,14 @@ import type { SeasonRecord } from "@yogan-hockey/schemas";
 import { Suspense } from "react";
 import { Link } from "../link";
 import { ScoreboardGate } from "../scoreboard/scoreboard-provider";
-import { Dateline, DatelineFrame, SectionLinks, ShortDate, ThemeControl } from "./masthead-client";
+import {
+  Dateline,
+  DatelineFrame,
+  SectionLinks,
+  ShortDate,
+  ThemeControl,
+  Wordmark,
+} from "./masthead-client";
 
 /** The dateline once the season's record has been read; the Scoreboard keeps the rest current. */
 async function DatelineWithRecord({ record }: { record: Promise<SeasonRecord | null> }) {
@@ -28,6 +35,9 @@ async function DatelineWithRecord({ record }: { record: Promise<SeasonRecord | n
  * phone's has to be a child of the page's column, not of the `<header>`, to stay put: a sticky
  * box travels no further than the box that holds it. So this returns the column's parts.
  *
+ * The wordmark is Home's `h1`, where no page title is drawn, and a paragraph everywhere else,
+ * where the page has its own: a client component for that alone.
+ *
  * Only what must know the path, the Scoreboard or the theme is a client component. `record` is
  * the season's picks, not waited for: the dateline's rules hold its place.
  */
@@ -46,25 +56,25 @@ export function Masthead({ record }: { record: Promise<SeasonRecord | null> }) {
           </nav>
           <ThemeControl />
         </div>
-        {/*
-          Not a heading: each page has its own first one. One line at any width: 54px fills a
-          390px phone's column to within 2px, so on a narrower one it shrinks with the screen.
-        */}
-        <p
-          data-slot="wordmark"
-          className="mt-[18px] whitespace-nowrap font-bold font-serif text-[min(54px,13.85vw)] leading-[0.95] tracking-[-0.025em] [font-variation-settings:'opsz'_72] md:mt-7 md:text-[clamp(54px,9vw,120px)] md:leading-[0.92]"
-        >
-          <Link href="/">Yogan Hockey</Link>
-        </p>
+        <Wordmark />
       </header>
       {/*
         The phone's sections, under the double rule: 3px, a 2px gap, then the row's own 1px. The
         rules are the wrapper's and the row scrolls inside it, since a box that scrolls sideways
         cuts off anything drawn above it.
       */}
+      {/*
+        In a site opened from the home screen the page can reach under the status bar: the row
+        stops below it (`--safe-top`), and this covers what scrolls past above the row. No height
+        in a browser tab.
+      */}
+      <div
+        aria-hidden="true"
+        className="fixed inset-x-0 top-0 z-30 h-(--safe-top) bg-background md:hidden"
+      />
       <div
         data-slot="section-nav"
-        className="sticky top-0 z-30 mt-[14px] border-rule border-t-[3px] bg-background pt-[2px] md:hidden"
+        className="sticky top-(--safe-top) z-30 mt-[14px] border-rule border-t-[3px] bg-background pt-[2px] md:hidden"
       >
         <nav
           aria-label="Site"

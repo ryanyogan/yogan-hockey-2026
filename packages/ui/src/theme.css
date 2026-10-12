@@ -33,8 +33,9 @@
  * label.
  *
  * Spacing is one scale, 4, 8, 12, 16, 24, 32 and 48px: Tailwind's steps 1, 2, 3, 4, 6, 8 and 12.
- * An agate row's own padding is `py-row` (5px; 8px on a phone). `text-wordmark` is the tuned
- * ledger's, and only the global error page, drawn without the layout, still uses it.
+ * An agate row's own padding is `py-row` (5px; 8px on a phone). `text-wordmark` is the masthead's
+ * wordmark (its size, line and tracking; it also wants `[font-variation-settings:'opsz'_72]`),
+ * which the global error page draws too.
  */
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -77,14 +78,13 @@
   /* A control's edge and its focus ring have to be seen, which a hairline need not be. */
   --input: #5c5a55;
   --ring: #5c5a55;
-  /* A game in progress: the marker's colour and the tint behind its row. */
+  /* A game in progress: the marker's colour. No row is tinted. */
   --live: var(--kicker);
-  --live-tint: #fbeeef;
   /* The row under the pointer. */
   --highlight: #f0efeb;
   /*
    * A figure above or below zero, such as a goal difference. The green is a step darker than the
-   * tuned ledger's #15803d, which is 4.4:1 on the row under the pointer and on a live row's tint.
+   * tuned ledger's #15803d, which is 4.4:1 on the row under the pointer.
    */
   --positive: #166534;
   --negative: #c81e1e;
@@ -98,7 +98,9 @@
   --fs-score: 16px;
   --fs-title: 32px;
   --fs-stat: 72px;
-  --fs-wordmark: 14px;
+  /* The masthead's wordmark: it grows with the window, and on a phone fills the column. */
+  --fs-wordmark: clamp(54px, 9vw, 120px);
+  --lh-wordmark: 0.92;
   /* An agate row is its line and this above and below: 32.75px with its rule. */
   --row-pad: 5px;
 }
@@ -112,7 +114,8 @@
     --fs-row: 16px;
     --fs-title: 30px;
     --fs-stat: 52px;
-    --fs-wordmark: 15px;
+    --fs-wordmark: min(54px, 13.85vw);
+    --lh-wordmark: 0.95;
     --row-pad: 8px;
   }
 }
@@ -143,7 +146,6 @@
   --ring: #a3a09a;
   /* Said again so that it is this theme's red wherever `.dark` is put, not only on <html>. */
   --live: var(--kicker);
-  --live-tint: #2a1516;
   --highlight: #1f1f1e;
   --positive: #4ade80;
   --negative: #f87171;
@@ -180,7 +182,6 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-live: var(--live);
-  --color-live-tint: var(--live-tint);
   --color-highlight: var(--highlight);
   --color-positive: var(--positive);
   --color-negative: var(--negative);
@@ -200,7 +201,8 @@
   --text-score: var(--fs-score);
   --text-score--line-height: var(--lh);
   --text-wordmark: var(--fs-wordmark);
-  --text-wordmark--line-height: var(--lh);
+  --text-wordmark--line-height: var(--lh-wordmark);
+  --text-wordmark--letter-spacing: -0.025em;
   /* The serif sizes of a story and of a box of figures. */
   --text-headline: clamp(34px, 3vw, 40px);
   --text-headline--line-height: 1.02;

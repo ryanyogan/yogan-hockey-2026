@@ -188,6 +188,28 @@ describe("storyHeader", () => {
     expect(said(header)[1]).toMatch(/ after the 2nd\.$/);
   });
 
+  it("takes any clock of nothing but zeros as no clock, the header's and the Scoreboard's", () => {
+    for (const none of ["0:00", "0.0", "0:00.0", "00:00", "0", ""]) {
+      const heard = storyHeader({
+        header: live({ clock: none }),
+        plays: [shot],
+        scoreboard: onScoreboard(),
+      });
+      expect(heard.clock).toBe("12:34");
+      const unheard = storyHeader({
+        header: live({ clock: none }),
+        plays: [shot],
+        scoreboard: onScoreboard({ clock: none }),
+      });
+      expect(said(unheard)[0]).toBe("Live · 2nd");
+    }
+    // A clock with time on it is a clock, however little.
+    for (const some of ["0:01", "0.4", "0:00.3", "10:00"]) {
+      const header = live({ clock: some });
+      expect(storyHeader({ header, plays: [shot] })).toBe(header);
+    }
+  });
+
   it("keeps a header's own clock", () => {
     const header = live({ clock: "7:07" });
     expect(storyHeader({ header, plays: [shot], scoreboard: onScoreboard() })).toBe(header);

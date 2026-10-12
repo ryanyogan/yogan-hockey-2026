@@ -92,7 +92,6 @@ async function measure(page: Page, wide: boolean) {
         "aside",
         "kicker",
         "live",
-        "live-tint",
         "highlight",
         "rule",
         "rule-head",

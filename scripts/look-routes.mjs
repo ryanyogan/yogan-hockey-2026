@@ -1,5 +1,5 @@
-// Every route of the site as the look's scripts visit it in fixture mode: `look-shots.mjs` shoots
-// each, `tap-targets.mjs` measures what can be tapped on each. `place` is the destination the
+// Every route of the site as the measuring scripts visit it in fixture mode: `tap-targets.mjs`
+// measures what can be tapped on each, and the Agate scripts take a team's and a player's id here. `place` is the destination the
 // shell marks as current there; a route without one (a page that is nowhere) marks none.
 
 export const TEAM = "21";
@@ -23,6 +23,8 @@ export const ROUTES = [
   { name: "game-pick", path: `/nhl/games/${FINAL_GAME}/pick`, place: "Scores" },
   { name: "game-scheduled", path: `/nhl/games/${SCHEDULED_GAME}`, place: "Scores" },
   { name: "not-found", path: "/no-such-page", status: 404 },
+  // An id that is no team's: its own page, with a link back to the teams.
+  { name: "team-not-found", path: "/nhl/teams/leafs", status: 404, place: "Teams" },
   // A team with no recording: the read fails as it does when ESPN is down. The dev server lays
   // its overlay over this one; the page under it is what is measured.
   { name: "error", path: "/nhl/teams/1", status: 503, overlay: true, place: "Teams" },

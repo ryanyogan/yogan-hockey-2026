@@ -15,7 +15,7 @@ import { useScoreboard } from "./scoreboard-provider";
 
 const plural = (count: number, noun: string) => `${count} ${noun}${count === 1 ? "" : "s"}`;
 
-/** Each game's pick in one line, by game id, as the page's server component read them. */
+/** Each game's pick in one line, by game id, as the route's loader read them. */
 type Picks = Readonly<Record<string, string>>;
 
 function Games({ title, games, picks }: { title: string; games: ScoreboardGame[]; picks: Picks }) {
@@ -75,7 +75,7 @@ export function ScoresTitle({ count, heardAt }: { count?: string; heardAt?: stri
 
 /**
  * `/nhl/live`: today's games by where each stands, kept current by the Scoreboard socket. `picks`
- * is as old as the page's last render, so a "pick pending" is checked against the game's status.
+ * is as old as the loader's last read, so a "pick pending" is checked against the game's status.
  */
 export function LiveScores({ picks = {} }: { picks?: Picks }) {
   const { date, games, heardAt } = useScoreboard();

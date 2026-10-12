@@ -30,11 +30,11 @@ test("/nhl/live lists the slate in sections, links each game, and follows the so
     pushState = (state) => socket.send(JSON.stringify({ type: "cf_agent_state", state }));
     sayHeardAt = (at) => socket.send(JSON.stringify({ type: "scoreboard_heard", at }));
   });
-  // Every time the page asks the server to render it again.
-  let rerenders = 0;
+  // Every call of a server function. This page makes none of its own once it is drawn (it lists
+  // no favorite players), so each one is a loader reading again.
+  let rereads = 0;
   page.on("request", (request) => {
-    const again = request.headers().rsc === "1" && new URL(request.url()).pathname === "/nhl/live";
-    if (again) rerenders += 1;
+    if (new URL(request.url()).pathname.startsWith("/_serverFn/")) rereads += 1;
   });
 
   await page.goto("/nhl/live");
@@ -153,15 +153,17 @@ test("/nhl/live lists the slate in sections, links each game, and follows the so
   pushState(over);
   const final = page.getByRole("region", { name: "Final" });
   await expect(final.getByRole("link", { name: /NSH at TOR, Final/ })).toBeVisible();
-  expect(rerenders).toBe(0);
+  expect(rereads).toBe(0);
 
-  // The Scoreboard has recorded the final and invalidated what the server said about the game
-  // (standings, records): it moves `invalidatedAt`, and the page has the server render it again.
-  const rerender = page.waitForRequest((request) => request.headers().rsc === "1");
+  // The Scoreboard has recorded the final and forgotten what the server said about the game
+  // (standings, records): it moves `invalidatedAt`, and the page's loaders are run again, the
+  // root route's and this page's.
   pushState({ ...over, invalidatedAt: "2031-01-16T01:02:33.000Z" });
-  await (await rerender).response();
-  expect(rerenders).toBe(1);
-  // The server's first paint is older than the socket's news and does not replace it.
+  await expect.poll(() => rereads).toBe(2);
+  // And no more than those two.
+  await page.waitForTimeout(500);
+  expect(rereads).toBe(2);
+  // The root loader's read is older than the socket's news and does not replace it.
   await expect(final.getByRole("row")).toHaveCount(2);
   await expect(entry).toHaveText(/NSH 2.*TOR 1.*final/);
 

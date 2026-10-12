@@ -43,7 +43,8 @@ export async function readSlatePicks(): Promise<SlatePicks> {
 /**
  * Home's picks and the season's record, read as `readSlatePicks` reads, and as much an extra. The
  * season is the slate's own (`seasonOfSlate`), not a year written down here; its record is the
- * read the layout makes for the dateline (`seasonRecord`), not a second one.
+ * one the root route reads for the dateline (`seasonRecord`), read a second time: the two are
+ * separate server functions, with nothing shared between them.
  */
 export async function readHomePicks(): Promise<HomePicks> {
   try {

@@ -32,7 +32,8 @@ function asId(value: unknown): string | null {
 /**
  * The ids in a stored value, which is whatever the browser held: written by an older version, by
  * hand or by another site. Anything that is not a list is no favorites, and anything in a list
- * that cannot be an id is left out. Also what a Server Action runs its argument through.
+ * that cannot be an id is left out. Also what Resolving favorites runs its argument
+ * through (`src/functions/favorites.ts`).
  */
 export function readFavoriteIds(stored: unknown): string[] {
   if (!Array.isArray(stored)) return [];

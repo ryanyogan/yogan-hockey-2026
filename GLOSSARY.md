@@ -43,3 +43,35 @@ _Avoid_: Forecast, odds, tip, Claude's pick
 **Parity Reference**:
 The Elixir app in `ryanyogan/yogan_hockey`, whose seven routes define the minimum functionality the rebuild must match.
 _Avoid_: Old site, legacy app
+
+**Dateline**:
+The line under the wordmark on every page: the date, tonight's games counted by state, and the season's picks record. One short line on a phone.
+_Avoid_: Status bar, summary line, header counts
+
+**Lead**:
+One of at most three games Home writes up as a full story: live games first, then the next to start, then the latest finals.
+_Avoid_: Featured game, top story, hero
+
+**Brief**:
+A game on Home that is not a Lead, in two lines under "Around the league": the game, then its status and its pick.
+_Avoid_: Row, ticker item, short
+
+**Story**:
+A game written up as a newspaper would: Kicker, Headline, Deck, line score, the pick and where it is on TV. A Lead on Home and the header of a game's page are both Stories.
+_Avoid_: Card, game card, tile
+
+**Kicker**:
+The small red line of capitals above a Headline, saying a game's state and where it is played: "Final/OT · Scotiabank Arena".
+_Avoid_: Eyebrow, overline, tag
+
+**Headline**:
+A game in one serif line: the winner first once it is final ("Kraken 5, Capitals 3"), away then home before that.
+_Avoid_: Title, heading
+
+**Deck**:
+The sentence under a Headline, built only from the game's data: "The Kraken win on the road and move to 4-2-0."
+_Avoid_: Subhead, summary, blurb
+
+**Agate name**:
+A team as a table names it: its city ("Seattle"), with "N.Y. Rangers" and "N.Y. Islanders" where two clubs share one. A Headline uses the nickname instead.
+_Avoid_: Short name, location, city name

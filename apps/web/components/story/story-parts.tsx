@@ -67,7 +67,7 @@ export function PickMark({ outcome }: { outcome: "right" | "wrong" | null }) {
 /**
  * Team, record and, once there is a score, the shots (where the page knows them) and the score:
  * the away side over the home side. `marks` draws each club's mark before its name, which only a
- * game page's header does (HANDOFF.md, Q3).
+ * game page's header does (agate.md, Decisions).
  */
 export function StoryLineScore({ game, marks = false }: { game: StoryGame; marks?: boolean }) {
   const { caption, score, sides } = lineScore(game);

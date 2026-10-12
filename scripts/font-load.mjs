@@ -1,24 +1,28 @@
-// Measures how the font arrives on a cold load of a production build, for the record beside the
-// look's screenshots (docs/design/approved-look).
+// Measures how the fonts arrive on a cold load of a production build.
 //
 //   ESPN_FIXTURES=1 pnpm build && (cd apps/web && pnpm exec vite preview --port <PORT> --strictPort)
 //   node scripts/font-load.mjs [baseURL] [out.json]
 //
 // Each page is opened in a new browser context (an empty cache) at 390px and 1440px, twice: as
-// the network gives it, and with the font file held back two seconds, which is the slow phone.
-// It records the cumulative layout shift, whether the font is self-hosted and preloaded, and,
+// the network gives it, and with the font files held back two seconds, which is the slow phone.
+// It records the cumulative layout shift, whether the fonts are self-hosted and preloaded, and,
 // for the held-back load, how far the first row's cells (a ledger's, or a play's on a game's
-// page) and the page's height moved when the real face took over from the fallback, and the
-// layout shift in the frames after it arrived. A page shifts for reasons that are not the font
-// (a time rewritten in the visitor's zone, favorites read from the browser) and by an amount
-// that varies with when the page hydrates, so the font is judged at the swap alone: it exits 1
-// when anything moved or shifted there, when there was no row to measure, or when the font
-// comes from another origin or is not preloaded.
+// page) and the page's height moved when the real faces took over from the fallbacks, and the
+// layout shift in the frames after they arrived.
 //
-// That bar was Geist Mono's, whose fallback was letter for letter as wide. Since #168 the faces
-// are Newsreader and IBM Plex Sans Condensed over resized system fonts, a held-back load does move
-// (docs/agents/build-notes.md, "Agate 1"), and so this exits 1: read its numbers, not its status,
-// until a later Agate ticket sets a new bar.
+// The bar is Agate's. Newsreader and IBM Plex Sans Condensed stand over Times New Roman and Arial
+// resized to each face's average width (vinext's fallbacks), which are not letter for letter as
+// wide, so a held-back load does move a little: a word, and whatever is set beside it. What it
+// must not do is move the page. So it exits 1 when:
+// - a font comes from another origin, or a font the page needs at once is not preloaded (the
+//   serif's italic is the pick line's alone and is fetched when first used, on purpose);
+// - the layout shift in the frames after the faces arrive is over SWAP_CLS (0.05, half of what
+//   Core Web Vitals calls good for a whole page; the worst measured in #168 was 0.021);
+// - anything measured moved more than SWAP_PX (32px; the worst measured in #168 was 24px, a
+//   ledger cell on the player's page);
+// - there was nothing to measure.
+// A page shifts for reasons that are not the fonts (a time rewritten in the visitor's zone,
+// favorites read from the browser), so the fonts are judged at the swap alone.
 import { writeFile } from "node:fs/promises";
 import { chromium } from "@playwright/test";
 
@@ -26,6 +30,10 @@ const [baseURL = "http://localhost:5173", out] = process.argv.slice(2);
 const PATHS = ["/", "/nhl", "/nhl/teams/21", "/players/4024123", "/nhl/games/401803652"];
 const WIDTHS = { 390: 844, 1440: 900 };
 const HOLD_MS = 2000;
+const SWAP_CLS = 0.05;
+const SWAP_PX = 32;
+/** The pick line's italic: not preloaded, by design (`app/layout.tsx`). */
+const lazy = (url) => /italic/i.test(url);
 
 /**
  * Where the first ledger row's cells and the page's own blocks are, and the size of the page:
@@ -113,12 +121,12 @@ for (const path of PATHS) {
               ),
             );
       const failed = [];
-      if (held && head.atSwap > 0.001) failed.push(`${head.atSwap} of layout shift at the swap`);
+      if (held && head.atSwap > SWAP_CLS) failed.push(`${head.atSwap} of layout shift at the swap`);
 
-      if (moved != null && moved > 0.5) failed.push(`moved ${moved}px at the swap`);
+      if (moved != null && moved > SWAP_PX) failed.push(`moved ${moved}px at the swap`);
       if (fonts.some((url) => !url.startsWith(baseURL))) failed.push("font from another origin");
       if (fonts.length === 0) failed.push("no font requested");
-      if (!fonts.every((url) => head.preload.some((href) => url.endsWith(href))))
+      if (!fonts.every((url) => lazy(url) || head.preload.some((href) => url.endsWith(href))))
         failed.push("font not preloaded");
       if (before?.loaded) failed.push("the held-back font had already loaded");
       // A ledger that had not been drawn when the font was still held back measured nothing.

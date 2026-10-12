@@ -48,7 +48,7 @@ export function TeamHeader({
         {/* The heart stays at the end of the first line when a phone wraps the name. */}
         <div className="mt-3 flex items-start justify-between gap-4">
           <h1 className={storyHeadline}>
-            {/* The one place a team's mark is drawn on its page (HANDOFF.md, question 3). */}
+            {/* The one place a team's mark is drawn on its page (agate.md, Decisions). */}
             <TeamMark teamId={team.id} size="headline" eager className="mr-[0.3em]" />
             {team.name}
           </h1>

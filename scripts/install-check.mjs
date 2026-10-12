@@ -1,6 +1,8 @@
 // Checks that the site can be installed to a home screen, as far as a desktop Chromium can say,
-// and shoots the shell as an installed site would draw it on a phone with a notch and a home bar.
-// Usage: node scripts/install-check.mjs [baseURL] [outDir]
+// and shoots the Agate masthead as an installed site would draw it on a phone with a notch and a
+// home bar: upright (the section nav stuck under the status bar) and on its side.
+// Usage: TMPDIR=~/.cache/install-check node scripts/install-check.mjs [baseURL] [outDir]
+// (a short TMPDIR: the full Chromium puts a socket there and dies on a worktree's long path).
 // Writes <outDir>/report.json and the shots, and exits 1 when a check fails.
 //
 // Installability is Chrome's own verdict over the DevTools protocol (`Page.getAppManifest`,
@@ -19,15 +21,15 @@ import { join } from "node:path";
 import { chromium } from "@playwright/test";
 import { THEME_COLORS } from "../apps/web/lib/install.ts";
 
-const [base = "http://localhost:5173", out = "docs/design/install"] = process.argv.slice(2);
+const [base = "http://localhost:5173", out = "node_modules/.tmp/install-check"] =
+  process.argv.slice(2);
 const INSETS = { top: 47, right: 0, bottom: 34, left: 0 };
 const PHONE = { width: 390, height: 844 };
-// The same phone on its side: the notch at one end, and wide enough for the sidebar.
+// The same phone on its side: the notch at one end, and wide enough for the desk's masthead.
 const SIDEWAYS = { width: 844, height: 390 };
 const SIDEWAYS_INSETS = { top: 0, right: 47, bottom: 21, left: 47 };
-// A small phone on its side is still narrower than the sidebar's breakpoint: it keeps the tab bar.
+// A small phone on its side is still narrower than `md`: it keeps the phone's masthead.
 const SMALL_SIDEWAYS = { width: 667, height: 375 };
-const TAB_BAR = 56;
 
 await mkdir(out, { recursive: true });
 const browser = await chromium.launch();
@@ -125,7 +127,39 @@ async function installability() {
   };
 }
 
-/** The shell in an installed site on a phone, in one theme, the operating system in the other. */
+const HATCH =
+  "z-index:9999;pointer-events:none;background:repeating-linear-gradient(45deg,rgba(220,38,38,.28) 0 6px,transparent 6px 12px);outline:1px dashed rgba(220,38,38,.8)";
+
+/** Runs in the page: where the masthead, the section nav and the footer are. */
+const measure = () => {
+  const text = (node) => {
+    // The words or the control itself, not the padded box around it.
+    const range = document.createRange();
+    range.selectNodeContents(node);
+    const { top, bottom, left, right } = range.getBoundingClientRect();
+    return Object.fromEntries(
+      Object.entries({ top, bottom, left, right }).map(([k, v]) => [k, Math.round(v * 10) / 10]),
+    );
+  };
+  const shown = (node) => node.getClientRects().length > 0;
+  const masthead = document.querySelector('[data-slot="masthead"]');
+  const nav = document.querySelector('[data-slot="section-nav"]');
+  return {
+    osPrefersDark: matchMedia("(prefers-color-scheme: dark)").matches,
+    mastheadContent: [...masthead.querySelectorAll("a, button")].filter(shown).map(text),
+    sectionNavShown: shown(nav),
+    sectionNavBox: nav.getBoundingClientRect().toJSON(),
+    sectionNavPlaces: [...nav.querySelectorAll("a")].filter(shown).map(text),
+    // What is drawn at the very top of the screen, above the nav when it is stuck.
+    aboveNav: document.elementFromPoint(innerWidth / 2, 1)?.getAttribute("aria-hidden") ?? null,
+    footerContent: text(document.querySelector("footer")),
+    viewport: { width: innerWidth, height: innerHeight },
+    sideways: document.documentElement.scrollWidth > innerWidth,
+    themeColor: [...document.querySelectorAll('meta[name="theme-color"]')].map((m) => m.content),
+  };
+};
+
+/** The masthead in an installed site on a phone, in one theme, the operating system in the other. */
 async function standalone(theme) {
   const os = theme === "dark" ? "light" : "dark";
   // No colour scheme through Playwright: its own media emulation would replace the one below.
@@ -147,62 +181,28 @@ async function standalone(theme) {
       [...document.querySelectorAll('meta[name="theme-color"]')].every((m) => m.content === color),
     THEME_COLORS[theme],
   );
-
   // Where the hardware is, hatched over the page: nothing to read or press may be under it.
-  await page.evaluate(({ top, bottom }) => {
-    for (const [edge, size] of [
-      ["top", top],
-      ["bottom", bottom],
-    ]) {
-      const bar = document.createElement("div");
-      bar.dataset.simulated = edge;
-      bar.style.cssText = `position:fixed;left:0;right:0;${edge}:0;height:${size}px;z-index:9999;pointer-events:none;background:repeating-linear-gradient(45deg,rgba(220,38,38,.28) 0 6px,transparent 6px 12px);outline:1px dashed rgba(220,38,38,.8)`;
-      document.body.append(bar);
-    }
-  }, INSETS);
+  await page.evaluate(
+    ([{ top, bottom }, hatch]) => {
+      for (const [edge, size] of [
+        ["top", top],
+        ["bottom", bottom],
+      ]) {
+        const bar = document.createElement("div");
+        bar.style.cssText = `position:fixed;left:0;right:0;${edge}:0;height:${size}px;${hatch}`;
+        document.body.append(bar);
+      }
+    },
+    [INSETS, HATCH],
+  );
 
-  const measure = () =>
-    page.evaluate(() => {
-      const box = (node) => {
-        // The text or control itself, not the padded box around it.
-        const range = document.createRange();
-        range.selectNodeContents(node);
-        const { top, bottom } = range.getBoundingClientRect();
-        return { top: Math.round(top * 10) / 10, bottom: Math.round(bottom * 10) / 10 };
-      };
-      const header = document.querySelector("header");
-      const footer = document.querySelector("footer");
-      return {
-        osPrefersDark: matchMedia("(prefers-color-scheme: dark)").matches,
-        insetTop: getComputedStyle(document.documentElement).getPropertyValue("--safe-top"),
-        headerBox: header.getBoundingClientRect().toJSON(),
-        headerContent: [...header.querySelectorAll("a, button")].map(box),
-        footerContent: box(footer),
-        tabBarBox: document.querySelector('[data-slot="tab-bar"]').getBoundingClientRect().toJSON(),
-        tabBarContent: [...document.querySelectorAll('[data-slot="tab-bar"] a')].map(box),
-        stripBottom: document.querySelector('[data-slot="score-ticker"]').getBoundingClientRect()
-          .bottom,
-        viewportHeight: innerHeight,
-        sideways: document.documentElement.scrollWidth > innerWidth,
-        themeColor: [...document.querySelectorAll('meta[name="theme-color"]')].map(
-          (m) => m.content,
-        ),
-        background: getComputedStyle(document.body).backgroundColor,
-      };
-    });
-
-  const top = await measure();
+  const top = await page.evaluate(measure);
   await page.screenshot({ path: `${out}/standalone-${theme}-390-top.png` });
   check(`${theme}: the operating system prefers ${os}`, top.osPrefersDark === (os === "dark"), top);
   check(
-    `${theme}: the top bar's wordmark and buttons clear the status bar`,
-    top.headerContent.every((item) => item.top >= INSETS.top),
-    top.headerContent,
-  );
-  check(
-    `${theme}: the top bar's own background reaches the top edge`,
-    top.headerBox.top === 0 && top.headerBox.height === 44 + INSETS.top,
-    top.headerBox,
+    `${theme}: the masthead's date, theme button and wordmark clear the status bar`,
+    top.mastheadContent.length >= 2 && top.mastheadContent.every((item) => item.top >= INSETS.top),
+    top.mastheadContent,
   );
   check(`${theme}: the page does not scroll sideways`, !top.sideways, top);
   check(
@@ -211,166 +211,93 @@ async function standalone(theme) {
     top.themeColor,
   );
 
+  // Part of the way down: the section nav has stuck, and it must have stuck below the status bar.
+  await page.evaluate(() => scrollTo(0, 600));
+  const stuck = await page.evaluate(measure);
+  await page.screenshot({ path: `${out}/standalone-${theme}-390-stuck.png` });
   check(
-    `${theme}: the tab bar's own background reaches the bottom edge`,
-    top.tabBarBox.bottom === top.viewportHeight && top.tabBarBox.height === TAB_BAR + INSETS.bottom,
-    top.tabBarBox,
+    `${theme}: the section nav sticks under the status bar, not behind it`,
+    stuck.sectionNavShown && Math.abs(stuck.sectionNavBox.top - INSETS.top) < 0.5,
+    stuck.sectionNavBox,
   );
   check(
-    `${theme}: the tab bar's five places clear the home bar`,
-    top.tabBarContent.length === 5 &&
-      top.tabBarContent.every((item) => item.bottom <= top.viewportHeight - INSETS.bottom),
-    top.tabBarContent,
+    `${theme}: the stuck nav's five places clear the status bar`,
+    stuck.sectionNavPlaces.length === 5 &&
+      stuck.sectionNavPlaces.every((item) => item.top >= INSETS.top),
+    stuck.sectionNavPlaces,
   );
   check(
-    `${theme}: the tab bar is below the score strip`,
-    top.stripBottom <= top.tabBarBox.top,
-    top,
+    `${theme}: the page is covered behind the status bar while the nav is stuck`,
+    stuck.aboveNav === "true",
+    stuck.aboveNav,
   );
 
   await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
-  const bottom = await measure();
+  const bottom = await page.evaluate(measure);
   check(
     `${theme}: the footer's last line clears the home bar`,
-    bottom.footerContent.bottom <= bottom.viewportHeight - INSETS.bottom,
+    bottom.footerContent.bottom <= bottom.viewport.height - INSETS.bottom,
     bottom.footerContent,
-  );
-  check(
-    `${theme}: the footer's last line ends above the tab bar`,
-    bottom.footerContent.bottom <= bottom.tabBarBox.top,
-    bottom,
   );
   await page.screenshot({ path: `${out}/standalone-${theme}-390-bottom.png` });
   await context.close();
-  return { operatingSystem: os, top, bottom };
+  return { operatingSystem: os, top, stuck, bottom };
 }
 
-/** The shell with the phone on its side: the sidebar beside the notch, the page beside the other end. */
-async function sideways() {
-  const context = await browser.newContext({ viewport: SIDEWAYS, colorScheme: "light" });
+/**
+ * The phone on its side, the notch at one end: wide enough for the desk's masthead at 844, and
+ * still the phone's (the sections under the wordmark) at 667.
+ */
+async function sideways(viewport) {
+  const name = `sideways ${viewport.width}`;
+  const context = await browser.newContext({ viewport, colorScheme: "light", hasTouch: true });
   const page = await context.newPage();
   const cdp = await context.newCDPSession(page);
   await cdp.send("Emulation.setSafeAreaInsetsOverride", { insets: SIDEWAYS_INSETS });
   await page.goto(base, { waitUntil: "networkidle" });
   await page.evaluate(() => document.fonts.ready);
-  await page.evaluate(({ left, right, bottom }) => {
-    for (const [edge, size] of [
-      ["left", left],
-      ["right", right],
-      ["bottom", bottom],
-    ]) {
-      const bar = document.createElement("div");
-      const across = edge === "bottom" ? "left:0;right:0;height" : "top:0;bottom:0;width";
-      bar.style.cssText = `position:fixed;${edge}:0;${across}:${size}px;z-index:9999;pointer-events:none;background:repeating-linear-gradient(45deg,rgba(220,38,38,.28) 0 6px,transparent 6px 12px);outline:1px dashed rgba(220,38,38,.8)`;
-      document.body.append(bar);
-    }
-  }, SIDEWAYS_INSETS);
-  const measured = await page.evaluate(() => {
-    const text = (node) => {
-      const range = document.createRange();
-      range.selectNodeContents(node);
-      const { left, right, bottom } = range.getBoundingClientRect();
-      return { left, right, bottom };
-    };
-    const aside = document.querySelector("aside");
-    const column = [...document.querySelectorAll("main > *, [data-slot=score-ticker] > *")];
-    return {
-      sidebarShown: getComputedStyle(aside).display !== "none",
-      sidebarLeft: Math.min(...[...aside.querySelectorAll("a, button")].map((n) => text(n).left)),
-      sidebarBottom: Math.max(
-        ...[...aside.querySelectorAll("a, button")].map((n) => text(n).bottom),
-      ),
-      // The boxes inside the padded column, and the footer by its text: its own box is the padding.
-      columnRight: Math.max(
-        text(document.querySelector("footer")).right,
-        ...column.map((node) => node.getBoundingClientRect().right),
-      ),
-      sidewaysScroll: document.documentElement.scrollWidth > innerWidth,
-    };
-  });
+  await page.evaluate(
+    ([{ left, right, bottom }, hatch]) => {
+      for (const [edge, size] of [
+        ["left", left],
+        ["right", right],
+        ["bottom", bottom],
+      ]) {
+        const bar = document.createElement("div");
+        const across = edge === "bottom" ? "left:0;right:0;height" : "top:0;bottom:0;width";
+        bar.style.cssText = `position:fixed;${edge}:0;${across}:${size}px;${hatch}`;
+        document.body.append(bar);
+      }
+    },
+    [SIDEWAYS_INSETS, HATCH],
+  );
   const { left, right, bottom } = SIDEWAYS_INSETS;
-  check("sideways: the sidebar is shown", measured.sidebarShown, measured);
-  check("sideways: the sidebar's links clear the notch", measured.sidebarLeft >= left, measured);
+  const top = await page.evaluate(measure);
+  const phone = viewport.width < 768;
   check(
-    "sideways: the sidebar's theme switch clears the home bar",
-    measured.sidebarBottom <= SIDEWAYS.height - bottom,
-    measured,
-  );
-  check(
-    "sideways: the ticker, the page and the footer clear the far end",
-    measured.columnRight <= SIDEWAYS.width - right,
-    measured,
-  );
-  check("sideways: the page does not scroll sideways", !measured.sidewaysScroll, measured);
-  await page.screenshot({ path: `${out}/sideways-light-844.png` });
-  await context.close();
-  return { simulatedInsets: SIDEWAYS_INSETS, ...measured };
-}
-
-/** A small phone on its side: the tab bar between the notch and the far end, over the home bar. */
-async function smallSideways() {
-  const context = await browser.newContext({
-    viewport: SMALL_SIDEWAYS,
-    colorScheme: "light",
-    hasTouch: true,
-  });
-  const page = await context.newPage();
-  const cdp = await context.newCDPSession(page);
-  await cdp.send("Emulation.setSafeAreaInsetsOverride", { insets: SIDEWAYS_INSETS });
-  await page.goto(base, { waitUntil: "networkidle" });
-  await page.evaluate(() => document.fonts.ready);
-  const measure = () =>
-    page.evaluate(() => {
-      const text = (node) => {
-        const range = document.createRange();
-        range.selectNodeContents(node);
-        const { left, right, bottom } = range.getBoundingClientRect();
-        return { left, right, bottom };
-      };
-      const bar = document.querySelector('[data-slot="tab-bar"]');
-      return {
-        tabBarShown: getComputedStyle(bar).display !== "none",
-        tabBarBox: bar.getBoundingClientRect().toJSON(),
-        tabBarContent: [...bar.querySelectorAll("a")].map(text),
-        stripBottom: document.querySelector('[data-slot="score-ticker"]').getBoundingClientRect()
-          .bottom,
-        footerBottom: text(document.querySelector("footer")).bottom,
-        sidewaysScroll: document.documentElement.scrollWidth > innerWidth,
-      };
-    });
-  const { left, right, bottom } = SIDEWAYS_INSETS;
-  const { width, height } = SMALL_SIDEWAYS;
-  const top = await measure();
-  check("small sideways: the tab bar is shown", top.tabBarShown, top);
-  check(
-    "small sideways: the tab bar's background reaches the bottom edge",
-    top.tabBarBox.bottom === height && top.tabBarBox.height === TAB_BAR + bottom,
-    top.tabBarBox,
-  );
-  check(
-    "small sideways: the tab bar's places clear the notch, the far end and the home bar",
-    top.tabBarContent.length === 5 &&
-      top.tabBarContent.every(
-        (item) =>
-          item.left >= left && item.right <= width - right && item.bottom <= height - bottom,
-      ),
-    top.tabBarContent,
-  );
-  check(
-    "small sideways: the tab bar is below the score strip",
-    top.stripBottom <= top.tabBarBox.top,
+    `${name}: the sections are ${phone ? "under" : "above"} the wordmark`,
+    top.sectionNavShown === phone,
     top,
   );
-  check("small sideways: the page does not scroll sideways", !top.sidewaysScroll, top);
-  await page.screenshot({ path: `${out}/sideways-light-667-top.png` });
-  await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
-  const end = await measure();
+  const pressed = [...top.mastheadContent, ...top.sectionNavPlaces];
   check(
-    "small sideways: the footer's last line ends above the tab bar",
-    end.footerBottom <= end.tabBarBox.top,
-    end,
+    `${name}: the masthead and its sections clear the notch and the far end`,
+    pressed.length >= 3 &&
+      pressed.every((item) => item.left >= left && item.right <= viewport.width - right),
+    pressed,
   );
-  await page.screenshot({ path: `${out}/sideways-light-667-bottom.png` });
+  check(`${name}: the page does not scroll sideways`, !top.sideways, top);
+  await page.screenshot({ path: `${out}/sideways-light-${viewport.width}-top.png` });
+  await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
+  const end = await page.evaluate(measure);
+  check(
+    `${name}: the footer clears the notch, the far end and the home bar`,
+    end.footerContent.left >= left &&
+      end.footerContent.right <= viewport.width - right &&
+      end.footerContent.bottom <= viewport.height - bottom,
+    end.footerContent,
+  );
+  await page.screenshot({ path: `${out}/sideways-light-${viewport.width}-bottom.png` });
   await context.close();
   return { simulatedInsets: SIDEWAYS_INSETS, top, bottom: end };
 }
@@ -382,14 +309,15 @@ const report = {
   simulatedInsets: INSETS,
   installability: await installability(),
   standalone: { light: await standalone("light"), dark: await standalone("dark") },
-  sideways: await sideways(),
-  smallSideways: await smallSideways(),
+  sideways: await sideways(SIDEWAYS),
+  smallSideways: await sideways(SMALL_SIDEWAYS),
   failures,
 };
 await browser.close();
 await writeFile(`${out}/report.json`, `${JSON.stringify(report, null, 2)}\n`);
-// Biome checks the JSON under docs/ too.
-spawnSync("pnpm", ["exec", "biome", "format", "--write", `${out}/report.json`]);
+// Biome checks the JSON under docs/ too, should the report be kept there.
+if (!out.includes("node_modules"))
+  spawnSync("pnpm", ["exec", "biome", "format", "--write", `${out}/report.json`]);
 console.log(
   `installability errors: ${JSON.stringify(report.installability.installabilityErrors)}; ` +
     `${report.installability.files.length} files fetched; ${failures.length} failed checks`,

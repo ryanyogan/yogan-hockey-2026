@@ -55,7 +55,7 @@ const VIEWS = [
         "6",
       ]);
       await expect(leader.getByRole("link")).toHaveAttribute("href", "/nhl/teams/13");
-      // No row has a team's mark (HANDOFF.md, question 3): the score strip above has them, and
+      // No row has a team's mark (agate.md, Decisions): the score strip above has them, and
       // the team's own page (`team.spec.ts`).
       await expect(page.locator("main [data-slot=team-mark]")).toHaveCount(0);
     },

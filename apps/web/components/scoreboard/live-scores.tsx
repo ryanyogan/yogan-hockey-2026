@@ -4,10 +4,11 @@ import type { ScoreboardGame } from "@yogan-hockey/schemas";
 import { PageHeader, Section, SectionHeader } from "@yogan-hockey/ui/components/section";
 import { favoritesFirst } from "../../lib/favorites";
 import { slateDay } from "../../lib/game-time";
-import { pickNote } from "../../lib/picks";
+import { pickLineOutcome, pickNote } from "../../lib/picks";
 import { slateSections } from "../../lib/scoreboard-view";
 import { useFavorites } from "../../lib/use-favorites";
 import { LocalTime } from "../local-time";
+import { PickMark } from "../story/story-parts";
 import { emptyProse } from "../story/type";
 import { GameLedger } from "./game-ledger";
 import { useScoreboard } from "./scoreboard-provider";
@@ -28,7 +29,16 @@ function Games({ title, games, picks }: { title: string; games: ScoreboardGame[]
       <GameLedger
         games={favoritesFirst(games, favoriteTeamIds)}
         favoriteTeamIds={favoriteTeamIds}
-        pick={(game) => pickNote(picks[game.id], game.status)}
+        pick={(game) => {
+          const line = pickNote(picks[game.id], game.status);
+          // A final's pick says how it went, as a brief on Home does.
+          return line == null ? undefined : (
+            <>
+              {line}
+              <PickMark outcome={pickLineOutcome(line, game)} />
+            </>
+          );
+        }}
       />
     </Section>
   );

@@ -5,6 +5,7 @@ import {
   madePicks,
   PICK_PENDING,
   pickLine,
+  pickLineOutcome,
   pickNote,
   seasonNow,
   seasonOfSlate,
@@ -148,4 +149,25 @@ test("a slate's picks for the browser are the made ones, and only what saying an
   expect(madePicks(predictions)).toEqual({
     "401892449": { status: "made", pickTeamId: "21", winProbability: 58 },
   });
+});
+
+test("a one-line pick is right or wrong once its game is final, and unmarked until then", () => {
+  const game = (status: "scheduled" | "live" | "final", home: number, away: number) => ({
+    status,
+    home: { id: "23", abbreviation: "WSH", score: home },
+    away: { id: "124292", abbreviation: "SEA", score: away },
+  });
+  expect(pickLineOutcome("WSH 63%", game("final", 3, 5))).toBe("wrong");
+  expect(pickLineOutcome("SEA 55%", game("final", 3, 5))).toBe("right");
+  expect(pickLineOutcome("WSH 63%", game("final", 4, 3))).toBe("right");
+  // Not before the final, whatever the score says.
+  expect(pickLineOutcome("WSH 63%", game("live", 4, 3))).toBeNull();
+  expect(pickLineOutcome("WSH 63%", game("scheduled", 0, 0))).toBeNull();
+  // Nothing to mark: no line, a pick still pending, a club not in the game, no winner.
+  expect(pickLineOutcome(undefined, game("final", 4, 3))).toBeNull();
+  expect(pickLineOutcome("pick pending", game("final", 4, 3))).toBeNull();
+  expect(pickLineOutcome("TOR 58%", game("final", 4, 3))).toBeNull();
+  expect(pickLineOutcome("WSH 63%", game("final", 3, 3))).toBeNull();
+  // An abbreviation that begins another's is not it.
+  expect(pickLineOutcome("WSHX 63%", game("final", 4, 3))).toBeNull();
 });

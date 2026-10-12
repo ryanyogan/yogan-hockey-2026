@@ -8,7 +8,7 @@ import { teamHref } from "./team-name";
  * Every team in the league, by name, each linking to the team's page: an agate list set as the
  * prototype's briefs are (`.brief`), a name in 16px semibold over a dotted rule with the team's
  * abbreviation stepping back at the end of its line. It runs in as many columns as fit, read
- * down each, and no row has a mark (HANDOFF.md, question 3).
+ * down each, and no row has a mark (agate.md, Decisions).
  */
 export function TeamsList({ teams }: { teams: Team[] }) {
   const byName = teams.toSorted((a, b) => a.name.localeCompare(b.name));

@@ -78,7 +78,7 @@ const FITTED_GAME_COLUMNS = {
  * Games as agate rows: status, away, home, each team with its record, then the note: the
  * favorite-team marker, the pick, and where the game is played and shown. Each row links to the
  * game's page, a game in progress has its status in the one red, the scores are bold and the
- * winner of a finished game is in bold. No row has a team's mark (HANDOFF.md, question 3). The columns are fixed widths, so one ledger under another lines up;
+ * winner of a finished game is in bold. No row has a team's mark (agate.md, Decisions). The columns are fixed widths, so one ledger under another lines up;
  * `fitted` is for a ledger that stands alone.
  *
  * A phone has no room for the last column or for a record beside its team, so there a row has a

@@ -91,6 +91,26 @@ export function pickNote(line: string | undefined, status: GameStatus): string |
 }
 
 /**
+ * Right or wrong for a pick known only by its line ("WSH 63%"), once its game is final: the line
+ * names the picked side by its abbreviation, and the side with more goals won. Null before the
+ * final, with no line, for "pick pending", and for a line that names neither side.
+ */
+export function pickLineOutcome(
+  line: string | undefined,
+  game: {
+    status: GameStatus;
+    home: Side & { score: number };
+    away: Side & { score: number };
+  },
+): "right" | "wrong" | null {
+  if (game.status !== "final" || line == null) return null;
+  const picked = [game.home, game.away].find((side) => line.startsWith(`${side.abbreviation} `));
+  if (picked == null || game.home.score === game.away.score) return null;
+  const winner = game.home.score > game.away.score ? game.home : game.away;
+  return picked.id === winner.id ? "right" : "wrong";
+}
+
+/**
  * The season under way: the slate's when its date is known, and otherwise that of the day it is
  * where the NHL keeps its days. For a page drawn without today's games (the page cache's).
  */

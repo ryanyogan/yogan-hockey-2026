@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { currentNavItem, NAV_ITEMS, navItemByPathAlone } from "./nav";
+import { currentNavItem, NAV_ITEMS, navItemByPathAlone, showsScoreStrip } from "./nav";
 
 const labelAt = (pathname: string, tab: string | null = null) =>
   currentNavItem(pathname, tab)?.label;
@@ -71,5 +71,11 @@ describe("the site navigation", () => {
 
   it("does not match a path that merely starts with the same letters", () => {
     expect(labelAt("/playersx")).toBeUndefined();
+  });
+
+  it("draws the score strip on every page but Home, whose page is the scores", () => {
+    expect(showsScoreStrip("/")).toBe(false);
+    for (const path of ["/nhl", "/nhl/live", "/nhl/games/401", "/players", "/no-such-page"])
+      expect(showsScoreStrip(path), path).toBe(true);
   });
 });

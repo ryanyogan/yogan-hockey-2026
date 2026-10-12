@@ -171,19 +171,27 @@ describe("verdicts", () => {
 });
 
 describe("comparison", () => {
-  it("lists the misses first and prints a range for every time", () => {
-    const text = comparison({
-      baseline: measurement([result({ hydratedMs: 6000 }, { perRun: undefined })]),
-      main: merge([4100, 4200, 4400].map((ms) => measurement([result({ pageHydratedMs: ms })]))),
-      branch: merge(
-        [4000, 4300, 4900].map((ms) => measurement([result({ pageHydratedMs: ms }, warm)])),
-      ),
-    });
-    expect(text.indexOf("## Routes that hydrate later")).toBeLessThan(text.indexOf("## Script"));
+  const sides = (branch: number[], main: number[]) => ({
+    baseline: measurement([result({ hydratedMs: 6000 }, { perRun: undefined })]),
+    main: merge(main.map((ms) => measurement([result({ pageHydratedMs: ms })]))),
+    branch: merge(branch.map((ms) => measurement([result({ pageHydratedMs: ms }, warm)]))),
+  });
+
+  it("calls a route undecided, not later, when the runs' ranges overlap", () => {
+    const text = comparison(sides([4000, 4300, 4900], [4100, 4200, 4400]));
+    expect(text).toContain("## Routes that hydrate later than `main` today\n\nEvery control");
     expect(text).toContain(
-      "- `/nhl`: 4300 (4000 to 4900) ms against 4200 (4100 to 4400) ms (the ranges overlap)",
+      "## Routes where hydration is undecided\n\nThe runs of one site differ by more than the two sites do, so neither is called earlier.\n\n- `/nhl`: 4300 (4000 to 4900) ms against 4200 (4100 to 4400) ms",
     );
-    expect(text).toContain("## Routes over their script budget\n\nNone.");
-    expect(text).toContain("**later** ✗ by 100 ms, ranges overlap");
+    expect(text).toContain("undecided: the runs' ranges overlap");
+    expect(text).not.toContain("**later**");
+  });
+
+  it("lists a route later when every run of it is after every run of main, with its runs", () => {
+    const text = comparison(sides([4500, 4600], [4100, 4200]));
+    expect(text).toContain("- `/nhl`: 4600 (4500 to 4600) ms against 4200 (4100 to 4200) ms");
+    expect(text).toContain("**later** ✗ by 400 ms");
+    expect(text).toContain("| `/nhl` | 2 / 2 |");
+    expect(text.indexOf("## Routes that hydrate later")).toBeLessThan(text.indexOf("## Script"));
   });
 });

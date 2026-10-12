@@ -119,7 +119,7 @@ for (const route of measuredRoutes(FIXTURE_SUBJECTS)) {
 
 console.log(
   [
-    `Asked of \`main\` at ${main} and the branch at ${branch}, in turn, ${n} times a page (${colds} with KV emptied), no throttling, ${new Date().toISOString()}. Milliseconds: the median, with the least and the greatest in brackets. Size: kB, gzipped in brackets.`,
+    `Asked of \`main\` at ${main} and the branch at ${branch}, in turn, ${n} times a page${cold === "" ? ", KV never emptied" : ` (${colds} more with KV emptied)`}, no throttling, ${new Date().toISOString()}. Milliseconds: the median, with the least and the greatest in brackets. Size: kB, gzipped in brackets.`,
     "",
     "| Page | Headers: `main` cached | Headers: `main` rendered | Headers: branch, KV warm | Headers: branch, KV cold | Whole answer: `main` cached | Whole answer: `main` rendered | Whole answer: branch, KV warm | Whole answer: branch, KV cold | Document: `main` | Document: branch |",
     "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",

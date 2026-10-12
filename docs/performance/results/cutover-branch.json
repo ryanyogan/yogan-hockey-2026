@@ -1,0 +1,3902 @@
+{
+ "base": "http://localhost:5352",
+ "measuredAt": "2026-10-12T18:22:32.406Z to 2026-10-12T19:54:05.061Z",
+ "runs": 3,
+ "profile": {
+  "name": "Lighthouse mobile: Moto G Power, 4x CPU slowdown, Slow 4G",
+  "viewport": {
+   "width": 412,
+   "height": 823
+  },
+  "deviceScaleFactor": 1.75,
+  "userAgent": "Mozilla/5.0 (Linux; Android 11; moto g power (2022)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36",
+  "cpuSlowdown": 4,
+  "network": {
+   "latencyMs": 562.5,
+   "downloadKbps": 1474.56,
+   "uploadKbps": 675
+  },
+  "timezone": "America/Chicago"
+ },
+ "budgets": {
+  "layoutShiftBelow": 0.0005,
+  "largestPaintCachedMs": 1500,
+  "largestPaintRenderedMs": 2500,
+  "interactionMs": 200,
+  "shellMs": 200
+ },
+ "machine": "AMD Ryzen AI 9 HX 370 w/ Radeon 890M x 24, linux",
+ "load": {
+  "before": [
+   1.32
+  ],
+  "after": [
+   4.32
+  ]
+ },
+ "label": "019d70c The baseline script prepares and measures a site wit",
+ "chromium": "153.0.8010.12",
+ "subjects": {
+  "team": "21",
+  "player": "4024123",
+  "goalie": "3067313",
+  "finishedGame": "401803652",
+  "scheduledGame": "401892449",
+  "search": "mar"
+ },
+ "failures": [],
+ "results": [
+  {
+   "route": "/",
+   "path": "/",
+   "mode": "rendered",
+   "cacheStatus": [
+    "kv cold",
+    "kv cold",
+    "kv cold"
+   ],
+   "ttfbMs": 36.099999994039536,
+   "firstPaintMs": 1576,
+   "largestPaintMs": 1576,
+   "largestPaintElement": "h1[wordmark] \"Yogan Hockey\"",
+   "hydratedMs": 5031.300000011921,
+   "pageHydratedMs": 5179.20000000298,
+   "errors": [],
+   "perRun": [
+    {
+     "firstPaintMs": 1584,
+     "largestPaintMs": 1584,
+     "hydratedMs": 5031.300000011921,
+     "pageHydratedMs": 5179.20000000298,
+     "loadShift": 0.051171602337541235,
+     "liveShift": 0.12142663773190443,
+     "slowestTapMs": 40,
+     "shellMs": 805.6000000089407
+    },
+    {
+     "firstPaintMs": 1560,
+     "largestPaintMs": 1560,
+     "hydratedMs": 4983.29999999702,
+     "pageHydratedMs": 5057.29999999702,
+     "loadShift": 0.051171602337541235,
+     "liveShift": 0.12142663773190443,
+     "slowestTapMs": 40,
+     "shellMs": 766.5
+    },
+    {
+     "firstPaintMs": 1576,
+     "largestPaintMs": 1576,
+     "hydratedMs": 5043.79999999702,
+     "pageHydratedMs": 5186.5,
+     "loadShift": 0.051171602337541235,
+     "liveShift": 0.12142663773190443,
+     "slowestTapMs": 40,
+     "shellMs": 801.7000000029802
+    }
+   ],
+   "loadShift": 0.051171602337541235,
+   "loadShifts": [
+    {
+     "value": 0.00009173669270044113,
+     "atMs": 3279,
+     "nodes": "text"
+    },
+    {
+     "value": 0.00008829656672417458,
+     "atMs": 3793,
+     "nodes": "a[section-nav] \"Players\"; a[section-nav] \"Teams\""
+    },
+    {
+     "value": 0.05099156907811662,
+     "atMs": 4256,
+     "nodes": "article[story] \"7:00 PM ET · Scotiabank ArenaPre\"; div[ledger] \"Hurricanes at Canadiens: line sc\"; div[ledger] \"Predators at Maple Leafs: line s\"; ::after[story] \"\""
+    }
+   ],
+   "liveShift": 0.12142663773190443,
+   "liveShifts": [
+    {
+     "value": 0.12142663773190443,
+     "atMs": 8825,
+     "nodes": "article[story] \"6:00 PM · Little Caesars ArenaSe\"; div[ledger] \"Senators at Red Wings: line scor\"; text; td[ledger-cell] \"1⁠-⁠0⁠-⁠1\"; td[ledger-cell] \"1⁠-⁠1⁠-⁠1\""
+    }
+   ],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 40
+    },
+    {
+     "name": "open the whole slate",
+     "ms": null
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/games/401891815",
+    "shellMs": 801.7000000029802,
+    "contentMs": 801.7000000029802,
+    "blankFrames": 0,
+    "viewTransition": true,
+    "requestsAfterTap": 1,
+    "documentLoad": false,
+    "notFound": false
+   },
+   "script": {
+    "files": 23,
+    "rawBytes": 678249,
+    "gzipBytes": 207971
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 69718,
+    "gzipBytes": 9297
+   },
+   "stylesheet": {
+    "files": 1,
+    "rawBytes": 58105,
+    "gzipBytes": 11547
+   }
+  },
+  {
+   "route": "/",
+   "path": "/",
+   "mode": "rendered",
+   "cacheStatus": [
+    "kv warm",
+    "kv warm",
+    "kv warm"
+   ],
+   "ttfbMs": 22.5,
+   "firstPaintMs": 1568,
+   "largestPaintMs": 1568,
+   "largestPaintElement": "h1[wordmark] \"Yogan Hockey\"",
+   "hydratedMs": 5021.0999999940395,
+   "pageHydratedMs": 5137,
+   "errors": [],
+   "perRun": [
+    {
+     "firstPaintMs": 1564,
+     "largestPaintMs": 1564,
+     "hydratedMs": 5037.899999991059,
+     "pageHydratedMs": 5166.20000000298,
+     "loadShift": 0.051171602337541235,
+     "liveShift": 0.12142663773190443,
+     "slowestTapMs": 40,
+     "shellMs": 797.2000000029802
+    },
+    {
+     "firstPaintMs": 1568,
+     "largestPaintMs": 1568,
+     "hydratedMs": 5019,
+     "pageHydratedMs": 5091.29999999702,
+     "loadShift": 0.051171602337541235,
+     "liveShift": 0.12142663773190443,
+     "slowestTapMs": 32,
+     "shellMs": 788.8000000119209
+    },
+    {
+     "firstPaintMs": 1580,
+     "largestPaintMs": 1580,
+     "hydratedMs": 5021.0999999940395,
+     "pageHydratedMs": 5137,
+     "loadShift": 0.051171602337541235,
+     "liveShift": 0.12142663773190443,
+     "slowestTapMs": 32,
+     "shellMs": 798.9000000059605
+    }
+   ],
+   "loadShift": 0.051171602337541235,
+   "loadShifts": [
+    {
+     "value": 0.00009173669270044113,
+     "atMs": 3294,
+     "nodes": "text"
+    },
+    {
+     "value": 0.00008829656672417458,
+     "atMs": 3792,
+     "nodes": "a[section-nav] \"Players\"; a[section-nav] \"Teams\""
+    },
+    {
+     "value": 0.05099156907811662,
+     "atMs": 4267,
+     "nodes": "article[story] \"7:00 PM ET · Scotiabank ArenaPre\"; div[ledger] \"Hurricanes at Canadiens: line sc\"; div[ledger] \"Predators at Maple Leafs: line s\"; ::after[story] \"\""
+    }
+   ],
+   "liveShift": 0.12142663773190443,
+   "liveShifts": [
+    {
+     "value": 0.12142663773190443,
+     "atMs": 8803,
+     "nodes": "article[story] \"6:00 PM · Little Caesars ArenaSe\"; div[ledger] \"Senators at Red Wings: line scor\"; text; td[ledger-cell] \"1⁠-⁠0⁠-⁠1\"; td[ledger-cell] \"1⁠-⁠1⁠-⁠1\""
+    }
+   ],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 32
+    },
+    {
+     "name": "open the whole slate",
+     "ms": null
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/games/401891815",
+    "shellMs": 797.2000000029802,
+    "contentMs": 797.2000000029802,
+    "blankFrames": 0,
+    "viewTransition": true,
+    "requestsAfterTap": 1,
+    "documentLoad": false,
+    "notFound": false
+   },
+   "script": {
+    "files": 23,
+    "rawBytes": 678249,
+    "gzipBytes": 207971
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 69718,
+    "gzipBytes": 9294
+   },
+   "stylesheet": {
+    "files": 1,
+    "rawBytes": 58105,
+    "gzipBytes": 11547
+   }
+  },
+  {
+   "route": "/nhl",
+   "path": "/nhl",
+   "mode": "rendered",
+   "cacheStatus": [
+    "kv cold",
+    "kv cold",
+    "kv cold"
+   ],
+   "ttfbMs": 34.69999998807907,
+   "firstPaintMs": 1560,
+   "largestPaintMs": 1560,
+   "largestPaintElement": "p[wordmark] \"Yogan Hockey\"",
+   "hydratedMs": 4514.300000011921,
+   "pageHydratedMs": 4676.4000000059605,
+   "errors": [],
+   "perRun": [
+    {
+     "firstPaintMs": 1560,
+     "largestPaintMs": 1560,
+     "hydratedMs": 4483.899999991059,
+     "pageHydratedMs": 4657.0999999940395,
+     "loadShift": 0.006493685713272925,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 56,
+     "shellMs": 1245
+    },
+    {
+     "firstPaintMs": 1560,
+     "largestPaintMs": 1560,
+     "hydratedMs": 4514.300000011921,
+     "pageHydratedMs": 4676.4000000059605,
+     "loadShift": 0.005998200068753784,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 72,
+     "shellMs": 1222.6000000089407
+    },
+    {
+     "firstPaintMs": 1580,
+     "largestPaintMs": 1580,
+     "hydratedMs": 4516.4000000059605,
+     "pageHydratedMs": 4677.600000008941,
+     "loadShift": 0.006493685713272925,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 72,
+     "shellMs": 1228.4000000059605
+    }
+   ],
+   "loadShift": 0.006493685713272925,
+   "loadShifts": [
+    {
+     "value": 0.0027095829740253147,
+     "atMs": 3811,
+     "nodes": "ul[score-ticker] \"CAR@atMTL7:00 PM ETNSH@atTOR7:00\"; a[url-tabs] \"wild card\"; a[section-nav] \"Players\"; text; a[section-nav] \"Teams\""
+    },
+    {
+     "value": 0.0006617942346842761,
+     "atMs": 4079,
+     "nodes": "text"
+    },
+    {
+     "value": 0.003122308504563334,
+     "atMs": 4577,
+     "nodes": "li[score-ticker] \"favorite team, NSH@atTOR6:00 PM\""
+    }
+   ],
+   "liveShift": 0.0006806988019632283,
+   "liveShifts": [
+    {
+     "value": 0.0006806988019632283,
+     "atMs": 8614,
+     "nodes": "span[dateline] \"9 games · 1 live · 1 final · Pic\""
+    }
+   ],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 64
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 72
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/teams/14",
+    "shellMs": 1228.4000000059605,
+    "contentMs": 1228.4000000059605,
+    "blankFrames": 0,
+    "viewTransition": true,
+    "requestsAfterTap": 2,
+    "documentLoad": false,
+    "notFound": false
+   },
+   "script": {
+    "files": 18,
+    "rawBytes": 659395,
+    "gzipBytes": 200493
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 111260,
+    "gzipBytes": 10974
+   },
+   "stylesheet": {
+    "files": 1,
+    "rawBytes": 58105,
+    "gzipBytes": 11547
+   }
+  },
+  {
+   "route": "/nhl",
+   "path": "/nhl",
+   "mode": "rendered",
+   "cacheStatus": [
+    "kv warm",
+    "kv warm",
+    "kv warm"
+   ],
+   "ttfbMs": 19.900000005960464,
+   "firstPaintMs": 1580,
+   "largestPaintMs": 1580,
+   "largestPaintElement": "p[wordmark] \"Yogan Hockey\"",
+   "hydratedMs": 4515.70000000298,
+   "pageHydratedMs": 4676.29999999702,
+   "errors": [],
+   "perRun": [
+    {
+     "firstPaintMs": 1580,
+     "largestPaintMs": 1580,
+     "hydratedMs": 4518.5999999940395,
+     "pageHydratedMs": 4676.29999999702,
+     "loadShift": 0.005998200068753784,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 64,
+     "shellMs": 1228.7999999970198
+    },
+    {
+     "firstPaintMs": 1568,
+     "largestPaintMs": 1568,
+     "hydratedMs": 4507.4000000059605,
+     "pageHydratedMs": 4649.9000000059605,
+     "loadShift": 0.006493685713272925,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 48,
+     "shellMs": 1262.6000000089407
+    },
+    {
+     "firstPaintMs": 1580,
+     "largestPaintMs": 1580,
+     "hydratedMs": 4515.70000000298,
+     "pageHydratedMs": 4692.5,
+     "loadShift": 0.005998200068753784,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 48,
+     "shellMs": 1228.7000000029802
+    }
+   ],
+   "loadShift": 0.006493685713272925,
+   "loadShifts": [
+    {
+     "value": 0.0027095829740253147,
+     "atMs": 3837,
+     "nodes": "ul[score-ticker] \"CAR@atMTL7:00 PM ETNSH@atTOR7:00\"; a[url-tabs] \"wild card\"; a[section-nav] \"Players\"; text; a[section-nav] \"Teams\""
+    },
+    {
+     "value": 0.0006617942346842761,
+     "atMs": 4370,
+     "nodes": "text"
+    },
+    {
+     "value": 0.003122308504563334,
+     "atMs": 4591,
+     "nodes": "li[score-ticker] \"favorite team, NSH@atTOR6:00 PM\""
+    }
+   ],
+   "liveShift": 0.0006806988019632283,
+   "liveShifts": [
+    {
+     "value": 0.0006806988019632283,
+     "atMs": 8565,
+     "nodes": "span[dateline] \"9 games · 1 live · 1 final · Pic\""
+    }
+   ],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 48
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 48
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/teams/14",
+    "shellMs": 1228.7999999970198,
+    "contentMs": 1228.7999999970198,
+    "blankFrames": 0,
+    "viewTransition": true,
+    "requestsAfterTap": 2,
+    "documentLoad": false,
+    "notFound": false
+   },
+   "script": {
+    "files": 18,
+    "rawBytes": 659395,
+    "gzipBytes": 200493
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 111260,
+    "gzipBytes": 10974
+   },
+   "stylesheet": {
+    "files": 1,
+    "rawBytes": 58105,
+    "gzipBytes": 11547
+   }
+  },
+  {
+   "route": "/nhl?tab=teams",
+   "path": "/nhl?tab=teams",
+   "mode": "rendered",
+   "cacheStatus": [
+    "kv cold",
+    "kv cold",
+    "kv cold"
+   ],
+   "ttfbMs": 37.70000000298023,
+   "firstPaintMs": 1556,
+   "largestPaintMs": 1556,
+   "largestPaintElement": "p[wordmark] \"Yogan Hockey\"",
+   "hydratedMs": 4505.5999999940395,
+   "pageHydratedMs": 4649.29999999702,
+   "errors": [],
+   "perRun": [
+    {
+     "firstPaintMs": 1552,
+     "largestPaintMs": 1552,
+     "hydratedMs": 4435.9000000059605,
+     "pageHydratedMs": 4532.20000000298,
+     "loadShift": 0.004197312037501042,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 48,
+     "shellMs": 1221
+    },
+    {
+     "firstPaintMs": 1560,
+     "largestPaintMs": 1560,
+     "hydratedMs": 4511.0999999940395,
+     "pageHydratedMs": 4649.29999999702,
+     "loadShift": 0.004197312037501042,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 48,
+     "shellMs": 1277.2999999970198
+    },
+    {
+     "firstPaintMs": 1556,
+     "largestPaintMs": 1556,
+     "hydratedMs": 4505.5999999940395,
+     "pageHydratedMs": 4650.5,
+     "loadShift": 0.004197312037501042,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 48,
+     "shellMs": 1224.4000000059605
+    }
+   ],
+   "loadShift": 0.004197312037501042,
+   "loadShifts": [
+    {
+     "value": 0.00007736699982041109,
+     "atMs": 3776,
+     "nodes": "text"
+    },
+    {
+     "value": 0.0003358422984330211,
+     "atMs": 3794,
+     "nodes": "ul[score-ticker] \"CAR@atMTL7:00 PM ETNSH@atTOR7:00\"; a[section-nav] \"Players\"; a[section-nav] \"Teams\""
+    },
+    {
+     "value": 0.0006617942346842761,
+     "atMs": 4073,
+     "nodes": "text"
+    },
+    {
+     "value": 0.003122308504563334,
+     "atMs": 4500,
+     "nodes": "li[score-ticker] \"favorite team, NSH@atTOR6:00 PM\""
+    }
+   ],
+   "liveShift": 0.0006806988019632283,
+   "liveShifts": [
+    {
+     "value": 0.0006806988019632283,
+     "atMs": 8554,
+     "nodes": "span[dateline] \"9 games · 1 live · 1 final · Pic\""
+    }
+   ],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 48
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 48
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/teams/25",
+    "shellMs": 1224.4000000059605,
+    "contentMs": 1224.4000000059605,
+    "blankFrames": 0,
+    "viewTransition": true,
+    "requestsAfterTap": 2,
+    "documentLoad": false,
+    "notFound": false
+   },
+   "script": {
+    "files": 18,
+    "rawBytes": 659395,
+    "gzipBytes": 200493
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 62573,
+    "gzipBytes": 8923
+   },
+   "stylesheet": {
+    "files": 1,
+    "rawBytes": 58105,
+    "gzipBytes": 11547
+   }
+  },
+  {
+   "route": "/nhl?tab=teams",
+   "path": "/nhl?tab=teams",
+   "mode": "rendered",
+   "cacheStatus": [
+    "kv warm",
+    "kv warm",
+    "kv warm"
+   ],
+   "ttfbMs": 17.899999991059303,
+   "firstPaintMs": 1552,
+   "largestPaintMs": 1552,
+   "largestPaintElement": "p[wordmark] \"Yogan Hockey\"",
+   "hydratedMs": 4457.300000011921,
+   "pageHydratedMs": 4541.4000000059605,
+   "errors": [],
+   "perRun": [
+    {
+     "firstPaintMs": 1552,
+     "largestPaintMs": 1552,
+     "hydratedMs": 4454,
+     "pageHydratedMs": 4538.70000000298,
+     "loadShift": 0.004197312037501042,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 48,
+     "shellMs": 1242.5
+    },
+    {
+     "firstPaintMs": 1580,
+     "largestPaintMs": 1580,
+     "hydratedMs": 4578.9000000059605,
+     "pageHydratedMs": 4734.70000000298,
+     "loadShift": 0.004281272612109298,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 48,
+     "shellMs": 1248.1000000089407
+    },
+    {
+     "firstPaintMs": 1548,
+     "largestPaintMs": 1548,
+     "hydratedMs": 4457.300000011921,
+     "pageHydratedMs": 4541.4000000059605,
+     "loadShift": 0.004197312037501042,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 48,
+     "shellMs": 1222.2999999970198
+    }
+   ],
+   "loadShift": 0.004281272612109298,
+   "loadShifts": [
+    {
+     "value": 0.0004971698728616875,
+     "atMs": 3846,
+     "nodes": "ul[score-ticker] \"CAR@atMTL7:00 PM ETNSH@atTOR7:00\"; text; a[section-nav] \"Players\"; a[section-nav] \"Teams\""
+    },
+    {
+     "value": 0.0006617942346842761,
+     "atMs": 4370,
+     "nodes": "text"
+    },
+    {
+     "value": 0.003122308504563334,
+     "atMs": 4697,
+     "nodes": "li[score-ticker] \"favorite team, NSH@atTOR6:00 PM\""
+    }
+   ],
+   "liveShift": 0.0006806988019632283,
+   "liveShifts": [
+    {
+     "value": 0.0006806988019632283,
+     "atMs": 8535,
+     "nodes": "span[dateline] \"9 games · 1 live · 1 final · Pic\""
+    }
+   ],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 40
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 48
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/teams/25",
+    "shellMs": 1242.5,
+    "contentMs": 1242.5,
+    "blankFrames": 0,
+    "viewTransition": true,
+    "requestsAfterTap": 2,
+    "documentLoad": false,
+    "notFound": false
+   },
+   "script": {
+    "files": 18,
+    "rawBytes": 659395,
+    "gzipBytes": 200493
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 62573,
+    "gzipBytes": 8926
+   },
+   "stylesheet": {
+    "files": 1,
+    "rawBytes": 58105,
+    "gzipBytes": 11547
+   }
+  },
+  {
+   "route": "/nhl/live",
+   "path": "/nhl/live",
+   "mode": "rendered",
+   "cacheStatus": [
+    "kv cold",
+    "kv cold",
+    "kv cold"
+   ],
+   "ttfbMs": 27.600000008940697,
+   "firstPaintMs": 1560,
+   "largestPaintMs": 1560,
+   "largestPaintElement": "p[wordmark] \"Yogan Hockey\"",
+   "hydratedMs": 4789.399999991059,
+   "pageHydratedMs": 4883,
+   "errors": [],
+   "perRun": [
+    {
+     "firstPaintMs": 1568,
+     "largestPaintMs": 1568,
+     "hydratedMs": 4794.300000011921,
+     "pageHydratedMs": 4933.600000008941,
+     "loadShift": 0.013306887684416374,
+     "liveShift": 0.08506046888601712,
+     "slowestTapMs": 80,
+     "shellMs": 1279.7999999970198
+    },
+    {
+     "firstPaintMs": 1544,
+     "largestPaintMs": 1544,
+     "hydratedMs": 4745.70000000298,
+     "pageHydratedMs": 4843.4000000059605,
+     "loadShift": 0.013306887684416374,
+     "liveShift": 0.08506046888601712,
+     "slowestTapMs": 56,
+     "shellMs": 1261.6000000089407
+    },
+    {
+     "firstPaintMs": 1560,
+     "largestPaintMs": 1560,
+     "hydratedMs": 4789.399999991059,
+     "pageHydratedMs": 4883,
+     "loadShift": 0.013306887684416374,
+     "liveShift": 0.08506046888601712,
+     "slowestTapMs": 64,
+     "shellMs": 1280.7000000029802
+    }
+   ],
+   "loadShift": 0.013306887684416374,
+   "loadShifts": [
+    {
+     "value": 0.0003358422984330211,
+     "atMs": 3558,
+     "nodes": "ul[score-ticker] \"CAR@atMTL7:00 PM ETNSH@atTOR7:00\"; a[section-nav] \"Players\"; a[section-nav] \"Teams\""
+    },
+    {
+     "value": 0.0009104508404062921,
+     "atMs": 4105,
+     "nodes": "text"
+    },
+    {
+     "value": 0.003122308504563334,
+     "atMs": 4880,
+     "nodes": "li[score-ticker] \"favorite team, NSH@atTOR6:00 PM\""
+    },
+    {
+     "value": 0.008938286041013727,
+     "atMs": 4956,
+     "nodes": "tr[ledger-row] \"NSH at TOR, 6:00 PMTOR 58%NSHNas\""
+    }
+   ],
+   "liveShift": 0.08506046888601712,
+   "liveShifts": [
+    {
+     "value": 0.08506046888601712,
+     "atMs": 8768,
+     "nodes": "section[section] \"Upcoming 7statusawayhomenoteOTT \"; div[ledger] \"statusawayhomenoteOTT at DET, 6:\"; tr[ledger-row] \"NYI at NYR, 6:30 PMNYR 53%NYIN.Y\"; ::after[ledger-cell] \"\"; span[dateline] \"9 games · 1 live · 1 final · Pic\""
+    }
+   ],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 48
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 64
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/games/401892449",
+    "shellMs": 1279.7999999970198,
+    "contentMs": 1279.7999999970198,
+    "blankFrames": 0,
+    "viewTransition": true,
+    "requestsAfterTap": 1,
+    "documentLoad": false,
+    "notFound": false
+   },
+   "script": {
+    "files": 20,
+    "rawBytes": 667730,
+    "gzipBytes": 204115
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 62422,
+    "gzipBytes": 8220
+   },
+   "stylesheet": {
+    "files": 1,
+    "rawBytes": 58105,
+    "gzipBytes": 11547
+   }
+  },
+  {
+   "route": "/nhl/live",
+   "path": "/nhl/live",
+   "mode": "rendered",
+   "cacheStatus": [
+    "kv warm",
+    "kv warm",
+    "kv warm"
+   ],
+   "ttfbMs": 15.5,
+   "firstPaintMs": 1560,
+   "largestPaintMs": 1560,
+   "largestPaintElement": "p[wordmark] \"Yogan Hockey\"",
+   "hydratedMs": 4794.199999988079,
+   "pageHydratedMs": 4956.600000008941,
+   "errors": [],
+   "perRun": [
+    {
+     "firstPaintMs": 1548,
+     "largestPaintMs": 1548,
+     "hydratedMs": 4791.70000000298,
+     "pageHydratedMs": 4941,
+     "loadShift": 0.013306887684416374,
+     "liveShift": 0.08506046888601712,
+     "slowestTapMs": 72,
+     "shellMs": 1274.7000000029802
+    },
+    {
+     "firstPaintMs": 1560,
+     "largestPaintMs": 1560,
+     "hydratedMs": 4806.600000008941,
+     "pageHydratedMs": 4956.600000008941,
+     "loadShift": 0.013306887684416374,
+     "liveShift": 0.08506046888601712,
+     "slowestTapMs": 80,
+     "shellMs": 1299.5
+    },
+    {
+     "firstPaintMs": 1564,
+     "largestPaintMs": 1564,
+     "hydratedMs": 4794.199999988079,
+     "pageHydratedMs": 4958.5,
+     "loadShift": 0.013306887684416374,
+     "liveShift": 0.08506046888601712,
+     "slowestTapMs": 64,
+     "shellMs": 1295.7000000029802
+    }
+   ],
+   "loadShift": 0.013306887684416374,
+   "loadShifts": [
+    {
+     "value": 0.0003358422984330211,
+     "atMs": 3552,
+     "nodes": "ul[score-ticker] \"CAR@atMTL7:00 PM ETNSH@atTOR7:00\"; a[section-nav] \"Players\"; a[section-nav] \"Teams\""
+    },
+    {
+     "value": 0.0009104508404062921,
+     "atMs": 4089,
+     "nodes": "text"
+    },
+    {
+     "value": 0.003122308504563334,
+     "atMs": 4883,
+     "nodes": "li[score-ticker] \"favorite team, NSH@atTOR6:00 PM\""
+    },
+    {
+     "value": 0.008938286041013727,
+     "atMs": 4963,
+     "nodes": "tr[ledger-row] \"NSH at TOR, 6:00 PMTOR 58%NSHNas\""
+    }
+   ],
+   "liveShift": 0.08506046888601712,
+   "liveShifts": [
+    {
+     "value": 0.08506046888601712,
+     "atMs": 8759,
+     "nodes": "section[section] \"Upcoming 7statusawayhomenoteOTT \"; div[ledger] \"statusawayhomenoteOTT at DET, 6:\"; tr[ledger-row] \"NYI at NYR, 6:30 PMNYR 53%NYIN.Y\"; ::after[ledger-cell] \"\"; span[dateline] \"9 games · 1 live · 1 final · Pic\""
+    }
+   ],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 72
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 72
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/games/401892449",
+    "shellMs": 1295.7000000029802,
+    "contentMs": 1295.7000000029802,
+    "blankFrames": 0,
+    "viewTransition": true,
+    "requestsAfterTap": 1,
+    "documentLoad": false,
+    "notFound": false
+   },
+   "script": {
+    "files": 20,
+    "rawBytes": 667730,
+    "gzipBytes": 204115
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 62422,
+    "gzipBytes": 8217
+   },
+   "stylesheet": {
+    "files": 1,
+    "rawBytes": 58105,
+    "gzipBytes": 11547
+   }
+  },
+  {
+   "route": "/nhl/teams/:id",
+   "path": "/nhl/teams/21",
+   "mode": "rendered",
+   "cacheStatus": [
+    "kv cold",
+    "kv cold",
+    "kv cold"
+   ],
+   "ttfbMs": 77.5,
+   "firstPaintMs": 1580,
+   "largestPaintMs": 1580,
+   "largestPaintElement": "p[wordmark] \"Yogan Hockey\"",
+   "hydratedMs": 5015.79999999702,
+   "pageHydratedMs": 5236,
+   "errors": [],
+   "perRun": [
+    {
+     "firstPaintMs": 1580,
+     "largestPaintMs": 1580,
+     "hydratedMs": 5015.79999999702,
+     "pageHydratedMs": 5236,
+     "loadShift": 0.029131774681294905,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 56,
+     "shellMs": 644.5
+    },
+    {
+     "firstPaintMs": 1580,
+     "largestPaintMs": 1580,
+     "hydratedMs": 5037.9000000059605,
+     "pageHydratedMs": 5287.9000000059605,
+     "loadShift": 0.029131774681294905,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 56,
+     "shellMs": 647
+    },
+    {
+     "firstPaintMs": 1560,
+     "largestPaintMs": 1560,
+     "hydratedMs": 4956.5999999940395,
+     "pageHydratedMs": 5125.899999991059,
+     "loadShift": 0.029131774681294905,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 56,
+     "shellMs": 642
+    }
+   ],
+   "loadShift": 0.029131774681294905,
+   "loadShifts": [
+    {
+     "value": 0.0005997859639620715,
+     "atMs": 4131,
+     "nodes": "td[ledger-cell] \"7:00 PM ETTOR 58%\"; th[ledger-column] \"time\"; td[ledger-cell] \"10:00 PM ET\"; td[ledger-cell] \"7:00 PM ET\""
+    },
+    {
+     "value": 0.000835090580738703,
+     "atMs": 4278,
+     "nodes": "ul[score-ticker] \"CAR@atMTL7:00 PM ETNSH@atTOR7:00\"; text; a[section-nav] \"Players\"; a[section-nav] \"Teams\""
+    },
+    {
+     "value": 0.00018860490664881317,
+     "atMs": 4377,
+     "nodes": "td[ledger-cell] \"6th in Atlantic Division\"; th[ledger-column] \"standing\""
+    },
+    {
+     "value": 0.023025164059249464,
+     "atMs": 4783,
+     "nodes": "div[page] \"schedulerosterstatsUpcoming 81 g\"; div[team-now] \"Playing now Next gamedateopponen\"; div[ledger] \"dateopponenttimeTue Oct 6vs Nash\"; div[ledger] \"wlotlptsstanding12026th in Atlan\"; div[ledger] \"dateopponenttimewhereTue Oct 6vs\""
+    },
+    {
+     "value": 0.003122308504563334,
+     "atMs": 5087,
+     "nodes": "li[score-ticker] \"favorite team, NSH@atTOR6:00 PM\""
+    },
+    {
+     "value": 0.0013608206661325202,
+     "atMs": 5324,
+     "nodes": "text; td[ledger-cell] \"6:00 PM\"; th[ledger-column] \"time\"; td[ledger-cell] \"9:00 PM\""
+    }
+   ],
+   "liveShift": 0.0006806988019632283,
+   "liveShifts": [
+    {
+     "value": 0.0006806988019632283,
+     "atMs": 9002,
+     "nodes": "span[dateline] \"9 games · 1 live · 1 final · Pic\""
+    }
+   ],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 56
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 56
+    },
+    {
+     "name": "favorite heart",
+     "ms": 40
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/teams/21/roster",
+    "shellMs": 644.5,
+    "contentMs": 644.5,
+    "blankFrames": 0,
+    "viewTransition": true,
+    "requestsAfterTap": 1,
+    "documentLoad": false,
+    "notFound": false
+   },
+   "script": {
+    "files": 23,
+    "rawBytes": 670793,
+    "gzipBytes": 205039
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 199297,
+    "gzipBytes": 17217
+   },
+   "stylesheet": {
+    "files": 1,
+    "rawBytes": 58105,
+    "gzipBytes": 11547
+   }
+  },
+  {
+   "route": "/nhl/teams/:id",
+   "path": "/nhl/teams/21",
+   "mode": "rendered",
+   "cacheStatus": [
+    "kv warm",
+    "kv warm",
+    "kv warm"
+   ],
+   "ttfbMs": 32.5,
+   "firstPaintMs": 1584,
+   "largestPaintMs": 1584,
+   "largestPaintElement": "p[wordmark] \"Yogan Hockey\"",
+   "hydratedMs": 5028,
+   "pageHydratedMs": 5378.5,
+   "errors": [],
+   "perRun": [
+    {
+     "firstPaintMs": 1556,
+     "largestPaintMs": 1556,
+     "hydratedMs": 5028,
+     "pageHydratedMs": 5378.5,
+     "loadShift": 0.029131774681294905,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 56,
+     "shellMs": 642.0999999940395
+    },
+    {
+     "firstPaintMs": 1588,
+     "largestPaintMs": 1588,
+     "hydratedMs": 4986.0999999940395,
+     "pageHydratedMs": 5137.199999988079,
+     "loadShift": 0.029131774681294905,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 56,
+     "shellMs": 661.2000000029802
+    },
+    {
+     "firstPaintMs": 1584,
+     "largestPaintMs": 1584,
+     "hydratedMs": 5044,
+     "pageHydratedMs": 5401.600000008941,
+     "loadShift": 0.029131774681294905,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 88,
+     "shellMs": 664.3999999910593
+    }
+   ],
+   "loadShift": 0.029131774681294905,
+   "loadShifts": [
+    {
+     "value": 0.0005997859639620715,
+     "atMs": 4119,
+     "nodes": "td[ledger-cell] \"7:00 PM ETTOR 58%\"; th[ledger-column] \"time\"; td[ledger-cell] \"10:00 PM ET\"; td[ledger-cell] \"7:00 PM ET\""
+    },
+    {
+     "value": 0.000835090580738703,
+     "atMs": 4268,
+     "nodes": "ul[score-ticker] \"CAR@atMTL7:00 PM ETNSH@atTOR7:00\"; text; a[section-nav] \"Players\"; a[section-nav] \"Teams\""
+    },
+    {
+     "value": 0.00018860490664881317,
+     "atMs": 4367,
+     "nodes": "td[ledger-cell] \"6th in Atlantic Division\"; th[ledger-column] \"standing\""
+    },
+    {
+     "value": 0.023025164059249464,
+     "atMs": 4780,
+     "nodes": "div[page] \"schedulerosterstatsUpcoming 81 g\"; div[team-now] \"Playing now Next gamedateopponen\"; div[ledger] \"dateopponenttimeTue Oct 6vs Nash\"; div[ledger] \"wlotlptsstanding12026th in Atlan\"; div[ledger] \"dateopponenttimewhereTue Oct 6vs\""
+    },
+    {
+     "value": 0.003122308504563334,
+     "atMs": 5133,
+     "nodes": "li[score-ticker] \"favorite team, NSH@atTOR6:00 PM\""
+    },
+    {
+     "value": 0.0013608206661325202,
+     "atMs": 5388,
+     "nodes": "text; td[ledger-cell] \"6:00 PM\"; th[ledger-column] \"time\"; td[ledger-cell] \"9:00 PM\""
+    }
+   ],
+   "liveShift": 0.0006806988019632283,
+   "liveShifts": [
+    {
+     "value": 0.0006806988019632283,
+     "atMs": 9030,
+     "nodes": "span[dateline] \"9 games · 1 live · 1 final · Pic\""
+    }
+   ],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 56
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 56
+    },
+    {
+     "name": "favorite heart",
+     "ms": 40
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/teams/21/roster",
+    "shellMs": 661.2000000029802,
+    "contentMs": 661.2000000029802,
+    "blankFrames": 0,
+    "viewTransition": true,
+    "requestsAfterTap": 1,
+    "documentLoad": false,
+    "notFound": false
+   },
+   "script": {
+    "files": 23,
+    "rawBytes": 670793,
+    "gzipBytes": 205039
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 199297,
+    "gzipBytes": 17217
+   },
+   "stylesheet": {
+    "files": 1,
+    "rawBytes": 58105,
+    "gzipBytes": 11547
+   }
+  },
+  {
+   "route": "/nhl/teams/:id/roster",
+   "path": "/nhl/teams/21/roster",
+   "mode": "rendered",
+   "cacheStatus": [
+    "kv cold",
+    "kv cold",
+    "kv cold"
+   ],
+   "ttfbMs": 37.70000000298023,
+   "firstPaintMs": 1548,
+   "largestPaintMs": 1548,
+   "largestPaintElement": "p[wordmark] \"Yogan Hockey\"",
+   "hydratedMs": 5031.79999999702,
+   "pageHydratedMs": 5159.0999999940395,
+   "errors": [],
+   "perRun": [
+    {
+     "firstPaintMs": 1544,
+     "largestPaintMs": 1544,
+     "hydratedMs": 5031.79999999702,
+     "pageHydratedMs": 5159.0999999940395,
+     "loadShift": 0.027864267432268615,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 56,
+     "shellMs": 664.2999999970198
+    },
+    {
+     "firstPaintMs": 1548,
+     "largestPaintMs": 1548,
+     "hydratedMs": 5012.70000000298,
+     "pageHydratedMs": 5117.20000000298,
+     "loadShift": 0.027864267432268615,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 48,
+     "shellMs": 673
+    },
+    {
+     "firstPaintMs": 1552,
+     "largestPaintMs": 1552,
+     "hydratedMs": 5090.9000000059605,
+     "pageHydratedMs": 5266.9000000059605,
+     "loadShift": 0.027864267432268615,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 72,
+     "shellMs": 725.4000000059605
+    }
+   ],
+   "loadShift": 0.027864267432268615,
+   "loadShifts": [
+    {
+     "value": 0.0003572570826352804,
+     "atMs": 4026,
+     "nodes": "td[ledger-cell] \"7:00 PM ETTOR 58%\"; th[ledger-column] \"time\"; text"
+    },
+    {
+     "value": 0.00018860490664881317,
+     "atMs": 4393,
+     "nodes": "td[ledger-cell] \"6th in Atlantic Division\"; th[ledger-column] \"standing\""
+    },
+    {
+     "value": 0.000835090580738703,
+     "atMs": 4414,
+     "nodes": "ul[score-ticker] \"CAR@atMTL7:00 PM ETNSH@atTOR7:00\"; text; a[section-nav] \"Players\"; a[section-nav] \"Teams\""
+    },
+    {
+     "value": 0.023025164059249464,
+     "atMs": 4925,
+     "nodes": "div[page] \"schedulerosterstatsRoster 24 pla\"; div[team-now] \"Playing now Next gamedateopponen\"; div[ledger] \"#playerpos3Nick BlankenburgD8Chr\"; div[ledger] \"wlotlptsstanding12026th in Atlan\"; div[ledger] \"dateopponenttimewhereTue Oct 6vs\""
+    },
+    {
+     "value": 0.003122308504563334,
+     "atMs": 5093,
+     "nodes": "li[score-ticker] \"favorite team, NSH@atTOR6:00 PM\""
+    },
+    {
+     "value": 0.0003358422984330212,
+     "atMs": 5163,
+     "nodes": "text"
+    }
+   ],
+   "liveShift": 0.0006806988019632283,
+   "liveShifts": [
+    {
+     "value": 0.0006806988019632283,
+     "atMs": 9125,
+     "nodes": "span[dateline] \"9 games · 1 live · 1 final · Pic\""
+    }
+   ],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 48
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 56
+    },
+    {
+     "name": "favorite heart",
+     "ms": 40
+    }
+   ],
+   "navigation": {
+    "to": "/players/4781550",
+    "shellMs": 673,
+    "contentMs": 673,
+    "blankFrames": 0,
+    "viewTransition": true,
+    "requestsAfterTap": 1,
+    "documentLoad": false,
+    "notFound": false
+   },
+   "script": {
+    "files": 24,
+    "rawBytes": 668997,
+    "gzipBytes": 204661
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 94325,
+    "gzipBytes": 10615
+   },
+   "stylesheet": {
+    "files": 1,
+    "rawBytes": 58105,
+    "gzipBytes": 11547
+   }
+  },
+  {
+   "route": "/nhl/teams/:id/roster",
+   "path": "/nhl/teams/21/roster",
+   "mode": "rendered",
+   "cacheStatus": [
+    "kv warm",
+    "kv warm",
+    "kv warm"
+   ],
+   "ttfbMs": 22.299999997019768,
+   "firstPaintMs": 1548,
+   "largestPaintMs": 1548,
+   "largestPaintElement": "p[wordmark] \"Yogan Hockey\"",
+   "hydratedMs": 5046.79999999702,
+   "pageHydratedMs": 5160.399999991059,
+   "errors": [],
+   "perRun": [
+    {
+     "firstPaintMs": 1548,
+     "largestPaintMs": 1548,
+     "hydratedMs": 5046.79999999702,
+     "pageHydratedMs": 5160.399999991059,
+     "loadShift": 0.027864267432268615,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 48,
+     "shellMs": 676.7000000029802
+    },
+    {
+     "firstPaintMs": 1556,
+     "largestPaintMs": 1556,
+     "hydratedMs": 5065.5999999940395,
+     "pageHydratedMs": 5170.4000000059605,
+     "loadShift": 0.027864267432268615,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 64,
+     "shellMs": 712.7999999970198
+    },
+    {
+     "firstPaintMs": 1548,
+     "largestPaintMs": 1548,
+     "hydratedMs": 5031.29999999702,
+     "pageHydratedMs": 5147.20000000298,
+     "loadShift": 0.027864267432268615,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 48,
+     "shellMs": 714.7999999970198
+    }
+   ],
+   "loadShift": 0.027864267432268615,
+   "loadShifts": [
+    {
+     "value": 0.0003572570826352804,
+     "atMs": 4066,
+     "nodes": "td[ledger-cell] \"7:00 PM ETTOR 58%\"; th[ledger-column] \"time\"; text"
+    },
+    {
+     "value": 0.000835090580738703,
+     "atMs": 4387,
+     "nodes": "ul[score-ticker] \"CAR@atMTL7:00 PM ETNSH@atTOR7:00\"; text; a[section-nav] \"Players\"; a[section-nav] \"Teams\""
+    },
+    {
+     "value": 0.00018860490664881317,
+     "atMs": 4406,
+     "nodes": "td[ledger-cell] \"6th in Atlantic Division\"; th[ledger-column] \"standing\""
+    },
+    {
+     "value": 0.023025164059249464,
+     "atMs": 4843,
+     "nodes": "div[page] \"schedulerosterstatsRoster 24 pla\"; div[team-now] \"Playing now Next gamedateopponen\"; div[ledger] \"#playerpos3Nick BlankenburgD8Chr\"; div[ledger] \"wlotlptsstanding12026th in Atlan\"; div[ledger] \"dateopponenttimewhereTue Oct 6vs\""
+    },
+    {
+     "value": 0.003122308504563334,
+     "atMs": 5110,
+     "nodes": "li[score-ticker] \"favorite team, NSH@atTOR6:00 PM\""
+    },
+    {
+     "value": 0.0003358422984330212,
+     "atMs": 5163,
+     "nodes": "text"
+    }
+   ],
+   "liveShift": 0.0006806988019632283,
+   "liveShifts": [
+    {
+     "value": 0.0006806988019632283,
+     "atMs": 9156,
+     "nodes": "span[dateline] \"9 games · 1 live · 1 final · Pic\""
+    }
+   ],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 48
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 48
+    },
+    {
+     "name": "favorite heart",
+     "ms": 40
+    }
+   ],
+   "navigation": {
+    "to": "/players/4781550",
+    "shellMs": 712.7999999970198,
+    "contentMs": 712.7999999970198,
+    "blankFrames": 0,
+    "viewTransition": true,
+    "requestsAfterTap": 1,
+    "documentLoad": false,
+    "notFound": false
+   },
+   "script": {
+    "files": 24,
+    "rawBytes": 668997,
+    "gzipBytes": 204661
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 94325,
+    "gzipBytes": 10610
+   },
+   "stylesheet": {
+    "files": 1,
+    "rawBytes": 58105,
+    "gzipBytes": 11547
+   }
+  },
+  {
+   "route": "/nhl/teams/:id/stats",
+   "path": "/nhl/teams/21/stats",
+   "mode": "rendered",
+   "cacheStatus": [
+    "kv cold",
+    "kv cold",
+    "kv cold"
+   ],
+   "ttfbMs": 36.400000005960464,
+   "firstPaintMs": 1556,
+   "largestPaintMs": 1556,
+   "largestPaintElement": "p[wordmark] \"Yogan Hockey\"",
+   "hydratedMs": 5062,
+   "pageHydratedMs": 5221.9000000059605,
+   "errors": [],
+   "perRun": [
+    {
+     "firstPaintMs": 1552,
+     "largestPaintMs": 1552,
+     "hydratedMs": 5057.70000000298,
+     "pageHydratedMs": 5219.79999999702,
+     "loadShift": 0.028698337845440788,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 48,
+     "shellMs": 804.0999999940395
+    },
+    {
+     "firstPaintMs": 1560,
+     "largestPaintMs": 1560,
+     "hydratedMs": 5062,
+     "pageHydratedMs": 5227,
+     "loadShift": 0.029026977380111004,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 40,
+     "shellMs": 788.3000000119209
+    },
+    {
+     "firstPaintMs": 1556,
+     "largestPaintMs": 1556,
+     "hydratedMs": 5067.600000008941,
+     "pageHydratedMs": 5221.9000000059605,
+     "loadShift": 0.028698337845440788,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 64,
+     "shellMs": 748.8999999910593
+    }
+   ],
+   "loadShift": 0.029026977380111004,
+   "loadShifts": [
+    {
+     "value": 0.0013611651266632167,
+     "atMs": 4025,
+     "nodes": "td[ledger-cell] \"7:00 PM ETTOR 58%\"; th[ledger-column] \"time\"; td[ledger-cell] \"0-0-0\"; td[ledger-cell] \"1-2-0\"; text"
+    },
+    {
+     "value": 0.001360913836211044,
+     "atMs": 4405,
+     "nodes": "ul[score-ticker] \"CAR@atMTL7:00 PM ETNSH@atTOR7:00\"; td[ledger-cell] \"6th in Atlantic Division\"; th[ledger-column] \"standing\"; text; a[section-nav] \"Players\""
+    },
+    {
+     "value": 0.02284674761424039,
+     "atMs": 4935,
+     "nodes": "div[page] \"schedulerosterstatsSeason statsg\"; div[team-now] \"Playing now Next gamedateopponen\"; div[ledger] \"gpgfgadiffpp%pk%homeroad367-118.\"; div[ledger] \"wlotlptsstanding12026th in Atlan\"; div[ledger] \"dateopponenttimewhereTue Oct 6vs\""
+    },
+    {
+     "value": 0.003122308504563334,
+     "atMs": 5155,
+     "nodes": "li[score-ticker] \"favorite team, NSH@atTOR6:00 PM\""
+    },
+    {
+     "value": 0.0003358422984330212,
+     "atMs": 5247,
+     "nodes": "text"
+    }
+   ],
+   "liveShift": 0.0006806988019632283,
+   "liveShifts": [
+    {
+     "value": 0.0006806988019632283,
+     "atMs": 9173,
+     "nodes": "span[dateline] \"9 games · 1 live · 1 final · Pic\""
+    }
+   ],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 48
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 48
+    },
+    {
+     "name": "favorite heart",
+     "ms": 40
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/teams/21",
+    "shellMs": 788.3000000119209,
+    "contentMs": 788.3000000119209,
+    "blankFrames": 0,
+    "viewTransition": true,
+    "requestsAfterTap": 1,
+    "documentLoad": false,
+    "notFound": false
+   },
+   "script": {
+    "files": 24,
+    "rawBytes": 669598,
+    "gzipBytes": 204809
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 59937,
+    "gzipBytes": 8946
+   },
+   "stylesheet": {
+    "files": 1,
+    "rawBytes": 58105,
+    "gzipBytes": 11547
+   }
+  },
+  {
+   "route": "/nhl/teams/:id/stats",
+   "path": "/nhl/teams/21/stats",
+   "mode": "rendered",
+   "cacheStatus": [
+    "kv warm",
+    "kv warm",
+    "kv warm"
+   ],
+   "ttfbMs": 22,
+   "firstPaintMs": 1552,
+   "largestPaintMs": 1552,
+   "largestPaintElement": "p[wordmark] \"Yogan Hockey\"",
+   "hydratedMs": 5051,
+   "pageHydratedMs": 5219,
+   "errors": [],
+   "perRun": [
+    {
+     "firstPaintMs": 1544,
+     "largestPaintMs": 1544,
+     "hydratedMs": 5012.5,
+     "pageHydratedMs": 5123.5,
+     "loadShift": 0.028698337845440788,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 48,
+     "shellMs": 731.2000000029802
+    },
+    {
+     "firstPaintMs": 1552,
+     "largestPaintMs": 1552,
+     "hydratedMs": 5054.79999999702,
+     "pageHydratedMs": 5219,
+     "loadShift": 0.028698337845440788,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 64,
+     "shellMs": 788.9000000059605
+    },
+    {
+     "firstPaintMs": 1560,
+     "largestPaintMs": 1560,
+     "hydratedMs": 5051,
+     "pageHydratedMs": 5226,
+     "loadShift": 0.028698337845440788,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 64,
+     "shellMs": 728.8000000119209
+    }
+   ],
+   "loadShift": 0.028698337845440788,
+   "loadShifts": [
+    {
+     "value": 0.0013611651266632167,
+     "atMs": 4000,
+     "nodes": "td[ledger-cell] \"7:00 PM ETTOR 58%\"; th[ledger-column] \"time\"; td[ledger-cell] \"0-0-0\"; td[ledger-cell] \"1-2-0\"; text"
+    },
+    {
+     "value": 0.00019718372080212786,
+     "atMs": 4384,
+     "nodes": "td[ledger-cell] \"6th in Atlantic Division\"; th[ledger-column] \"standing\"; text"
+    },
+    {
+     "value": 0.000835090580738703,
+     "atMs": 4397,
+     "nodes": "ul[score-ticker] \"CAR@atMTL7:00 PM ETNSH@atTOR7:00\"; text; a[section-nav] \"Players\"; a[section-nav] \"Teams\""
+    },
+    {
+     "value": 0.02284674761424039,
+     "atMs": 4924,
+     "nodes": "div[page] \"schedulerosterstatsSeason statsg\"; div[team-now] \"Playing now Next gamedateopponen\"; div[ledger] \"gpgfgadiffpp%pk%homeroad367-118.\"; div[ledger] \"wlotlptsstanding12026th in Atlan\"; div[ledger] \"dateopponenttimewhereTue Oct 6vs\""
+    },
+    {
+     "value": 0.003122308504563334,
+     "atMs": 5071,
+     "nodes": "li[score-ticker] \"favorite team, NSH@atTOR6:00 PM\""
+    },
+    {
+     "value": 0.0003358422984330212,
+     "atMs": 5126,
+     "nodes": "text"
+    }
+   ],
+   "liveShift": 0.0006806988019632283,
+   "liveShifts": [
+    {
+     "value": 0.0006806988019632283,
+     "atMs": 9122,
+     "nodes": "span[dateline] \"9 games · 1 live · 1 final · Pic\""
+    }
+   ],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 48
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 64
+    },
+    {
+     "name": "favorite heart",
+     "ms": 40
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/teams/21",
+    "shellMs": 731.2000000029802,
+    "contentMs": 731.2000000029802,
+    "blankFrames": 0,
+    "viewTransition": true,
+    "requestsAfterTap": 1,
+    "documentLoad": false,
+    "notFound": false
+   },
+   "script": {
+    "files": 24,
+    "rawBytes": 669598,
+    "gzipBytes": 204809
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 60074,
+    "gzipBytes": 8951
+   },
+   "stylesheet": {
+    "files": 1,
+    "rawBytes": 58105,
+    "gzipBytes": 11547
+   }
+  },
+  {
+   "route": "/nhl/games/:id (finished)",
+   "path": "/nhl/games/401803652",
+   "mode": "rendered",
+   "cacheStatus": [
+    "kv cold",
+    "kv cold"
+   ],
+   "ttfbMs": 62.80000001192093,
+   "firstPaintMs": 1592,
+   "largestPaintMs": 1592,
+   "largestPaintElement": "p[wordmark] \"Yogan Hockey\"",
+   "hydratedMs": 5508.100000008941,
+   "pageHydratedMs": 5690.600000008941,
+   "errors": [],
+   "perRun": [
+    {
+     "firstPaintMs": 1592,
+     "largestPaintMs": 1592,
+     "hydratedMs": 5479.100000008941,
+     "pageHydratedMs": 5690.600000008941,
+     "loadShift": 0.004195627809158496,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 72,
+     "shellMs": 80.6000000089407
+    },
+    {
+     "firstPaintMs": 1508,
+     "largestPaintMs": 1508,
+     "hydratedMs": 5508.100000008941,
+     "pageHydratedMs": 5641.70000000298,
+     "loadShift": 0.004195627809158496,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 56,
+     "shellMs": 82.5
+    }
+   ],
+   "loadShift": 0.004195627809158496,
+   "loadShifts": [
+    {
+     "value": 0.00007568277147786392,
+     "atMs": 4069,
+     "nodes": "text"
+    },
+    {
+     "value": 0.0003358422984330211,
+     "atMs": 4467,
+     "nodes": "ul[score-ticker] \"CAR@atMTL7:00 PM ETNSH@atTOR7:00\"; a[section-nav] \"Players\"; a[section-nav] \"Teams\""
+    },
+    {
+     "value": 0.0006617942346842761,
+     "atMs": 4865,
+     "nodes": "text"
+    },
+    {
+     "value": 0.003122308504563334,
+     "atMs": 5587,
+     "nodes": "li[score-ticker] \"favorite team, NSH@atTOR6:00 PM\""
+    }
+   ],
+   "liveShift": 0.0006806988019632283,
+   "liveShifts": [
+    {
+     "value": 0.0006806988019632283,
+     "atMs": 9511,
+     "nodes": "span[dateline] \"9 games · 1 live · 1 final · Pic\""
+    }
+   ],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 72
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 56
+    },
+    {
+     "name": "select a goal on the timeline",
+     "ms": 48
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/games/401803652/scoring",
+    "shellMs": 82.5,
+    "contentMs": 82.5,
+    "blankFrames": 0,
+    "viewTransition": true,
+    "requestsAfterTap": 0,
+    "documentLoad": false,
+    "notFound": false
+   },
+   "script": {
+    "files": 25,
+    "rawBytes": 719470,
+    "gzipBytes": 221200
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 293955,
+    "gzipBytes": 32267
+   },
+   "stylesheet": {
+    "files": 1,
+    "rawBytes": 58105,
+    "gzipBytes": 11547
+   }
+  },
+  {
+   "route": "/nhl/games/:id (finished)",
+   "path": "/nhl/games/401803652",
+   "mode": "rendered",
+   "cacheStatus": [
+    "kv warm",
+    "kv warm"
+   ],
+   "ttfbMs": 50.8999999910593,
+   "firstPaintMs": 1560,
+   "largestPaintMs": 1560,
+   "largestPaintElement": "p[wordmark] \"Yogan Hockey\"",
+   "hydratedMs": 5516.0999999940395,
+   "pageHydratedMs": 5656.5999999940395,
+   "errors": [],
+   "perRun": [
+    {
+     "firstPaintMs": 1560,
+     "largestPaintMs": 1560,
+     "hydratedMs": 5465.899999991059,
+     "pageHydratedMs": 5639.29999999702,
+     "loadShift": 0.004195627809158496,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 64,
+     "shellMs": 59.30000001192093
+    },
+    {
+     "firstPaintMs": 1556,
+     "largestPaintMs": 1556,
+     "hydratedMs": 5516.0999999940395,
+     "pageHydratedMs": 5656.5999999940395,
+     "loadShift": 0.004195627809158496,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 64,
+     "shellMs": 56
+    }
+   ],
+   "loadShift": 0.004195627809158496,
+   "loadShifts": [
+    {
+     "value": 0.00007568277147786392,
+     "atMs": 4058,
+     "nodes": "text"
+    },
+    {
+     "value": 0.0003358422984330211,
+     "atMs": 4441,
+     "nodes": "ul[score-ticker] \"CAR@atMTL7:00 PM ETNSH@atTOR7:00\"; a[section-nav] \"Players\"; a[section-nav] \"Teams\""
+    },
+    {
+     "value": 0.0006617942346842761,
+     "atMs": 4966,
+     "nodes": "text"
+    },
+    {
+     "value": 0.003122308504563334,
+     "atMs": 5543,
+     "nodes": "li[score-ticker] \"favorite team, NSH@atTOR6:00 PM\""
+    }
+   ],
+   "liveShift": 0.0006806988019632283,
+   "liveShifts": [
+    {
+     "value": 0.0006806988019632283,
+     "atMs": 9496,
+     "nodes": "span[dateline] \"9 games · 1 live · 1 final · Pic\""
+    }
+   ],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 64
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 56
+    },
+    {
+     "name": "select a goal on the timeline",
+     "ms": 48
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/games/401803652/scoring",
+    "shellMs": 59.30000001192093,
+    "contentMs": 59.30000001192093,
+    "blankFrames": 0,
+    "viewTransition": true,
+    "requestsAfterTap": 0,
+    "documentLoad": false,
+    "notFound": false
+   },
+   "script": {
+    "files": 25,
+    "rawBytes": 719470,
+    "gzipBytes": 221200
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 293955,
+    "gzipBytes": 32268
+   },
+   "stylesheet": {
+    "files": 1,
+    "rawBytes": 58105,
+    "gzipBytes": 11547
+   }
+  },
+  {
+   "route": "/nhl/games/:id/scoring",
+   "path": "/nhl/games/401803652/scoring",
+   "mode": "rendered",
+   "cacheStatus": [
+    "kv cold",
+    "kv cold"
+   ],
+   "ttfbMs": 57.400000005960464,
+   "firstPaintMs": 1564,
+   "largestPaintMs": 1564,
+   "largestPaintElement": "p[wordmark] \"Yogan Hockey\"",
+   "hydratedMs": 5478.70000000298,
+   "pageHydratedMs": 5682.4000000059605,
+   "errors": [],
+   "perRun": [
+    {
+     "firstPaintMs": 1516,
+     "largestPaintMs": 1516,
+     "hydratedMs": 5404.20000000298,
+     "pageHydratedMs": 5544.5999999940395,
+     "loadShift": 0.004195627809158496,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 56,
+     "shellMs": 84.79999999701977
+    },
+    {
+     "firstPaintMs": 1564,
+     "largestPaintMs": 1564,
+     "hydratedMs": 5478.70000000298,
+     "pageHydratedMs": 5682.4000000059605,
+     "loadShift": 0.004195627809158496,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 72,
+     "shellMs": 81.90000000596046
+    }
+   ],
+   "loadShift": 0.004195627809158496,
+   "loadShifts": [
+    {
+     "value": 0.00007568277147786392,
+     "atMs": 4057,
+     "nodes": "text"
+    },
+    {
+     "value": 0.0003358422984330211,
+     "atMs": 4389,
+     "nodes": "ul[score-ticker] \"CAR@atMTL7:00 PM ETNSH@atTOR7:00\"; a[section-nav] \"Players\"; a[section-nav] \"Teams\""
+    },
+    {
+     "value": 0.0006617942346842761,
+     "atMs": 4747,
+     "nodes": "text"
+    },
+    {
+     "value": 0.003122308504563334,
+     "atMs": 5467,
+     "nodes": "li[score-ticker] \"favorite team, NSH@atTOR6:00 PM\""
+    }
+   ],
+   "liveShift": 0.0006806988019632283,
+   "liveShifts": [
+    {
+     "value": 0.0006806988019632283,
+     "atMs": 9423,
+     "nodes": "span[dateline] \"9 games · 1 live · 1 final · Pic\""
+    }
+   ],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 72
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 72
+    },
+    {
+     "name": "select a goal on the timeline",
+     "ms": 64
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/games/401803652",
+    "shellMs": 84.79999999701977,
+    "contentMs": 84.79999999701977,
+    "blankFrames": 0,
+    "viewTransition": true,
+    "requestsAfterTap": 0,
+    "documentLoad": false,
+    "notFound": false
+   },
+   "script": {
+    "files": 25,
+    "rawBytes": 719470,
+    "gzipBytes": 221200
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 258813,
+    "gzipBytes": 31218
+   },
+   "stylesheet": {
+    "files": 1,
+    "rawBytes": 58105,
+    "gzipBytes": 11547
+   }
+  },
+  {
+   "route": "/nhl/games/:id/scoring",
+   "path": "/nhl/games/401803652/scoring",
+   "mode": "rendered",
+   "cacheStatus": [
+    "kv warm",
+    "kv warm"
+   ],
+   "ttfbMs": 42.6000000089407,
+   "firstPaintMs": 1596,
+   "largestPaintMs": 1596,
+   "largestPaintElement": "p[wordmark] \"Yogan Hockey\"",
+   "hydratedMs": 5636.29999999702,
+   "pageHydratedMs": 5766.29999999702,
+   "errors": [],
+   "perRun": [
+    {
+     "firstPaintMs": 1596,
+     "largestPaintMs": 1596,
+     "hydratedMs": 5636.29999999702,
+     "pageHydratedMs": 5766.29999999702,
+     "loadShift": 0.004195627809158496,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 48,
+     "shellMs": 81.80000001192093
+    },
+    {
+     "firstPaintMs": 1528,
+     "largestPaintMs": 1528,
+     "hydratedMs": 5560.600000008941,
+     "pageHydratedMs": 5758.9000000059605,
+     "loadShift": 0.004195627809158496,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 72,
+     "shellMs": 82.90000000596046
+    }
+   ],
+   "loadShift": 0.004195627809158496,
+   "loadShifts": [
+    {
+     "value": 0.00007568277147786392,
+     "atMs": 4085,
+     "nodes": "text"
+    },
+    {
+     "value": 0.0003358422984330211,
+     "atMs": 4451,
+     "nodes": "ul[score-ticker] \"CAR@atMTL7:00 PM ETNSH@atTOR7:00\"; a[section-nav] \"Players\"; a[section-nav] \"Teams\""
+    },
+    {
+     "value": 0.0006617942346842761,
+     "atMs": 4970,
+     "nodes": "text"
+    },
+    {
+     "value": 0.003122308504563334,
+     "atMs": 5710,
+     "nodes": "li[score-ticker] \"favorite team, NSH@atTOR6:00 PM\""
+    }
+   ],
+   "liveShift": 0.0006806988019632283,
+   "liveShifts": [
+    {
+     "value": 0.0006806988019632283,
+     "atMs": 9488,
+     "nodes": "span[dateline] \"9 games · 1 live · 1 final · Pic\""
+    }
+   ],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 72
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 72
+    },
+    {
+     "name": "select a goal on the timeline",
+     "ms": 64
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/games/401803652",
+    "shellMs": 82.90000000596046,
+    "contentMs": 82.90000000596046,
+    "blankFrames": 0,
+    "viewTransition": true,
+    "requestsAfterTap": 0,
+    "documentLoad": false,
+    "notFound": false
+   },
+   "script": {
+    "files": 25,
+    "rawBytes": 719470,
+    "gzipBytes": 221200
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 258813,
+    "gzipBytes": 31217
+   },
+   "stylesheet": {
+    "files": 1,
+    "rawBytes": 58105,
+    "gzipBytes": 11547
+   }
+  },
+  {
+   "route": "/nhl/games/:id/pick",
+   "path": "/nhl/games/401803652/pick",
+   "mode": "rendered",
+   "cacheStatus": [
+    "kv cold",
+    "kv cold"
+   ],
+   "ttfbMs": 58.70000000298023,
+   "firstPaintMs": 1540,
+   "largestPaintMs": 1540,
+   "largestPaintElement": "p[wordmark] \"Yogan Hockey\"",
+   "hydratedMs": 5909.70000000298,
+   "pageHydratedMs": 6110.5,
+   "errors": [],
+   "perRun": [
+    {
+     "firstPaintMs": 1540,
+     "largestPaintMs": 1540,
+     "hydratedMs": 5909.70000000298,
+     "pageHydratedMs": 6110.5,
+     "loadShift": 0.004195627809158496,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 72,
+     "shellMs": 85.20000000298023
+    },
+    {
+     "firstPaintMs": 1540,
+     "largestPaintMs": 1540,
+     "hydratedMs": 5719,
+     "pageHydratedMs": 5854.9000000059605,
+     "loadShift": 0.004195627809158496,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 48,
+     "shellMs": 53.400000005960464
+    }
+   ],
+   "loadShift": 0.004195627809158496,
+   "loadShifts": [
+    {
+     "value": 0.00007568277147786392,
+     "atMs": 4657,
+     "nodes": "text"
+    },
+    {
+     "value": 0.0003358422984330211,
+     "atMs": 4824,
+     "nodes": "ul[score-ticker] \"CAR@atMTL7:00 PM ETNSH@atTOR7:00\"; a[section-nav] \"Players\"; a[section-nav] \"Teams\""
+    },
+    {
+     "value": 0.0006617942346842761,
+     "atMs": 5192,
+     "nodes": "text"
+    },
+    {
+     "value": 0.003122308504563334,
+     "atMs": 6015,
+     "nodes": "li[score-ticker] \"favorite team, NSH@atTOR6:00 PM\""
+    }
+   ],
+   "liveShift": 0.0006806988019632283,
+   "liveShifts": [
+    {
+     "value": 0.0006806988019632283,
+     "atMs": 9883,
+     "nodes": "span[dateline] \"9 games · 1 live · 1 final · Pic\""
+    }
+   ],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 72
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 48
+    },
+    {
+     "name": "select a goal on the timeline",
+     "ms": 48
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/games/401803652",
+    "shellMs": 85.20000000298023,
+    "contentMs": 85.20000000298023,
+    "blankFrames": 0,
+    "viewTransition": true,
+    "requestsAfterTap": 0,
+    "documentLoad": false,
+    "notFound": false
+   },
+   "script": {
+    "files": 25,
+    "rawBytes": 719470,
+    "gzipBytes": 221200
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 252993,
+    "gzipBytes": 31242
+   },
+   "stylesheet": {
+    "files": 1,
+    "rawBytes": 58105,
+    "gzipBytes": 11547
+   }
+  },
+  {
+   "route": "/nhl/games/:id/pick",
+   "path": "/nhl/games/401803652/pick",
+   "mode": "rendered",
+   "cacheStatus": [
+    "kv warm",
+    "kv warm"
+   ],
+   "ttfbMs": 32.80000001192093,
+   "firstPaintMs": 1528,
+   "largestPaintMs": 1528,
+   "largestPaintElement": "p[wordmark] \"Yogan Hockey\"",
+   "hydratedMs": 5906.79999999702,
+   "pageHydratedMs": 6097.29999999702,
+   "errors": [],
+   "perRun": [
+    {
+     "firstPaintMs": 1528,
+     "largestPaintMs": 1528,
+     "hydratedMs": 5906.79999999702,
+     "pageHydratedMs": 6097.29999999702,
+     "loadShift": 0.004195627809158496,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 72,
+     "shellMs": 97.70000000298023
+    },
+    {
+     "firstPaintMs": 1528,
+     "largestPaintMs": 1528,
+     "hydratedMs": 5883.300000011921,
+     "pageHydratedMs": 6082.100000008941,
+     "loadShift": 0.004195627809158496,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 56,
+     "shellMs": 54.400000005960464
+    }
+   ],
+   "loadShift": 0.004195627809158496,
+   "loadShifts": [
+    {
+     "value": 0.00007568277147786392,
+     "atMs": 4656,
+     "nodes": "text"
+    },
+    {
+     "value": 0.0003358422984330211,
+     "atMs": 4818,
+     "nodes": "ul[score-ticker] \"CAR@atMTL7:00 PM ETNSH@atTOR7:00\"; a[section-nav] \"Players\"; a[section-nav] \"Teams\""
+    },
+    {
+     "value": 0.0006617942346842761,
+     "atMs": 5198,
+     "nodes": "text"
+    },
+    {
+     "value": 0.003122308504563334,
+     "atMs": 6012,
+     "nodes": "li[score-ticker] \"favorite team, NSH@atTOR6:00 PM\""
+    }
+   ],
+   "liveShift": 0.0006806988019632283,
+   "liveShifts": [
+    {
+     "value": 0.0006806988019632283,
+     "atMs": 9888,
+     "nodes": "span[dateline] \"9 games · 1 live · 1 final · Pic\""
+    }
+   ],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 72
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 64
+    },
+    {
+     "name": "select a goal on the timeline",
+     "ms": 64
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/games/401803652",
+    "shellMs": 97.70000000298023,
+    "contentMs": 97.70000000298023,
+    "blankFrames": 0,
+    "viewTransition": true,
+    "requestsAfterTap": 0,
+    "documentLoad": false,
+    "notFound": false
+   },
+   "script": {
+    "files": 25,
+    "rawBytes": 719470,
+    "gzipBytes": 221200
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 252993,
+    "gzipBytes": 31240
+   },
+   "stylesheet": {
+    "files": 1,
+    "rawBytes": 58105,
+    "gzipBytes": 11547
+   }
+  },
+  {
+   "route": "/nhl/games/:id (scheduled)",
+   "path": "/nhl/games/401892449",
+   "mode": "rendered",
+   "cacheStatus": [
+    "kv cold",
+    "kv cold"
+   ],
+   "ttfbMs": 57.5,
+   "firstPaintMs": 1548,
+   "largestPaintMs": 1548,
+   "largestPaintElement": "p[wordmark] \"Yogan Hockey\"",
+   "hydratedMs": 5842.79999999702,
+   "pageHydratedMs": 5998.70000000298,
+   "errors": [],
+   "perRun": [
+    {
+     "firstPaintMs": 1532,
+     "largestPaintMs": 1532,
+     "hydratedMs": 5842.79999999702,
+     "pageHydratedMs": 5961.5999999940395,
+     "loadShift": 0.026592886290079564,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 56,
+     "shellMs": 1209
+    },
+    {
+     "firstPaintMs": 1548,
+     "largestPaintMs": 1548,
+     "hydratedMs": 5790.9000000059605,
+     "pageHydratedMs": 5998.70000000298,
+     "loadShift": 0.026592886290079564,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 64,
+     "shellMs": 1212.3999999910593
+    }
+   ],
+   "loadShift": 0.026592886290079564,
+   "loadShifts": [
+    {
+     "value": 0.000045868346350220566,
+     "atMs": 4642,
+     "nodes": "text"
+    },
+    {
+     "value": 0.0003358422984330211,
+     "atMs": 4809,
+     "nodes": "ul[score-ticker] \"CAR@atMTL7:00 PM ETNSH@atTOR7:00\"; a[section-nav] \"Players\"; a[section-nav] \"Teams\""
+    },
+    {
+     "value": 0.02297235974927115,
+     "atMs": 5193,
+     "nodes": "div[game-matchup] \"away · 1-1-0NSH1-1-0Tue Oct 67:0\"; div[game-story] \"Predators at Maple Leafs: line s\"; div[ledger] \"Predators at Maple Leafs: line s\"; text; p[deck] \"The Predators (1⁠-⁠1⁠-⁠0) visit \""
+    },
+    {
+     "value": 0.003122308504563334,
+     "atMs": 5903,
+     "nodes": "li[score-ticker] \"favorite team, NSH@atTOR6:00 PM\""
+    },
+    {
+     "value": 0.00011650739146183955,
+     "atMs": 5964,
+     "nodes": "text"
+    }
+   ],
+   "liveShift": 0.0006806988019632283,
+   "liveShifts": [
+    {
+     "value": 0.0006806988019632283,
+     "atMs": 9876,
+     "nodes": "span[dateline] \"9 games · 1 live · 1 final · Pic\""
+    }
+   ],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 64
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 64
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/teams/27",
+    "shellMs": 1212.3999999910593,
+    "contentMs": 1212.3999999910593,
+    "blankFrames": 0,
+    "viewTransition": true,
+    "requestsAfterTap": 2,
+    "documentLoad": false,
+    "notFound": false
+   },
+   "script": {
+    "files": 25,
+    "rawBytes": 719470,
+    "gzipBytes": 221200
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 85759,
+    "gzipBytes": 12274
+   },
+   "stylesheet": {
+    "files": 1,
+    "rawBytes": 58105,
+    "gzipBytes": 11547
+   }
+  },
+  {
+   "route": "/nhl/games/:id (scheduled)",
+   "path": "/nhl/games/401892449",
+   "mode": "rendered",
+   "cacheStatus": [
+    "kv warm",
+    "kv warm"
+   ],
+   "ttfbMs": 24.200000002980232,
+   "firstPaintMs": 1532,
+   "largestPaintMs": 1532,
+   "largestPaintElement": "p[wordmark] \"Yogan Hockey\"",
+   "hydratedMs": 5789.70000000298,
+   "pageHydratedMs": 5997.600000008941,
+   "errors": [],
+   "perRun": [
+    {
+     "firstPaintMs": 1516,
+     "largestPaintMs": 1516,
+     "hydratedMs": 5497.79999999702,
+     "pageHydratedMs": 5629.600000008941,
+     "loadShift": 0.026592886290079564,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 48,
+     "shellMs": 1231.5
+    },
+    {
+     "firstPaintMs": 1532,
+     "largestPaintMs": 1532,
+     "hydratedMs": 5789.70000000298,
+     "pageHydratedMs": 5997.600000008941,
+     "loadShift": 0.026592886290079564,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 64,
+     "shellMs": 1241.5
+    }
+   ],
+   "loadShift": 0.026592886290079564,
+   "loadShifts": [
+    {
+     "value": 0.000045868346350220566,
+     "atMs": 4279,
+     "nodes": "text"
+    },
+    {
+     "value": 0.0003358422984330211,
+     "atMs": 4510,
+     "nodes": "ul[score-ticker] \"CAR@atMTL7:00 PM ETNSH@atTOR7:00\"; a[section-nav] \"Players\"; a[section-nav] \"Teams\""
+    },
+    {
+     "value": 0.02297235974927115,
+     "atMs": 4977,
+     "nodes": "div[game-matchup] \"away · 1-1-0NSH1-1-0Tue Oct 67:0\"; div[game-story] \"Predators at Maple Leafs: line s\"; div[ledger] \"Predators at Maple Leafs: line s\"; text; p[deck] \"The Predators (1⁠-⁠1⁠-⁠0) visit \""
+    },
+    {
+     "value": 0.003122308504563334,
+     "atMs": 5568,
+     "nodes": "li[score-ticker] \"favorite team, NSH@atTOR6:00 PM\""
+    },
+    {
+     "value": 0.00011650739146183955,
+     "atMs": 5632,
+     "nodes": "text"
+    }
+   ],
+   "liveShift": 0.0006806988019632283,
+   "liveShifts": [
+    {
+     "value": 0.0006806988019632283,
+     "atMs": 9436,
+     "nodes": "span[dateline] \"9 games · 1 live · 1 final · Pic\""
+    }
+   ],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 64
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 64
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/teams/27",
+    "shellMs": 1241.5,
+    "contentMs": 1241.5,
+    "blankFrames": 0,
+    "viewTransition": true,
+    "requestsAfterTap": 2,
+    "documentLoad": false,
+    "notFound": false
+   },
+   "script": {
+    "files": 25,
+    "rawBytes": 719470,
+    "gzipBytes": 221200
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 85759,
+    "gzipBytes": 12269
+   },
+   "stylesheet": {
+    "files": 1,
+    "rawBytes": 58105,
+    "gzipBytes": 11547
+   }
+  },
+  {
+   "route": "/players",
+   "path": "/players",
+   "mode": "rendered",
+   "cacheStatus": [
+    "kv cold",
+    "kv cold"
+   ],
+   "ttfbMs": 17.400000005960464,
+   "firstPaintMs": 1560,
+   "largestPaintMs": 1560,
+   "largestPaintElement": "p[wordmark] \"Yogan Hockey\"",
+   "hydratedMs": 4400.70000000298,
+   "pageHydratedMs": 4522.5,
+   "errors": [],
+   "perRun": [
+    {
+     "firstPaintMs": 1548,
+     "largestPaintMs": 1548,
+     "hydratedMs": 4400.70000000298,
+     "pageHydratedMs": 4522.5,
+     "loadShift": 0.004479076272280065,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 48,
+     "shellMs": 680.1000000089407
+    },
+    {
+     "firstPaintMs": 1560,
+     "largestPaintMs": 1560,
+     "hydratedMs": 4363.70000000298,
+     "pageHydratedMs": 4482.5,
+     "loadShift": 0.004479076272280065,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 48,
+     "shellMs": 687.2999999970198
+    }
+   ],
+   "loadShift": 0.004479076272280065,
+   "loadShifts": [
+    {
+     "value": 0.0002560564600355477,
+     "atMs": 3336,
+     "nodes": "text; ::after[page] \"\""
+    },
+    {
+     "value": 0.0003358422984330211,
+     "atMs": 3718,
+     "nodes": "ul[score-ticker] \"CAR@atMTL7:00 PM ETNSH@atTOR7:00\"; a[section-nav] \"Players\"; a[section-nav] \"Teams\""
+    },
+    {
+     "value": 0.0007648690092481623,
+     "atMs": 4048,
+     "nodes": "text"
+    },
+    {
+     "value": 0.003122308504563334,
+     "atMs": 4488,
+     "nodes": "li[score-ticker] \"favorite team, NSH@atTOR6:00 PM\""
+    }
+   ],
+   "liveShift": 0.0006806988019632283,
+   "liveShifts": [
+    {
+     "value": 0.0006806988019632283,
+     "atMs": 8412,
+     "nodes": "span[dateline] \"9 games · 1 live · 1 final · Pic\""
+    }
+   ],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 48
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 48
+    },
+    {
+     "name": "type in the search",
+     "ms": 40
+    }
+   ],
+   "navigation": {
+    "to": "/nhl?tab=teams",
+    "shellMs": 687.2999999970198,
+    "contentMs": 687.2999999970198,
+    "blankFrames": 0,
+    "viewTransition": true,
+    "requestsAfterTap": 1,
+    "documentLoad": false,
+    "notFound": false
+   },
+   "script": {
+    "files": 16,
+    "rawBytes": 663240,
+    "gzipBytes": 202123
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 43875,
+    "gzipBytes": 7248
+   },
+   "stylesheet": {
+    "files": 1,
+    "rawBytes": 58105,
+    "gzipBytes": 11547
+   }
+  },
+  {
+   "route": "/players",
+   "path": "/players",
+   "mode": "rendered",
+   "cacheStatus": [
+    "kv warm",
+    "kv warm"
+   ],
+   "ttfbMs": 17,
+   "firstPaintMs": 1560,
+   "largestPaintMs": 1560,
+   "largestPaintElement": "p[wordmark] \"Yogan Hockey\"",
+   "hydratedMs": 4358.100000008941,
+   "pageHydratedMs": 4467.800000011921,
+   "errors": [],
+   "perRun": [
+    {
+     "firstPaintMs": 1560,
+     "largestPaintMs": 1560,
+     "hydratedMs": 4308,
+     "pageHydratedMs": 4385.100000008941,
+     "loadShift": 0.004479076272280065,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 48,
+     "shellMs": 660.1999999880791
+    },
+    {
+     "firstPaintMs": 1548,
+     "largestPaintMs": 1548,
+     "hydratedMs": 4358.100000008941,
+     "pageHydratedMs": 4467.800000011921,
+     "loadShift": 0.004479076272280065,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 56,
+     "shellMs": 680
+    }
+   ],
+   "loadShift": 0.004479076272280065,
+   "loadShifts": [
+    {
+     "value": 0.0002560564600355477,
+     "atMs": 3502,
+     "nodes": "text; ::after[page] \"\""
+    },
+    {
+     "value": 0.0003358422984330211,
+     "atMs": 3667,
+     "nodes": "ul[score-ticker] \"CAR@atMTL7:00 PM ETNSH@atTOR7:00\"; a[section-nav] \"Players\"; a[section-nav] \"Teams\""
+    },
+    {
+     "value": 0.0007648690092481623,
+     "atMs": 4196,
+     "nodes": "text"
+    },
+    {
+     "value": 0.003122308504563334,
+     "atMs": 4368,
+     "nodes": "li[score-ticker] \"favorite team, NSH@atTOR6:00 PM\""
+    }
+   ],
+   "liveShift": 0.0006806988019632283,
+   "liveShifts": [
+    {
+     "value": 0.0006806988019632283,
+     "atMs": 8403,
+     "nodes": "span[dateline] \"9 games · 1 live · 1 final · Pic\""
+    }
+   ],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 48
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 56
+    },
+    {
+     "name": "type in the search",
+     "ms": 40
+    }
+   ],
+   "navigation": {
+    "to": "/nhl?tab=teams",
+    "shellMs": 680,
+    "contentMs": 680,
+    "blankFrames": 0,
+    "viewTransition": true,
+    "requestsAfterTap": 1,
+    "documentLoad": false,
+    "notFound": false
+   },
+   "script": {
+    "files": 16,
+    "rawBytes": 663240,
+    "gzipBytes": 202123
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 43875,
+    "gzipBytes": 7248
+   },
+   "stylesheet": {
+    "files": 1,
+    "rawBytes": 58105,
+    "gzipBytes": 11547
+   }
+  },
+  {
+   "route": "/players?q=",
+   "path": "/players?q=mar",
+   "mode": "rendered",
+   "cacheStatus": [
+    "kv cold",
+    "kv cold"
+   ],
+   "ttfbMs": 38.30000001192093,
+   "firstPaintMs": 1572,
+   "largestPaintMs": 1572,
+   "largestPaintElement": "p[wordmark] \"Yogan Hockey\"",
+   "hydratedMs": 4395.800000011921,
+   "pageHydratedMs": 4552.300000011921,
+   "errors": [],
+   "perRun": [
+    {
+     "firstPaintMs": 1568,
+     "largestPaintMs": 1568,
+     "hydratedMs": 4395.800000011921,
+     "pageHydratedMs": 4552.300000011921,
+     "loadShift": 0.00567554850336101,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 48,
+     "shellMs": 679.7000000029802
+    },
+    {
+     "firstPaintMs": 1572,
+     "largestPaintMs": 1572,
+     "hydratedMs": 4354.9000000059605,
+     "pageHydratedMs": 4509.70000000298,
+     "loadShift": 0.00567554850336101,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 48,
+     "shellMs": 702.2000000029802
+    }
+   ],
+   "loadShift": 0.00567554850336101,
+   "loadShifts": [
+    {
+     "value": 0.0003358422984330211,
+     "atMs": 3711,
+     "nodes": "ul[score-ticker] \"CAR@atMTL7:00 PM ETNSH@atTOR7:00\"; a[section-nav] \"Players\"; a[section-nav] \"Teams\""
+    },
+    {
+     "value": 0.0014525286911164924,
+     "atMs": 3744,
+     "nodes": "text"
+    },
+    {
+     "value": 0.0007648690092481623,
+     "atMs": 4050,
+     "nodes": "text"
+    },
+    {
+     "value": 0.003122308504563334,
+     "atMs": 4486,
+     "nodes": "li[score-ticker] \"favorite team, NSH@atTOR6:00 PM\""
+    }
+   ],
+   "liveShift": 0.0006806988019632283,
+   "liveShifts": [
+    {
+     "value": 0.0006806988019632283,
+     "atMs": 8399,
+     "nodes": "span[dateline] \"9 games · 1 live · 1 final · Pic\""
+    }
+   ],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 40
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 48
+    },
+    {
+     "name": "favorite heart",
+     "ms": 32
+    }
+   ],
+   "navigation": {
+    "to": "/players/3852",
+    "shellMs": 702.2000000029802,
+    "contentMs": 702.2000000029802,
+    "blankFrames": 0,
+    "viewTransition": true,
+    "requestsAfterTap": 1,
+    "documentLoad": false,
+    "notFound": false
+   },
+   "script": {
+    "files": 16,
+    "rawBytes": 663240,
+    "gzipBytes": 202123
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 62558,
+    "gzipBytes": 8639
+   },
+   "stylesheet": {
+    "files": 1,
+    "rawBytes": 58105,
+    "gzipBytes": 11547
+   }
+  },
+  {
+   "route": "/players?q=",
+   "path": "/players?q=mar",
+   "mode": "rendered",
+   "cacheStatus": [
+    "kv warm",
+    "kv warm"
+   ],
+   "ttfbMs": 17.700000002980232,
+   "firstPaintMs": 1564,
+   "largestPaintMs": 1564,
+   "largestPaintElement": "p[wordmark] \"Yogan Hockey\"",
+   "hydratedMs": 4289.29999999702,
+   "pageHydratedMs": 4442.29999999702,
+   "errors": [],
+   "perRun": [
+    {
+     "firstPaintMs": 1556,
+     "largestPaintMs": 1556,
+     "hydratedMs": 4289.29999999702,
+     "pageHydratedMs": 4442.29999999702,
+     "loadShift": 0.00567554850336101,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 64,
+     "shellMs": 705.5999999940395
+    },
+    {
+     "firstPaintMs": 1564,
+     "largestPaintMs": 1564,
+     "hydratedMs": 4287,
+     "pageHydratedMs": 4377.70000000298,
+     "loadShift": 0.00567554850336101,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 48,
+     "shellMs": 676
+    }
+   ],
+   "loadShift": 0.00567554850336101,
+   "loadShifts": [
+    {
+     "value": 0.0003358422984330211,
+     "atMs": 3615,
+     "nodes": "ul[score-ticker] \"CAR@atMTL7:00 PM ETNSH@atTOR7:00\"; a[section-nav] \"Players\"; a[section-nav] \"Teams\""
+    },
+    {
+     "value": 0.0014525286911164924,
+     "atMs": 3701,
+     "nodes": "text"
+    },
+    {
+     "value": 0.0007648690092481623,
+     "atMs": 4016,
+     "nodes": "text"
+    },
+    {
+     "value": 0.003122308504563334,
+     "atMs": 4382,
+     "nodes": "li[score-ticker] \"favorite team, NSH@atTOR6:00 PM\""
+    }
+   ],
+   "liveShift": 0.0006806988019632283,
+   "liveShifts": [
+    {
+     "value": 0.0006806988019632283,
+     "atMs": 8408,
+     "nodes": "span[dateline] \"9 games · 1 live · 1 final · Pic\""
+    }
+   ],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 56
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 64
+    },
+    {
+     "name": "favorite heart",
+     "ms": 32
+    }
+   ],
+   "navigation": {
+    "to": "/players/3852",
+    "shellMs": 705.5999999940395,
+    "contentMs": 705.5999999940395,
+    "blankFrames": 0,
+    "viewTransition": true,
+    "requestsAfterTap": 1,
+    "documentLoad": false,
+    "notFound": false
+   },
+   "script": {
+    "files": 16,
+    "rawBytes": 663240,
+    "gzipBytes": 202123
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 62558,
+    "gzipBytes": 8643
+   },
+   "stylesheet": {
+    "files": 1,
+    "rawBytes": 58105,
+    "gzipBytes": 11547
+   }
+  },
+  {
+   "route": "/players/:id (skater)",
+   "path": "/players/4024123",
+   "mode": "rendered",
+   "cacheStatus": [
+    "kv cold",
+    "kv cold"
+   ],
+   "ttfbMs": 50.400000005960464,
+   "firstPaintMs": 1572,
+   "largestPaintMs": 1572,
+   "largestPaintElement": "p[wordmark] \"Yogan Hockey\"",
+   "hydratedMs": 4645.100000008941,
+   "pageHydratedMs": 4806.600000008941,
+   "errors": [],
+   "perRun": [
+    {
+     "firstPaintMs": 1572,
+     "largestPaintMs": 1572,
+     "hydratedMs": 4645.100000008941,
+     "pageHydratedMs": 4806.600000008941,
+     "loadShift": 0.008056140763189367,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 64,
+     "shellMs": 1412.0999999940395
+    },
+    {
+     "firstPaintMs": 1564,
+     "largestPaintMs": 1564,
+     "hydratedMs": 4592.100000008941,
+     "pageHydratedMs": 4746.70000000298,
+     "loadShift": 0.008056140763189367,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 48,
+     "shellMs": 1340.7000000029802
+    }
+   ],
+   "loadShift": 0.008056140763189367,
+   "loadShifts": [
+    {
+     "value": 0.003588352404268927,
+     "atMs": 3529,
+     "nodes": "::after[page-count] \"\"; text; td[ledger-cell] \"T-195th\"; td[ledger-cell] \"1\"; td[ledger-cell] \"0\""
+    },
+    {
+     "value": 0.0003358422984330211,
+     "atMs": 3891,
+     "nodes": "ul[score-ticker] \"CAR@atMTL7:00 PM ETNSH@atTOR7:00\"; a[section-nav] \"Players\"; a[section-nav] \"Teams\""
+    },
+    {
+     "value": 0.0003478433212398093,
+     "atMs": 3976,
+     "nodes": "td[ledger-cell] \"1\"; td[ledger-cell] \"6\"; td[ledger-cell] \"0\"; td[ledger-cell] \"3\""
+    },
+    {
+     "value": 0.0006617942346842761,
+     "atMs": 4357,
+     "nodes": "text"
+    },
+    {
+     "value": 0.003122308504563334,
+     "atMs": 4742,
+     "nodes": "li[score-ticker] \"favorite team, NSH@atTOR6:00 PM\""
+    }
+   ],
+   "liveShift": 0.0006806988019632283,
+   "liveShifts": [
+    {
+     "value": 0.0006806988019632283,
+     "atMs": 8654,
+     "nodes": "span[dateline] \"9 games · 1 live · 1 final · Pic\""
+    }
+   ],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 64
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 64
+    },
+    {
+     "name": "favorite heart",
+     "ms": 32
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/teams/21",
+    "shellMs": 1412.0999999940395,
+    "contentMs": 1412.0999999940395,
+    "blankFrames": 0,
+    "viewTransition": true,
+    "requestsAfterTap": 2,
+    "documentLoad": false,
+    "notFound": false
+   },
+   "script": {
+    "files": 19,
+    "rawBytes": 661832,
+    "gzipBytes": 201201
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 97190,
+    "gzipBytes": 10933
+   },
+   "stylesheet": {
+    "files": 1,
+    "rawBytes": 58105,
+    "gzipBytes": 11547
+   }
+  },
+  {
+   "route": "/players/:id (skater)",
+   "path": "/players/4024123",
+   "mode": "rendered",
+   "cacheStatus": [
+    "kv warm",
+    "kv warm"
+   ],
+   "ttfbMs": 20,
+   "firstPaintMs": 1572,
+   "largestPaintMs": 1572,
+   "largestPaintElement": "p[wordmark] \"Yogan Hockey\"",
+   "hydratedMs": 4615.29999999702,
+   "pageHydratedMs": 4785.70000000298,
+   "errors": [],
+   "perRun": [
+    {
+     "firstPaintMs": 1552,
+     "largestPaintMs": 1552,
+     "hydratedMs": 4523.70000000298,
+     "pageHydratedMs": 4630.0999999940395,
+     "loadShift": 0.008056140763189367,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 48,
+     "shellMs": 1359.5
+    },
+    {
+     "firstPaintMs": 1572,
+     "largestPaintMs": 1572,
+     "hydratedMs": 4615.29999999702,
+     "pageHydratedMs": 4785.70000000298,
+     "loadShift": 0.008056140763189367,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 48,
+     "shellMs": 1342.5
+    }
+   ],
+   "loadShift": 0.008056140763189367,
+   "loadShifts": [
+    {
+     "value": 0.003588352404268927,
+     "atMs": 3698,
+     "nodes": "::after[page-count] \"\"; text; td[ledger-cell] \"T-195th\"; td[ledger-cell] \"1\"; td[ledger-cell] \"0\""
+    },
+    {
+     "value": 0.0003478433212398093,
+     "atMs": 3878,
+     "nodes": "td[ledger-cell] \"1\"; td[ledger-cell] \"6\"; td[ledger-cell] \"0\"; td[ledger-cell] \"3\""
+    },
+    {
+     "value": 0.0003358422984330211,
+     "atMs": 3897,
+     "nodes": "ul[score-ticker] \"CAR@atMTL7:00 PM ETNSH@atTOR7:00\"; a[section-nav] \"Players\"; a[section-nav] \"Teams\""
+    },
+    {
+     "value": 0.0006617942346842761,
+     "atMs": 4383,
+     "nodes": "text"
+    },
+    {
+     "value": 0.003122308504563334,
+     "atMs": 4586,
+     "nodes": "li[score-ticker] \"favorite team, NSH@atTOR6:00 PM\""
+    }
+   ],
+   "liveShift": 0.0006806988019632283,
+   "liveShifts": [
+    {
+     "value": 0.0006806988019632283,
+     "atMs": 8612,
+     "nodes": "span[dateline] \"9 games · 1 live · 1 final · Pic\""
+    }
+   ],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 48
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 48
+    },
+    {
+     "name": "favorite heart",
+     "ms": 32
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/teams/21",
+    "shellMs": 1359.5,
+    "contentMs": 1359.5,
+    "blankFrames": 0,
+    "viewTransition": true,
+    "requestsAfterTap": 2,
+    "documentLoad": false,
+    "notFound": false
+   },
+   "script": {
+    "files": 19,
+    "rawBytes": 661832,
+    "gzipBytes": 201201
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 97190,
+    "gzipBytes": 10931
+   },
+   "stylesheet": {
+    "files": 1,
+    "rawBytes": 58105,
+    "gzipBytes": 11547
+   }
+  },
+  {
+   "route": "/players/:id/games",
+   "path": "/players/4024123/games",
+   "mode": "rendered",
+   "cacheStatus": [
+    "kv cold",
+    "kv cold"
+   ],
+   "ttfbMs": 46.400000005960464,
+   "firstPaintMs": 1576,
+   "largestPaintMs": 1576,
+   "largestPaintElement": "p[wordmark] \"Yogan Hockey\"",
+   "hydratedMs": 4624.0999999940395,
+   "pageHydratedMs": 4783.899999991059,
+   "errors": [],
+   "perRun": [
+    {
+     "firstPaintMs": 1568,
+     "largestPaintMs": 1568,
+     "hydratedMs": 4624.0999999940395,
+     "pageHydratedMs": 4783.899999991059,
+     "loadShift": 0.008007301724720058,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 72,
+     "shellMs": 1312.2000000029802
+    },
+    {
+     "firstPaintMs": 1576,
+     "largestPaintMs": 1576,
+     "hydratedMs": 4580.70000000298,
+     "pageHydratedMs": 4741.79999999702,
+     "loadShift": 0.008007301724720058,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 48,
+     "shellMs": 1329.300000011921
+    }
+   ],
+   "loadShift": 0.008007301724720058,
+   "loadShifts": [
+    {
+     "value": 0.003588352404268927,
+     "atMs": 3525,
+     "nodes": "::after[page-count] \"\"; text; td[ledger-cell] \"T-195th\"; td[ledger-cell] \"1\"; td[ledger-cell] \"0\""
+    },
+    {
+     "value": 0.0003358422984330211,
+     "atMs": 3887,
+     "nodes": "ul[score-ticker] \"CAR@atMTL7:00 PM ETNSH@atTOR7:00\"; a[section-nav] \"Players\"; a[section-nav] \"Teams\""
+    },
+    {
+     "value": 0.0002990042827705003,
+     "atMs": 3954,
+     "nodes": "td[ledger-cell] \"1\"; td[ledger-cell] \"6\"; td[ledger-cell] \"0\"; th[ledger-column] \"SOG\""
+    },
+    {
+     "value": 0.0006617942346842761,
+     "atMs": 4350,
+     "nodes": "text"
+    },
+    {
+     "value": 0.003122308504563334,
+     "atMs": 4719,
+     "nodes": "li[score-ticker] \"favorite team, NSH@atTOR6:00 PM\""
+    }
+   ],
+   "liveShift": 0.0006806988019632283,
+   "liveShifts": [
+    {
+     "value": 0.0006806988019632283,
+     "atMs": 8615,
+     "nodes": "span[dateline] \"9 games · 1 live · 1 final · Pic\""
+    }
+   ],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 72
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 64
+    },
+    {
+     "name": "favorite heart",
+     "ms": 32
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/games/401892434",
+    "shellMs": 1329.300000011921,
+    "contentMs": 1329.300000011921,
+    "blankFrames": 0,
+    "viewTransition": true,
+    "requestsAfterTap": 1,
+    "documentLoad": false,
+    "notFound": false
+   },
+   "script": {
+    "files": 19,
+    "rawBytes": 661899,
+    "gzipBytes": 201256
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 97298,
+    "gzipBytes": 10967
+   },
+   "stylesheet": {
+    "files": 1,
+    "rawBytes": 58105,
+    "gzipBytes": 11547
+   }
+  },
+  {
+   "route": "/players/:id/games",
+   "path": "/players/4024123/games",
+   "mode": "rendered",
+   "cacheStatus": [
+    "kv warm",
+    "kv warm"
+   ],
+   "ttfbMs": 20.400000005960464,
+   "firstPaintMs": 1572,
+   "largestPaintMs": 1572,
+   "largestPaintElement": "p[wordmark] \"Yogan Hockey\"",
+   "hydratedMs": 4625.79999999702,
+   "pageHydratedMs": 4752,
+   "errors": [],
+   "perRun": [
+    {
+     "firstPaintMs": 1560,
+     "largestPaintMs": 1560,
+     "hydratedMs": 4526.600000008941,
+     "pageHydratedMs": 4627.20000000298,
+     "loadShift": 0.008007301724720058,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 48,
+     "shellMs": 1330.300000011921
+    },
+    {
+     "firstPaintMs": 1572,
+     "largestPaintMs": 1572,
+     "hydratedMs": 4625.79999999702,
+     "pageHydratedMs": 4752,
+     "loadShift": 0.008007301724720058,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 64,
+     "shellMs": 1309.300000011921
+    }
+   ],
+   "loadShift": 0.008007301724720058,
+   "loadShifts": [
+    {
+     "value": 0.003588352404268927,
+     "atMs": 3676,
+     "nodes": "::after[page-count] \"\"; text; td[ledger-cell] \"T-195th\"; td[ledger-cell] \"1\"; td[ledger-cell] \"0\""
+    },
+    {
+     "value": 0.0002990042827705003,
+     "atMs": 3891,
+     "nodes": "td[ledger-cell] \"1\"; td[ledger-cell] \"6\"; td[ledger-cell] \"0\"; th[ledger-column] \"SOG\""
+    },
+    {
+     "value": 0.0003358422984330211,
+     "atMs": 3911,
+     "nodes": "ul[score-ticker] \"CAR@atMTL7:00 PM ETNSH@atTOR7:00\"; a[section-nav] \"Players\"; a[section-nav] \"Teams\""
+    },
+    {
+     "value": 0.0006617942346842761,
+     "atMs": 4384,
+     "nodes": "text"
+    },
+    {
+     "value": 0.003122308504563334,
+     "atMs": 4587,
+     "nodes": "li[score-ticker] \"favorite team, NSH@atTOR6:00 PM\""
+    }
+   ],
+   "liveShift": 0.0006806988019632283,
+   "liveShifts": [
+    {
+     "value": 0.0006806988019632283,
+     "atMs": 8622,
+     "nodes": "span[dateline] \"9 games · 1 live · 1 final · Pic\""
+    }
+   ],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 64
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 64
+    },
+    {
+     "name": "favorite heart",
+     "ms": 32
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/games/401892434",
+    "shellMs": 1330.300000011921,
+    "contentMs": 1330.300000011921,
+    "blankFrames": 0,
+    "viewTransition": true,
+    "requestsAfterTap": 1,
+    "documentLoad": false,
+    "notFound": false
+   },
+   "script": {
+    "files": 19,
+    "rawBytes": 661899,
+    "gzipBytes": 201256
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 97298,
+    "gzipBytes": 10965
+   },
+   "stylesheet": {
+    "files": 1,
+    "rawBytes": 58105,
+    "gzipBytes": 11547
+   }
+  },
+  {
+   "route": "/players/:id (goalie)",
+   "path": "/players/3067313",
+   "mode": "rendered",
+   "cacheStatus": [
+    "kv cold",
+    "kv cold"
+   ],
+   "ttfbMs": 34.80000001192093,
+   "firstPaintMs": 1576,
+   "largestPaintMs": 1576,
+   "largestPaintElement": "p[wordmark] \"Yogan Hockey\"",
+   "hydratedMs": 4632.300000011921,
+   "pageHydratedMs": 4790.100000008941,
+   "errors": [],
+   "perRun": [
+    {
+     "firstPaintMs": 1544,
+     "largestPaintMs": 1544,
+     "hydratedMs": 4569.0999999940395,
+     "pageHydratedMs": 4675.4000000059605,
+     "loadShift": 0.005545336151694762,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 48,
+     "shellMs": 1357.5
+    },
+    {
+     "firstPaintMs": 1576,
+     "largestPaintMs": 1576,
+     "hydratedMs": 4632.300000011921,
+     "pageHydratedMs": 4790.100000008941,
+     "loadShift": 0.005545336151694762,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 64,
+     "shellMs": 1339.7999999970198
+    }
+   ],
+   "loadShift": 0.005545336151694762,
+   "loadShifts": [
+    {
+     "value": 0.0013870050416622908,
+     "atMs": 3507,
+     "nodes": "::after[page-count] \"\"; text; div[player-header] \"birthplaceEdison, NJ\"; td[ledger-cell] \"T-9th\"; td[ledger-cell] \"0\""
+    },
+    {
+     "value": 0.0003358422984330211,
+     "atMs": 3874,
+     "nodes": "ul[score-ticker] \"CAR@atMTL7:00 PM ETNSH@atTOR7:00\"; a[section-nav] \"Players\"; a[section-nav] \"Teams\""
+    },
+    {
+     "value": 0.00003838607235184083,
+     "atMs": 3941,
+     "nodes": "div[player-header] \"weight257 lbs\"; text"
+    },
+    {
+     "value": 0.0006617942346842761,
+     "atMs": 4332,
+     "nodes": "text"
+    },
+    {
+     "value": 0.003122308504563334,
+     "atMs": 4627,
+     "nodes": "li[score-ticker] \"favorite team, NSH@atTOR6:00 PM\""
+    }
+   ],
+   "liveShift": 0.0006806988019632283,
+   "liveShifts": [
+    {
+     "value": 0.0006806988019632283,
+     "atMs": 8596,
+     "nodes": "span[dateline] \"9 games · 1 live · 1 final · Pic\""
+    }
+   ],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 64
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 64
+    },
+    {
+     "name": "favorite heart",
+     "ms": 32
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/teams/21",
+    "shellMs": 1357.5,
+    "contentMs": 1357.5,
+    "blankFrames": 0,
+    "viewTransition": true,
+    "requestsAfterTap": 2,
+    "documentLoad": false,
+    "notFound": false
+   },
+   "script": {
+    "files": 19,
+    "rawBytes": 661832,
+    "gzipBytes": 201201
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 90998,
+    "gzipBytes": 10775
+   },
+   "stylesheet": {
+    "files": 1,
+    "rawBytes": 58105,
+    "gzipBytes": 11547
+   }
+  },
+  {
+   "route": "/players/:id (goalie)",
+   "path": "/players/3067313",
+   "mode": "rendered",
+   "cacheStatus": [
+    "kv warm",
+    "kv warm"
+   ],
+   "ttfbMs": 19.200000002980232,
+   "firstPaintMs": 1568,
+   "largestPaintMs": 1568,
+   "largestPaintElement": "p[wordmark] \"Yogan Hockey\"",
+   "hydratedMs": 4631.79999999702,
+   "pageHydratedMs": 4796.9000000059605,
+   "errors": [],
+   "perRun": [
+    {
+     "firstPaintMs": 1564,
+     "largestPaintMs": 1564,
+     "hydratedMs": 4618.4000000059605,
+     "pageHydratedMs": 4779.5,
+     "loadShift": 0.005545336151694762,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 64,
+     "shellMs": 1339.2999999970198
+    },
+    {
+     "firstPaintMs": 1568,
+     "largestPaintMs": 1568,
+     "hydratedMs": 4631.79999999702,
+     "pageHydratedMs": 4796.9000000059605,
+     "loadShift": 0.005545336151694762,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 48,
+     "shellMs": 1417.1000000089407
+    }
+   ],
+   "loadShift": 0.005545336151694762,
+   "loadShifts": [
+    {
+     "value": 0.0013870050416622908,
+     "atMs": 3520,
+     "nodes": "::after[page-count] \"\"; text; div[player-header] \"birthplaceEdison, NJ\"; td[ledger-cell] \"T-9th\"; td[ledger-cell] \"0\""
+    },
+    {
+     "value": 0.0003358422984330211,
+     "atMs": 3885,
+     "nodes": "ul[score-ticker] \"CAR@atMTL7:00 PM ETNSH@atTOR7:00\"; a[section-nav] \"Players\"; a[section-nav] \"Teams\""
+    },
+    {
+     "value": 0.00003838607235184083,
+     "atMs": 3949,
+     "nodes": "div[player-header] \"weight257 lbs\"; text"
+    },
+    {
+     "value": 0.0006617942346842761,
+     "atMs": 4342,
+     "nodes": "text"
+    },
+    {
+     "value": 0.003122308504563334,
+     "atMs": 4708,
+     "nodes": "li[score-ticker] \"favorite team, NSH@atTOR6:00 PM\""
+    }
+   ],
+   "liveShift": 0.0006806988019632283,
+   "liveShifts": [
+    {
+     "value": 0.0006806988019632283,
+     "atMs": 8611,
+     "nodes": "span[dateline] \"9 games · 1 live · 1 final · Pic\""
+    }
+   ],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 64
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 56
+    },
+    {
+     "name": "favorite heart",
+     "ms": 32
+    }
+   ],
+   "navigation": {
+    "to": "/nhl/teams/21",
+    "shellMs": 1417.1000000089407,
+    "contentMs": 1417.1000000089407,
+    "blankFrames": 0,
+    "viewTransition": true,
+    "requestsAfterTap": 2,
+    "documentLoad": false,
+    "notFound": false
+   },
+   "script": {
+    "files": 19,
+    "rawBytes": 661832,
+    "gzipBytes": 201201
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 90998,
+    "gzipBytes": 10775
+   },
+   "stylesheet": {
+    "files": 1,
+    "rawBytes": 58105,
+    "gzipBytes": 11547
+   }
+  },
+  {
+   "route": "not found",
+   "path": "/no-such-page",
+   "mode": "rendered",
+   "cacheStatus": [
+    "kv cold",
+    "kv cold"
+   ],
+   "ttfbMs": 16.099999994039536,
+   "firstPaintMs": 1548,
+   "largestPaintMs": 1548,
+   "largestPaintElement": "p[wordmark] \"Yogan Hockey\"",
+   "hydratedMs": 3024.5999999940395,
+   "pageHydratedMs": 3024.5999999940395,
+   "errors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
+   ],
+   "perRun": [
+    {
+     "firstPaintMs": 1548,
+     "largestPaintMs": 1548,
+     "hydratedMs": 3024.5999999940395,
+     "pageHydratedMs": 3024.5999999940395,
+     "loadShift": 0.004338160111977247,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 64,
+     "shellMs": 1841.9000000059605
+    },
+    {
+     "firstPaintMs": 1548,
+     "largestPaintMs": 1548,
+     "hydratedMs": 3013.2000000029802,
+     "pageHydratedMs": 3013.2000000029802,
+     "loadShift": 0.004338160111977247,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 64,
+     "shellMs": 1811.9000000059605
+    }
+   ],
+   "loadShift": 0.004338160111977247,
+   "loadShifts": [
+    {
+     "value": 0.0002560564600355477,
+     "atMs": 2944,
+     "nodes": "text; ::after[page] \"\""
+    },
+    {
+     "value": 0.003122308504563334,
+     "atMs": 3071,
+     "nodes": "li[score-ticker] \"favorite team, NSH@atTOR6:00 PM\""
+    },
+    {
+     "value": 0.00029800091269408923,
+     "atMs": 3322,
+     "nodes": "ul[score-ticker] \"favorite team, NSH@atTOR6:00 PMC\"; a[section-nav] \"Players\"; a[section-nav] \"Teams\""
+    },
+    {
+     "value": 0.0006617942346842761,
+     "atMs": 3838,
+     "nodes": "text"
+    }
+   ],
+   "liveShift": 0.0006806988019632283,
+   "liveShifts": [
+    {
+     "value": 0.0006806988019632283,
+     "atMs": 7747,
+     "nodes": "span[dateline] \"9 games · 1 live · 1 final · Pic\""
+    }
+   ],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 48
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 64
+    }
+   ],
+   "navigation": {
+    "to": "/",
+    "shellMs": 1841.9000000059605,
+    "contentMs": 2418.5,
+    "blankFrames": 0,
+    "viewTransition": true,
+    "requestsAfterTap": 2,
+    "documentLoad": false,
+    "notFound": false
+   },
+   "script": {
+    "files": 11,
+    "rawBytes": 651454,
+    "gzipBytes": 196795
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 42061,
+    "gzipBytes": 6634
+   },
+   "stylesheet": {
+    "files": 1,
+    "rawBytes": 58105,
+    "gzipBytes": 11547
+   }
+  },
+  {
+   "route": "not found",
+   "path": "/no-such-page",
+   "mode": "rendered",
+   "cacheStatus": [
+    "kv warm",
+    "kv warm"
+   ],
+   "ttfbMs": 18.30000001192093,
+   "firstPaintMs": 1556,
+   "largestPaintMs": 1556,
+   "largestPaintElement": "p[wordmark] \"Yogan Hockey\"",
+   "hydratedMs": 3016.5,
+   "pageHydratedMs": 3016.5,
+   "errors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
+   ],
+   "perRun": [
+    {
+     "firstPaintMs": 1544,
+     "largestPaintMs": 1544,
+     "hydratedMs": 3015.6000000089407,
+     "pageHydratedMs": 3015.6000000089407,
+     "loadShift": 0.004338160111977247,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 48,
+     "shellMs": 1846.0999999940395
+    },
+    {
+     "firstPaintMs": 1556,
+     "largestPaintMs": 1556,
+     "hydratedMs": 3016.5,
+     "pageHydratedMs": 3016.5,
+     "loadShift": 0.004338160111977247,
+     "liveShift": 0.0006806988019632283,
+     "slowestTapMs": 64,
+     "shellMs": 1810.7999999970198
+    }
+   ],
+   "loadShift": 0.004338160111977247,
+   "loadShifts": [
+    {
+     "value": 0.0002560564600355477,
+     "atMs": 2933,
+     "nodes": "text; ::after[page] \"\""
+    },
+    {
+     "value": 0.003122308504563334,
+     "atMs": 3058,
+     "nodes": "li[score-ticker] \"favorite team, NSH@atTOR6:00 PM\""
+    },
+    {
+     "value": 0.00029800091269408923,
+     "atMs": 3315,
+     "nodes": "ul[score-ticker] \"favorite team, NSH@atTOR6:00 PMC\"; a[section-nav] \"Players\"; a[section-nav] \"Teams\""
+    },
+    {
+     "value": 0.0006617942346842761,
+     "atMs": 3831,
+     "nodes": "text"
+    }
+   ],
+   "liveShift": 0.0006806988019632283,
+   "liveShifts": [
+    {
+     "value": 0.0006806988019632283,
+     "atMs": 7737,
+     "nodes": "span[dateline] \"9 games · 1 live · 1 final · Pic\""
+    }
+   ],
+   "interactions": [
+    {
+     "name": "theme toggle",
+     "ms": 48
+    },
+    {
+     "name": "open the whole slate",
+     "ms": 64
+    }
+   ],
+   "navigation": {
+    "to": "/",
+    "shellMs": 1846.0999999940395,
+    "contentMs": 2416.7000000029802,
+    "blankFrames": 0,
+    "viewTransition": true,
+    "requestsAfterTap": 2,
+    "documentLoad": false,
+    "notFound": false
+   },
+   "script": {
+    "files": 11,
+    "rawBytes": 651454,
+    "gzipBytes": 196795
+   },
+   "document": {
+    "files": 1,
+    "rawBytes": 42061,
+    "gzipBytes": 6634
+   },
+   "stylesheet": {
+    "files": 1,
+    "rawBytes": 58105,
+    "gzipBytes": 11547
+   }
+  }
+ ]
+}

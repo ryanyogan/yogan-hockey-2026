@@ -299,10 +299,23 @@ const loadOf = (measurement: Measurement) =>
 export function comparison(sides: Sides): string {
   const judged = verdicts(sides);
   const over = judged.filter((verdict) => verdict.overBudget);
-  const later = judged.filter((verdict) => verdict.later);
+  // Later only where the runs agree: every run of the branch after every run of `main`.
+  const later = judged.filter((verdict) => verdict.later && !verdict.overlap);
+  const undecided = judged.filter((verdict) => verdict.overlap);
+  const runsBehind = (route: string) => {
+    const count = (measurement: Measurement) =>
+      Math.max(
+        0,
+        ...measurement.results
+          .filter((result) => result.route === route)
+          .map((result) => runsOf(result).length),
+      );
+    return `${count(sides.main)} / ${count(sides.branch)}`;
+  };
   const scripts = table(
     [
       "Route",
+      "Runs (`main` / branch)",
       "Budget",
       "Baseline",
       "`main` today",
@@ -321,6 +334,7 @@ export function comparison(sides: Sides): string {
       const branch = sides.branch.results.find((result) => result.route === route);
       return [
         `\`${path}\``,
+        runsBehind(route),
         SCRIPT_BUDGETS_KB[route] == null ? "none" : String(SCRIPT_BUDGETS_KB[route]),
         sent(sides.baseline),
         sent(sides.main),
@@ -339,6 +353,7 @@ export function comparison(sides: Sides): string {
   const hydration = table(
     [
       "Route",
+      "Runs (`main` / branch)",
       "Baseline, site's mark (cached / rendered)",
       "`main` today, site's mark",
       "`main` today, every control (cached)",
@@ -370,9 +385,12 @@ export function comparison(sides: Sides): string {
       const against =
         verdict?.branchHydrated == null || verdict.mainHydrated == null
           ? "n/a"
-          : `${verdict.later ? "**later** ✗" : "no later"} by ${Math.abs(Math.round(verdict.branchHydrated.median - verdict.mainHydrated.median))} ms${verdict.overlap ? ", ranges overlap" : ""}`;
+          : verdict.overlap
+            ? "undecided: the runs' ranges overlap"
+            : `${verdict.later ? "**later** ✗" : "no later"} by ${Math.abs(Math.round(verdict.branchHydrated.median - verdict.mainHydrated.median))} ms`;
       return [
         `\`${path}\``,
+        runsBehind(route),
         [of("baseline", "cached"), of("baseline", "rendered")]
           .map((result) => (result == null ? "n/a" : mark(result)))
           .join(" / "),
@@ -396,7 +414,7 @@ export function comparison(sides: Sides): string {
     [
       `The recorded baseline (${sides.baseline.measuredAt}, ${sides.baseline.machine}) beside two sites measured now, in turn, a route at a time: \`main\` (${sides.main.label ?? ""}, ${sides.main.measuredAt}) and the branch (${sides.branch.label ?? ""}, ${sides.branch.measuredAt}), on ${sides.branch.machine}.`,
       `The machine's one-minute load as the runs began and ended ranged ${loadOf(sides.main)} for \`main\` and ${loadOf(sides.branch)} for the branch.`,
-      "A time is the median run with the least and the greatest run in brackets; a shift is the worst run with every run in brackets. No run was left out. The baseline's figures are its recorded medians of three, from another machine.",
+      "Each figure of today's rests on the runs its row says, two or three, where the baseline's method takes three: the measuring was stopped part-way through its third round, and a route is in that round only if `main` and the branch both finished it. A time is the middle run (of two, the later) with the least and the greatest in brackets; a shift is the worst run with every run in brackets. No finished run of a finished route was left out. The baseline's figures are its recorded medians of three, from another machine.",
     ].join(" "),
     "## Routes over their script budget",
     list(over, (verdict) => `${verdict.scriptKb?.toFixed(1)} kB against ${verdict.budgetKb}`),
@@ -405,7 +423,14 @@ export function comparison(sides: Sides): string {
     list(
       later,
       (verdict) =>
-        `${printed(verdict.branchHydrated)} ms against ${printed(verdict.mainHydrated)} ms${verdict.overlap ? " (the ranges overlap)" : ""}`,
+        `${printed(verdict.branchHydrated)} ms against ${printed(verdict.mainHydrated)} ms`,
+    ),
+    "## Routes where hydration is undecided",
+    "The runs of one site differ by more than the two sites do, so neither is called earlier.",
+    list(
+      undecided,
+      (verdict) =>
+        `${printed(verdict.branchHydrated)} ms against ${printed(verdict.mainHydrated)} ms`,
     ),
     "## Script, gzipped kB",
     scripts,

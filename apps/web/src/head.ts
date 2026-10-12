@@ -14,8 +14,8 @@ type Outcome = { status: string; _notFound?: boolean };
  * A route's `head` for a page with this title, given the `match` its `head` was called with. The
  * title is the page's own only when its read answered: a read that failed is drawn by the error
  * page and one that found nothing by the not-found page (`components/shell/`), and the tab says
- * so, and asks not to be indexed (`failureMeta`). The router calls `head` for the match that failed and for none beneath it, so the last
- * title in the document is the right one.
+ * so, and the page asks not to be indexed (`failureMeta`). The router calls `head` for the match
+ * that failed and for none beneath it, so the last title in the document is the right one.
  *
  * `_notFound` is the router's own mark on the root's match for an address no route answers, or a
  * `notFound()` no route beneath catches (router-core 1.171: `load-server.ts`, `load-client.ts`).

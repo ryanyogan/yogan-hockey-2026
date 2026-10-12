@@ -14,6 +14,8 @@ test("the masthead renders, switches theme, and a phone gets its sections under 
   // modules are still loading, crashes the page.)
   await page.goto("/no-such-page");
   await expect(page.getByRole("heading", { name: "Not found" })).toBeVisible();
+  // The document a search engine is sent asks not to be indexed, in one tag (#215).
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex");
 
   // Desktop: the masthead, with the wordmark leading home and the sections in order.
   const masthead = page.getByRole("banner");

@@ -497,6 +497,8 @@ describe("the kicker and the deck in the states the table leaves out", () => {
     const warmUp = { ...SEA, status: "live" as const, period: 0 };
 
     expect(kicker(warmUp, EASTERN)).toBe("Live · Climate Pledge Arena");
+    expect(headline(warmUp)).toBe("Golden Knights at Kraken");
+    expect(briefGame(warmUp)).toBe("Vegas at Seattle");
     expect(read(deck(warmUp))).toBe("The Golden Knights (2-1-0) visit the Kraken (2-1-0).");
   });
 

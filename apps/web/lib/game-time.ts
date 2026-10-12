@@ -49,6 +49,17 @@ export function slateDay(date: string): string {
   return gameDay(`${date}T00:00:00Z`, "UTC");
 }
 
+/**
+ * "Sunday, October 11", or "Sun, Oct 11" when short: a slate's date (`YYYY-MM-DD`) written out,
+ * as the masthead's dateline has it.
+ */
+export function slateDate(date: string, length: "long" | "short" = "long"): string {
+  const parts = formatter("UTC", { weekday: length, month: length, day: "numeric" }).formatToParts(
+    new Date(`${date}T00:00:00Z`),
+  );
+  return `${part(parts, "weekday")}, ${part(parts, "month")} ${part(parts, "day")}`;
+}
+
 /** "Oct 6": a calendar day (`YYYY-MM-DD`) in a table that has no room for the weekday. */
 export function calendarDay(date: string): string {
   const parts = formatter("UTC", { month: "short", day: "numeric" }).formatToParts(

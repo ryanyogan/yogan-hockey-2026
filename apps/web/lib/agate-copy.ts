@@ -6,9 +6,9 @@ import {
   type StoredPrediction,
 } from "@yogan-hockey/schemas";
 import { tonightGames } from "./dashboard";
-import { gameTime } from "./game-time";
+import { gameTime, slateDate } from "./game-time";
 import { pickedSide } from "./picks";
-import { gameStatusLine, periodLabel } from "./scoreboard-view";
+import { betweenPeriods, gameStatusLine, periodLabel, slateCounts } from "./scoreboard-view";
 
 /*
  * Every sentence the Agate look prints, as pure functions of a game, its Prediction and the
@@ -82,7 +82,7 @@ function gameLine(game: ScoreboardGame, name: (side: ScoreboardSide) => string):
     const [winner, loser] = sides(game);
     return `${name(winner)} ${winner.score}, ${name(loser)} ${loser.score}`;
   }
-  if (game.status === "live") return `${name(away)} ${away.score}, ${name(home)} ${home.score}`;
+  if (underWay(game)) return `${name(away)} ${away.score}, ${name(home)} ${home.score}`;
   return `${name(away)} at ${name(home)}`;
 }
 
@@ -129,8 +129,7 @@ function finalDeck(game: ScoreboardGame): string {
 function liveDeck(game: ScoreboardGame): string {
   const { away, home } = game;
   const phrase = periodPhrase(periodLabel(game));
-  // The clock has run out: the period is over and the next has not begun.
-  const between = gameStatusLine(game)?.startsWith("end ") ?? false;
+  const between = betweenPeriods(game);
   const when = `${between ? "after" : "in"} ${phrase}`;
   if (away.score === home.score) {
     return phrase === "overtime" && !between
@@ -212,21 +211,21 @@ export function leadsAndBriefs(
   max: number = MAX_LEADS,
 ): { leads: ScoreboardGame[]; briefs: ScoreboardGame[] } {
   const slate = tonightGames(games);
-  const rank = (index: number) => LEAD_RANK[(slate[index] as ScoreboardGame).status];
+  // The sort is stable, so each status keeps the slate's order: the earliest first. The finals
+  // are turned round beforehand, which puts the latest of them first.
+  const finalsLatestFirst = [
+    ...slate.filter((game) => game.status !== "final"),
+    ...slate.filter((game) => game.status === "final").toReversed(),
+  ];
   const chosen = new Set(
-    slate
-      .map((_, index) => index)
-      .sort(
-        (a, b) =>
-          rank(a) - rank(b) ||
-          // The latest finals first; anything else, the earliest.
-          ((slate[a] as ScoreboardGame).status === "final" ? b - a : a - b),
-      )
-      .slice(0, max),
+    finalsLatestFirst
+      .toSorted((a, b) => LEAD_RANK[a.status] - LEAD_RANK[b.status])
+      .slice(0, max)
+      .map((game) => game.id),
   );
   return {
-    leads: slate.filter((_, index) => chosen.has(index)),
-    briefs: slate.filter((_, index) => !chosen.has(index)),
+    leads: slate.filter((game) => chosen.has(game.id)),
+    briefs: slate.filter((game) => !chosen.has(game.id)),
   };
 }
 
@@ -308,14 +307,7 @@ export function datelineDate(
   date: string | null,
   length: "long" | "short" = "long",
 ): string | null {
-  if (date == null) return null;
-  // A slate's date is a calendar day with no zone of its own, and en-US puts the commas in.
-  return new Intl.DateTimeFormat("en-US", {
-    weekday: length,
-    month: length,
-    day: "numeric",
-    timeZone: "UTC",
-  }).format(new Date(`${date}T00:00:00Z`));
+  return date == null ? null : slateDate(date, length);
 }
 
 /** The masthead's dateline, both ways it is written. */
@@ -342,20 +334,18 @@ export function dateline(
 ): Dateline {
   const date = datelineDate(slate.date);
   if (date == null) return { wide: [], narrow: "" };
-  const count = (status: ScoreboardGame["status"]) =>
-    slate.games.filter((game) => game.status === status).length;
-  const part = (status: ScoreboardGame["status"], word: string) =>
-    count(status) > 0 ? `${count(status)} ${word}` : null;
+  const counts = slateCounts([...slate.games]);
+  const part = (count: number, word: string) => (count > 0 ? `${count} ${word}` : null);
   const total = slate.games.length;
   const games = total === 0 ? "no games" : `${total} game${total === 1 ? "" : "s"}`;
-  const live = part("live", "live");
-  const final = part("final", "final");
+  const live = part(counts.live, "live");
+  const final = part(counts.final, "final");
   const decided = decidedRecord(record);
   const present = (parts: (string | null)[]) => parts.filter((each) => each != null);
   return {
     wide: present([
       date,
-      `Tonight: ${present([games, live, part("scheduled", "to come"), final, part("postponed", "postponed")]).join(SEPARATOR)}`,
+      `Tonight: ${present([games, live, part(counts.upcoming, "to come"), final, part(counts.postponed, "postponed")]).join(SEPARATOR)}`,
       decided && `Picks this season: ${decided.right} right, ${decided.wrong} wrong`,
     ]),
     narrow: present([

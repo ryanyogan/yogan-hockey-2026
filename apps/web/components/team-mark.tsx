@@ -5,12 +5,15 @@ import { TEAM_MARKS } from "../lib/team-marks.generated";
  * The box a mark is drawn in. It is the size it is whether its image has loaded, failed or does
  * not exist, and it never makes its line taller: 1.2em sits inside a line of its type (15.6px in
  * 13px type on a 20px line, 18px in a phone's 15 on 22), lowered so its middle is the capitals'
- * middle, and the 20px box gives back with a negative margin what it has over the line.
+ * middle, and the 20px box gives back with a negative margin what it has over the line. A
+ * headline's mark is sized by the headline.
  */
 const BOX: Record<TeamMarkSize, { px: number; className: string }> = {
   row: { px: 14, className: "size-[1.2em] align-[-0.24em]" },
   line: { px: 14, className: "size-[1.2em] align-[-0.24em]" },
   header: { px: 20, className: "-my-1 size-5 align-[-5px]" },
+  // In a headline: as tall as its capitals and standing on their line, so it adds nothing to it.
+  headline: { px: 42, className: "size-[0.72em] align-[-0.04em]" },
 };
 
 /**
@@ -41,7 +44,7 @@ export function TeamMark({
   className?: string;
 }) {
   const box = BOX[size];
-  const images = teamId == null ? null : teamMarkImages(teamId, TEAM_MARKS);
+  const images = teamId == null ? null : teamMarkImages(teamId, TEAM_MARKS, size);
   const sized = { width: box.px, height: box.px, decoding: "async" } as const;
   return (
     <span

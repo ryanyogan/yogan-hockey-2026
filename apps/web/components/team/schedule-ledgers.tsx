@@ -10,12 +10,11 @@ import {
 } from "@yogan-hockey/ui/components/ledger";
 import { LiveMarker } from "@yogan-hockey/ui/components/marker";
 import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
+import { agateName } from "../../lib/agate-copy";
 import { gameHref } from "../../lib/scoreboard-view";
 import type { ResultRow, ScheduleRow } from "../../lib/team-schedule";
 import { Link } from "../link";
 import { LocalTime } from "../local-time";
-import { TeamName } from "../nhl/team-name";
-import { TeamMark } from "../team-mark";
 import { EmptyLedger } from "./empty-ledger";
 import { Versus } from "./versus";
 
@@ -41,8 +40,10 @@ function GameCells({ row }: { row: ScheduleRow }) {
         </Link>
       </LedgerCell>
       <LedgerCell className="whitespace-nowrap">
-        <Versus home={row.home} /> <TeamMark teamId={row.opponent.id} />
-        <TeamName team={row.opponent} />
+        <Versus home={row.home} />{" "}
+        {/* A phone has room for the agate name, not the club's whole one. */}
+        <span className="sm:hidden">{agateName(row.opponent)}</span>
+        <span className="max-sm:hidden">{row.opponent.name}</span>
       </LedgerCell>
     </>
   );
@@ -75,7 +76,7 @@ export function UpcomingLedger({
           </LedgerHead>
           <LedgerBody>
             {rows.map((row) => (
-              <LedgerRow key={row.game.id} interactive live={row.game.status === "live"}>
+              <LedgerRow key={row.game.id} live={row.game.status === "live"}>
                 <GameCells row={row} />
                 <LedgerCell numeric className="whitespace-nowrap">
                   {row.game.status === "live" ? (
@@ -87,7 +88,7 @@ export function UpcomingLedger({
               </LedgerRow>
             ))}
             {postponed.map((row) => (
-              <LedgerRow key={row.game.id} interactive>
+              <LedgerRow key={row.game.id}>
                 <GameCells row={row} />
                 <LedgerCell numeric tone="note" className="whitespace-nowrap">
                   postponed
@@ -136,18 +137,16 @@ export function ResultsLedger({
           </LedgerHead>
           <LedgerBody>
             {rows.map((row) => (
-              <LedgerRow key={row.game.id} interactive>
+              <LedgerRow key={row.game.id}>
                 <GameCells row={row} />
-                <LedgerCell
-                  tone={row.won ? "positive" : "negative"}
-                  className="whitespace-nowrap font-strong"
-                >
+                {/* A win is bold and a loss steps back, as a line score's winner and loser do. */}
+                <LedgerCell tone={row.won ? "strong" : "aside"} className="whitespace-nowrap">
                   {row.won ? "W" : "L"}
                   {row.extraTime && (
                     <LedgerAside className="font-quiet"> {row.extraTime}</LedgerAside>
                   )}
                 </LedgerCell>
-                <LedgerCell numeric className="whitespace-nowrap">
+                <LedgerCell numeric tone="strong" className="whitespace-nowrap">
                   {row.teamScore}-{row.opponentScore}
                 </LedgerCell>
               </LedgerRow>

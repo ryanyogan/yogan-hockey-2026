@@ -1,9 +1,10 @@
 import { type StandingsView, standingsView } from "@yogan-hockey/schemas";
+import { PageHeader } from "@yogan-hockey/ui/components/section";
 import { UrlTabs } from "@yogan-hockey/ui/components/url-tabs";
 import type { Metadata } from "next";
 import { Link } from "../../components/link";
 import { StandingsLedger } from "../../components/nhl/standings-ledger";
-import { TeamsLedger } from "../../components/nhl/teams-ledger";
+import { TeamsList } from "../../components/nhl/teams-list";
 import { cachedStandings, cachedTeams } from "../../lib/espn";
 import { NHL_TABS, nhlHref, type Query, readNhlPage, STANDINGS_VIEWS } from "../../lib/nhl-page";
 import { tablesByConference } from "../../lib/standings-table";
@@ -30,10 +31,14 @@ export default async function NhlPage({ searchParams }: Props) {
 
   return (
     <>
-      <div className="space-y-2">
-        {/* On a phone the tabs are a strip the page's width, under the title. */}
-        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-          <h1 className="font-strong uppercase">NHL</h1>
+      <div>
+        {/* The page is named for its tab, as the masthead names the two places. */}
+        <PageHeader
+          title={page.tab === "teams" ? "Teams" : "Standings"}
+          count={page.tab === "teams" ? undefined : `by ${VIEW_LABELS[page.view]}`}
+        />
+        {/* On a phone each set of tabs is a strip the page's width, one under the other. */}
+        <div className="flex flex-wrap gap-x-6 gap-y-2 max-md:mt-3">
           <UrlTabs
             label="NHL"
             link={Link}
@@ -44,19 +49,23 @@ export default async function NhlPage({ searchParams }: Props) {
               href: nhlHref({ ...page, tab }),
             }))}
           />
+          {page.tab === "standings" && (
+            <UrlTabs
+              label="Standings view"
+              // Four views in a phone's width: each cell gives up most of its padding and more than
+              // half its tracking (.05em for .12em), or the last is off the edge of a strip nobody knows to scroll. They fit
+              // a 360px phone with 18px over.
+              className="max-md:[&>a]:px-1 max-md:[&>a]:tracking-wider"
+              link={Link}
+              current={page.view}
+              tabs={STANDINGS_VIEWS.map((view) => ({
+                value: view,
+                label: VIEW_LABELS[view],
+                href: nhlHref({ ...page, view }),
+              }))}
+            />
+          )}
         </div>
-        {page.tab === "standings" && (
-          <UrlTabs
-            label="Standings view"
-            link={Link}
-            current={page.view}
-            tabs={STANDINGS_VIEWS.map((view) => ({
-              value: view,
-              label: VIEW_LABELS[view],
-              href: nhlHref({ ...page, view }),
-            }))}
-          />
-        )}
       </div>
       {page.tab === "teams" ? <Teams /> : <Standings view={page.view} />}
     </>
@@ -64,7 +73,7 @@ export default async function NhlPage({ searchParams }: Props) {
 }
 
 async function Teams() {
-  return <TeamsLedger teams={await cachedTeams()} />;
+  return <TeamsList teams={await cachedTeams()} />;
 }
 
 async function Standings({ view }: { view: StandingsView }) {

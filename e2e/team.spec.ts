@@ -55,8 +55,17 @@ test("a team's page shows each tab from a pasted URL, titled with the team's nam
       await expect(tabs(page).locator('[aria-current="page"]')).toHaveText("schedule");
 
       const header = section(page, /^Toronto Maple Leafs/);
-      await expect(header.getByRole("heading")).toHaveText(
+      // The team's name is the page's headline, under the line that says where it plays.
+      await expect(header.getByRole("heading", { level: 1 })).toHaveText("Toronto Maple Leafs");
+      await expect(header.locator("[data-slot=team-header] p")).toHaveText(
         /Toronto · Eastern Conference · Atlantic Division/,
+      );
+      // The one mark on the page is the headline's: no row of a schedule has one.
+      await expect(page.locator("main [data-slot=team-mark]")).toHaveCount(1);
+      // Toronto has a logo for each theme; the first is the day's.
+      await expect(header.locator("h1 [data-slot=team-mark] img").first()).toHaveAttribute(
+        "src",
+        /^\/team-marks\/21-42\.[0-9a-f]{8}\.webp$/,
       );
       await expect(header.locator("tbody td")).toHaveText([
         "1",
@@ -65,6 +74,23 @@ test("a team's page shows each tab from a pasted URL, titled with the team's nam
         "2",
         "6th in Atlantic Division",
       ]);
+
+      // It is the site's own file, loaded, and drawn at the capitals' height: 0.72 of the
+      // headline's size, which grows with the window (34 to 40px).
+      const mark = header.locator("h1 [data-slot=team-mark] img").first();
+      await expect(mark).toHaveJSProperty("complete", true);
+      // Never a file smaller than the box it is drawn in.
+      expect(
+        await mark.evaluate((img: HTMLImageElement) => img.naturalWidth),
+      ).toBeGreaterThanOrEqual(42);
+      const headline = await header
+        .getByRole("heading", { level: 1 })
+        .evaluate((h1) => Number.parseFloat(getComputedStyle(h1).fontSize));
+      expect(headline).toBeGreaterThanOrEqual(34);
+      expect(headline).toBeLessThanOrEqual(40);
+      const box = await mark.boundingBox();
+      expect(box?.width).toBeCloseTo(headline * 0.72, 1);
+      expect(box?.height).toBeCloseTo(headline * 0.72, 1);
 
       // The Next Game card links to the scheduled game's page, at the visitor's own time.
       const next = rows(page, /^Next game/);

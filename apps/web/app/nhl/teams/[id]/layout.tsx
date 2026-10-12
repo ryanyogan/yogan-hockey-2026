@@ -58,13 +58,15 @@ export default async function TeamLayout({ params, children }: Props) {
         <TeamHeader
           detail={detail}
           standing={standing}
-          // In line with the hearts of the roster's rows, which sit inside a cell's padding.
+          // Not squeezed by a long name, which would cost its reach a pixel. It ends on the
+          // column's edge, where the rules end and a roster's hearts are; its reach runs 8px
+          // into the gutter.
           action={
             <FavoriteHeart
               kind="team"
               id={detail.team.id}
               name={detail.team.name}
-              className="mr-2"
+              className="shrink-0"
             />
           }
         />
@@ -80,7 +82,7 @@ export default async function TeamLayout({ params, children }: Props) {
         {children}
       </div>
       {/* The foot of the page on every tab, as the player page has "back to players". */}
-      <p className="px-2">
+      <p className="font-label text-small uppercase tracking-head">
         <Link href="/nhl" className="tap-target underline">
           back to NHL
         </Link>

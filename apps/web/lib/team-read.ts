@@ -1,9 +1,15 @@
-import type { RosterPlayer, StandingsRow, TeamDetail } from "@yogan-hockey/schemas";
+import {
+  divisionPlace,
+  type RosterPlayer,
+  type Standings,
+  type TeamDetail,
+} from "@yogan-hockey/schemas";
 import { cachedStandings, cachedTeamSchedule } from "./espn";
 import { findTeam } from "./find-team";
 import { pageNotFound } from "./page-not-found";
 import { sortRoster } from "./roster";
 import { readSlatePicks } from "./slate-picks";
+import type { TeamStanding } from "./team-page";
 import { type ScheduleView, scheduleView } from "./team-schedule";
 
 /*
@@ -20,9 +26,13 @@ import { type ScheduleView, scheduleView } from "./team-schedule";
  * What the header, the "Playing now" banner and the Next Game card are drawn from. The roster and
  * the split records come with the team from ESPN and are left out: they are their tabs' to send.
  */
-export type TeamRead = Pick<TeamDetail, "team" | "stats" | "standingSummary" | "nextGame"> & {
-  /** The team's conference and division, or null when the standings could not be read. */
-  standing: Pick<StandingsRow, "conference" | "division"> | null;
+export type TeamRead = Pick<TeamDetail, "team" | "stats" | "nextGame"> & {
+  /**
+   * The team's conference and division and its place in the division, from the standings; null
+   * when they do not list the team or could not be read. ESPN's own `standingSummary` comes with
+   * the team and is left out: it has been wrong for every team since 2026-10-12 (#209).
+   */
+  standing: TeamStanding | null;
   /** Today's slate's picks in one line each, by game id: the banner's and the card's. */
   picks: Record<string, string>;
 };
@@ -32,6 +42,14 @@ async function team(id: string): Promise<TeamDetail> {
   return (await findTeam(id)) ?? pageNotFound();
 }
 
+/** Where the standings have a team, or null when they do not list it. */
+function teamStanding(standings: Standings, id: string): TeamStanding | null {
+  const place = divisionPlace(standings, id);
+  if (place == null) return null;
+  const { row, rank } = place;
+  return { conference: row.conference, division: row.division, divisionRank: rank };
+}
+
 /** The parent route's read: the team, where it plays, and the slate's picks. */
 export async function readTeam(id: string): Promise<TeamRead> {
   // Started with the others and asked last: neither of them fails, so a team that cannot be read
@@ -39,7 +57,7 @@ export async function readTeam(id: string): Promise<TeamRead> {
   const found = team(id);
   found.catch(() => {});
   const [standings, { picks }] = await Promise.all([
-    // The header can do without its conference and division.
+    // The header can do without its conference, its division and its place.
     cachedStandings().catch((error: unknown) => {
       console.error("Team: the standings could not be read", error);
       return null;
@@ -48,13 +66,11 @@ export async function readTeam(id: string): Promise<TeamRead> {
     readSlatePicks(),
   ]);
   const detail = await found;
-  const row = standings?.rows.find((standing) => standing.team.id === id);
   return {
     team: detail.team,
     stats: detail.stats,
-    standingSummary: detail.standingSummary,
     nextGame: detail.nextGame,
-    standing: row == null ? null : { conference: row.conference, division: row.division },
+    standing: standings == null ? null : teamStanding(standings, id),
     picks,
   };
 }

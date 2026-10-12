@@ -1,4 +1,4 @@
-import { standingsView } from "@yogan-hockey/schemas";
+import { divisionPlace, standingsView } from "@yogan-hockey/schemas";
 import { expect, test } from "vitest";
 import { endpoints } from "./endpoints.ts";
 import { EspnParseError } from "./errors.ts";
@@ -65,4 +65,28 @@ test("a response without the divisions is a parse error naming the endpoint", ()
 
   expect(parse).toThrow(EspnParseError);
   expect(parse).toThrow(/ESPN standings did not parse/);
+});
+
+test("every team has a place in its division, one to eight, and no two share one", async () => {
+  const standings = translateStandings(await recorded());
+  const places = new Map<string, number[]>();
+  for (const { team, division } of standings.rows) {
+    const place = divisionPlace(standings, team.id);
+    expect(place?.row.team.id).toBe(team.id);
+    places.set(division.name, [...(places.get(division.name) ?? []), place?.rank ?? 0]);
+  }
+
+  expect([...places.keys()]).toHaveLength(4);
+  for (const ranks of places.values()) {
+    expect(ranks.toSorted((a, b) => a - b)).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
+  }
+  // Seattle and Utah are listed under the two ids that are not small numbers.
+  expect(divisionPlace(standings, "124292")).toMatchObject({
+    rank: 3,
+    row: { team: { abbreviation: "SEA" }, division: { name: "Pacific Division" } },
+  });
+  expect(divisionPlace(standings, "129764")).toMatchObject({
+    rank: 4,
+    row: { team: { abbreviation: "UTA" }, division: { name: "Central Division" } },
+  });
 });

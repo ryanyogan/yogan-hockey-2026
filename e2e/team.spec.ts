@@ -68,12 +68,14 @@ test("a team's page shows each tab from a pasted URL, titled with the team's nam
         "src",
         /^\/team-marks\/21-42\.[0-9a-f]{8}\.webp$/,
       );
+      // The place is the standings' own, not ESPN's summary (#209): Toronto is seventh in the
+      // recorded Atlantic, level with Buffalo, which has played a game fewer.
       await expect(header.locator("tbody td")).toHaveText([
         "1",
         "2",
         "0",
         "2",
-        "6th in Atlantic Division",
+        "7th in Atlantic Division",
       ]);
 
       // It is the site's own file, loaded, and drawn at the capitals' height: 0.72 of the

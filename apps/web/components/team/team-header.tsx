@@ -1,4 +1,4 @@
-import type { StandingsRow, TeamDetail } from "@yogan-hockey/schemas";
+import type { TeamDetail } from "@yogan-hockey/schemas";
 import {
   Ledger,
   LedgerBody,
@@ -9,7 +9,7 @@ import {
 } from "@yogan-hockey/ui/components/ledger";
 import { Section } from "@yogan-hockey/ui/components/section";
 import type { ReactNode } from "react";
-import { teamPlace } from "../../lib/team-page";
+import { type TeamStanding, teamPlace, teamStandingLine } from "../../lib/team-page";
 import { storyHeadline, storyKicker, storyRule } from "../story/type";
 import { TeamMark } from "../team-mark";
 import { EmptyLedger } from "./empty-ledger";
@@ -17,16 +17,17 @@ import { EmptyLedger } from "./empty-ledger";
 /**
  * The head of a team's page, set as a story is (docs/design/agate.md § Page anatomy): a heavy
  * rule, a red line saying where the team plays and in which conference and division, its name as
- * the headline with its mark, and its record so far in agate. `standing` is the team's row in the
- * league standings; without it the red line is the city alone.
+ * the headline with its mark, and its record so far in agate, ending in its place in the division.
+ * `standing` is where the league standings have the team; without it the red line is the city
+ * alone and the place is a dash.
  */
 export function TeamHeader({
-  detail: { team, stats, standingSummary },
+  detail: { team, stats },
   standing,
   action,
 }: {
-  detail: Pick<TeamDetail, "team" | "stats" | "standingSummary">;
-  standing: Pick<StandingsRow, "conference" | "division"> | null;
+  detail: Pick<TeamDetail, "team" | "stats">;
+  standing: TeamStanding | null;
   /** Sits at the right end of the name's line: the heart that makes the team a favorite (#45). */
   action?: ReactNode;
 }) {
@@ -77,7 +78,7 @@ export function TeamHeader({
                   {stats.points}
                 </LedgerCell>
                 <LedgerCell tone="note" className="pl-6">
-                  {standingSummary ?? "-"}
+                  {teamStandingLine(standing)}
                 </LedgerCell>
               </LedgerRow>
             </LedgerBody>

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isTeamId, teamPageHref, teamPlace, teamTabOfPath } from "./team-page";
+import { isTeamId, teamPageHref, teamPlace, teamStandingLine, teamTabOfPath } from "./team-page";
 
 describe("where a team plays, for the line over its name", () => {
   const standing = {
@@ -17,6 +17,26 @@ describe("where a team plays, for the line over its name", () => {
 
   it("is the city alone when the standings could not be read", () => {
     expect(teamPlace({ location: "Toronto" }, null)).toEqual(["Toronto"]);
+  });
+});
+
+describe("where a team stands, for the header's record", () => {
+  const standing = (divisionRank: number, name = "Atlantic Division") => ({
+    conference: { name: "Eastern Conference", abbreviation: "East" },
+    division: { name, abbreviation: "ATL" },
+    divisionRank,
+  });
+
+  it("is its place in its division, in the words ESPN's summary had", () => {
+    expect(teamStandingLine(standing(6))).toBe("6th in Atlantic Division");
+    expect(teamStandingLine(standing(1, "Central Division"))).toBe("1st in Central Division");
+    expect(teamStandingLine(standing(2))).toBe("2nd in Atlantic Division");
+    expect(teamStandingLine(standing(3))).toBe("3rd in Atlantic Division");
+    expect(teamStandingLine(standing(8))).toBe("8th in Atlantic Division");
+  });
+
+  it("is a dash for a team the standings do not list, or when they could not be read", () => {
+    expect(teamStandingLine(null)).toBe("-");
   });
 });
 

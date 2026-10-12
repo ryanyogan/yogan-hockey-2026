@@ -15,7 +15,7 @@
 // that reaches past a line of text counts, as a finger finds it.
 import { writeFile } from "node:fs/promises";
 import { chromium } from "@playwright/test";
-import { PLAYER, ROUTES, seedPicks, TEAM } from "./look-routes.mjs";
+import { ROUTES, seedPicks } from "./look-routes.mjs";
 import { untilPageHydrated, watchHydration } from "./performance/hydration.ts";
 
 const [baseURL = "http://localhost:5173", out, only] = process.argv.slice(2);

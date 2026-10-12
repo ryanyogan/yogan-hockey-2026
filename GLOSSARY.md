@@ -17,7 +17,7 @@ A family member's sign-in to the site, by username and password. Ryan creates ev
 _Avoid_: User, profile, member
 
 **Favorite**:
-A player or a team an Account has marked with a heart. A Favorite belongs to the Account, so it is the same on every device; someone who is not signed in has none.
+A player or a team an Account has marked with a heart. A Favorite belongs to the Account, so it is the same on every device; someone who is not signed in has none. The site has no Favorites until it has Accounts: the ones it once kept in the browser were removed (#223).
 _Avoid_: Follow, bookmark, subscription
 
 **Alert**:

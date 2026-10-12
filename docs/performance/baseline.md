@@ -12,7 +12,7 @@ PORT=<your port> scripts/performance-baseline.sh local      # about 50 minutes
 scripts/performance-baseline.sh deployed                    # about 50 minutes, reads only
 ```
 
-Each writes `docs/performance/results/<target>.json` and `<target>.md` (every table below, plus each tap, navigation and layout shift). Flags after the target go to `scripts/measure-performance.ts`: `--only='/nhl,/players'` for some routes (the `route` names of `scripts/performance/routes.ts`; a name that matches none stops the run and lists them), `--runs=1`, `--out=node_modules/.tmp/try` to leave the committed results alone, `--favorites=off`.
+Each writes `docs/performance/results/<target>.json` and `<target>.md` (every table below, plus each tap, navigation and layout shift). Flags after the target go to `scripts/measure-performance.ts`: `--only='/nhl,/players'` for some routes (the `route` names of `scripts/performance/routes.ts`; a name that matches none stops the run and lists them), `--runs=1`, `--out=node_modules/.tmp/try` to leave the committed results alone.
 
 - **local** builds this checkout with `ESPN_FIXTURES=1`, serves it with `vite preview` on `PORT+10000` behind `scripts/performance/compressing-proxy.ts` on `PORT` (both ports must be free: it refuses to start otherwise, and stops only the two servers it started), migrates the local D1 the build reads, seeds the sample picks and archives the recorded finished game (`scripts/performance/prepare-fixtures.ts`), measures, and stops both servers.
 - **deployed** measures `https://hockey.yogan.dev` as it stands, with GET requests and the Scoreboard's socket only. It first writes `results/deployed-first-byte.md` (`scripts/performance/deployed-first-byte.sh`, no throttling).
@@ -25,7 +25,7 @@ Run it on a machine doing nothing else. Other worktrees were building and testin
 
 **Profile**: Lighthouse's mobile profile, applied through the DevTools protocol by Playwright's Chromium (`PROFILE` in `scripts/performance/budgets.ts`): a 412 x 823 viewport at 1.75x with touch and a phone's user agent, the CPU slowed 4x, and "Slow 4G" on every request (562.5 ms latency, 1.47 Mbps down, 675 Kbps up, which is DevTools' form of a 150 ms round trip at 1.6 Mbps). The time zone is America/Chicago, so every time the server wrote as "ET" changes when the page hydrates. The machine was an Intel i7-7700 (8 threads); a 4x slowdown of it is somewhat faster than a real mid-range phone.
 
-**A visitor with favorites**: `favorite_teams=["21"]` and `favorite_players=["4024123"]` are in localStorage before each load, because a family member has favorites and they reach the page after it hydrates.
+**A visitor with favorites** (the tables below; no longer how a run is made): `favorite_teams=["21"]` and `favorite_players=["4024123"]` were in localStorage before each load, because a family member had favorites and they reached the page after it hydrated. Favorites were removed in #223, with the `--favorites` flag and the heart's tap, so a run made now has neither; what this page says of favorites, hearts and `--favorites=off` describes the site as it was measured.
 
 **Per route, three times, each in a new browser profile with nothing cached** (times are the median run, a shift is the worst run):
 

@@ -103,7 +103,6 @@ A live story swaps its heavy top rule to `--live`.
 - **Standings:** a serif title and a "Full standings" link. East and West agate tables sit side by side, each under a red label with an ink underline. Columns are Team (agate name), GP (in `--aside`), W, L, OT and **PTS** (bold).
 - **The Picks:** a 1px ink box with a red label, the big serif record, and "Right on 67% of games this season. Two of three tonight." The second sentence only counts picked finals and spells out numbers up to ten.
 - **Tonight at a glance:** three counts (Live, To come, Final) in serif, separated by hairlines.
-- **Favorites:** a red label with "All players" beside it. The empty state is serif prose. A populated state wasn't drawn: use agate rows (player name, team in `--aside`, the stat line in tabular nums, the heart button at the right) with dotted separators.
 
 **Footer:** a 1px ink rule over the ESPN credit and the family-project line in `--aside`.
 
@@ -116,7 +115,7 @@ A live story swaps its heavy top rule to `--live`.
 | Three-part dateline | One line: "3 games · 3 final · Picks 29–14" |
 | Story grid | Stories stacked; headline 34px |
 | Briefs in 4 columns | One column |
-| Standings beside the aside | Order: **Picks box** (row layout) → **Standings** → **Favorites**; "Tonight at a glance" is hidden because the dateline carries it |
+| Standings beside the aside | Order: **Picks box** (row layout) → **Standings**; "Tonight at a glance" is hidden because the dateline carries it |
 | East and West side by side | An Eastern/Western segmented control (`role="group"`, `aria-pressed`, 44px) shows one table at a time |
 | `--gutter` 24px | 16px |
 
@@ -151,7 +150,7 @@ The answers to the six questions the design left open, and the calls made while 
 Calls made while building:
 
 - **The masthead on a phone draws the full double rule** (3px and 1px) above the nav, as the prototype's CSS means and its screenshots clip.
-- **Home.** The standings' team names are plain text on a phone (40px rows, as drawn) and links from `md` up. Home has no favorite-team marker, no "pick pending" and no "all scores" link. The Picks box is not drawn before any pick is decided. Day `--positive` is `#166534`, a step darker than the tuned ledger's green, for AA on the row under the pointer.
+- **Home.** The standings' team names are plain text on a phone (40px rows, as drawn) and links from `md` up. Home has no "pick pending" and no "all scores" link. Favorites are not drawn anywhere: the prototype's Favorites block and the site's hearts were removed in #223, until the site has Accounts (#132, #133). The Picks box is not drawn before any pick is decided. Day `--positive` is `#166534`, a step darker than the tuned ledger's green, for AA on the row under the pointer.
 - **The game page.** No club colours on the rink: goals are red, and saves, shots and hits differ by weight and fill, with a key. The score appears in the story header and over the rink.
 - **The NHL routes.** Scores is an agate ledger, not briefs. Teams is a CSS-column list. Wins are bold and losses grey. A standings row's link is named by the agate name.
 - **The dateline's record of the picks** is read with the page and again whenever the Scoreboard reports a final or a new pick, and not otherwise. (While whole pages were cached it could be about ten minutes old; they no longer are: ADR 0009.)

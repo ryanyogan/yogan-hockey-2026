@@ -13,7 +13,7 @@ A family hockey dashboard at `hockey.yogan.dev`: live NHL scores, standings, tea
 
 It replaces the Parity Reference (`ryanyogan/yogan_hockey`, at `yogan-hockey.fly.dev`). The floor is what the Parity Reference's code does, not what its README says.
 
-There are no accounts. Favorites live in the visitor's browser.
+There are no accounts, and so no Favorites: a favorite team or player is an Account's (#132, #133), and the ones the site once kept in the visitor's browser were removed (#223).
 
 ## 2. Architecture
 
@@ -40,7 +40,7 @@ Data comes from ESPN's unauthenticated site API and nowhere else (ADR 0003). One
 - An RPC result is copied to a plain object before it leaves the server.
 - Anyone who can reach the site can call a server function, so each one that takes input validates it with a Zod schema: the one in `packages/schemas` where the site has one for the thing (a team's id, a game's id), and one beside the page's own rules otherwise (`/nhl`'s tab and view, the player search).
 - A read that fails is logged on the server and reaches the browser as a sentence that says nothing (`pageRead` in `apps/web/src/functions/page-read.ts`), since the router writes a loader's error into the page.
-- Components do not fetch. The calls made outside a loader are: resolving favorites, which are ids in the browser's `localStorage` (`resolveFavoritePlayers`); a finished game whose plays were not yet in D1 when the page was read (it ended on the open page, or the page opened before it was archived) asking for its Replay's plays (`readReplayPlays`); and, on the `/skeleton` fixture pages, `bumpSkeleton` and `seedPicks`. Nothing a visitor does writes a pick: a Prediction is made by the Scoreboard Agent.
+- Components do not fetch. The calls made outside a loader are: a finished game whose plays were not yet in D1 when the page was read (it ended on the open page, or the page opened before it was archived) asking for its Replay's plays (`readReplayPlays`); and, on the `/skeleton` fixture pages, `bumpSkeleton` and `seedPicks`. Nothing a visitor does writes a pick: a Prediction is made by the Scoreboard Agent.
 - `GET /picks` answers today's picks as JSON. It is a server route (`apps/web/src/routes/picks.ts`), kept at its address; nothing on the site calls it.
 - Components hold the sockets with `useAgent`. Browsers are read-only: they can never write an Agent's state.
 - The `@callable` decorator is not used.
@@ -85,18 +85,18 @@ Every cached read goes through `cached` (`apps/web/lib/kv-cache.ts`), which is `
 - **Links preload on intent.** A link to a page of the site reads that page ahead when the pointer has rested on it for 65ms, when the keyboard's focus arrives, or when a finger goes down; never because it is on screen. What is fetched is the route's script and its loader's data, not a document, so the click draws the page with no request of its own.
 - **The router's cache.** What a loader read is fresh for five minutes on every route, and what a preload read is good for as long; going back to a page inside that costs nothing. The root route's never goes stale by itself. A later `invalidatedAt` ends all of it early, so a page read before a final is not drawn from memory after it. Two answers are not kept: a player search that was "not answering" and a game that "could not be read" are asked for again the next time they are opened. Scores are never from this cache: they are the socket's.
 - **A navigation keeps the page it leaves until the next is ready**, since no route has a pending component, and is a view transition where the browser has them. A visitor who asked for less motion gets none.
-- **No layout shift.** A page arrives with everything it draws, so nothing is put in after first paint but what the socket changes, in the place it already had. The one thing read in the browser after hydration is the visitor's favorites, from `localStorage`.
+- **No layout shift.** A page arrives with everything it draws, so nothing is put in after first paint but what the socket changes, in the place it already had. Nothing a page draws is read in the browser after hydration: the one thing that was, the visitor's favorites in `localStorage`, was removed (#223). What still moves on a load is a start time rewritten in the visitor's own zone and the faces taking over from their fallbacks.
 
 ## 3. Routes
 
 | Route | Holds |
 | --- | --- |
-| `/` | The dashboard ledger: tonight's games, Rylan, favorites, standings |
+| `/` | The dashboard ledger: tonight's games, Rylan, standings |
 | `/nhl` | Standings and Teams tabs |
 | `/nhl/live` | In Progress, Upcoming and Final sections |
 | `/nhl/games/:id` | Scheduled: matchup and the pick. Live: the Game Stream. Final: the Replay |
 | `/nhl/teams/:id` | Team header and the Schedule tab; `/nhl/teams/:id/roster` and `/nhl/teams/:id/stats` are the other tabs |
-| `/players` | Player search and favorite players |
+| `/players` | Player search |
 | `/players/:id` | Season stats, the recent-games log and the career table |
 | `/family/rylan` | Rylan's page |
 | `/yogan` | Redirects to `/family/rylan` |
@@ -119,9 +119,8 @@ Site-wide:
 
 Variant C, the "Tonight ledger": monospace type, one dense table per subject, no cards. The Reference UI draws no team logos; the site adds a small team mark before a team's abbreviation (see the site-wide rules), which leaves the ledger's rows at the Reference UI's heights and its columns at their places.
 
-- **Tonight's games**, with the live count in its header. Live rows are tinted. A note column carries the pick ("TOR 58%", or "pick pending") and a marker for a favorite team. Favorite teams' games sort first.
+- **Tonight's games**, with the live count in its header. Live rows are tinted. A note column carries the pick ("TOR 58%", or "pick pending").
 - **Family**: one row block for Rylan with his season totals, linking to `/family/rylan`.
-- **Favorites**: up to four favorite players, each with a "live now" marker when his team is playing.
 - **Standings**: each conference's top eight in a compact table, rows linking to teams, with a link to `/nhl`.
 - **Season record of the picks**, in the header line of the Tonight's games table: "Picks: 34 right, 21 wrong".
 
@@ -140,14 +139,12 @@ In Progress, Upcoming and Final sections. Each game row shows both teams with th
 
 - Header with the team's record.
 - Tabs, each a page under the team's header: Schedule (the team's own address), Roster (`/roster`), Stats (`/stats`). The addresses they had before #94, `?tab=roster` and `?tab=stats`, redirect there (308). Finished games on the schedule link to their Replay; this season only.
-- Hearts on the roster to favorite a player, and one on the header to favorite the team.
 - A banner linking to the game page when the team is playing now, and a Next Game card linking to the scheduled game's page.
 - Toronto's roster has Rylan Yogan, #99, at the top (see [Rylan](#7-rylan)).
 
 ### `/players` and `/players/:id`
 
 - Search starts at two characters and runs as the visitor types. Each pause in typing puts the search in the address as `?q=`, and the route's loader, which is keyed on it, asks the server (`readPlayers`, through `searchLoading` in `apps/web/lib/player-search.ts`). So a search can be pasted, linked and reloaded, and works as a plain form without JavaScript. Each result shows name, number, position and team. ESPN failing to answer is said in words on the page, never an error page; so is a search whose call got no answer with the browser off line, and one that fails on line loads its address as a document, which is how a tab older than the last deploy recovers.
-- The visitor's favorite players are listed.
 - A player page has a header line (name, position, number, team link, then born, birthplace, height, weight, shoots or catches, draft and experience where ESPN has them) and no photo. Season stats come from the career table's row for the season ESPN's summary names, with the summary's league ranks under them; a skater's shots are counted from his game log, since ESPN's career table has none. The career table is every column ESPN sends for a skater or a goalie, newest season first, a season split between clubs as a total ahead of its clubs, with career totals and, for a skater, points per game. ESPN's headings are corrected where they mislead: `SOG` (shootout goals) is shown as `S/O G`, `S` (shots) as `SOG`, `SPCT` as `S%`, `WINS` as `W`, a game's `TOI/G` as `TOI`, and `PROD` is dropped.
 - A recent-games log: the latest ten games of the latest season he played, newest first, each with the result and his line and linking to the game; `/players/:id/games` shows the whole season (the address it had before, `?games=all`, redirects there with a 308). It is one extra ESPN request, cached with the rest of the page (proved in #35).
 - An unknown id gets "Player not found" inside the layout, with a 404.
@@ -269,7 +266,10 @@ Rylan is a youth player, and the site is public (ADR 0005).
 
 ## 8. Favorites
 
-- Browser-only, in `localStorage`. No accounts.
+Removed from the site in #223, until it has Accounts (#132, #133). The Parity Reference keeps them in the browser's `localStorage`, which the server cannot see, so everything they drew (the hearts' pressed state, the Favorites blocks, a favorite team's game moved to the front) arrived after hydration and moved the page. The site draws no heart and no Favorites block, moves and marks no game for a favorite, and reads no `localStorage` key for them; the keys an earlier build wrote (`favorite_teams`, `favorite_players`) are left where they are and never read.
+
+When they come back they are an Account's and are read on the server, so a page arrives with them:
+
 - Players and teams can both be favorited.
 - Favorite teams' games sort first and are highlighted wherever games are listed.
 - The dashboard shows up to four favorite players, each with a "live now" marker when his team is playing.
@@ -343,7 +343,7 @@ Each line is something the design assumes and nobody has run. The build issue na
 | 9 | **Proved (#33).** What Workers observability's Issues feature surfaces, and whether it can notify. It groups a Worker's failures by fingerprint into issues of type exception, log (an error-level log line) or unknown (on this account, a suspected vulnerability scan), each with a count, first and last seen, and a status of active, resolved or ignored (`cf observability issues list --service yogan-hockey`; none for this Worker so far). It can notify on its own: an automation (`cf observability issues automations`) sends an issue to an account Notification policy after a number of occurrences or a spell of inactivity. The account has no automation, and one needs a Notification policy first (email or a webhook), which is Ryan's to add if he wants it | The Agents' alert is an error line in the logs, which Issues groups; nothing notifies | Deploy pipeline and Access |
 | 10 | **Proved (#187).** A route's `head` titles the page, and the `<title>` is in the `<head>` of the first HTML for every visitor (`titled` in `apps/web/src/head.ts`); no component renders one. A page whose read failed is titled "Not answering" and an address no route answers "Not found", seen on a build under `vite preview`. The second relies on `_notFound`, the router's own mark on the root's match, which has no public name: after a router upgrade `e2e/shell.spec.ts` says whether it still holds. Not yet seen on Cloudflare | Not needed | TanStack Start under `cf` |
 | 11 | **Proved (#187).** The router's default for when a loader's data is stale is not the site's: its stale time is 0 (every visit reads again) and a preload's is 30 seconds. `apps/web/src/router.tsx` sets both to five minutes, and the root route's to never. `e2e/nhl.spec.ts` proves that the page's own state on the socket runs no loader and that a later `invalidatedAt` runs the root's and the page's once each. No page is cached whole, whatever it reads from its address (ADR 0009) | Not needed | TanStack Start under `cf` |
-| 12 | **Proved locally (#190).** A server function called from a tab older than the last deploy either works or throws; it never answers with nothing. Rebuilding and restarting `vite preview` under an open `/players`: with only client code changed the function's address is unchanged and the call is answered; with the function renamed the call is a 500 and rejects; with its handler throwing the call rejects with the sentence `pageRead` gives. So a failed call is a `catch`. The search loads its address as a document when the browser is on line, and was seen to recover to the ten results; Favorites says "Your favorites could not be read just now." and asks again when the page is next opened; a link to a page whose script the deploy replaced loads that address as a document. Not yet seen on Cloudflare: a real deploy, and what a tab does while two versions are being served during a gradual rollout | Not needed | The players' pages on TanStack Start |
+| 12 | **Proved locally (#190).** A server function called from a tab older than the last deploy either works or throws; it never answers with nothing. Rebuilding and restarting `vite preview` under an open `/players`: with only client code changed the function's address is unchanged and the call is answered; with the function renamed the call is a 500 and rejects; with its handler throwing the call rejects with the sentence `pageRead` gives. So a failed call is a `catch`. The search loads its address as a document when the browser is on line, and was seen to recover to the ten results; a link to a page whose script the deploy replaced loads that address as a document. Not yet seen on Cloudflare: a real deploy, and what a tab does while two versions are being served during a gradual rollout | Not needed | The players' pages on TanStack Start |
 | 13 | **Proved (#35).** ESPN's athlete game log is one request (`athletes/{id}/gamelog`, 10 to 30 KB) and parses cleanly for a skater and a goalie: `getPlayerGameLog` in `packages/espn` | Not needed | ESPN: players, search and the game summary |
 | 14 | **Proved (#39).** The Scoreboard starts and stops polling with viewers, as the Game Agent did in the prototype. `apps/web/agents/scoreboard-agent.test.ts` proves it in the Workers runtime: the first socket sets a one-off timer, each poll sets the next while a socket is open, the last socket to close cancels it, and the timer and the sockets outlive a restart of the Agent. Not yet seen on Cloudflare with a real browser, which comes with the score ticker (#41) | Not needed | Scoreboard Agent: live scores |
 | 15 | **Proved (#48).** The short gap in polls around a deploy does not lose plays. `apps/web/agents/game-agent.test.ts` restarts the Game Agent in the Workers runtime in the middle of a game, with a viewer connected and 50 plays stored: the timer set before the restart fires, that poll reads the whole game and compares it with the stored plays, and the viewer is sent the ten plays added and the one revised meanwhile and nothing twice. The viewer's list and the stored list both end equal to ESPN's. Proved against the recorded game cut short, not yet across a real deploy during a live game | Not needed | Game Agent |

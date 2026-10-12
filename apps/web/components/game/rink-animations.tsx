@@ -33,8 +33,6 @@ export function RinkAnimations({
   game,
   plays,
   homeTeamId,
-  homeColour,
-  awayColour,
   focusId,
   picked,
   live,
@@ -61,9 +59,9 @@ export function RinkAnimations({
   useLayoutEffect(() => {
     dispatch({
       type: "scene",
-      scene: { game, plays, homeTeamId, homeColour, awayColour, focusId, picked },
+      scene: { game, plays, homeTeamId, focusId, picked },
     });
-  }, [game, plays, homeTeamId, homeColour, awayColour, focusId, picked]);
+  }, [game, plays, homeTeamId, focusId, picked]);
 
   // Read when a cue starts: more arriving behind it does not start it again.
   const pace = useRef(1);

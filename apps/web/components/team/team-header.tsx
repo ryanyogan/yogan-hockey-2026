@@ -7,9 +7,10 @@ import {
   LedgerHead,
   LedgerRow,
 } from "@yogan-hockey/ui/components/ledger";
-import { Section, sectionLabel } from "@yogan-hockey/ui/components/section";
+import { Section } from "@yogan-hockey/ui/components/section";
 import type { ReactNode } from "react";
 import { teamPlace } from "../../lib/team-page";
+import { storyHeadline, storyKicker, storyRule } from "../story/type";
 import { TeamMark } from "../team-mark";
 import { EmptyLedger } from "./empty-ledger";
 
@@ -33,8 +34,8 @@ export function TeamHeader({
 
   return (
     <Section>
-      <header data-slot="team-header" className="border-rule border-t-3 pt-3.5">
-        <p className={sectionLabel}>
+      <header data-slot="team-header" className={storyRule}>
+        <p className={storyKicker}>
           {/* A phone breaks the line between two of these, never inside one. */}
           {place.flatMap((part, index) => [
             <span key={part} className="whitespace-nowrap">
@@ -46,7 +47,7 @@ export function TeamHeader({
         </p>
         {/* The heart stays at the end of the first line when a phone wraps the name. */}
         <div className="mt-3 flex items-start justify-between gap-4">
-          <h1 className="text-balance font-serif font-strong text-headline [font-variation-settings:'opsz'_60]">
+          <h1 className={storyHeadline}>
             {/* The one place a team's mark is drawn on its page (HANDOFF.md, question 3). */}
             <TeamMark teamId={team.id} size="headline" eager className="mr-[0.3em]" />
             {team.name}

@@ -10,6 +10,7 @@
  */
 import { focusRing } from "@yogan-hockey/ui/components/nav-item";
 import { sectionLabel, sectionRule } from "@yogan-hockey/ui/components/section";
+import { fitted } from "../story/type";
 
 /** The red label over a section: "NHL Roundup", "The Picks". */
 export const label = `${sectionLabel} normal-nums`;
@@ -27,15 +28,7 @@ export const more = `${moreLink} text-small`;
 export const smallMore = `${moreLink} text-tag`;
 
 /**
- * Beside a `Ledger`'s parts on Home. The prototype's Home tables have no padding between their
- * columns, which are fixed widths, and a phone's rows are 40.2px apart, not a `LedgerRow`'s 44px:
- * no row here is a link on a phone.
+ * Beside a `Ledger`'s parts on Home: a story's own (`fitted`, which says why), and the standings'
+ * columns of figures.
  */
-export const agate = {
-  /** A column's head, whose figures are proportional and whose words may wrap. */
-  head: "whitespace-normal px-0 normal-nums",
-  row: "max-md:h-auto",
-  cell: "px-0",
-  /** A column of figures. */
-  figure: "w-[34px]",
-};
+export const agate = { ...fitted, figure: "w-[34px]" };

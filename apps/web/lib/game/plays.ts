@@ -26,6 +26,20 @@ export function toggleSelection(selectedId: string | null, clickedId: string): s
  */
 export type MarkKind = "goal" | "penalty" | "save" | "shot" | "hit" | "other";
 
+/**
+ * What each kind of dot is called in the rink's key, in the order the key lists them. With no hue
+ * but the one red, a save, a shot and a hit differ only in weight and filling, so the key is what
+ * says which is which.
+ */
+export const MARK_WORDS: readonly [kind: MarkKind, word: string][] = [
+  ["goal", "goal"],
+  ["save", "save"],
+  ["shot", "shot missed or blocked"],
+  ["penalty", "penalty"],
+  ["hit", "hit"],
+  ["other", "other play"],
+];
+
 export function markKind(play: Play): MarkKind {
   if (play.scoring) return "goal";
   if (play.penalty) return "penalty";

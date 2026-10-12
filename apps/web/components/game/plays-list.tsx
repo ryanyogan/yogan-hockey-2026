@@ -1,4 +1,5 @@
 import type { GameHeader, Play } from "@yogan-hockey/schemas";
+import { focusRingInside } from "@yogan-hockey/ui/components/nav-item";
 import { tabCellHoldsFocus, tabCellVariants, tabStrip } from "@yogan-hockey/ui/components/url-tabs";
 import type { ReactNode } from "react";
 import { markKind, playTime, scoringPlays, teamAbbreviation } from "../../lib/game/plays";
@@ -27,12 +28,14 @@ function PlayRow({
       data-play={play.id}
       aria-pressed={picked}
       onClick={() => onSelect(play.id)}
-      className={`flex w-full cursor-pointer gap-2 border-border border-b px-2 py-row text-left outline-none max-md:min-h-11 max-md:items-center hover:bg-highlight focus-visible:ring-2 focus-visible:ring-ring ${
+      className={`flex w-full cursor-pointer gap-2 border-border border-b border-dotted py-row text-left text-row max-md:min-h-11 max-md:items-center hover:bg-highlight ${focusRingInside} ${
         focused ? "bg-highlight" : ""
       }`}
     >
-      <span className="w-[9ch] shrink-0 text-label">{playTime(play)}</span>
-      <span className="w-[4ch] shrink-0">{teamAbbreviation(header, play.teamId)}</span>
+      <span className="w-[10ch] shrink-0 text-aside">{playTime(play)}</span>
+      <span className="w-[4ch] shrink-0 font-semibold">
+        {teamAbbreviation(header, play.teamId)}
+      </span>
       <span className={markKind(play) === "goal" ? "font-strong text-live" : ""}>
         {play.text}
         {note != null && <span className="font-quiet text-label"> {note}</span>}
@@ -61,10 +64,10 @@ export function PlaysList({
   /** The plays to list, in the game's order: the Key plays, or every play. */
   plays: readonly Play[];
 }) {
-  if (plays.length === 0) return <p className="text-label">No plays yet.</p>;
+  if (plays.length === 0) return <p className="py-row text-note">No plays yet.</p>;
   return (
     <div data-slot="plays-list" className="@container">
-      <div className="grid gap-x-8 border-rule-head border-t @3xl:grid-cols-2">
+      <div className="grid gap-x-8 border-rule border-t @3xl:grid-cols-2">
         {plays.toReversed().map((play) => (
           <PlayRow
             key={play.id}
@@ -136,11 +139,11 @@ export function ScoringSummary({
 }: ListProps & { plays: readonly Play[] }) {
   const { goals, shootout } = scoringPlays(plays);
   if (goals.length + shootout.length === 0) {
-    return <p className="text-label">No goals yet.</p>;
+    return <p className="py-row text-note">No goals yet.</p>;
   }
   const { home, away } = header;
   return (
-    <div data-slot="scoring-summary" className="max-w-4xl">
+    <div data-slot="scoring-summary" className="max-w-4xl border-rule border-t">
       {goals.map((play) => (
         <PlayRow
           key={play.id}
@@ -154,7 +157,9 @@ export function ScoringSummary({
       ))}
       {shootout.length > 0 && (
         <>
-          <h3 className="mt-4 mb-1 font-strong uppercase">Shootout</h3>
+          <h3 className="mt-6 border-rule border-b pb-1.5 font-strong text-kicker text-tag uppercase tracking-label">
+            Shootout
+          </h3>
           {shootout.map((play) => (
             <PlayRow
               key={play.id}

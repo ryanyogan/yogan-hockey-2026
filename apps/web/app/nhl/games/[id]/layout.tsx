@@ -1,5 +1,5 @@
 import type { GameHeader } from "@yogan-hockey/schemas";
-import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
+import { PageHeader } from "@yogan-hockey/ui/components/section";
 import type { Metadata } from "next";
 import { type ReactNode, Suspense } from "react";
 import { GameMatchup } from "../../../../components/game/game-matchup";
@@ -52,9 +52,9 @@ async function Matchup({ header }: { header: GameHeader }) {
  */
 function GameUnreadable({ pathname }: { pathname: string }) {
   return (
-    <Section data-slot="game-unreadable">
-      <SectionHeader title="Game" />
-      <p className="border-rule-head border-t px-2 py-row">
+    <section data-slot="game-unreadable">
+      <PageHeader title="Game" count="not read" />
+      <p className="pt-3 font-serif text-prose text-note leading-[1.4]">
         This game could not be read just now.{" "}
         {/* A plain link: the page is rendered again from nothing, which is the retry. */}
         <a href={pathname} className="tap-target font-strong underline">
@@ -66,7 +66,7 @@ function GameUnreadable({ pathname }: { pathname: string }) {
         </Link>
         .
       </p>
-    </Section>
+    </section>
   );
 }
 

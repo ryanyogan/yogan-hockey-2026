@@ -1,6 +1,6 @@
 import type { ScoreboardGame } from "@yogan-hockey/schemas";
 import { expect, test } from "vitest";
-import { lineScore } from "./home";
+import { lineScore } from "./story";
 
 function side(id: string): ScoreboardGame["home"] {
   return {
@@ -47,8 +47,8 @@ test("a line score names the game, heads its score by the game's state and marks
     caption: "Kraken 5, Capitals 3: line score",
     score: "F",
     sides: [
-      { id: "SEA", name: "Seattle", record: "4-2-0", score: 5, winner: true },
-      { id: "WSH", name: "Washington", record: null, score: 3, winner: false },
+      { id: "SEA", name: "Seattle", record: "4-2-0", shots: null, score: 5, winner: true },
+      { id: "WSH", name: "Washington", record: null, shots: null, score: 3, winner: false },
     ],
   });
 
@@ -64,4 +64,21 @@ test("a line score names the game, heads its score by the game's state and marks
   }
   // Live from the warm-up, which reads as a game to come: no score to show yet.
   expect(lineScore({ ...live, period: 0 }).score).toBeNull();
+});
+
+test("a game page's line score has each side's shots once there is a score, and none before", () => {
+  const header = game("1", "live", ["NYI", "NYR"]);
+  const played = {
+    ...header,
+    away: { ...header.away, score: 1, shots: 20 },
+    // A side whose shots the page was not sent has none, not nought.
+    home: { ...header.home, score: 2 },
+  };
+  expect(lineScore(played).sides.map((each) => [each.shots, each.score])).toEqual([
+    [20, 1],
+    [null, 2],
+  ]);
+  // Before the puck drops ESPN's nought shots are not a figure to print.
+  const toCome = { ...played, status: "scheduled" as const };
+  expect(lineScore(toCome).sides.map((each) => each.shots)).toEqual([null, null]);
 });

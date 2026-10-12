@@ -133,15 +133,15 @@ describe("describePlay", () => {
 });
 
 describe("a goal's sequence", () => {
-  /** The recorded game's sides: Buffalo at home in navy, Dallas away in green. */
-  const teams = { homeTeamId: BUFFALO, homeColour: "00468b", awayColour: "20864c" };
+  /** The recorded game's sides: Buffalo at home, Dallas away. */
+  const teams = { homeTeamId: BUFFALO };
   const scorer = (name: string) => [
     { athleteId: "1", name, shortName: name, role: "scorer" },
     { athleteId: "2", name: "Somebody Else", shortName: "S. Else", role: "assister" },
   ];
   const before = play({ homeScore: 1, awayScore: 1 });
 
-  test("an even-strength goal: the lamp's end, the team's colour, the score rolling up, the scorer", () => {
+  test("an even-strength goal: the lamp's end, the score rolling up, the scorer", () => {
     const bourque = goal({
       id: "g",
       teamId: DALLAS,
@@ -160,8 +160,6 @@ describe("a goal's sequence", () => {
       to: { x: -90.6, y: 0 },
       distance: Math.hypot(2, 7),
       side: "away",
-      // Green shows on white ice as it is, and is lifted a step to show on slate.
-      tint: { light: "#20864c", dark: "#489c6c" },
       score: { from: 1, to: 2 },
       scorer: "Mavrik Bourque",
       strength: null,
@@ -198,8 +196,6 @@ describe("a goal's sequence", () => {
     });
     expect(describePlay(benson, before, "right", teams)).toMatchObject({
       side: "home",
-      // Navy would vanish on slate: lifted towards white until it stands off the page.
-      tint: { light: "#00468b", dark: "#5482b1" },
       score: { from: 1, to: 2 },
       scorer: "Zach Benson",
       strength: "short-handed",
@@ -245,7 +241,7 @@ describe("a goal's sequence", () => {
     expect(describePlay(lagging, before, "right", teams)).toMatchObject({ score: null });
   });
 
-  test("a scorer ESPN gave no role is read from the play's words, and a team with no colour has no tint", () => {
+  test("a scorer ESPN gave no role is read from the play's words", () => {
     const unnamed = goal({
       teamId: BUFFALO,
       coordinate: { x: 70, y: 0 },
@@ -253,15 +249,15 @@ describe("a goal's sequence", () => {
       awayScore: 1,
       text: "Josh Norris Goal (13) Wrist Shot, assists: Zach Benson (30), Owen Power (20)",
     });
-    expect(
-      describePlay(unnamed, before, "right", { homeTeamId: BUFFALO, homeColour: null }),
-    ).toMatchObject({ scorer: "Josh Norris", tint: null });
+    expect(describePlay(unnamed, before, "right", teams)).toMatchObject({
+      scorer: "Josh Norris",
+    });
   });
 
   test("a save says none of it", () => {
     const stopped = describePlay(save({ coordinate: { x: 60, y: 0 } }), before, "right", teams);
     expect(stopped).not.toHaveProperty("score");
-    expect(stopped).not.toHaveProperty("tint");
+    expect(stopped).not.toHaveProperty("scorer");
   });
 
   test("the words of a goal: its scorer, the tally, how, and the strength", () => {

@@ -51,7 +51,9 @@ export function doNotKeepPage(): void {
  * The page of last resort: for a request that vinext could not answer at all, which is a failure
  * of the root layout. There is then no shell and no stylesheet to count on (`app/error.tsx` is
  * drawn inside the layout, and with it present vinext does not turn to `app/global-error.tsx`
- * on the server), so this is whole in itself, in the site's type and colours.
+ * on the server), so this is whole in itself, in the Agate look as far as a page with no fonts
+ * to load can be: the wordmark and the title in a device's serif, the rules and the colours the
+ * theme's own.
  */
 const LAST_RESORT_PAGE = `<!doctype html>
 <html lang="en">
@@ -62,18 +64,23 @@ const LAST_RESORT_PAGE = `<!doctype html>
 <style>
 :root { color-scheme: light dark; --background: #fafaf8; --foreground: #111111; }
 @media (prefers-color-scheme: dark) { :root { --background: #121212; --foreground: #eceae4; } }
-body { margin: 0; padding: 16px; background: var(--background); color: var(--foreground);
-  font: 13px/1.5 "Arial Narrow", "Helvetica Neue", Arial, sans-serif; }
+body { margin: 0 auto; max-width: 1320px; padding: 0 16px 48px; background: var(--background);
+  color: var(--foreground); font: 17px/1.4 Georgia, "Times New Roman", serif; }
 a { color: inherit; font-weight: bold; }
-.wordmark { display: block; margin-bottom: 32px; font-size: 14px; text-decoration: none; }
-h1 { margin: 0 0 4px; font-size: inherit; text-transform: uppercase; }
-h1 span { font-weight: normal; text-transform: none; opacity: 0.5; }
-p { margin: 0; padding: 6px 8px;
-  border-top: 1px solid color-mix(in srgb, currentColor 20%, transparent); }
+.wordmark { display: block; margin: 18px 0 12px; text-align: center; white-space: nowrap;
+  font-size: min(54px, 13.85vw); line-height: 0.95; letter-spacing: -0.025em;
+  text-decoration: none; }
+.rule { margin-bottom: 16px; border-top: 3px solid; padding-top: 2px; }
+.rule::after { content: ""; display: block; border-top: 1px solid; }
+h1 { margin: 0; font-size: 30px; line-height: 1.1; letter-spacing: -0.01em; }
+h1 span { font: 13px/1.5 "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  letter-spacing: 0; opacity: 0.7; }
+p { margin: 0; padding-top: 12px; }
 </style>
 </head>
 <body>
-<a class="wordmark" href="/">YOGAN/HOCKEY</a>
+<a class="wordmark" href="/">Yogan Hockey</a>
+<div class="rule"></div>
 <h1>Page <span>not read</span></h1>
 <p>The site could not draw this page just now.
 <a href="">Try again</a> or go to <a href="/">tonight</a>.</p>

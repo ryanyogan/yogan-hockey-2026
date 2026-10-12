@@ -3,17 +3,16 @@
 import type { GameHeader, GameHeaderSide, Play } from "@yogan-hockey/schemas";
 import { LiveMarker } from "@yogan-hockey/ui/components/marker";
 import { type ReactNode, useRef, useState } from "react";
-import { goalCall, goalFlag, STRENGTH_WORDS } from "../../lib/game/goal";
+import { shotsOnGoal } from "../../lib/agate-copy";
+import { goalCall, STRENGTH_WORDS } from "../../lib/game/goal";
 import { type GameClock, NO_PENALTIES, penaltyState } from "../../lib/game/penalties";
 import { gameStatus, markKind, playTime } from "../../lib/game/plays";
 import { attackedEnd, type RinkEnd } from "../../lib/game/rink";
 import { periodLabel } from "../../lib/game/timeline";
 import { LocalTime } from "../local-time";
-import { TeamMark } from "../team-mark";
 import { PenaltyBox, PenaltyBoxSpace } from "./penalty-box";
 import { Rink } from "./rink";
 import { RinkAnimations } from "./rink-animations";
-import { teamColour } from "./team-colour";
 
 /*
  * Where the overlay sits, as fractions of the rink's width (`cqw`), so it keeps its place at any
@@ -22,9 +21,13 @@ import { teamColour } from "./team-colour";
  *
  * The scores stand in the strip between an end-zone faceoff circle (which ends 23.5% in) and the
  * blue line (37.7% in), and the clock over centre ice above the centre circle, so no circle is
- * written over. Below `@2xl` (a rink 672px wide: a phone, or a narrow column beside the sidebar)
+ * written over. Below `@2xl` (a rink 672px wide: a phone, or a narrow window)
  * a one-line "BUF · 24 shots" no longer fits that strip, so each side becomes a centred stack,
  * and the caption, too long for the ice, moves under the rink.
+ *
+ * The type is the page's two voices: the figures are the serif's, as a big number is, and every
+ * word beside them is agate. A caption on the ice is a slip of paper with a plain ink rule round
+ * it; under the ice it is a line over a hairline. Nothing here is filled but the goal's red flag.
  */
 const SCORE_SIDE = {
   away: "left-[30.6cqw] -translate-x-1/2 text-center @2xl:left-[24.5cqw] @2xl:translate-x-0 @2xl:text-left",
@@ -38,6 +41,7 @@ function OverIce({
   slot,
   place,
   line,
+  word = false,
   wide,
   figure,
   narrow,
@@ -45,6 +49,12 @@ function OverIce({
   slot: string;
   place: Place;
   line: ReactNode;
+  /**
+   * The figure is a club's abbreviation, not a score. Three serif capitals at a score's 24px are
+   * as wide as the strip they stand in on a phone (51px of a 358px rink) and touched the blue
+   * line, so there they are 18px on the same 24px line.
+   */
+  word?: boolean;
   /** Joins `line` where the rink is wide enough to write one line. */
   wide: ReactNode;
   figure: ReactNode;
@@ -61,7 +71,11 @@ function OverIce({
         {line}
         <span className="hidden @2xl:inline"> · {wide}</span>
       </div>
-      <div className="font-strong text-2xl leading-none @2xl:text-[clamp(24px,5.36cqw,60px)]">
+      <div
+        className={`font-bold font-serif @2xl:text-[clamp(24px,5.36cqw,60px)] @2xl:leading-none ${
+          word ? "text-[18px] leading-6" : "text-2xl leading-none"
+        }`}
+      >
         {figure}
       </div>
       <div className="whitespace-nowrap text-small text-note leading-[15px] @2xl:hidden">
@@ -76,13 +90,8 @@ function Score({ side, place }: { side: GameHeaderSide; place: Place }) {
     <OverIce
       slot="rink-score"
       place={place}
-      line={
-        <>
-          <TeamMark teamId={side.id} size="line" eager className="mr-[0.4em]" />
-          {side.abbreviation}
-        </>
-      }
-      wide={`${side.shots} shots`}
+      line={side.abbreviation}
+      wide={shotsOnGoal(side.shots)}
       figure={
         // A window one figure tall. A goal's sequence (`rink-player.ts`) writes the score before
         // the goal above the figure and rolls the two up through the window; the figure itself is
@@ -103,17 +112,21 @@ function Score({ side, place }: { side: GameHeaderSide; place: Place }) {
   );
 }
 
+/* On a slip of paper, as a caption is: the centre line runs under the clock, not through it. */
 const STATUS_PLACE =
-  "absolute top-1 left-1/2 -translate-x-1/2 whitespace-nowrap text-center text-small leading-[15px] @2xl:top-[1.43cqw] @2xl:text-[clamp(10px,1.43cqw,16px)] @2xl:leading-normal";
-const STATUS_KICKER = "block uppercase @2xl:text-[clamp(10px,1.07cqw,12px)] @2xl:leading-[1.33]";
-const CAPTION_ON_ICE = "max-w-[50cqw] truncate bg-black/70 px-4 py-1 text-slate-100 leading-5";
+  "absolute top-1 left-1/2 -translate-x-1/2 whitespace-nowrap bg-background px-1 text-center @2xl:px-2 text-small leading-[15px] @2xl:top-[1.43cqw] @2xl:text-[clamp(10px,1.43cqw,16px)] @2xl:leading-normal";
+const STATUS_KICKER =
+  "block font-semibold uppercase @2xl:tracking-head @2xl:text-[clamp(10px,1.07cqw,12px)] @2xl:leading-[1.33]";
+const CAPTION_ON_ICE =
+  "max-w-[50cqw] truncate border border-rule bg-background px-4 py-1 text-small leading-5";
 /* Under the ice where the ice is too small to write on. Two lines tall, so it never jumps. */
 const CAPTION_UNDER_ICE =
-  "mt-1 line-clamp-2 min-h-10 bg-secondary px-2 py-0.5 leading-[18px] @2xl:hidden";
+  "mt-1 line-clamp-2 min-h-10 border-rule-head border-b py-0.5 text-small leading-[18px] @2xl:hidden";
 /* A goal's caption is a flag beside two lines, each cut short, in the same room as any other's. */
-const GOAL_CAPTION_ON_ICE = "flex max-w-[56cqw] items-stretch bg-black/70 text-slate-100 leading-5";
+const GOAL_CAPTION_ON_ICE =
+  "flex max-w-[56cqw] items-stretch border border-rule bg-background text-small leading-5";
 const GOAL_CAPTION_UNDER_ICE =
-  "mt-1 flex min-h-10 items-stretch bg-secondary leading-[18px] @2xl:hidden";
+  "mt-1 flex min-h-10 items-stretch border-rule-head border-b text-small leading-[18px] @2xl:hidden";
 
 /**
  * The rink before the game: the same ice at the same size as `GameRink`, so the page does not
@@ -128,12 +141,8 @@ export function MatchupRink({ header, status }: { header: GameHeader; status?: s
     <OverIce
       slot="rink-team"
       place={place}
-      line={
-        <>
-          <TeamMark teamId={header[place].id} size="line" eager className="mr-[0.4em]" />
-          {place}
-        </>
-      }
+      line={place}
+      word
       wide={header[place].record ?? "no record"}
       figure={header[place].abbreviation}
       narrow={header[place].record ?? "no record"}
@@ -201,7 +210,7 @@ function GoalKicker({ live }: { live: boolean }) {
     <span
       data-fx="goal-kicker"
       aria-hidden="true"
-      className={`${STATUS_KICKER} absolute inset-x-0 font-bold text-live tracking-wider opacity-0 before:content-['Goal'] ${
+      className={`${STATUS_KICKER} absolute inset-x-0 font-bold text-live opacity-0 before:content-['Goal'] ${
         live ? "top-0" : "top-full"
       }`}
     />
@@ -209,8 +218,7 @@ function GoalKicker({ live }: { live: boolean }) {
 }
 
 /**
- * The play in focus, in words. A goal's are laid out as the approved prototype has them: a flag
- * in the team's colour, the scorer, and how it was scored, led by the strength so that a long
+ * The play in focus, in words. A goal's are a flag in the one red, the scorer, and how it was scored, led by the strength so that a long
  * list of assists cannot push it out of sight.
  */
 function Caption({ play, team }: { play: Play; team: GameHeaderSide | undefined }) {
@@ -232,12 +240,11 @@ function Caption({ play, team }: { play: Play; team: GameHeaderSide | undefined 
       <span
         data-fx="caption-part"
         data-slot="goal-flag"
-        style={goalFlag(team?.color)}
-        className="flex flex-none items-center bg-live px-3 font-bold text-white tracking-wider"
+        className="flex flex-none items-center bg-kicker px-3 font-bold text-background text-tag tracking-mark"
       >
         GOAL
       </span>
-      <span data-fx="caption-part" className="min-w-0 self-center px-3 py-0.5">
+      <span data-fx="caption-part" className="min-w-0 self-center px-3 py-0.5 max-@2xl:pr-0">
         <span data-slot="goal-scorer" className="block truncate font-bold">
           {team && `${team.abbreviation} · `}
           {who} {time}
@@ -254,7 +261,7 @@ function Caption({ play, team }: { play: Play; team: GameHeaderSide | undefined 
  * The rink as the page: the ice filling the width, the score, shots and clock laid over it, and
  * the play in focus ringed and captioned. Shots, saves, misses and penalties are played on the
  * ice as they arrive, and when a play is picked (`RinkAnimations`). Under it is the penalty box,
- * and while a team has the advantage the zone it attacks is ruled in its colour.
+ * and while a team has the advantage the zone it attacks is ruled in ink.
  */
 export function GameRink({
   header,
@@ -326,7 +333,7 @@ export function GameRink({
     ahead && period === penalties.period
       ? attackedEnd(plays, header.home.id, ahead.id, period)
       : null;
-  const powerPlay = ahead && attacked ? { end: attacked, style: teamColour(ahead) } : null;
+  const powerPlay = ahead && attacked ? { end: attacked } : null;
   return (
     <div data-slot="game-rink" className="@container">
       <div className="relative">
@@ -336,8 +343,6 @@ export function GameRink({
           game={plays}
           plays={played}
           homeTeamId={header.home.id}
-          homeColour={header.home.color}
-          awayColour={header.away.color}
           focusId={focus?.id ?? null}
           picked={picked}
           live={header.status === "live"}

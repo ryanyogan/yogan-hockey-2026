@@ -3,6 +3,7 @@ import { PenaltyBoxSpace } from "./game/penalty-box";
 import { Rink } from "./game/rink";
 import { FIXED_GAME_COLUMNS, GAME_SCORE_CELL, GAME_TEXT_CELL } from "./scoreboard/game-ledger";
 import { ScoresTitle } from "./scoreboard/live-scores";
+import { storyDeck, storyHeadline, storyKicker, storyRule } from "./story/type";
 
 /**
  * The placeholders of the live page and a game's page (#95), each drawn by its
@@ -57,15 +58,33 @@ export function LiveSkeleton() {
 export function GameSkeleton() {
   return (
     <div data-slot="game-skeleton">
+      {/* The story: its heavy rule, then the kicker's, the headline's and the deck's lines. */}
+      <div
+        aria-hidden="true"
+        className={`mb-6 grid gap-x-8 gap-y-3 lg:grid-cols-[minmax(0,1fr)_minmax(320px,420px)] ${storyRule}`}
+      >
+        <div className="flex flex-col gap-3">
+          <p className={storyKicker}>
+            <SkeletonBar width="lg" />
+          </p>
+          <p className={storyHeadline}>
+            <SkeletonBar width="xl" />
+          </p>
+          <p className={storyDeck}>
+            <SkeletonBar width="xl" />
+          </p>
+        </div>
+        <div className="h-[89px] border-rule border-y" />
+      </div>
       <div className="@container" aria-hidden="true">
         <Rink plays={[]} focus={null} />
         <PenaltyBoxSpace />
-        <p className="mt-1 min-h-10 bg-secondary px-2 py-0.5 leading-[18px] @2xl:hidden">
+        <p className="mt-1 min-h-10 border-rule-head border-b py-0.5 text-small leading-[18px] @2xl:hidden">
           <SkeletonBar width="lg" />
         </p>
       </div>
       <div className="mt-4" aria-hidden="true">
-        <div className="h-12 border border-rule" />
+        <div className="h-14 border border-rule" />
         <p className="mt-1">
           <SkeletonBar width="xl" />
         </p>

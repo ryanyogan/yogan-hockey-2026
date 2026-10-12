@@ -54,6 +54,9 @@ const WORD_JOINER = "⁠";
 export const rec = (record: string): string =>
   record.replaceAll("-", `${WORD_JOINER}-${WORD_JOINER}`);
 
+/** A side's shots over the ice: "27 shots", "1 shot". */
+export const shotsOnGoal = (shots: number): string => `${shots} ${shots === 1 ? "shot" : "shots"}`;
+
 const capitalized = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
 
 /** The side ahead and the side behind. Level, which no final is, the home side is put first. */

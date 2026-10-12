@@ -79,7 +79,6 @@ describe("Ledger, an agate table", () => {
   });
 
   it("makes every row a thumb tall on a phone, a link or with one in a cell", () => {
-    expect(table(<LedgerRow interactive />).slot("ledger-row").classes).toContain("max-md:h-11");
     expect(table(<LedgerRow />).slot("ledger-row").classes).toContain("max-md:h-11");
   });
 

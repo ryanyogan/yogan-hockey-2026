@@ -1,8 +1,7 @@
 import type { Play } from "@yogan-hockey/schemas";
-import { type CSSProperties, type Ref, useId } from "react";
-import { type MarkKind, markKind, playTime } from "../../lib/game/plays";
+import { type Ref, useId } from "react";
+import { MARK_WORDS, type MarkKind, markKind, playTime } from "../../lib/game/plays";
 import { RINK, type RinkEnd, rinkPoint } from "../../lib/game/rink";
-import { TEAM_STROKE } from "./team-colour";
 
 const {
   halfLength,
@@ -30,25 +29,36 @@ const VIEW_BOX = [
 /** The goal lines stop short of the boards, where the corners have begun to turn. */
 const GOAL_LINE_REACH = 37;
 
-/** A play's dot. On white ice each colour is a step darker than on dark ice. */
+/**
+ * A play's dot, in the page's own inks (`docs/design/agate.md`: one red, and nothing else
+ * coloured). A goal is the red; a save is ink and a shot grey; a penalty and a hit are rings,
+ * ink and grey; anything else is the faintest grey. The kinds are told apart by weight and by
+ * whether they are filled, since they cannot be by hue, and `RinkKey` says which is which.
+ */
 const MARK_FILL: Record<MarkKind, string> = {
-  goal: "fill-red-600 dark:fill-red-500",
-  penalty: "fill-amber-500",
-  save: "fill-sky-500 dark:fill-sky-400",
-  shot: "fill-slate-500 dark:fill-slate-400",
-  hit: "fill-violet-500 dark:fill-violet-400",
-  other: "fill-slate-400 dark:fill-slate-500",
+  goal: "fill-kicker",
+  penalty: "fill-background",
+  save: "fill-foreground",
+  shot: "fill-label",
+  hit: "fill-background",
+  other: "fill-border",
 };
+/** The ring of a kind that is one. The play in focus has an ink ring of its own instead. */
+const MARK_RING: Partial<Record<MarkKind, string>> = {
+  penalty: "stroke-foreground [stroke-width:0.6]",
+  hit: "stroke-label [stroke-width:0.5]",
+};
+const markClass = (kind: MarkKind) => `${MARK_FILL[kind]} ${MARK_RING[kind] ?? ""}`.trimEnd();
 
 /**
  * The colour of what an animation draws (`RinkAnimation`'s kinds), read from `data-kind` on the
  * layer it is drawn in: a goal's and a save's as their dots, a miss's as a shot's.
  */
 const FX_STROKE = [
-  "group-data-[kind=goal]/fx:stroke-red-600 dark:group-data-[kind=goal]/fx:stroke-red-500",
-  "group-data-[kind=save]/fx:stroke-sky-500 dark:group-data-[kind=save]/fx:stroke-sky-400",
-  "group-data-[kind=miss]/fx:stroke-slate-500 dark:group-data-[kind=miss]/fx:stroke-slate-400",
-  "group-data-[kind=penalty]/fx:stroke-amber-500",
+  "group-data-[kind=goal]/fx:stroke-kicker",
+  "group-data-[kind=save]/fx:stroke-foreground",
+  "group-data-[kind=miss]/fx:stroke-label",
+  "group-data-[kind=penalty]/fx:stroke-foreground",
 ].join(" ");
 
 /** Radii in feet: a goal is larger than any other play, and the play in focus larger again. */
@@ -67,11 +77,34 @@ function Mark({ play, focused }: { play: Play; focused: boolean }) {
       cx={x}
       cy={y}
       r={focused ? RADIUS.focus : kind === "goal" ? RADIUS.goal : RADIUS.play}
-      className={focused ? `${MARK_FILL[kind]} stroke-foreground` : MARK_FILL[kind]}
+      className={focused ? `stroke-foreground ${MARK_FILL[kind]}` : markClass(kind)}
       strokeWidth={focused ? 1 : 0}
     >
       <title>{`${playTime(play)} ${play.text}`}</title>
     </circle>
+  );
+}
+
+/**
+ * The key to the dots, under the ice: each kind drawn as `Mark` draws it, with its name. The
+ * drawing says nothing to a screen reader, which is read the names alone.
+ */
+export function RinkKey() {
+  return (
+    <ul
+      data-slot="rink-key"
+      aria-label="What the dots on the rink are"
+      className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-label text-small"
+    >
+      {MARK_WORDS.map(([kind, word]) => (
+        <li key={kind} className="flex items-center gap-1.5 whitespace-nowrap">
+          <svg viewBox="-4 -4 8 8" aria-hidden="true" className="size-3 shrink-0">
+            <circle r={kind === "goal" ? RADIUS.goal : RADIUS.play} className={markClass(kind)} />
+          </svg>
+          {word}
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -84,7 +117,7 @@ function Goal({ side }: { side: 1 | -1 }) {
         data-slot="rink-crease"
         d={`M ${x} ${-creaseRadius} A ${creaseRadius} ${creaseRadius} 0 0 ${side > 0 ? 0 : 1} ${x} ${creaseRadius}`}
         strokeWidth={0.4}
-        className="fill-sky-400/20 stroke-red-600/60 data-lit:stroke-sky-500 dark:fill-sky-400/15 dark:stroke-red-500/60 dark:data-lit:stroke-sky-400"
+        className="fill-highlight stroke-foreground [stroke-opacity:0.6] data-lit:[stroke-opacity:1]"
       />
       <rect
         data-slot="rink-net"
@@ -132,9 +165,9 @@ function GoalLamp({ side }: { side: 1 | -1 }) {
 }
 
 /**
- * An end zone, from its blue line to the boards, which a goal floods with the scoring team's
- * colour. The player gives it the colour as `--tint` and `--tint-dark`, so the theme picks; a
- * team with no colour gets the goal's red. Drawn before `PowerPlayZones`, whose rules read it.
+ * An end zone, from its blue line to the boards, which a goal floods with the page's one red
+ * whichever club scored (`docs/design/agate.md`). Drawn before `PowerPlayZones`, whose rules read
+ * it.
  */
 function EndTint({ side }: { side: 1 | -1 }) {
   const [line, boards, turn] = [side * blueLine, side * halfLength, side * (halfLength - corner)];
@@ -150,7 +183,7 @@ function EndTint({ side }: { side: 1 | -1 }) {
         `A ${corner} ${corner} 0 0 ${sweep} ${turn} ${halfWidth} H ${line} Z`,
       ].join(" ")}
       opacity={0}
-      className="[fill:var(--tint,var(--live))] dark:[fill:var(--tint-dark,var(--live))]"
+      className="fill-live"
     />
   );
 }
@@ -179,7 +212,7 @@ function Effects() {
 }
 
 /** The team with the advantage, and the end it attacks while it has it. */
-export type RinkPowerPlay = { end: RinkEnd; style: CSSProperties };
+export type RinkPowerPlay = { end: RinkEnd };
 
 /** Ruled lines this far apart, in feet, at 45 degrees. */
 const HATCH = 5;
@@ -195,8 +228,8 @@ const UNDER_A_GOAL = {
 } as const;
 
 /**
- * The power play on the ice: the zone the team with the advantage attacks, ruled in its colour
- * (`--team`). A goal floods an end and lets go; this stays for as long as the advantage does, so
+ * The power play on the ice: the zone the team with the advantage attacks, ruled in ink. A goal
+ * floods an end and lets go; this stays for as long as the advantage does, so
  * it is lines and not a fill, and the dots stay readable through it.
  *
  * Both ends are always drawn and only their opacity changes, so the zone comes and goes without
@@ -206,7 +239,7 @@ function PowerPlayZones({ powerPlay }: { powerPlay: RinkPowerPlay | null }) {
   const id = useId();
   const [hatch, boards] = [`${id}hatch`, `${id}boards`];
   return (
-    <g data-slot="rink-power-play" style={powerPlay?.style}>
+    <g data-slot="rink-power-play">
       <defs>
         <pattern
           id={hatch}
@@ -215,7 +248,7 @@ function PowerPlayZones({ powerPlay }: { powerPlay: RinkPowerPlay | null }) {
           patternUnits="userSpaceOnUse"
           patternTransform="rotate(45)"
         >
-          <line y2={HATCH} strokeWidth={1.1} className={TEAM_STROKE} />
+          <line y2={HATCH} strokeWidth={1.1} className="stroke-foreground" />
         </pattern>
         <clipPath id={boards}>
           <rect
@@ -262,7 +295,7 @@ export function Rink({
   plays: readonly Play[];
   /** The play to highlight. */
   focus?: Play | null;
-  /** The zone to rule in the colour of the team with the advantage. */
+  /** The zone the team with the advantage attacks, which is ruled. */
   powerPlay?: RinkPowerPlay | null;
 }) {
   // Goals over the rest, so a goal is never hidden under the shot before it.
@@ -283,12 +316,13 @@ export function Rink({
         width={2 * halfLength}
         height={2 * halfWidth}
         rx={corner}
-        className="fill-white stroke-sky-900/35 dark:fill-sky-200/[0.04] dark:stroke-sky-200/35"
+        strokeWidth={0.6}
+        className="fill-background stroke-rule"
       />
       <EndTint side={-1} />
       <EndTint side={1} />
       <PowerPlayZones powerPlay={powerPlay} />
-      <g fill="none" className="stroke-red-600 dark:stroke-red-500">
+      <g fill="none" className="stroke-foreground">
         <line data-line="centre" y1={-halfWidth} y2={halfWidth} strokeOpacity={0.6} />
         {[-goalLine, goalLine].map((x) => (
           <line
@@ -315,7 +349,7 @@ export function Rink({
           )),
         )}
       </g>
-      <g fill="none" className="stroke-blue-600 dark:stroke-blue-500">
+      <g fill="none" className="stroke-foreground">
         {[-blueLine, blueLine].map((x) => (
           <line
             key={x}

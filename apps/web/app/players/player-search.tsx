@@ -1,5 +1,6 @@
 "use client";
 
+import { focusRing } from "@yogan-hockey/ui/components/nav-item";
 import { useSearchParams } from "next/navigation";
 import { type FormEvent, useEffect, useId, useRef, useState, useTransition } from "react";
 import { useDebouncedCallback } from "use-debounce";
@@ -54,7 +55,7 @@ export function PlayerSearch({ initial }: { initial: Search }) {
     });
   }, TYPING_PAUSE_MS);
 
-  // Arriving by a link (the sidebar, Back) starts the box from that URL. The box's own rewrites
+  // Arriving by a link (the section nav, Back) starts the box from that URL. The box's own rewrites
   // of the address match what is typed, and a refresh of the page (the shell asks for one when a
   // game goes final) leaves the address alone, so neither disturbs the typing.
   const urlQuery = (useSearchParams().get("q") ?? "").trim();
@@ -82,11 +83,11 @@ export function PlayerSearch({ initial }: { initial: Search }) {
 
   return (
     <>
-      <search className="block px-2">
+      <search className="block max-md:mt-3">
         <form action="/players" method="get" onSubmit={submit}>
           <label
             htmlFor={inputId}
-            className="block py-1 font-label text-label text-small uppercase tracking-head"
+            className="block py-1 font-bold text-head text-label uppercase tracking-head"
           >
             player name
           </label>
@@ -102,7 +103,7 @@ export function PlayerSearch({ initial }: { initial: Search }) {
             spellCheck={false}
             placeholder="two letters or more"
             // 16px on a phone, where a smaller field makes Safari zoom the page on focus.
-            className="w-full max-w-md border border-rule-head bg-transparent px-2 py-row text-base outline-none max-md:min-h-11 placeholder:text-muted-foreground focus-visible:border-foreground md:text-body"
+            className={`w-full max-w-md appearance-none rounded-none border border-rule bg-transparent px-2 py-row text-base max-md:min-h-11 placeholder:text-aside md:text-body ${focusRing}`}
           />
         </form>
       </search>
@@ -113,7 +114,7 @@ export function PlayerSearch({ initial }: { initial: Search }) {
           className={
             search.status === "found" && search.players.length > 0
               ? "sr-only"
-              : "px-2 text-muted-foreground"
+              : "font-serif text-prose text-note leading-[1.4]"
           }
         >
           {searchSummary(search)}

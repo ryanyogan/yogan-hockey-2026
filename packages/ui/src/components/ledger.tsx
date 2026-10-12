@@ -76,7 +76,6 @@ function LedgerBody(props: ComponentProps<"tbody">) {
 function LedgerRow({
   className,
   live = false,
-  interactive: _interactive = false,
   cutoff = false,
   ...props
 }: ComponentProps<"tr"> & {
@@ -85,12 +84,6 @@ function LedgerRow({
    * whose status says so in the one red (a `LiveMarker`).
    */
   live?: boolean;
-  /**
-   * Does nothing, and is kept for the callers that still pass it: every row is tinted under the
-   * pointer and is 44px tall on a phone, a link or not, since a row that is not a link often has
-   * one in a cell.
-   */
-  interactive?: boolean;
   /** Draws a plain ink rule under the row: the last playoff place in the standings. */
   cutoff?: boolean;
 }) {

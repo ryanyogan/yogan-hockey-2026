@@ -80,7 +80,8 @@ describe("the status of a page whose render failed", () => {
     expect(response.status).toBe(500);
     expect(response.headers.get("content-type")).toBe("text/html; charset=utf-8");
     const page = await response.text();
-    expect(page).toContain("YOGAN/HOCKEY");
+    expect(page).toContain("Yogan Hockey</a>");
+    expect(page).not.toContain("YOGAN/HOCKEY");
     expect(page).toContain("Try again");
     expect(page).not.toContain("espn.com");
   });

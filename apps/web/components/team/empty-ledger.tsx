@@ -1,12 +1,16 @@
 import type { ComponentProps, ReactNode } from "react";
+import { PROSE } from "../agate-type";
 
-/** The line drawn where a ledger would be, when there is nothing yet to put in it. */
+/**
+ * The line drawn where a ledger would be, when there is nothing yet to put in it: a sentence of
+ * serif prose under the section's own rule, starting on the label's line.
+ */
 export function EmptyLedger({
   children,
   ...props
 }: { children: ReactNode } & Pick<ComponentProps<"p">, "role">) {
   return (
-    <p className="border-rule-head border-t px-2 py-row text-note" {...props}>
+    <p className={`py-2 ${PROSE}`} {...props}>
       {children}
     </p>
   );

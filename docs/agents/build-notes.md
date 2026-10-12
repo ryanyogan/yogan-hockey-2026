@@ -2,6 +2,22 @@
 
 What earlier tickets learned that the code does not show. Read before building; add a line when you learn something the next subagent would otherwise rediscover. Keep each note to what cannot be found by reading the code.
 
+## The NHL routes in agate (#173, first half)
+
+Scores, Standings, Teams and the team page, which the prototype does not draw. `node scripts/agate-routes.mjs <site> [outDir] [name-prefix]` shoots each at 390 and 1440 in both themes (`docs/design/agate/<route>-<width>-<theme>.png`, the top `MAX_HEIGHT` px) and checks everything under `<main>` by computed style: the two faces, text and rule colours from the tokens only, no radius or shadow, no fill but `--highlight` and ink, tabular figures, `scrollWidth`. It prints each page's type roles and rules to be read against `agate.md`.
+
+- **A port that answers is not yours because you asked for it.** `pnpm dev` on a port another worktree holds fails ("Port 5473 is already in use") while everything pointed at the port goes on working, against the other worktree's code. Look for the port first (`ss -ltn | grep :<port>`) and read `dev.log` before believing a measurement.
+- **The worktree guard refuses a heredoc and a compound command with `git` in it.** Edits that are not worth an `Edit` each go in a Python file under `node_modules/.tmp/` and are run from there.
+- **No row has a team's mark; the team's headline has the one** (question 3). `size="header"` is 20px, set for a 13px title: beside a 40px headline it is drawn at the capitals' height by classes that override the box (`size-[0.72em]!`). `team-mark.tsx` is unchanged, since the game page's header shares it: when both headers are headlines the size belongs there.
+- **A team is its agate name where a row has room**, and what a phone shows differs by table: the standings and a schedule's opponent are the agate name at every width ("N.Y. Islanders" fits eight columns at 390), a slate's row and the Next Game card keep the abbreviation on a phone. `toHaveText` sees both where both are in the markup ("NSHNashville 1-1-0").
+- **A live row is not tinted on these routes.** The prototype defines `--live-tint` and never uses it; `LedgerRow live` still tints, so a caller that wants the mark without the fill passes `className="bg-transparent"`. The status is the red `LiveMarker`.
+- **A won game is bold and a lost one grey**, not green and red: `--positive` and `--negative` are kept for a goal difference alone, which is what `agate.md` gives them to.
+- **The serif roles with no utility yet are in `components/agate-type.ts`** (`HEADLINE`, `PROSE`, `MORE`), in arbitrary values, so nothing was added to `theme.css` or `cn.ts` while Home's sizes were becoming tokens there. Rewrite them in those tokens and delete what doubles.
+- **A flex row squeezes a `HeartButton`** (16px to 14.1px beside a long headline), and its reach is measured from its box: 43.1px. `shrink-0`.
+- **Four tabs do not fit a phone at the tabs' own padding**: the last is off the edge of a strip nobody knows to scroll. The standings' views give up padding and tracking below `md` through the strip's `className` (`max-md:[&>a]:px-1`); they fit at 390 (measured: the strip's `scrollWidth` is its width) and scroll 3px at 360.
+- **The Teams tab is a list in CSS columns** (`columns-[280px]`), read down each column, so `getByRole("table")` finds nothing there: a team is a `listitem`.
+- **A status in a slate's row is `statusText()` once the game has one** ("Final/OT"), and a live one is the status line capitalised by CSS (`capitalize` leaves "2nd 12:34" alone and makes "end 1st" "End 1st"). A link's name in a test is then "NSH at TOR, Final".
+
 ## The primitives in agate (#172)
 
 `packages/ui/src/components/*` are redrawn from the prototype's `.agate`, `.label`, `.band-title`, `.conf-tabs` and `.mark`. `node scripts/agate-primitives.mjs <prototype> <site> [outDir]` compares the computed styles of each with its equivalent in the prototype, at 390 and 1440 in both themes, and exits 1 on a difference that is not listed in its `KNOWN` with a reason.

@@ -1,5 +1,30 @@
 import { describe, expect, it } from "vitest";
-import { isTeamId, legacyTeamTabRedirects, teamPageHref, teamTabOfPath } from "./team-page";
+import {
+  isTeamId,
+  legacyTeamTabRedirects,
+  teamPageHref,
+  teamPlace,
+  teamTabOfPath,
+} from "./team-page";
+
+describe("where a team plays, for the line over its name", () => {
+  const standing = {
+    conference: { name: "Eastern Conference", abbreviation: "East" },
+    division: { name: "Atlantic Division", abbreviation: "ATL" },
+  };
+
+  it("is its city, then its conference and division", () => {
+    expect(teamPlace({ location: "Toronto" }, standing)).toEqual([
+      "Toronto",
+      "Eastern Conference",
+      "Atlantic Division",
+    ]);
+  });
+
+  it("is the city alone when the standings could not be read", () => {
+    expect(teamPlace({ location: "Toronto" }, null)).toEqual(["Toronto"]);
+  });
+});
 
 describe("the address of each tab of a team's page", () => {
   it("is the team's own address for the schedule", () => {

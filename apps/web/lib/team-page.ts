@@ -1,3 +1,5 @@
+import type { StandingsRow, Team } from "@yogan-hockey/schemas";
+
 /**
  * A team page's tabs, in the order they are drawn. Each is a page of its own under the team's
  * layout (`app/nhl/teams/[id]/layout.tsx`): the schedule at the team's address, the others at a
@@ -34,6 +36,20 @@ export function legacyTeamTabRedirects() {
     destination: teamPageHref(":id", tab),
     permanent: true,
   }));
+}
+
+/**
+ * Where a team plays, for the red line over its name: its city, then its conference and division.
+ * `standing` is the team's row in the league standings, which is where the last two come from;
+ * without it the line is the city alone.
+ */
+export function teamPlace(
+  team: Pick<Team, "location">,
+  standing: Pick<StandingsRow, "conference" | "division"> | null,
+): string[] {
+  return [team.location, standing?.conference.name, standing?.division.name].filter(
+    (part) => part != null,
+  );
 }
 
 /**

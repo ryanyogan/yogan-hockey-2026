@@ -12,17 +12,20 @@ import {
 } from "@yogan-hockey/ui/components/ledger";
 import { FavoriteMarker, LiveMarker } from "@yogan-hockey/ui/components/marker";
 import type { ReactNode } from "react";
+import { agateName, statusText } from "../../lib/agate-copy";
 import { isFavoriteGame } from "../../lib/favorites";
 import { gameHref, gameStatusLine, gameWhere, hasScore } from "../../lib/scoreboard-view";
 import { Link } from "../link";
-import { TeamMark } from "../team-mark";
 import { GameStatus } from "./game-status";
 
 function Team({ side, favorite }: { side: ScoreboardSide; favorite: boolean }) {
   return (
     <>
-      <TeamMark teamId={side.id} />
-      <span className={side.winner ? "font-strong" : undefined}>{side.abbreviation}</span>{" "}
+      {/* Its agate name where there is room and its abbreviation on a phone: one is shown. */}
+      <span className={side.winner ? "font-strong" : undefined}>
+        <span className="sm:hidden">{side.abbreviation}</span>
+        <span className="max-sm:hidden">{agateName(side)}</span>
+      </span>{" "}
       {/* A phone has no last column to say "favorite team" in: the star goes by the team. */}
       {favorite && (
         <FavoriteMarker className="text-note xl:hidden">
@@ -72,10 +75,10 @@ const FITTED_GAME_COLUMNS = {
 };
 
 /**
- * Games as ledger rows, the Reference UI's "tonight" table: status, away, home, each team with its
- * record, then the note: the favorite-team marker, the pick, and where the game is played and
- * shown. Each row links to the game's page, a game in progress is tinted, and the winner of a
- * finished game is in bold. The columns are fixed widths, so one ledger under another lines up;
+ * Games as agate rows: status, away, home, each team with its record, then the note: the
+ * favorite-team marker, the pick, and where the game is played and shown. Each row links to the
+ * game's page, a game in progress has its status in the one red, the scores are bold and the
+ * winner of a finished game is in bold. No row has a team's mark (HANDOFF.md, question 3). The columns are fixed widths, so one ledger under another lines up;
  * `fitted` is for a ledger that stands alone.
  *
  * A phone has no room for the last column or for a record beside its team, so there a row has a
@@ -128,19 +131,25 @@ export function GameLedger({
           const hasPick = picked != null && picked !== false;
           const final = game.status === "final";
           return (
-            <LedgerRow key={game.id} live={game.status === "live"} interactive>
+            // Marked live and not tinted: the prototype says "live" in the one red and fills nothing.
+            <LedgerRow key={game.id} live={game.status === "live"} className="bg-transparent">
               <LedgerCell className={GAME_TEXT_CELL}>
                 <Link href={gameHref(game)} className={ledgerRowLink}>
                   <span className="sr-only">
                     {game.away.abbreviation} at {game.home.abbreviation},{" "}
                   </span>
                   {game.status === "live" ? (
-                    <LiveMarker strong className="text-foreground underline underline-offset-[3px]">
+                    // "End 1st", as a kicker has it: the status line's own first letter is small.
+                    <LiveMarker strong className="capitalize">
                       {/* The marker says "live" itself: a game in its warm-up has no more to add. */}
                       {status === "live" ? null : status}
                     </LiveMarker>
-                  ) : (
+                  ) : status == null ? (
+                    // Still to be played: the time it starts, in the visitor's own zone.
                     <GameStatus game={game} />
+                  ) : (
+                    // "Final/OT", "Postponed": as Home's briefs say it.
+                    statusText(game)
                   )}
                 </Link>
                 <LedgerDetail fine className="xl:hidden">

@@ -1,4 +1,8 @@
-import { SectionSkeleton, SkeletonBar } from "@yogan-hockey/ui/components/skeleton";
+import {
+  PageHeaderSkeleton,
+  SectionSkeleton,
+  SkeletonBar,
+} from "@yogan-hockey/ui/components/skeleton";
 import { PenaltyBoxSpace } from "./game/penalty-box";
 import { Rink } from "./game/rink";
 import { FIXED_GAME_COLUMNS, GAME_SCORE_CELL, GAME_TEXT_CELL } from "./scoreboard/game-ledger";
@@ -17,8 +21,8 @@ import { FIXED_GAME_COLUMNS, GAME_SCORE_CELL, GAME_TEXT_CELL } from "./scoreboar
 const SLATE_ROWS = 8;
 
 /**
- * `GameLedger`'s six columns: status, away, score, home, score, note. A team's cell is its mark
- * and its abbreviation, and a bar of `lg` holds the place of both.
+ * `GameLedger`'s six columns: status, away, score, home, score, note. A team's cell is its name
+ * and its record, and a bar of `lg` holds the place of both.
  */
 const TEXT = { cellClassName: GAME_TEXT_CELL };
 const SCORE = { width: "xs" as const, numeric: true, cellClassName: GAME_SCORE_CELL };
@@ -38,9 +42,7 @@ export const SLATE_TABLE = "[&_[data-slot=ledger-detail]]:xl:hidden";
 export function LiveSkeleton() {
   return (
     <>
-      <header className="flex flex-wrap items-baseline justify-between gap-x-4">
-        <h1 className="font-strong uppercase">Live scores</h1>
-      </header>
+      <PageHeaderSkeleton title="Live scores" />
       <SectionSkeleton
         label="Today's games"
         rows={SLATE_ROWS}

@@ -3,6 +3,8 @@ import { expect, type Page, test } from "@playwright/test";
 const tabs = (page: Page) => page.getByRole("navigation", { name: "NHL", exact: true });
 const views = (page: Page) => page.getByRole("navigation", { name: "Standings view" });
 const rows = (page: Page) => page.getByRole("table").getByRole("row");
+// The Teams tab is a list, not a table: one item a team.
+const teams = (page: Page) => page.getByRole("main").getByRole("listitem");
 
 // The recorded standings (fixture mode): the table titles each view draws, in order.
 const VIEWS = [
@@ -43,8 +45,8 @@ const VIEWS = [
       const leader = rows(page).nth(1);
       await expect(leader.getByRole("cell")).toHaveText([
         "1",
-        // Both names are in the markup; the phone's abbreviation is hidden at this width.
-        /New York Rangers$/,
+        // A team is its agate name, at every width.
+        "N.Y. Rangers",
         "4",
         "3",
         "1",
@@ -53,15 +55,9 @@ const VIEWS = [
         "6",
       ]);
       await expect(leader.getByRole("link")).toHaveAttribute("href", "/nhl/teams/13");
-      // Every row has its team's mark: a file of the site's own, drawn 1.2 times its 15px type.
-      await expect(page.locator("main [data-slot=team-mark]")).toHaveCount(32);
-      const mark = leader.locator("[data-slot=team-mark] img");
-      await expect(mark).toHaveAttribute("src", /^\/team-marks\/13-28\.[0-9a-f]{8}\.webp$/);
-      await expect(mark).toHaveJSProperty("complete", true);
-      expect(await mark.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBe(28);
-      const box = await mark.boundingBox();
-      expect(box?.width).toBeCloseTo(18, 1);
-      expect(box?.height).toBeCloseTo(18, 1);
+      // No row has a team's mark (HANDOFF.md, question 3): the score strip above has them, and
+      // the team's own page (`team.spec.ts`).
+      await expect(page.locator("main [data-slot=team-mark]")).toHaveCount(0);
     },
   },
 ];
@@ -86,6 +82,7 @@ test("/nhl shows each standings view and the teams from a pasted URL", async ({ 
   for (const { url, view, tables, also } of VIEWS) {
     await paste(url, async (page) => {
       await expect(page).toHaveTitle("NHL standings · Yogan Hockey");
+      await expect(page.getByRole("heading", { level: 1 })).toHaveText(`Standings by ${view}`);
       await expect(tabs(page).locator('[aria-current="page"]')).toHaveText("standings");
       await expect(views(page).locator('[aria-current="page"]')).toHaveText(view);
       await expect(page.locator("main section h2")).toHaveText(
@@ -99,7 +96,9 @@ test("/nhl shows each standings view and the teams from a pasted URL", async ({ 
     await expect(page).toHaveTitle("NHL teams · Yogan Hockey");
     await expect(tabs(page).locator('[aria-current="page"]')).toHaveText("teams");
     await expect(views(page)).toHaveCount(0);
-    await expect(rows(page)).toHaveCount(33);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Teams");
+    await expect(teams(page)).toHaveCount(32);
+    await expect(page.locator("main [data-slot=team-mark]")).toHaveCount(0);
     await expect(page.getByRole("link", { name: "Toronto Maple Leafs" })).toHaveAttribute(
       "href",
       "/nhl/teams/21",

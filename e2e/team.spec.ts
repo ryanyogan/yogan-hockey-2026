@@ -55,8 +55,17 @@ test("a team's page shows each tab from a pasted URL, titled with the team's nam
       await expect(tabs(page).locator('[aria-current="page"]')).toHaveText("schedule");
 
       const header = section(page, /^Toronto Maple Leafs/);
-      await expect(header.getByRole("heading")).toHaveText(
+      // The team's name is the page's headline, under the line that says where it plays.
+      await expect(header.getByRole("heading", { level: 1 })).toHaveText("Toronto Maple Leafs");
+      await expect(header.locator("[data-slot=team-header] p")).toHaveText(
         /Toronto · Eastern Conference · Atlantic Division/,
+      );
+      // The one mark on the page is the headline's: no row of a schedule has one.
+      await expect(page.locator("main [data-slot=team-mark]")).toHaveCount(1);
+      // Toronto has a logo for each theme; the first is the day's.
+      await expect(header.locator("h1 [data-slot=team-mark] img").first()).toHaveAttribute(
+        "src",
+        /^\/team-marks\/21-28\.[0-9a-f]{8}\.webp$/,
       );
       await expect(header.locator("tbody td")).toHaveText([
         "1",

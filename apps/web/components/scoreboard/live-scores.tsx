@@ -1,12 +1,13 @@
 "use client";
 
 import type { ScoreboardGame } from "@yogan-hockey/schemas";
-import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
+import { PageHeader, Section, SectionHeader } from "@yogan-hockey/ui/components/section";
 import { favoritesFirst } from "../../lib/favorites";
 import { slateDay } from "../../lib/game-time";
 import { pickNote } from "../../lib/picks";
 import { slateSections } from "../../lib/scoreboard-view";
 import { useFavorites } from "../../lib/use-favorites";
+import { PROSE } from "../agate-type";
 import { LocalTime } from "../local-time";
 import { GameLedger } from "./game-ledger";
 import { useScoreboard } from "./scoreboard-provider";
@@ -48,17 +49,13 @@ export function LiveScores({ picks = {} }: { picks?: Picks }) {
 
   return (
     <>
-      <header className="flex flex-wrap items-baseline justify-between gap-x-4">
-        <h1 className="font-strong uppercase">
-          Live scores
-          <span className="font-quiet text-label normal-case"> {summary.join(", ")}</span>
-        </h1>
+      <PageHeader title="Live scores" count={summary.join(", ")}>
         {heardAt && (
-          <p className="text-label">
+          <p className="font-quiet text-aside">
             updated <LocalTime at={heardAt} show="clock" />
           </p>
         )}
-      </header>
+      </PageHeader>
       <Games title="In progress" games={sections.live} picks={picks} />
       <Games title="Upcoming" games={sections.upcoming} picks={picks} />
       <Games title="Final" games={sections.final} picks={picks} />
@@ -67,7 +64,7 @@ export function LiveScores({ picks = {} }: { picks?: Picks }) {
         <Section>
           {/* Without a date the Scoreboard has not answered yet, which is not a day off. */}
           <SectionHeader title={date == null ? "Scores unavailable" : "No games today"} />
-          <p className="border-rule-head border-t px-2 py-row text-note">
+          <p className={`py-2 ${PROSE}`}>
             {date == null
               ? "Today's games could not be read. They appear here as soon as they can be."
               : "Nothing is on the NHL's slate. Scores appear here as soon as there is a game."}

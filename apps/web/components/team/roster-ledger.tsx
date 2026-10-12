@@ -51,7 +51,7 @@ export function RosterLedger({
           </LedgerHead>
           <LedgerBody>
             {players.map((player) => (
-              <LedgerRow key={player.id} interactive>
+              <LedgerRow key={player.id}>
                 <LedgerCell numeric tone="aside">
                   {player.jersey ?? "-"}
                 </LedgerCell>

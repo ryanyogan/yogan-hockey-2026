@@ -54,8 +54,13 @@ test("/nhl/live lists the slate in sections, links each game, and follows the so
   );
   // Each team with its record, then where the game is played and who shows it.
   const row = upcoming.getByRole("row").filter({ hasText: "NSH" });
-  await expect(row.getByRole("cell").nth(1)).toHaveText("NSH 1-1-0");
-  await expect(row.getByRole("cell").nth(3)).toHaveText("TOR 1-2-0");
+  // A team's abbreviation and its agate name are both in the markup; a width shows one.
+  await expect(row.getByRole("cell").nth(1)).toHaveText("NSHNashville 1-1-0");
+  await expect(row.getByRole("cell").nth(3)).toHaveText("TORToronto 1-2-0");
+  await expect(row.getByText("Nashville", { exact: true })).toBeVisible();
+  await expect(row.getByText("NSH", { exact: true })).toBeHidden();
+  // No row has a team's mark; the strip above keeps its own.
+  await expect(page.locator("main [data-slot=team-mark]")).toHaveCount(0);
   await expect(row.locator('[data-slot="game-pick"]')).toHaveText("TOR 58%");
   await expect(row.getByRole("cell").last()).toHaveText(
     "TOR 58%Scotiabank Arena · ESPN+, Scripps Sports",
@@ -147,7 +152,7 @@ test("/nhl/live lists the slate in sections, links each game, and follows the so
   };
   pushState(over);
   const final = page.getByRole("region", { name: "Final" });
-  await expect(final.getByRole("link", { name: /NSH at TOR, final/ })).toBeVisible();
+  await expect(final.getByRole("link", { name: /NSH at TOR, Final/ })).toBeVisible();
   expect(rerenders).toBe(0);
 
   // The Scoreboard has recorded the final and invalidated what the server said about the game

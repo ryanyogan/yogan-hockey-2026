@@ -21,7 +21,6 @@ import { LocalTime } from "../local-time";
 import { TeamName } from "../nhl/team-name";
 import { GameLedger } from "../scoreboard/game-ledger";
 import { useScoreboard } from "../scoreboard/scoreboard-provider";
-import { TeamMark } from "../team-mark";
 import { Versus } from "./versus";
 
 /**
@@ -74,17 +73,14 @@ function NextGame({ teamId, game, pick }: { teamId: string; game: Game; pick?: s
           <LedgerColumn className="w-full max-sm:hidden">where</LedgerColumn>
         </LedgerHead>
         <LedgerBody>
-          <LedgerRow interactive>
+          <LedgerRow>
             <LedgerCell className="whitespace-nowrap">
               <Link href={gameHref(game)} className={ledgerRowLink}>
                 <LocalTime at={game.startTime} show="day" />
               </Link>
             </LedgerCell>
             <LedgerCell className="whitespace-nowrap">
-              {/* A phone's row has no room for it: the longest ends 2px inside the ledger as it is. */}
-              <Versus home={home} />{" "}
-              <TeamMark teamId={opponent.id} className="mr-[0.45em] max-sm:hidden" />
-              <TeamName team={opponent} />
+              <Versus home={home} /> <TeamName team={opponent} />
             </LedgerCell>
             <LedgerCell className="whitespace-nowrap">
               <LocalTime at={game.startTime} show="time" />

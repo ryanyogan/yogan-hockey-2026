@@ -9,11 +9,9 @@ import { gameStatus, markKind, playTime } from "../../lib/game/plays";
 import { attackedEnd, type RinkEnd } from "../../lib/game/rink";
 import { periodLabel } from "../../lib/game/timeline";
 import { LocalTime } from "../local-time";
-import { TeamMark } from "../team-mark";
 import { PenaltyBox, PenaltyBoxSpace } from "./penalty-box";
 import { Rink } from "./rink";
 import { RinkAnimations } from "./rink-animations";
-import { teamColour } from "./team-colour";
 
 /*
  * Where the overlay sits, as fractions of the rink's width (`cqw`), so it keeps its place at any
@@ -42,6 +40,7 @@ function OverIce({
   slot,
   place,
   line,
+  word = false,
   wide,
   figure,
   narrow,
@@ -49,6 +48,12 @@ function OverIce({
   slot: string;
   place: Place;
   line: ReactNode;
+  /**
+   * The figure is a club's abbreviation, not a score. Three serif capitals at a score's 24px are
+   * as wide as the strip they stand in on a phone (51px of a 358px rink) and touched the blue
+   * line, so there they are 18px on the same 24px line.
+   */
+  word?: boolean;
   /** Joins `line` where the rink is wide enough to write one line. */
   wide: ReactNode;
   figure: ReactNode;
@@ -65,7 +70,11 @@ function OverIce({
         {line}
         <span className="hidden @2xl:inline"> · {wide}</span>
       </div>
-      <div className="font-bold font-serif text-2xl leading-none @2xl:text-[clamp(24px,5.36cqw,60px)]">
+      <div
+        className={`font-bold font-serif @2xl:text-[clamp(24px,5.36cqw,60px)] @2xl:leading-none ${
+          word ? "text-[18px] leading-6" : "text-2xl leading-none"
+        }`}
+      >
         {figure}
       </div>
       <div className="whitespace-nowrap text-small text-note leading-[15px] @2xl:hidden">
@@ -80,13 +89,8 @@ function Score({ side, place }: { side: GameHeaderSide; place: Place }) {
     <OverIce
       slot="rink-score"
       place={place}
-      line={
-        <>
-          <TeamMark teamId={side.id} size="line" eager className="mr-[0.4em]" />
-          {side.abbreviation}
-        </>
-      }
-      wide={`${side.shots} shots`}
+      line={side.abbreviation}
+      wide={`${side.shots} ${side.shots === 1 ? "shot" : "shots"}`}
       figure={
         // A window one figure tall. A goal's sequence (`rink-player.ts`) writes the score before
         // the goal above the figure and rolls the two up through the window; the figure itself is
@@ -107,8 +111,9 @@ function Score({ side, place }: { side: GameHeaderSide; place: Place }) {
   );
 }
 
+/* On a slip of paper, as a caption is: the centre line runs under the clock, not through it. */
 const STATUS_PLACE =
-  "absolute top-1 left-1/2 -translate-x-1/2 whitespace-nowrap text-center text-small leading-[15px] @2xl:top-[1.43cqw] @2xl:text-[clamp(10px,1.43cqw,16px)] @2xl:leading-normal";
+  "absolute top-1 left-1/2 -translate-x-1/2 whitespace-nowrap bg-background px-1 text-center @2xl:px-2 text-small leading-[15px] @2xl:top-[1.43cqw] @2xl:text-[clamp(10px,1.43cqw,16px)] @2xl:leading-normal";
 const STATUS_KICKER =
   "block font-semibold uppercase @2xl:tracking-head @2xl:text-[clamp(10px,1.07cqw,12px)] @2xl:leading-[1.33]";
 const CAPTION_ON_ICE =
@@ -135,12 +140,8 @@ export function MatchupRink({ header, status }: { header: GameHeader; status?: s
     <OverIce
       slot="rink-team"
       place={place}
-      line={
-        <>
-          <TeamMark teamId={header[place].id} size="line" eager className="mr-[0.4em]" />
-          {place}
-        </>
-      }
+      line={place}
+      word
       wide={header[place].record ?? "no record"}
       figure={header[place].abbreviation}
       narrow={header[place].record ?? "no record"}
@@ -259,7 +260,7 @@ function Caption({ play, team }: { play: Play; team: GameHeaderSide | undefined 
  * The rink as the page: the ice filling the width, the score, shots and clock laid over it, and
  * the play in focus ringed and captioned. Shots, saves, misses and penalties are played on the
  * ice as they arrive, and when a play is picked (`RinkAnimations`). Under it is the penalty box,
- * and while a team has the advantage the zone it attacks is ruled in its colour.
+ * and while a team has the advantage the zone it attacks is ruled in ink.
  */
 export function GameRink({
   header,
@@ -331,7 +332,7 @@ export function GameRink({
     ahead && period === penalties.period
       ? attackedEnd(plays, header.home.id, ahead.id, period)
       : null;
-  const powerPlay = ahead && attacked ? { end: attacked, style: teamColour(ahead) } : null;
+  const powerPlay = ahead && attacked ? { end: attacked } : null;
   return (
     <div data-slot="game-rink" className="@container">
       <div className="relative">
@@ -341,8 +342,6 @@ export function GameRink({
           game={plays}
           plays={played}
           homeTeamId={header.home.id}
-          homeColour={header.home.color}
-          awayColour={header.away.color}
           focusId={focus?.id ?? null}
           picked={picked}
           live={header.status === "live"}

@@ -1,10 +1,10 @@
 import type { FinalGame, GameHeader, MadePrediction } from "@yogan-hockey/schemas";
 import { pickOutcome } from "@yogan-hockey/schemas";
-import { Badge } from "@yogan-hockey/ui/components/badge";
 import { pickSentence } from "../../lib/agate-copy";
 import { finalResult, pickedSide } from "../../lib/picks";
 import { LocalTime } from "../local-time";
-import { STORY_PICK } from "./game-story";
+import { PickMark } from "../story/story-parts";
+import { storyPick } from "../story/type";
 
 /**
  * The whole pick on a game page, the Reference UI's third tab: the story's pick line ("Our pick:
@@ -31,21 +31,8 @@ export function GamePick({
   const outcome = pickOutcome(prediction, final);
   return (
     <div data-slot="game-pick-full" className="mt-3 max-w-prose space-y-3">
-      <p data-slot="pick-lead" className={STORY_PICK}>
-        {pickSentence(prediction, header)}
-        {outcome != null && final != null && (
-          <>
-            {" "}
-            <Badge
-              data-slot="pick-outcome"
-              data-outcome={outcome}
-              variant={outcome === "right" ? "default" : "outline"}
-              className="not-italic"
-            >
-              {outcome}
-            </Badge>
-          </>
-        )}
+      <p data-slot="pick-lead" className={storyPick}>
+        {pickSentence(prediction, header)} <PickMark outcome={outcome} />
       </p>
       {outcome != null && final != null && (
         <p data-slot="pick-result" className="text-aside text-small">

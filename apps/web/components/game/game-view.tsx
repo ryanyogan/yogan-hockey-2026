@@ -12,6 +12,7 @@ import { Link } from "../link";
 import { GameRink } from "./game-rink";
 import { PeriodTimeline } from "./period-timeline";
 import { KeyPlaysToggle, PlaysList, ScoringSummary } from "./plays-list";
+import { RinkKey } from "./rink";
 
 /** No plays still to come: every page but a Replay in the middle of a game. One array, not one a render. */
 const NONE: readonly Play[] = [];
@@ -112,6 +113,7 @@ export function GameView({
         notice={notice}
         clock={clock}
       />
+      <RinkKey />
       <div className="mt-4">
         <PeriodTimeline
           game={header}

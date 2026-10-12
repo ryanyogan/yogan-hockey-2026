@@ -84,7 +84,7 @@ export function GameSkeleton() {
         </p>
       </div>
       <div className="mt-4" aria-hidden="true">
-        <div className="h-12 border border-rule" />
+        <div className="h-14 border border-rule" />
         <p className="mt-1">
           <SkeletonBar width="xl" />
         </p>

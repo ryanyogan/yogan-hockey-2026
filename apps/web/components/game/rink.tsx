@@ -1,8 +1,7 @@
 import type { Play } from "@yogan-hockey/schemas";
-import { type CSSProperties, type Ref, useId } from "react";
-import { type MarkKind, markKind, playTime } from "../../lib/game/plays";
+import { type Ref, useId } from "react";
+import { MARK_WORDS, type MarkKind, markKind, playTime } from "../../lib/game/plays";
 import { RINK, type RinkEnd, rinkPoint } from "../../lib/game/rink";
-import { TEAM_STROKE } from "./team-colour";
 
 const {
   halfLength,
@@ -80,6 +79,29 @@ function Mark({ play, focused }: { play: Play; focused: boolean }) {
   );
 }
 
+/**
+ * The key to the dots, under the ice: each kind drawn as `Mark` draws it, with its name. The
+ * drawing says nothing to a screen reader, which is read the names alone.
+ */
+export function RinkKey() {
+  return (
+    <ul
+      data-slot="rink-key"
+      aria-label="What the dots on the rink are"
+      className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-label text-small"
+    >
+      {MARK_WORDS.map(([kind, word]) => (
+        <li key={kind} className="flex items-center gap-1.5 whitespace-nowrap">
+          <svg viewBox="-4 -4 8 8" aria-hidden="true" className="size-3 shrink-0">
+            <circle r={kind === "goal" ? RADIUS.goal : RADIUS.play} className={MARK_FILL[kind]} />
+          </svg>
+          {word}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 /** A crease and the net behind it, which a shot's line is drawn to. `side` is -1 at the left end. */
 function Goal({ side }: { side: 1 | -1 }) {
   const x = side * goalLine;
@@ -137,9 +159,9 @@ function GoalLamp({ side }: { side: 1 | -1 }) {
 }
 
 /**
- * An end zone, from its blue line to the boards, which a goal floods with the scoring team's
- * colour. The player gives it the colour as `--tint` and `--tint-dark`, so the theme picks; a
- * team with no colour gets the goal's red. Drawn before `PowerPlayZones`, whose rules read it.
+ * An end zone, from its blue line to the boards, which a goal floods with the page's one red
+ * whichever club scored (`docs/design/agate.md`). Drawn before `PowerPlayZones`, whose rules read
+ * it.
  */
 function EndTint({ side }: { side: 1 | -1 }) {
   const [line, boards, turn] = [side * blueLine, side * halfLength, side * (halfLength - corner)];
@@ -184,7 +206,7 @@ function Effects() {
 }
 
 /** The team with the advantage, and the end it attacks while it has it. */
-export type RinkPowerPlay = { end: RinkEnd; style: CSSProperties };
+export type RinkPowerPlay = { end: RinkEnd };
 
 /** Ruled lines this far apart, in feet, at 45 degrees. */
 const HATCH = 5;
@@ -200,8 +222,8 @@ const UNDER_A_GOAL = {
 } as const;
 
 /**
- * The power play on the ice: the zone the team with the advantage attacks, ruled in its colour
- * (`--team`). A goal floods an end and lets go; this stays for as long as the advantage does, so
+ * The power play on the ice: the zone the team with the advantage attacks, ruled in ink. A goal
+ * floods an end and lets go; this stays for as long as the advantage does, so
  * it is lines and not a fill, and the dots stay readable through it.
  *
  * Both ends are always drawn and only their opacity changes, so the zone comes and goes without
@@ -211,7 +233,7 @@ function PowerPlayZones({ powerPlay }: { powerPlay: RinkPowerPlay | null }) {
   const id = useId();
   const [hatch, boards] = [`${id}hatch`, `${id}boards`];
   return (
-    <g data-slot="rink-power-play" style={powerPlay?.style}>
+    <g data-slot="rink-power-play">
       <defs>
         <pattern
           id={hatch}
@@ -220,7 +242,7 @@ function PowerPlayZones({ powerPlay }: { powerPlay: RinkPowerPlay | null }) {
           patternUnits="userSpaceOnUse"
           patternTransform="rotate(45)"
         >
-          <line y2={HATCH} strokeWidth={1.1} className={TEAM_STROKE} />
+          <line y2={HATCH} strokeWidth={1.1} className="stroke-foreground" />
         </pattern>
         <clipPath id={boards}>
           <rect
@@ -267,7 +289,7 @@ export function Rink({
   plays: readonly Play[];
   /** The play to highlight. */
   focus?: Play | null;
-  /** The zone to rule in the colour of the team with the advantage. */
+  /** The zone the team with the advantage attacks, which is ruled. */
   powerPlay?: RinkPowerPlay | null;
 }) {
   // Goals over the rest, so a goal is never hidden under the shot before it.

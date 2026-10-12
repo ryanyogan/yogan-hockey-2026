@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 import {
   focusedPlay,
   gameStatus,
+  MARK_WORDS,
   markKind,
   playTime,
   scoringPlays,
@@ -60,6 +61,12 @@ describe("selection", () => {
 });
 
 describe("markKind", () => {
+  test("has a name in the rink's key for every kind of dot, each a different one", () => {
+    const kinds = ["goal", "penalty", "save", "shot", "hit", "other"];
+    expect(MARK_WORDS.map(([kind]) => kind).toSorted()).toEqual(kinds.toSorted());
+    expect(new Set(MARK_WORDS.map(([, word]) => word)).size).toBe(kinds.length);
+  });
+
   test("goals, penalties and shots are told apart; the rest are plain", () => {
     expect(markKind(play({ type: "goal", scoring: true }))).toBe("goal");
     expect(markKind(play({ type: "Hooking", penalty: true }))).toBe("penalty");

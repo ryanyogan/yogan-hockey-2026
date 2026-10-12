@@ -70,10 +70,9 @@ a { color: inherit; font-weight: bold; }
 .wordmark { display: block; margin: 18px 0 12px; text-align: center; white-space: nowrap;
   font-size: min(54px, 13.85vw); line-height: 0.95; letter-spacing: -0.025em;
   text-decoration: none; }
-.rule { margin-bottom: 28px; border-top: 3px solid; padding-top: 2px; }
+.rule { margin-bottom: 16px; border-top: 3px solid; padding-top: 2px; }
 .rule::after { content: ""; display: block; border-top: 1px solid; }
-h1 { margin: 0; border-top: 3px solid; padding-top: 12px; font-size: 30px; line-height: 1.1;
-  letter-spacing: -0.01em; }
+h1 { margin: 0; font-size: 30px; line-height: 1.1; letter-spacing: -0.01em; }
 h1 span { font: 13px/1.5 "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
   letter-spacing: 0; opacity: 0.7; }
 p { margin: 0; padding-top: 12px; }

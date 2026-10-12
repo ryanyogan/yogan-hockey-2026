@@ -2,19 +2,40 @@
 // in its three states and its tabs, a player's pages, the player search, and the pages for a
 // failure and a missing address. For docs/design/agate.
 //
-//   node scripts/agate-game-shots.ts [baseURL] [outDir]
+//   node scripts/agate-game-shots.ts [baseURL] [scratchDir]
 //
 // Needs a dev server in fixture mode (ESPN_FIXTURES=1) and TMPDIR set (see the build notes), and
-// not the server Playwright's own run uses. Each page is saved as <name>-<width>-<theme>.png at
-// 390 and 1440 in both themes, and for each the script prints what it measured: the document's
+// not the server Playwright's own run uses. Each page is shot as <name>-<width>-<theme>.png at
+// 390 and 1440 in both themes. The pictures the repository keeps (`KEPT`: a page of each kind on a
+// light phone and at a dark desk) go to docs/design/agate; the rest are for looking at and go to
+// the scratch directory, node_modules/.tmp/agate-game-shots unless another is named. For each the
+// script prints what it measured: the document's
 // `scrollWidth`, the story's type against the prototype's values (`prototypes/agate/style.css`),
 // and every colour, face, radius and shadow on the page that is not one of the theme's. It exits
 // 1 on any of those.
+import { mkdirSync } from "node:fs";
 import { chromium, type Page } from "@playwright/test";
 import { driveGame, recordedGame, SCHEDULED_GAME } from "../e2e/game-driver.ts";
 import { PLAYER, seedPicks } from "./look-routes.mjs";
 
-const [baseURL = "http://localhost:5173", outDir = "docs/design/agate"] = process.argv.slice(2);
+const [baseURL = "http://localhost:5173", scratchDir = "node_modules/.tmp/agate-game-shots"] =
+  process.argv.slice(2);
+mkdirSync(scratchDir, { recursive: true });
+
+/** The pages whose pictures are kept in the repository, each on a light phone and at a dark desk. */
+const KEPT = new Set([
+  "game-scheduled",
+  "game-live",
+  "game-final",
+  "game-replay",
+  "game-pick",
+  "players-search",
+  "player",
+  "not-found",
+]);
+const KEPT_AT = new Set(["390-light", "1440-dark"]);
+const pictureOf = (name: string, width: number, theme: string) =>
+  `${KEPT.has(name) && KEPT_AT.has(`${width}-${theme}`) ? "docs/design/agate" : scratchDir}/${name}-${width}-${theme}.png`;
 const FINAL_GAME = "401803652";
 const game = await recordedGame(baseURL);
 const midSecond =
@@ -182,7 +203,7 @@ for (const theme of ["light", "dark"] as const) {
     const shot = async (name: string) => {
       await page.evaluate(() => document.fonts.ready);
       await page.waitForTimeout(400);
-      await page.screenshot({ path: `${outDir}/${name}-${width}-${theme}.png`, fullPage: true });
+      await page.screenshot({ path: pictureOf(name, width, theme), fullPage: true });
       const { scrollWidth, rule, faults } = await measure(page, wide);
       const wider = scrollWidth !== width;
       if (wider || faults.length > 0) failed = true;
@@ -231,7 +252,7 @@ for (const theme of ["light", "dark"] as const) {
       await act?.();
       await rest.evaluate(() => document.fonts.ready);
       await rest.waitForTimeout(400);
-      await rest.screenshot({ path: `${outDir}/${name}-${width}-${theme}.png`, fullPage: true });
+      await rest.screenshot({ path: pictureOf(name, width, theme), fullPage: true });
       const { scrollWidth, rule, faults } = await measure(rest, wide);
       const wider = scrollWidth !== width;
       if (wider || faults.length > 0) failed = true;
@@ -251,7 +272,8 @@ for (const theme of ["light", "dark"] as const) {
         await rest.locator('[data-slot="timeline-tick"][data-kind="goal"]').first().click();
         await rest.locator('[data-slot="goal-flag"]').first().waitFor({ state: "attached" });
         await rest.waitForTimeout(2500);
-        // The click scrolled to the tick and left the focus on it.
+        // The click scrolled to the tick and left the focus on it, and the pointer over a row.
+        await rest.mouse.move(0, 0);
         await rest.evaluate(() => {
           (document.activeElement as HTMLElement | null)?.blur();
           window.scrollTo(0, 0);
@@ -266,7 +288,8 @@ for (const theme of ["light", "dark"] as const) {
     await restShot("game-pick", `/nhl/games/${FINAL_GAME}/pick`, '[data-slot="game-pick-full"]');
     await restShot("players", "/players", 'input[type="search"]');
     await restShot("players-search", "/players?q=mar", '[data-slot="ledger"]');
-    await restShot("players-none", "/players?q=zz", '[role="status"]');
+    // Fixture mode has one recorded search ("mar"): any other is ESPN not answering.
+    await restShot("players-unavailable", "/players?q=zz", '[role="status"]');
     await restShot("player", `/players/${PLAYER}`, '[data-slot="player-header"]');
     await restShot("not-found", "/no-such-page");
     await restShot("game-not-found", "/nhl/games/not-a-game");

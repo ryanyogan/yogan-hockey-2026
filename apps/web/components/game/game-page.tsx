@@ -4,7 +4,7 @@ import type { Game, GameHeader, Play, ScoreboardGame } from "@yogan-hockey/schem
 import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
 import { type ReactNode, useState } from "react";
 import type { FoundGame } from "../../lib/find-game";
-import { gamePhase, streamReading, streamStarts } from "../../lib/game/page-state";
+import { gamePhase, storyHeader, streamReading, streamStarts } from "../../lib/game/page-state";
 import type { GameTab } from "../../lib/game/tabs";
 import { useGameStream } from "../../lib/game/use-game-stream";
 import { PICK_PENDING } from "../../lib/picks";
@@ -120,7 +120,7 @@ function GameInPhase({
   });
   return (
     <>
-      <GameStory header={header} />
+      <GameStory header={storyHeader({ header, plays, scoreboard })} />
       {inPhase()}
     </>
   );

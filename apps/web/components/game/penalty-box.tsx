@@ -5,7 +5,6 @@ import {
   type PenaltyState,
   strengthLine,
 } from "../../lib/game/penalties";
-import { TEAM_BG, teamColour } from "./team-colour";
 
 /*
  * The box's size is the same whoever is in it: a heading and two rows, so a penalty arriving or
@@ -42,9 +41,8 @@ function Boxed({ penalty, side }: { penalty: BoxedPenalty; side: GameHeaderSide 
       data-play={penalty.playId}
       data-waiting={penalty.waiting || undefined}
       className={`${ROW} motion-safe:animate-[boxed-in_300ms_ease-out]`}
-      style={teamColour(side)}
     >
-      <span aria-hidden="true" className={`h-3.5 w-[3px] shrink-0 ${TEAM_BG}`} />
+      <span aria-hidden="true" className={`h-3.5 w-[3px] shrink-0 bg-foreground`} />
       <span className="w-[3ch] shrink-0">{side.abbreviation}</span>
       <span className="shrink-0">{penalty.player ?? "Bench"}</span>
       <span className="min-w-0 flex-1 truncate text-aside">
@@ -77,8 +75,8 @@ export function PenaltyBox({ header, state }: { header: GameHeader; state: Penal
       <div className={`${ROW} justify-between border-rule-head border-b`}>
         <p className="font-bold text-head text-label uppercase tracking-head">Penalty box</p>
         {ahead != null && advantage != null ? (
-          <p data-slot="power-play" className="flex items-center gap-2" style={teamColour(ahead)}>
-            <span aria-hidden="true" className={`size-2 shrink-0 ${TEAM_BG}`} />
+          <p data-slot="power-play" className="flex items-center gap-2">
+            <span aria-hidden="true" className={`size-2 shrink-0 bg-foreground`} />
             <span>
               <span className="font-bold">{ahead.abbreviation} power play</span>
               <span className="text-aside"> · {strengthLine(skaters)} · </span>

@@ -4,7 +4,9 @@ import { layoutTimeline } from "../../lib/game/timeline";
 
 /**
  * A tick: 4px by 16px and grey for any play, 6px by 32px and the one red for a goal, and ink with
- * a square standing clear above it for a penalty. All stand on one line, 4px above the foot of the bar.
+ * a square standing clear above it for a penalty. All stand on one line, 4px above the foot of the bar,
+ * which is 56px tall: a goal's tick ends 2px under a period's label, where in a bar of 48px it ran
+ * through "1ST".
  */
 const TICK = {
   play: "h-4 w-1 bg-label",
@@ -45,7 +47,7 @@ export function PeriodTimeline({
 }) {
   const { periods, positions } = layoutTimeline(plays, game);
   return (
-    <div data-slot="period-timeline" className="relative h-12 border border-rule">
+    <div data-slot="period-timeline" className="relative h-14 border border-rule">
       {periods.map((period) => (
         <div
           key={period.period}

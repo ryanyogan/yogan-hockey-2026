@@ -57,8 +57,6 @@ function clearGoal(root: SVGSVGElement) {
   for (const tint of root.querySelectorAll<SVGElement>('[data-slot="rink-tint"]')) {
     gsap.set(tint, { clearProps: "opacity" });
     tint.removeAttribute("data-lit");
-    tint.style.removeProperty("--tint");
-    tint.style.removeProperty("--tint-dark");
   }
   // One at a time: GSAP warns in the console when it is handed a list with nothing in it, and a
   // Replay has no live marker, as a play that is no goal has no flag.
@@ -147,13 +145,13 @@ const travelTime = (distance: number) => 0.28 + distance / 170;
 /**
  * What a goal adds once its shot is in the net, as the approved prototype plays it: the lamp
  * behind the net comes on and throws three rings, the net lights, the scoring end floods with the
- * team's colour and settles to a tint, "GOAL" lands over centre ice, the score rolls up to its new
+ * page's one red and settles to a tint, "GOAL" lands over centre ice, the score rolls up to its new
  * figure, and the caption's flag and scorer slide in. The lamp, the net and the tint stay as long
  * as the goal is on the ice.
  */
 function goal(
   root: SVGSVGElement,
-  { playId, end, distance, side, tint: colour, score }: Extract<RinkAnimation, { kind: "goal" }>,
+  { playId, end, distance, side, score }: Extract<RinkAnimation, { kind: "goal" }>,
   timeline: gsap.core.Timeline,
 ) {
   const at = (slot: string) => root.querySelector(`[data-slot="${slot}"][data-end="${end}"]`);
@@ -190,10 +188,6 @@ function goal(
     );
   }
   if (tint instanceof SVGElement) {
-    if (colour) {
-      tint.style.setProperty("--tint", colour.light);
-      tint.style.setProperty("--tint-dark", colour.dark);
-    }
     timeline
       .to(tint, { opacity: 0.55, duration: 0.12, ease: "none" }, scored)
       .to(tint, { opacity: 0.2, duration: 1.4 }, scored + 0.12);

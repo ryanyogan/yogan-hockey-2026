@@ -309,17 +309,12 @@ describe("a revised game", () => {
     expect(again.playing).toBe(true);
   });
 
-  test("a goal knows its side, its colour and the score before it from the scene", () => {
+  test("a goal knows its side and the score before it from the scene", () => {
     const scored = game.map((each) => (each.id === "goal" ? { ...each, awayScore: 1 } : each));
-    const colours = { homeColour: "00468b", awayColour: "20864c" };
-    const queue = run([
-      { ...live("nowhere", scored), ...colours },
-      { ...live("goal", scored), ...colours },
-    ]);
+    const queue = run([live("nowhere", scored), live("goal", scored)]);
     expect(queue.current).toMatchObject({
       kind: "goal",
       side: "away",
-      tint: { light: "#20864c", dark: "#489c6c" },
       score: { from: 0, to: 1 },
     });
   });

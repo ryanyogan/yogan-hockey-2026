@@ -17,6 +17,17 @@ export const INK_COLORS = { light: "#111111", dark: "#eceae4" } as const;
 
 export type ShownTheme = keyof typeof THEME_COLORS;
 
+/**
+ * The theme a visitor is shown, from what next-themes keeps of their choice (`localStorage`'s
+ * "theme": "light", "dark", or "system" or nothing for a visitor who has not chosen) and what
+ * their device prefers. For a page drawn without the layout, and so without next-themes
+ * (`app/global-error.tsx`).
+ */
+export function shownTheme(stored: string | null, prefersDark: boolean): ShownTheme {
+  if (stored === "dark" || stored === "light") return stored;
+  return prefersDark ? "dark" : "light";
+}
+
 /** Where the generated icons and splash images are served from. */
 export const ICONS_PATH = "/icons/";
 /** The sizes Chrome asks of an installable site, each drawn plain and maskable. */

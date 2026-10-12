@@ -1,18 +1,15 @@
-import { getRequestExecutionContext } from "vinext/shims/request-context";
-
 const memos = new WeakMap<object, Map<string, Promise<unknown>>>();
 
 /**
- * One read a request, whoever asks: `generateMetadata`, a layout and a page each asking for the
- * same thing share the first one's promise, its failure included. React's `cache()` does not do
- * this in vinext (each of the three has its own); the request's execution context, which vinext
- * holds for the length of a request, is one object for all of them.
+ * A read that vinext's metadata, layout and page each asked for, which shared one answer a
+ * request. Under TanStack Start a page's reads are one server function's, called once by its
+ * loader, so there is nobody to share with and `read` is simply called. It is kept for the reads
+ * whose routes are still to be ported (#188 to #192), which drop it as they go.
  *
- * `key` names the read and its arguments ("team:21"). Outside a request (an Agent, a test) there
- * is nothing to share with and `read` is simply called.
+ * `key` names the read and its arguments ("team:21").
  */
-export function perRequest<T>(key: string, read: () => Promise<T>): Promise<T> {
-  return memoFor(getRequestExecutionContext(), key, read);
+export function perRequest<T>(_key: string, read: () => Promise<T>): Promise<T> {
+  return read();
 }
 
 /** `perRequest` with the request's identity handed in, which is what its tests do. */

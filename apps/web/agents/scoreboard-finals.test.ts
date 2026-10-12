@@ -1,11 +1,8 @@
 import { applyD1Migrations, runDurableObjectAlarm, runInDurableObject } from "cloudflare:test";
 import { env, exports } from "cloudflare:workers";
-import createKvDataCache from "@vinext/cloudflare/cache/kv-data-adapter.runtime";
-import { createKvKeySpace } from "@vinext/cloudflare/cache/kv-key";
 import { createDb, getGameWithPlays, replaceGamePlays } from "@yogan-hockey/db";
 import type { Game, Play, ScoreboardState } from "@yogan-hockey/schemas";
 import { getAgentByName, routeAgentRequest } from "agents";
-import { setDataCacheHandler } from "vinext/shims/cache-handler";
 import { afterEach, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import recordedSlate from "../../../packages/espn/fixtures/scoreboard.json";
 import recordedFinals from "../../../packages/espn/fixtures/scoreboard-20261003.json";
@@ -79,8 +76,6 @@ function teamDetail(teamId: string): Response {
 }
 
 beforeAll(async () => {
-  // The site's entry registers the KV cache; this entry is the Agents alone, so the test does it.
-  setDataCacheHandler(createKvDataCache({ env: { ...env }, options: undefined }));
   await applyD1Migrations(env.DB, env.TEST_MIGRATIONS);
 });
 
@@ -112,23 +107,34 @@ afterEach(() => {
 });
 
 /**
- * Where the KV cache records that these tags were invalidated, sorted. A tag with a colon in it
- * is stored under a hash, so a test names the tags it expects and compares keys.
+ * The cache keys behind these tags, sorted. A tag is the test's name for a subject ("team:2");
+ * the cache has no tags, only the keys of what it holds about each (`lib/espn.ts`).
  */
 function tagKeys(tags: string[]): string[] {
-  const { tagKey } = createKvKeySpace(undefined);
-  return tags.map(tagKey).sort();
+  return tags.flatMap(keysOf).sort();
 }
 
-/** The key of every cache tag invalidated since the last `forgetTags`, sorted. */
+function keysOf(tag: string): string[] {
+  const [subject, id] = tag.split(":");
+  if (subject === "standings") return ["espn-standings"];
+  if (subject === "team") return [`espn-team:${id}`, `espn-team-schedule:${id}`];
+  if (subject === "game") return [`espn-game-pregame:${id}`];
+  if (subject === "player") {
+    return [`espn-player:${id}`, `espn-player-career:${id}`, `espn-player-game-log:${id}`];
+  }
+  throw new Error(`No cache keys are known for "${tag}"`);
+}
+
+/** Every key deleted from the cache since the last `forgetTags`. The Agent runs in this isolate. */
+const deleted = vi.spyOn(env.CACHE, "delete");
+
+/** The cache keys deleted since the last `forgetTags`, each once, sorted. */
 async function invalidatedTags(): Promise<string[]> {
-  const { keys } = await env.VINEXT_KV_CACHE.list({ prefix: "__tag:" });
-  return keys.map((key) => key.name).sort();
+  return [...new Set(deleted.mock.calls.map(([key]) => key))].sort();
 }
 
 async function forgetTags(): Promise<void> {
-  const { keys } = await env.VINEXT_KV_CACHE.list({ prefix: "__tag:" });
-  for (const key of keys) await env.VINEXT_KV_CACHE.delete(key.name);
+  deleted.mockClear();
 }
 
 function play(id: string): Play {

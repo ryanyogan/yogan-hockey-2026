@@ -23,7 +23,7 @@ export default defineConfig(async () => ({
           SkeletonAgent: { className: "SkeletonAgent", useSQLite: true },
         },
         d1Databases: ["DB"],
-        kvNamespaces: ["VINEXT_KV_CACHE"],
+        kvNamespaces: ["CACHE"],
         bindings: { TEST_MIGRATIONS: await readD1Migrations(MIGRATIONS) },
       },
     }),

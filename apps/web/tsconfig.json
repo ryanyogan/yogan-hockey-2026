@@ -1,8 +1,12 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "types": ["vinext/types", "node", "@cloudflare/vitest-pool-workers/types"]
+    "jsx": "react-jsx",
+    // TanStack Start's own advice: with it on, a server-only import can be kept in the browser's bundle.
+    "verbatimModuleSyntax": false,
+    "types": ["vite/client", "node", "@cloudflare/vitest-pool-workers/types"]
   },
   "include": ["**/*.ts", "**/*.tsx", ".cloudflare/types"],
-  "exclude": ["node_modules", "dist"]
+  // `app` is vinext's routes, kept to be read by the tickets that port them (#188 to #192).
+  "exclude": ["node_modules", "dist", "app"]
 }

@@ -36,7 +36,7 @@ export default defineConfig({
       env: {
         ASSETS: bindings.assets(),
         // The disposable cache behind vinext's data cache (kvDataAdapter's default binding name).
-        VINEXT_KV_CACHE: bindings.kv({ id: target.kvId }),
+        CACHE: bindings.kv({ id: target.kvId }),
         // The permanent record.
         DB: bindings.d1({ id: target.d1Id, name: target.d1Name }),
         GameAgent: bindings.durableObject({ worker: NAME, exportName: "GameAgent" }),

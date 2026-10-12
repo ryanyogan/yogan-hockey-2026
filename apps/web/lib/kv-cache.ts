@@ -1,0 +1,63 @@
+import { env, waitUntil } from "cloudflare:workers";
+import { type Cache, type CacheEntry, cachified, totalTtl } from "@epic-web/cachified";
+
+/**
+ * The site's one cache of what it reads from elsewhere: KV, through `@epic-web/cachified`.
+ *
+ * A read inside its time limit is answered from KV. One past it is answered from KV all the same,
+ * at once, and read again behind the answer for whoever asks next, so no visitor waits on ESPN
+ * for a page somebody has opened before, or is shown its failure. A key that was never read, or
+ * has been forgotten, is read before it is answered, and a failure of that read is the caller's.
+ *
+ * Nothing is tagged. What a result makes stale is a fixed set of keys, which `forget` deletes.
+ *
+ * KV is not exact: a location that has read a key may go on answering what it read for up to a
+ * minute after another location wrote or deleted it.
+ */
+
+const SECOND = 1000;
+const DAY = 24 * 60 * 60;
+
+/**
+ * How long past its time limit an entry may still be answered, in seconds. Nothing is kept for
+ * ever: a search nobody repeats, or a player long retired, leaves KV by itself.
+ */
+const STALE_FOR = 30 * DAY;
+
+/** KV refuses an entry asked to expire sooner than this, in seconds. */
+const KV_SHORTEST_LIFE = 60;
+
+/** cachified's cache, kept in the Worker's KV namespace. The adapter is the site's own. */
+const kv: Cache = {
+  name: "KV",
+  get: (key) => env.CACHE.get<CacheEntry>(key, "json"),
+  set: (key, entry) => {
+    const life = Math.ceil(totalTtl(entry.metadata) / SECOND);
+    return env.CACHE.put(key, JSON.stringify(entry), {
+      expirationTtl: Math.max(life, KV_SHORTEST_LIFE),
+    });
+  },
+  delete: (key) => env.CACHE.delete(key),
+};
+
+/** What `read` answers, kept under `key` and fresh for `seconds`. */
+export function cached<Value>(
+  key: string,
+  seconds: number,
+  read: () => Promise<Value>,
+): Promise<Value> {
+  return cachified<Value>({
+    key,
+    cache: kv,
+    ttl: seconds * SECOND,
+    staleWhileRevalidate: STALE_FOR * SECOND,
+    getFreshValue: read,
+    // The read behind a stale answer outlives the request or the Agent's call that asked.
+    waitUntil,
+  });
+}
+
+/** Deletes keys, so the next read of each is a fresh one. Resolves once they are gone. */
+export async function forget(keys: Iterable<string>): Promise<void> {
+  await Promise.all([...new Set(keys)].map((key) => env.CACHE.delete(key)));
+}

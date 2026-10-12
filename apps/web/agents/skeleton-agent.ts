@@ -1,13 +1,12 @@
 import { createDb, recordSkeletonBump } from "@yogan-hockey/db";
 import type { Pulse } from "@yogan-hockey/schemas";
 import { Agent } from "agents";
-import { invalidateTag } from "../lib/invalidate-tag";
-import { SKELETON_TAG } from "../lib/skeleton";
+import { forgetSkeletonReading } from "../lib/skeleton";
 
 /**
  * Walking-skeleton Agent (#31). It proves the joins the Scoreboard and Game
  * Agents rest on: state pushed to viewers, first paint over RPC, a write to
- * D1, and a cache tag invalidated from inside the Agent.
+ * D1, and a cached read forgotten from inside the Agent.
  */
 export class SkeletonAgent extends Agent<Env, Pulse> {
   initialState: Pulse = { count: 0, lastBumpAt: null };
@@ -28,7 +27,7 @@ export class SkeletonAgent extends Agent<Env, Pulse> {
     const pulse: Pulse = { count: this.state.count + 1, lastBumpAt: bumpedAt };
     this.setState(pulse);
     await recordSkeletonBump(createDb(this.env.DB), { count: pulse.count, bumpedAt });
-    await invalidateTag(SKELETON_TAG);
+    await forgetSkeletonReading();
     return pulse;
   }
 }

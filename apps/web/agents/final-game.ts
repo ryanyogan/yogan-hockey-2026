@@ -1,8 +1,7 @@
 import { type Db, gameHasPlays, replaceGamePlays, saveFinalGame } from "@yogan-hockey/db";
 import { getGameSummary, getTeam } from "@yogan-hockey/espn";
 import { FinalGameSchema, type Game } from "@yogan-hockey/schemas";
-import { gameTag, playerTag, STANDINGS_TAG, teamTag } from "../lib/espn";
-import { invalidateTag, invalidateTags } from "../lib/invalidate-tag";
+import { forgetGame, forgetPlayers, forgetStandings, forgetTeams } from "../lib/espn";
 
 /**
  * What the site does about a finished game (spec section 4), apart from who decides when: the
@@ -21,26 +20,24 @@ export function teamIdsOf(game: Game): string[] {
 }
 
 /**
- * Invalidates what a result changes for everyone: the standings and the teams that played. This
- * is all of a catch-up's invalidation and all of the second one, five minutes after a final.
+ * Forgets what a result changes for everyone: the cached standings and the teams that played, so
+ * the next read of each is a fresh one. This is all a catch-up forgets and all of the second
+ * round, five minutes after a final.
  */
 export async function invalidateStandingsAndTeams(teamIds: Iterable<string>): Promise<void> {
-  const tags = [STANDINGS_TAG, ...[...new Set(teamIds)].map(teamTag)];
-  // One call: the tags' page-cache times are one KV document, written once.
-  await invalidateTags(tags);
+  await Promise.all([forgetStandings(), forgetTeams(teamIds)]);
 }
 
 /**
- * Invalidates everything a final makes stale: standings, both teams, the game, and every player
- * on both rosters. The rosters are asked of ESPN as they are now, one request a team; the tags a
- * roster is not needed for are invalidated first, so they are done even when ESPN fails.
+ * Forgets everything a final makes stale: standings, both teams, the game, and every player on
+ * both rosters. The rosters are asked of ESPN as they are now, one request a team; what a roster
+ * is not needed for is forgotten first, so it is done even when ESPN fails.
  */
 export async function invalidateForFinal(game: Game): Promise<void> {
   const teamIds = teamIdsOf(game);
-  await Promise.all([invalidateStandingsAndTeams(teamIds), invalidateTag(gameTag(game.id))]);
+  await Promise.all([invalidateStandingsAndTeams(teamIds), forgetGame(game.id)]);
   const teams = await Promise.all(teamIds.map(getTeam));
-  const playerIds = new Set(teams.flatMap((team) => team.roster.map((player) => player.id)));
-  await Promise.all([...playerIds].map((id) => invalidateTag(playerTag(id))));
+  await forgetPlayers(teams.flatMap((team) => team.roster.map((player) => player.id)));
 }
 
 /**

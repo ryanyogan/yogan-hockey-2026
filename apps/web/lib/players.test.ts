@@ -1,6 +1,4 @@
 import { env } from "cloudflare:workers";
-import createKvDataCache from "@vinext/cloudflare/cache/kv-data-adapter.runtime";
-import { setDataCacheHandler } from "vinext/shims/cache-handler";
 import { afterEach, beforeAll, beforeEach, expect, test, vi } from "vitest";
 import { findPlayers, loadPlayer } from "./players";
 
@@ -8,8 +6,6 @@ const MATTHEWS = "4024123";
 const fetchMock = vi.fn<typeof fetch>();
 
 beforeAll(() => {
-  // The site's entry registers the KV cache; this entry is the Agents alone, so the test does it.
-  setDataCacheHandler(createKvDataCache({ env: { ...env }, options: undefined }));
 });
 
 beforeEach(() => {

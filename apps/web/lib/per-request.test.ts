@@ -1,7 +1,4 @@
 import { describe, expect, it, vi } from "vitest";
-
-vi.mock("vinext/shims/request-context", () => ({ getRequestExecutionContext: () => null }));
-
 import { memoFor, perRequest } from "./per-request";
 
 describe("one read a request", () => {
@@ -35,7 +32,7 @@ describe("one read a request", () => {
     expect(read).toHaveBeenCalledTimes(1);
   });
 
-  it("is simply made outside a request", async () => {
+  it("is simply made where no request is handed in", async () => {
     const read = vi.fn(async () => 1);
     await perRequest("scoreboard", read);
     await perRequest("scoreboard", read);

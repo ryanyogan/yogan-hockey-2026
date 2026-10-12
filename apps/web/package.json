@@ -11,7 +11,11 @@
     "typecheck": "cf workers types --quiet && tsc --noEmit"
   },
   "dependencies": {
-    "@vinext/cloudflare": "1.0.1",
+    "@epic-web/cachified": "5.6.3",
+    "@fontsource-variable/newsreader": "5.3.0",
+    "@fontsource/ibm-plex-sans-condensed": "5.3.0",
+    "@tanstack/react-router": "1.170.42",
+    "@tanstack/react-start": "1.168.61",
     "@yogan-hockey/db": "workspace:*",
     "@yogan-hockey/espn": "workspace:*",
     "@yogan-hockey/schemas": "workspace:*",
@@ -21,21 +25,19 @@
     "next-themes": "0.4.6",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "react-server-dom-webpack": "19.3.0",
     "use-debounce": "10.1.1",
     "use-local-storage-state": "20.0.0",
-    "vinext": "1.0.1"
+    "zod": "4.6.5"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "2.0.0-beta.sha-52b0dc0e9",
+    "@cloudflare/vite-plugin": "2.0.0-beta.sha-91c870c02",
     "@cloudflare/vitest-pool-workers": "0.22.0",
     "@tailwindcss/postcss": "4.3.3",
     "@types/node": "26.6.4",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "@vitejs/plugin-react": "6.1.2",
-    "@vitejs/plugin-rsc": "0.5.35",
-    "cf": "1.0.0-beta.12",
+    "cf": "1.0.0-beta.14",
     "tailwindcss": "4.3.3",
     "typescript": "7.0.2",
     "vite": "8.3.0",

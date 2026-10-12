@@ -81,15 +81,6 @@ export const NO_READING: ScoreboardReading = {
 };
 
 /**
- * Nothing any more: it held the place of whatever showed today's games until there were games to
- * show, and they are now in the first HTML. It draws its children, and is kept for the pages
- * still to be ported (#188 to #192), which drop it as they go.
- */
-export function ScoreboardGate({ children }: { fallback: ReactNode; children: ReactNode }) {
-  return children;
-}
-
-/**
  * Whether the page has lost its Scoreboard socket for more than a few seconds, so the scores it
  * shows may be behind. False again as soon as the socket is back.
  */
@@ -125,9 +116,3 @@ export function useScoreboard(): ScoreboardReading {
   if (reading == null) throw new Error("useScoreboard needs the root route's ScoreboardProvider");
   return reading;
 }
-
-/**
- * `useScoreboard()`, which no longer waits for anything. Kept for the pages still to be ported
- * (#188 to #192), which drop it as they go.
- */
-export const useScoreboardSoFar = useScoreboard;

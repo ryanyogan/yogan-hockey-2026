@@ -8,7 +8,7 @@ import { Link } from "../../../../../components/link";
 import { NotFoundPage } from "../../../../../components/shell/not-found-page";
 import { gameHref } from "../../../../../lib/scoreboard-view";
 import { type GameRead, readGameRoute } from "../../../../functions/game";
-import { pageTitle, titled } from "../../../../head";
+import { titled } from "../../../../head";
 
 /**
  * `/nhl/games/:id`: the game, read once for the page and its tabs. The tabs beneath it
@@ -30,10 +30,7 @@ export const Route = createFileRoute("/nhl/games/$id")({
   // other read is good for five minutes (`src/router.tsx`).
   shouldReload: ({ params, cause }) => (cause !== "stay" && unread.has(params.id)) || undefined,
   head: ({ match, loaderData }) =>
-    // The page of a game that does not exist has a title of its own.
-    match.status === "notFound"
-      ? { meta: [{ title: pageTitle("Game not found") }] }
-      : titled(match, loaderData == null ? undefined : gameTitle(loaderData)),
+    titled(match, loaderData == null ? undefined : gameTitle(loaderData), "Game not found"),
   component: Game,
   notFoundComponent: NotFound,
 });

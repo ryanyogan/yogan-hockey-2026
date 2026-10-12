@@ -1,5 +1,6 @@
 import { createMemoryHistory, createRouter, notFound } from "@tanstack/react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { FRESH_FOR } from "./router";
 import { routeTree } from "./routeTree.gen";
 
 // The server functions are the routes' only way to the server: each call of one is a request.
@@ -101,7 +102,7 @@ describe("a game's page", () => {
   it("keeps a game that was read for the site's five minutes", async () => {
     const found = { state: "found" } as Awaited<ReturnType<typeof readGameRoute>>;
     vi.mocked(readGameRoute).mockResolvedValueOnce(found);
-    const router = await open("/nhl/games/401", 5 * 60 * 1000);
+    const router = await open("/nhl/games/401", FRESH_FOR);
     await go(router, "/nhl");
     await go(router, "/nhl/games/401");
     expect(gameReads()).toBe(1);

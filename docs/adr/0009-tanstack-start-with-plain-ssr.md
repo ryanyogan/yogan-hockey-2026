@@ -27,3 +27,20 @@ This replaces what ADR 0006 and ADR 0007 say about vinext, server components and
 - The first byte waits for the slowest read. A page nobody has opened lately waits on ESPN before it shows anything, where it used to show its shell first.
 - A first load is rendered every time, so its budget is the one for a rendered page, not for a cached one.
 - A server function can be called by anyone who can reach the site, so each validates its input with the schemas in `packages/schemas`.
+
+## As built (#193): the calls made outside a loader
+
+A note on the site as it stands at the cutover, not a change to the decision. The rule above names two calls made outside a loader, resolving favorites and saving a pick. The site has four, and saving a pick is not one of them. They were found by listing every `createServerFn` in `apps/web/src/functions/` and every place each is called: all the others are called from a route's `loader` and nowhere else.
+
+| Server function | Called from | Why it is not a loader's |
+| --- | --- | --- |
+| `resolveFavoritePlayers` (`functions/favorites.ts`) | `useFavoritePlayers` (`components/favorites/use-favorite-players.ts`), in an effect, on Home and on `/players` | The favorites are ids in the browser's `localStorage`, which a first load's loader, running on the server, cannot see. Named by the rule. |
+| `readReplayPlays` (`functions/game.ts`) | `FinishedGame` (`components/game/finished-game.tsx`), in an effect | A game that ends on an open page: its plays are asked of D1 every ten seconds, for two minutes at most, until the Game Agent has archived them. A game already finished when the page was read has them from the loader. It was a Server Action before the port (#189). |
+| `bumpSkeleton` (`functions/skeleton.ts`) | the form on `/skeleton` (`routes/skeleton/index.tsx`), through `useServerFn` | A write: it bumps the Skeleton Agent. A fixture page, not one a visitor is led to (#192). |
+| `seedPicks` (`functions/skeleton.ts`) | the form on `/skeleton/picks` (`routes/skeleton/picks.tsx`), through `useServerFn` | A write: it seeds sample picks into D1 for Playwright and the comparison scripts. A fixture page (#192). |
+
+- **No call saves a pick.** A Prediction is made by the Scoreboard Agent; a page learns of it when `invalidatedAt` moves and its loaders run again. Nothing a visitor does writes one.
+- **The sockets are not calls**: `useAgent` in `ScoreboardProvider`, `useGameStream` and the skeleton's `PulseLive` open a socket to an Agent at `/agents/*`, which the Worker's entry routes before the site sees the request.
+- **`GET /picks`** (`routes/picks.ts`) is a server route, kept at its address by #192. Nothing on the site has called it since #188.
+
+For Ryan to decide: whether the rule becomes "a read a page draws on arrival is a loader's; a read that depends on the browser's own storage or on something that happens after the page is open, and a write, may be called from a component", or whether `readReplayPlays` moves (a final already runs the game's loader again through `router.invalidate()`, so the loader could carry the plays once they are archived).

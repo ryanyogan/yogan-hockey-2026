@@ -18,7 +18,7 @@ One ticket at a time, each by the `implement` skill (`~/.claude/skills/implement
 
 - Prefer an established npm package over hand-rolling.
 - In the TanStack Start app (`apps/web/src`), a page is a route whose loader waits for everything the page draws. A loader calls server functions and nothing else, one for each page-level read, each validating its input with the schemas in `packages/schemas`. Nothing is deferred, no route has a placeholder, and there is no TanStack Query (ADR 0009).
-- Until the cutover (#193), pull requests for the port are based on the branch `tanstack-start`, never on `main`, and `apps/web/app/` is the vinext site, kept unbuilt as the reference for each route still to be ported.
+- While the branch `tanstack-start` exists (it is merged to `main` at the cutover, #193, and then deleted), pull requests for the port are based on it, never on `main`.
 
 ## Agent skills
 

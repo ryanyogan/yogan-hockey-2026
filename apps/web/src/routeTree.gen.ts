@@ -20,9 +20,13 @@ import { Route as SkeletonIndexRouteImport } from './routes/skeleton/index'
 import { Route as SkeletonDashboardRouteImport } from './routes/skeleton/dashboard'
 import { Route as SkeletonLiveRouteImport } from './routes/skeleton/live'
 import { Route as SkeletonPicksRouteImport } from './routes/skeleton/picks'
+import { Route as NhlGamesIdRouteRouteImport } from './routes/nhl/games/$id/route'
 import { Route as NhlTeamsIdRouteRouteImport } from './routes/nhl/teams/$id/route'
 import { Route as PlayersIdIndexRouteImport } from './routes/players/$id/index'
 import { Route as PlayersIdGamesRouteImport } from './routes/players/$id/games'
+import { Route as NhlGamesIdIndexRouteImport } from './routes/nhl/games/$id/index'
+import { Route as NhlGamesIdPickRouteImport } from './routes/nhl/games/$id/pick'
+import { Route as NhlGamesIdScoringRouteImport } from './routes/nhl/games/$id/scoring'
 import { Route as NhlTeamsIdIndexRouteImport } from './routes/nhl/teams/$id/index'
 import { Route as NhlTeamsIdRosterRouteImport } from './routes/nhl/teams/$id/roster'
 import { Route as NhlTeamsIdStatsRouteImport } from './routes/nhl/teams/$id/stats'
@@ -82,6 +86,11 @@ const SkeletonPicksRoute = SkeletonPicksRouteImport.update({
   path: '/skeleton/picks',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NhlGamesIdRouteRoute = NhlGamesIdRouteRouteImport.update({
+  id: '/nhl/games/$id',
+  path: '/nhl/games/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NhlTeamsIdRouteRoute = NhlTeamsIdRouteRouteImport.update({
   id: '/nhl/teams/$id',
   path: '/nhl/teams/$id',
@@ -96,6 +105,21 @@ const PlayersIdGamesRoute = PlayersIdGamesRouteImport.update({
   id: '/games',
   path: '/games',
   getParentRoute: () => PlayersIdRouteRoute,
+} as any)
+const NhlGamesIdIndexRoute = NhlGamesIdIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => NhlGamesIdRouteRoute,
+} as any)
+const NhlGamesIdPickRoute = NhlGamesIdPickRouteImport.update({
+  id: '/pick',
+  path: '/pick',
+  getParentRoute: () => NhlGamesIdRouteRoute,
+} as any)
+const NhlGamesIdScoringRoute = NhlGamesIdScoringRouteImport.update({
+  id: '/scoring',
+  path: '/scoring',
+  getParentRoute: () => NhlGamesIdRouteRoute,
 } as any)
 const NhlTeamsIdIndexRoute = NhlTeamsIdIndexRouteImport.update({
   id: '/',
@@ -125,11 +149,15 @@ export interface FileRoutesByFullPath {
   '/nhl/': typeof NhlIndexRoute
   '/players/': typeof PlayersIndexRoute
   '/skeleton/': typeof SkeletonIndexRoute
+  '/nhl/games/$id': typeof NhlGamesIdRouteRouteWithChildren
   '/nhl/teams/$id': typeof NhlTeamsIdRouteRouteWithChildren
   '/players/$id/games': typeof PlayersIdGamesRoute
   '/players/$id/': typeof PlayersIdIndexRoute
+  '/nhl/games/$id/pick': typeof NhlGamesIdPickRoute
+  '/nhl/games/$id/scoring': typeof NhlGamesIdScoringRoute
   '/nhl/teams/$id/roster': typeof NhlTeamsIdRosterRoute
   '/nhl/teams/$id/stats': typeof NhlTeamsIdStatsRoute
+  '/nhl/games/$id/': typeof NhlGamesIdIndexRoute
   '/nhl/teams/$id/': typeof NhlTeamsIdIndexRoute
 }
 export interface FileRoutesByTo {
@@ -145,8 +173,11 @@ export interface FileRoutesByTo {
   '/skeleton': typeof SkeletonIndexRoute
   '/players/$id/games': typeof PlayersIdGamesRoute
   '/players/$id': typeof PlayersIdIndexRoute
+  '/nhl/games/$id/pick': typeof NhlGamesIdPickRoute
+  '/nhl/games/$id/scoring': typeof NhlGamesIdScoringRoute
   '/nhl/teams/$id/roster': typeof NhlTeamsIdRosterRoute
   '/nhl/teams/$id/stats': typeof NhlTeamsIdStatsRoute
+  '/nhl/games/$id': typeof NhlGamesIdIndexRoute
   '/nhl/teams/$id': typeof NhlTeamsIdIndexRoute
 }
 export interface FileRoutesById {
@@ -162,11 +193,15 @@ export interface FileRoutesById {
   '/nhl/': typeof NhlIndexRoute
   '/players/': typeof PlayersIndexRoute
   '/skeleton/': typeof SkeletonIndexRoute
+  '/nhl/games/$id': typeof NhlGamesIdRouteRouteWithChildren
   '/nhl/teams/$id': typeof NhlTeamsIdRouteRouteWithChildren
   '/players/$id/games': typeof PlayersIdGamesRoute
   '/players/$id/': typeof PlayersIdIndexRoute
+  '/nhl/games/$id/pick': typeof NhlGamesIdPickRoute
+  '/nhl/games/$id/scoring': typeof NhlGamesIdScoringRoute
   '/nhl/teams/$id/roster': typeof NhlTeamsIdRosterRoute
   '/nhl/teams/$id/stats': typeof NhlTeamsIdStatsRoute
+  '/nhl/games/$id/': typeof NhlGamesIdIndexRoute
   '/nhl/teams/$id/': typeof NhlTeamsIdIndexRoute
 }
 export interface FileRouteTypes {
@@ -183,11 +218,15 @@ export interface FileRouteTypes {
     | '/nhl/'
     | '/players/'
     | '/skeleton/'
+    | '/nhl/games/$id'
     | '/nhl/teams/$id'
     | '/players/$id/games'
     | '/players/$id/'
+    | '/nhl/games/$id/pick'
+    | '/nhl/games/$id/scoring'
     | '/nhl/teams/$id/roster'
     | '/nhl/teams/$id/stats'
+    | '/nhl/games/$id/'
     | '/nhl/teams/$id/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -203,8 +242,11 @@ export interface FileRouteTypes {
     | '/skeleton'
     | '/players/$id/games'
     | '/players/$id'
+    | '/nhl/games/$id/pick'
+    | '/nhl/games/$id/scoring'
     | '/nhl/teams/$id/roster'
     | '/nhl/teams/$id/stats'
+    | '/nhl/games/$id'
     | '/nhl/teams/$id'
   id:
     | '__root__'
@@ -219,11 +261,15 @@ export interface FileRouteTypes {
     | '/nhl/'
     | '/players/'
     | '/skeleton/'
+    | '/nhl/games/$id'
     | '/nhl/teams/$id'
     | '/players/$id/games'
     | '/players/$id/'
+    | '/nhl/games/$id/pick'
+    | '/nhl/games/$id/scoring'
     | '/nhl/teams/$id/roster'
     | '/nhl/teams/$id/stats'
+    | '/nhl/games/$id/'
     | '/nhl/teams/$id/'
   fileRoutesById: FileRoutesById
 }
@@ -239,6 +285,7 @@ export interface RootRouteChildren {
   NhlIndexRoute: typeof NhlIndexRoute
   PlayersIndexRoute: typeof PlayersIndexRoute
   SkeletonIndexRoute: typeof SkeletonIndexRoute
+  NhlGamesIdRouteRoute: typeof NhlGamesIdRouteRouteWithChildren
   NhlTeamsIdRouteRoute: typeof NhlTeamsIdRouteRouteWithChildren
 }
 
@@ -321,6 +368,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SkeletonPicksRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/nhl/games/$id': {
+      id: '/nhl/games/$id'
+      path: '/nhl/games/$id'
+      fullPath: '/nhl/games/$id'
+      preLoaderRoute: typeof NhlGamesIdRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/nhl/teams/$id': {
       id: '/nhl/teams/$id'
       path: '/nhl/teams/$id'
@@ -341,6 +395,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/players/$id/games'
       preLoaderRoute: typeof PlayersIdGamesRouteImport
       parentRoute: typeof PlayersIdRouteRoute
+    }
+    '/nhl/games/$id/': {
+      id: '/nhl/games/$id/'
+      path: '/'
+      fullPath: '/nhl/games/$id/'
+      preLoaderRoute: typeof NhlGamesIdIndexRouteImport
+      parentRoute: typeof NhlGamesIdRouteRoute
+    }
+    '/nhl/games/$id/pick': {
+      id: '/nhl/games/$id/pick'
+      path: '/pick'
+      fullPath: '/nhl/games/$id/pick'
+      preLoaderRoute: typeof NhlGamesIdPickRouteImport
+      parentRoute: typeof NhlGamesIdRouteRoute
+    }
+    '/nhl/games/$id/scoring': {
+      id: '/nhl/games/$id/scoring'
+      path: '/scoring'
+      fullPath: '/nhl/games/$id/scoring'
+      preLoaderRoute: typeof NhlGamesIdScoringRouteImport
+      parentRoute: typeof NhlGamesIdRouteRoute
     }
     '/nhl/teams/$id/': {
       id: '/nhl/teams/$id/'
@@ -380,6 +455,22 @@ const PlayersIdRouteRouteWithChildren = PlayersIdRouteRoute._addFileChildren(
   PlayersIdRouteRouteChildren,
 )
 
+interface NhlGamesIdRouteRouteChildren {
+  NhlGamesIdPickRoute: typeof NhlGamesIdPickRoute
+  NhlGamesIdScoringRoute: typeof NhlGamesIdScoringRoute
+  NhlGamesIdIndexRoute: typeof NhlGamesIdIndexRoute
+}
+
+const NhlGamesIdRouteRouteChildren: NhlGamesIdRouteRouteChildren = {
+  NhlGamesIdPickRoute: NhlGamesIdPickRoute,
+  NhlGamesIdScoringRoute: NhlGamesIdScoringRoute,
+  NhlGamesIdIndexRoute: NhlGamesIdIndexRoute,
+}
+
+const NhlGamesIdRouteRouteWithChildren = NhlGamesIdRouteRoute._addFileChildren(
+  NhlGamesIdRouteRouteChildren,
+)
+
 interface NhlTeamsIdRouteRouteChildren {
   NhlTeamsIdRosterRoute: typeof NhlTeamsIdRosterRoute
   NhlTeamsIdStatsRoute: typeof NhlTeamsIdStatsRoute
@@ -408,6 +499,7 @@ const rootRouteChildren: RootRouteChildren = {
   NhlIndexRoute: NhlIndexRoute,
   PlayersIndexRoute: PlayersIndexRoute,
   SkeletonIndexRoute: SkeletonIndexRoute,
+  NhlGamesIdRouteRoute: NhlGamesIdRouteRouteWithChildren,
   NhlTeamsIdRouteRoute: NhlTeamsIdRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport

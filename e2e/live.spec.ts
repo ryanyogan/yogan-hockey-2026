@@ -31,7 +31,8 @@ test("/nhl/live lists the slate in sections, links each game, and follows the so
     sayHeardAt = (at) => socket.send(JSON.stringify({ type: "scoreboard_heard", at }));
   });
   // Every call of a server function. This page makes none of its own once it is drawn (it lists
-  // no favorite players), so each one is a loader reading again.
+  // no favorite players), so each one is a loader reading: this page's again, or the page of a
+  // link the pointer rests on, read ahead (`defaultPreload` in `src/router.tsx`).
   let rereads = 0;
   page.on("request", (request) => {
     if (new URL(request.url()).pathname.startsWith("/_serverFn/")) rereads += 1;
@@ -71,6 +72,9 @@ test("/nhl/live lists the slate in sections, links each game, and follows the so
   await expect(ticker.getByRole("link")).toHaveCount(10);
   const entry = ticker.locator(`a[href="/nhl/games/${GAME_ID}"]`);
   await expect(entry).toHaveText(/NSH.*TOR.*6:00 PM$/);
+  // Nothing has been read since the page was drawn. From here the pointer is on the strip, where
+  // resting on a game reads that game's page ahead, so the count starts again once it has left.
+  expect(rereads).toBe(0);
   // Nine games are wider than the strip, and a plain vertical wheel reaches the rest.
   const strip = ticker.getByRole("list");
   await expect(async () => {
@@ -113,6 +117,9 @@ test("/nhl/live lists the slate in sections, links each game, and follows the so
     ).toBe(0);
   }
   if (desktop != null) await page.setViewportSize(desktop);
+  // The pointer off every link, and what it read ahead on the way forgotten.
+  await page.getByRole("heading", { name: /Live scores/ }).hover();
+  rereads = 0;
 
   // The Scoreboard pushes a change: the game is on, and the page follows without a refresh.
   await expect.poll(() => slate, { message: "the socket delivered the slate" }).toBeDefined();

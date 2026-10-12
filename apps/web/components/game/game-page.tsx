@@ -8,7 +8,7 @@ import { gamePhase, storyHeader, streamReading, streamStarts } from "../../lib/g
 import type { GameTab } from "../../lib/game/tabs";
 import { useGameStream } from "../../lib/game/use-game-stream";
 import { PICK_PENDING } from "../../lib/picks";
-import { useScoreboardSoFar } from "../scoreboard/scoreboard-provider";
+import { useScoreboard } from "../scoreboard/scoreboard-provider";
 import { FinishedGame } from "./finished-game";
 import { MatchupRink } from "./game-rink";
 import { GameStory } from "./game-story";
@@ -44,7 +44,7 @@ export function GamePage({
   const tab: GameTab = "plays";
   // Not waited for: the page is whole from the Game Agent's answer, and the slate only says when
   // a game still to come has started.
-  const scoreboard = useScoreboardSoFar().games.find((onSlate) => onSlate.id === gameId);
+  const scoreboard = useScoreboard().games.find((onSlate) => onSlate.id === gameId);
   // Kept once true: the Scoreboard's slate moves on to another day under an open page, and a
   // refresh of the server's snapshot must not take the socket away from a game being followed.
   const [streaming, setStreaming] = useState(false);

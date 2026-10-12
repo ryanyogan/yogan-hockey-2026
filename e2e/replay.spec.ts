@@ -1,7 +1,5 @@
 import { expect, test } from "./test";
 
-test.skip(true, "The game's routes are not ported to TanStack Start yet: #189 restores this spec.");
-
 // The recorded shootout, Dallas 4 at Buffalo 3 (event 401803652): a finished game nobody watched,
 // so this page's first open is what archives it, and the Replay is drawn from D1.
 test("the Replay opens laid out, plays, pauses, jumps to a tick, and follows the key-plays toggle", async ({
@@ -109,11 +107,26 @@ test("the Replay opens laid out, plays, pauses, jumps to a tick, and follows the
   await rows.filter({ hasText: "Mavrik Bourque Goal" }).click();
   await expect(score).toHaveText([/DAL.*1/, /BUF.*0/]);
   await rink.evaluate((node) => node.setAttribute("data-retained", "yes"));
+  // A tab is the game already read: going to one asks the server for nothing.
+  const reads: string[] = [];
+  page.on("request", (request) => {
+    if (new URL(request.url()).pathname.startsWith("/_serverFn/")) reads.push(request.url());
+  });
   await page.getByRole("link", { name: "scoring" }).click();
   await expect(page).toHaveURL(/\/nhl\/games\/401803652\/scoring$/);
   await expect(rink).toHaveAttribute("data-retained", "yes");
   await expect(page.locator('[data-slot="play-row"]')).toHaveCount(1);
   await expect(score).toHaveText([/DAL.*1/, /BUF.*0/]);
+
+  // The pick's tab, with the seeded pick (`e2e/picks.setup.ts`), and back: the same rink still.
+  await page.getByRole("link", { name: "the pick" }).click();
+  await expect(page).toHaveURL(/\/nhl\/games\/401803652\/pick$/);
+  await expect(page.locator('[data-slot="pick-lead"]')).toContainText("Our pick:");
+  await page.getByRole("link", { name: "scoring" }).click();
+  await expect(page).toHaveURL(/\/nhl\/games\/401803652\/scoring$/);
+  await expect(rink).toHaveAttribute("data-retained", "yes");
+  await expect(score).toHaveText([/DAL.*1/, /BUF.*0/]);
+  expect(reads).toEqual([]);
 
   // Back to the whole game.
   await page.getByRole("button", { name: "whole game" }).click();

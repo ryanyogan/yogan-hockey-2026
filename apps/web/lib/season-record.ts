@@ -1,7 +1,16 @@
 import { env } from "cloudflare:workers";
 import { createDb, getSeasonRecord } from "@yogan-hockey/db";
 import type { ScoreboardReading, SeasonRecord } from "@yogan-hockey/schemas";
+import { cache } from "react";
 import { seasonNow } from "./picks";
+
+/**
+ * A season's record of the picks, read from D1 once a request: the layout wants it for the
+ * dateline and Home for The Picks box, and both ask for the same season.
+ */
+export const seasonRecord = cache(
+  (season: number): Promise<SeasonRecord | null> => getSeasonRecord(createDb(env.DB), season),
+);
 
 /**
  * The season's record of the picks, for the masthead's dateline on every page. It waits for the
@@ -15,7 +24,7 @@ export async function readSeasonRecord(
 ): Promise<SeasonRecord | null> {
   try {
     const date = (await scoreboard)?.date ?? null;
-    return await getSeasonRecord(createDb(env.DB), seasonNow(date, new Date()));
+    return await seasonRecord(seasonNow(date, new Date()));
   } catch (error) {
     console.error("Masthead: the season's record could not be read", error);
     return null;

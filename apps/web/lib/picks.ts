@@ -1,4 +1,10 @@
-import type { FinalGame, GameStatus, SeasonRecord, StoredPrediction } from "@yogan-hockey/schemas";
+import type {
+  FinalGame,
+  GameStatus,
+  MadeSlatePick,
+  SlatePick,
+  StoredPrediction,
+} from "@yogan-hockey/schemas";
 import { NHL_TIME_ZONE } from "./game-time";
 
 /** What a game still to come says until its Prediction arrives. */
@@ -18,7 +24,7 @@ export function awaitsPick(game: Pick<PickedGame, "status" | "startTime">, now: 
 
 /** The side a Prediction picked, or null: a failed or missing one, or a team not in the game. */
 export function pickedSide<Game extends { home: Side; away: Side }>(
-  prediction: StoredPrediction | null | undefined,
+  prediction: SlatePick | null | undefined,
   game: Game,
 ): Game["home"] | Game["away"] | null {
   if (prediction?.status !== "made") return null;
@@ -60,6 +66,23 @@ export function slatePicks(
 }
 
 /**
+ * The made picks of a slate by game id, each cut down to who was picked and at what chance: what
+ * Home's server component hands the browser, which writes the pick lines and marks them from the
+ * socket's scores (`lib/agate-copy.ts`). A failed Prediction has no entry: it is nothing shown.
+ */
+export function madePicks(
+  predictions: ReadonlyMap<string, StoredPrediction>,
+): Record<string, MadeSlatePick> {
+  const picks: Record<string, MadeSlatePick> = {};
+  for (const [gameId, prediction] of predictions) {
+    if (prediction.status !== "made") continue;
+    const { status, pickTeamId, winProbability } = prediction;
+    picks[gameId] = { status, pickTeamId, winProbability };
+  }
+  return picks;
+}
+
+/**
  * A line the server drew, against the game's status as the socket now has it: the picks are as
  * old as the page's last render, and a game that has started since is no longer waiting for one.
  */
@@ -75,12 +98,6 @@ export function seasonNow(slateDate: string | null, now: Date): number {
   // The Canadian form of a date is year-month-day.
   const today = () => new Intl.DateTimeFormat("en-CA", { timeZone: NHL_TIME_ZONE }).format(now);
   return seasonOfSlate(slateDate ?? today());
-}
-
-/** The season record of the picks as the dashboard says it. Null until a pick has been decided. */
-export function recordLine(record: SeasonRecord | null): string | null {
-  if (record == null || record.right + record.wrong === 0) return null;
-  return `picks: ${record.right} right, ${record.wrong} wrong`;
 }
 
 /**

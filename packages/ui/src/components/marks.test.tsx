@@ -38,7 +38,7 @@ describe("LiveMarker", () => {
     );
     expect(view.tag("span", 1).attributes["aria-hidden"]).toBe("true");
     expect(view.tag("span", 1).classes).toEqual(
-      expect.arrayContaining(["size-2", "rounded-full", "bg-live", "motion-safe:animate-live"]),
+      expect.arrayContaining(["size-2", "rounded-[50%]", "bg-live", "motion-safe:animate-live"]),
     );
   });
 

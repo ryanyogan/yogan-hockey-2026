@@ -7,7 +7,11 @@ export type MeasuredRoute = {
   /** The route as the app names it. */
   route: string;
   path: string;
-  /** Whether `pagePolicy` (apps/web/lib/page-cache.ts) keeps the page: it is then measured cached and rendered. */
+  /**
+   * Whether vinext's page cache kept the page (`pagePolicy` in `main`'s apps/web/lib/page-cache.ts):
+   * on a site that has one it is then measured cached and rendered. The TanStack Start site keeps
+   * no page (ADR 0009), and every route of it is measured as rendered.
+   */
   cacheable: boolean;
   /** The link tapped to measure a navigation: the first on screen. */
   navigate: string;
@@ -17,7 +21,9 @@ export type MeasuredRoute = {
 
 /** On every route: the shell's own controls. */
 export const SHELL_INTERACTIONS: Interaction[] = [
-  { name: "theme toggle", selector: 'button:has-text("mode")' },
+  // Agate's two theme buttons, Day and Night: on a phone only the one that leads to the other
+  // theme is drawn, and the first on screen is the one tapped.
+  { name: "theme toggle", selector: '[role="group"][aria-label="Theme"] button' },
   { name: "open the whole slate", selector: 'nav button:has-text("games")' },
 ];
 
@@ -161,6 +167,14 @@ export function measuredRoutes(subjects: Subjects): MeasuredRoute[] {
       interactions: [heart],
     },
   ];
+  // An address no route answers. It has no script budget: the baseline did not measure it.
+  routes.push({
+    route: "not found",
+    path: "/no-such-page",
+    cacheable: false,
+    navigate: 'main a[href="/"]',
+    interactions: [],
+  });
   if (subjects.scheduledGame != null) {
     routes.splice(10, 0, {
       route: "/nhl/games/:id (scheduled)",

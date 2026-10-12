@@ -1,27 +1,33 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { PageHeader } from "@yogan-hockey/ui/components/section";
-import { GameMatchup } from "../../../../components/game/game-matchup";
-import { GamePage } from "../../../../components/game/game-page";
-import { GamePick } from "../../../../components/game/game-pick";
-import { Link } from "../../../../components/link";
-import { gameHref } from "../../../../lib/scoreboard-view";
-import { type GameRead, readGameRoute } from "../../../functions/game";
-import { pageTitle, titled } from "../../../head";
+import { GameMatchup } from "../../../../../components/game/game-matchup";
+import { GamePage } from "../../../../../components/game/game-page";
+import { GamePick } from "../../../../../components/game/game-pick";
+import { Link } from "../../../../../components/link";
+import { NotFoundPage } from "../../../../../components/shell/not-found-page";
+import { gameHref } from "../../../../../lib/scoreboard-view";
+import { type GameRead, readGameRoute } from "../../../../functions/game";
+import { pageTitle, titled } from "../../../../head";
 
 /**
- * `/nhl/games/:id`: the game, read once for the page and its tabs. The tabs beneath it (the
- * plays, `scoring`, `pick`) have no read of their own, so going from one to another asks for
+ * `/nhl/games/:id`: the game, read once for the page and its tabs. The tabs beneath it
+ * (`index.tsx` is the plays, `scoring.tsx` and `pick.tsx` the others) have no read of their own:
+ * a tab is the same game drawn another way, so going from one to another asks the server for
  * nothing and the stream, the Replay and the rink stay as they are.
+ *
+ * That holds however long the page has been open: the router reads a route it is staying on
+ * again only when told its read is out of date, which a final or a pick does
+ * (`lib/use-refresh-on-invalidation.ts`). `src/game-routes.test.ts` keeps it to that.
  */
 export const Route = createFileRoute("/nhl/games/$id")({
   loader: ({ params }) => readGameRoute({ data: { id: params.id } }),
   head: ({ match, loaderData }) =>
     // The page of a game that does not exist has a title of its own.
-    loaderData == null && match.status === "notFound"
+    match.status === "notFound"
       ? { meta: [{ title: pageTitle("Game not found") }] }
       : titled(match, loaderData == null ? undefined : gameTitle(loaderData)),
   component: Game,
-  notFoundComponent: GameNotFound,
+  notFoundComponent: NotFound,
 });
 
 function gameTitle(read: GameRead): string {
@@ -33,6 +39,11 @@ function gameTitle(read: GameRead): string {
 function Game() {
   const read = Route.useLoaderData();
   const { id } = Route.useParams();
+  // An address under the game that no route answers (`/nhl/games/401803652/coaches`) is the
+  // site's not-found page alone in the shell. The router draws it in this route's outlet and
+  // marks the match (`_notFound`: see `src/head.ts`).
+  const noSuchAddress = Route.useMatch({ select: (match) => match._notFound === true });
+  if (noSuchAddress) return <Outlet />;
   const pathname = gameHref({ id });
   if (read.state === "unreadable") return <GameUnreadable pathname={pathname} />;
   const { game, pick, pregame } = read;
@@ -80,6 +91,16 @@ function GameUnreadable({ pathname }: { pathname: string }) {
       </p>
     </section>
   );
+}
+
+/**
+ * Stands where the game's page would for either of two things the router sends here: a game that
+ * does not exist, which this route's own read found, and an address under a game that no route
+ * answers, which is the site's not-found page as anywhere else.
+ */
+function NotFound() {
+  const noSuchGame = Route.useMatch({ select: (match) => match.status === "notFound" });
+  return noSuchGame ? <GameNotFound /> : <NotFoundPage />;
 }
 
 /** An id that is no NHL game's: the same shell, and a way back to the scores. */

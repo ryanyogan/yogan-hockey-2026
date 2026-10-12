@@ -2,7 +2,7 @@
 
 The 2026 rebuild of [Yogan Hockey](https://github.com/ryanyogan/yogan_hockey): TypeScript on Cloudflare, with a backend on the Agents SDK and a TanStack Start (shadcn + Tailwind) UI, in one pnpm monorepo.
 
-The design is decided and the build has started: the walking skeleton (#31) is in, and the site itself is not built yet.
+The site is built and deployed at hockey.yogan.dev. What is left is tracked against the parity checklist ([#55](https://github.com/ryanyogan/yogan-hockey-2026/issues/55)).
 
 - **Spec:** [`docs/spec.md`](docs/spec.md) states the whole design, and ends with the assumptions nobody has run yet.
 - **Why:** the larger choices are recorded in [`docs/adr/`](docs/adr), and the vocabulary in [`GLOSSARY.md`](GLOSSARY.md).

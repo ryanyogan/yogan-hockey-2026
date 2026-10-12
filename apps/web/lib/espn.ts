@@ -51,11 +51,6 @@ export function forgetStandings(): Promise<void> {
   return forget([STANDINGS_KEY]);
 }
 
-/** The next read of the team list is a fresh one. */
-export function forgetTeamList(): Promise<void> {
-  return forget([TEAM_LIST_KEY]);
-}
-
 /** The next read of each team's page and schedule is a fresh one. */
 export function forgetTeams(teamIds: Iterable<string>): Promise<void> {
   return forget([...teamIds].flatMap((id) => [teamKey(id), teamScheduleKey(id)]));

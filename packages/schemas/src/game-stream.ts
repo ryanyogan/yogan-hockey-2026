@@ -46,7 +46,7 @@ export const GameStreamMessageSchema = z.discriminatedUnion("type", [
 ]);
 export type GameStreamMessage = z.infer<typeof GameStreamMessageSchema>;
 
-/** What the Game Agent answers a server component with for first paint. */
+/** What the Game Agent answers the game's read with for first paint. */
 export const GameSnapshotSchema = GameStreamStateSchema.extend({
   /** Every play so far, in order. */
   plays: z.array(PlaySchema),

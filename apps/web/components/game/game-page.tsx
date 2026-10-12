@@ -1,5 +1,3 @@
-"use client";
-
 import type { Game, GameHeader, Play, ScoreboardGame } from "@yogan-hockey/schemas";
 import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
 import { type ReactNode, useState } from "react";

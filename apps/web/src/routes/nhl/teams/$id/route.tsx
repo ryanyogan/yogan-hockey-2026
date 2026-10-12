@@ -5,7 +5,7 @@ import { NotFoundPage } from "../../../../../components/shell/not-found-page";
 import { TeamHeader } from "../../../../../components/team/team-header";
 import { TeamNotFound } from "../../../../../components/team/team-not-found";
 import { TeamNow } from "../../../../../components/team/team-now";
-import { TeamNowFrame } from "../../../../../components/team/team-skeletons";
+import { TeamNowFrame } from "../../../../../components/team/team-now-frame";
 import { TeamTabs } from "../../../../../components/team/team-tabs";
 import { readTeamPage } from "../../../../functions/team";
 import { titled } from "../../../../head";

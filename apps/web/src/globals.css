@@ -8,13 +8,10 @@
  */
 @import "./fonts.css";
 
-/* Vinext's routes, still to be ported (#188 to #192), are not pages of this build. */
-@source not "../app";
-
 /*
  * How far the notch, the rounded corners and the home bar reach into the page. All zero in a
  * browser tab; in a site opened from the home screen the page covers the whole screen
- * (`viewport-fit=cover` in the layout) and the shell adds these to its own padding, so its
+ * (`viewport-fit=cover` in `src/head.ts`) and the shell adds these to its own padding, so its
  * rules and backgrounds reach the edges and nothing to read or press sits under the hardware.
  */
 :root {

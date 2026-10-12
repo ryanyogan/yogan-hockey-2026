@@ -1,5 +1,3 @@
-"use client";
-
 import { type RefObject, useEffect, useLayoutEffect, useReducer, useRef } from "react";
 import {
   heldScores,

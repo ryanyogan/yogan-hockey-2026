@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import { DROP_WAIT_MS, watchForDrop } from "./connection-drop";
 

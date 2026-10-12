@@ -13,8 +13,8 @@ export const seasonRecord = (season: number): Promise<SeasonRecord | null> =>
 
 /**
  * The season's record of the picks, for the masthead's dateline on every page. It waits for the
- * layout's read of the Scoreboard only to know the season, and does without it on a page drawn
- * with no slate (`scoreboard` null: the page cache's), where the season is the calendar's.
+ * shell's read of the Scoreboard only to know the season; where that has no slate's date, the
+ * season is the calendar's.
  *
  * It never rejects: a dateline without its picks is still a dateline.
  */

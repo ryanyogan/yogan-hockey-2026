@@ -1,5 +1,3 @@
-"use client";
-
 import type { GameHeader, Play } from "@yogan-hockey/schemas";
 import { type ReactNode, useEffect, useState } from "react";
 import type { GameTab } from "../../lib/game/tabs";

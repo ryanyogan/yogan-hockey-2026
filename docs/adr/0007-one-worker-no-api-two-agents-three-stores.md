@@ -1,5 +1,7 @@
 # One Worker with no API, two Agents, and three stores with one job each
 
+> The site is no longer vinext: [ADR 0009](0009-tanstack-start-with-plain-ssr.md) replaces what this says about vinext, server components and Server Actions. The backend decisions here stand.
+
 The site and its backend are a single Worker. There is no REST API: server components and Server Actions read data by calling the Agents directly or by fetching ESPN through one shared module. Only what is polled on a schedule and pushed to viewers gets an Agent, which means the Scoreboard (one instance) and the Game (one per NHL game). Both poll only while someone is watching.
 
 Data lives in three places, each with one job: Workers KV is the disposable cache of ESPN data behind vinext's data cache; an Agent's own storage is its working state while live; D1 is the permanent record of finished games and their plays, which is what replay reads.

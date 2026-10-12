@@ -108,7 +108,7 @@ export class ScoreboardAgent extends ViewerPolledAgent<ScoreboardState> {
   initialState: ScoreboardState = { date: null, games: [], updatedAt: null, invalidatedAt: null };
 
   /**
-   * First paint, called by a server component over Durable Object RPC. With nobody watching the
+   * First paint, called by a page's server function over Durable Object RPC. With nobody watching the
    * stored games are old, so this asks ESPN first when they are older than one polling interval.
    * If ESPN fails, the answer is the games as last seen. `heardAt` is when ESPN last answered.
    */

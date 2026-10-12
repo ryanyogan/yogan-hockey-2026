@@ -46,11 +46,8 @@ test("canonical, unknown and ambiguous selectors do not redirect", () => {
     expect(legacyPageLocation(new URL(`https://hockey.test${path}`))).toBeNull();
 });
 
-test("RSC links retain their transport suffix and cache buster", () => {
-  expect(
-    legacyPageLocation(new URL("https://hockey.test/nhl/games/1.rsc?tab=scoring&_rsc=abc")),
-  ).toBe("https://hockey.test/nhl/games/1/scoring.rsc?_rsc=abc");
-  expect(legacyPageLocation(new URL("https://hockey.test/players/7?games=all&_rsc=abc"))).toBe(
-    "https://hockey.test/players/7/games?_rsc=abc",
+test("the rest of the query string is kept", () => {
+  expect(legacyPageLocation(new URL("https://hockey.test/players/7?games=all&from=home"))).toBe(
+    "https://hockey.test/players/7/games?from=home",
   );
 });

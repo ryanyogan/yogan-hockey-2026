@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useMemo, useState } from "react";
 import type { FavoritePlayer } from "../../lib/favorite-players";
 import { favoritesToShow, MAX_FAVORITES } from "../../lib/favorites";

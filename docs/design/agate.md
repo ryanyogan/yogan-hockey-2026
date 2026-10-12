@@ -41,7 +41,7 @@ The installed site's colours are these too: `THEME_COLORS = { light: "#fafaf8", 
 
 ## Type
 
-Both faces are self-hosted: `apps/web/app/layout.tsx` names them through `next/font/google`, and vinext downloads the files at build time and serves them from the site, so no page asks Google for anything. Newsreader is one variable file with its `opsz` axis (and a second, the italic, fetched only when a pick line is drawn); IBM Plex Sans Condensed is four files, 400, 500 (the dateline), 600 and 700, all drawn and all preloaded. `theme.css` exposes them as `--font-serif` and `--font-agate`, each followed by its sized fallbacks (`font-fallbacks.css`, written by `node scripts/font-fallbacks.ts`). `node scripts/font-load.mjs` measures how they arrive.
+Both faces are self-hosted: the font files are the site's own (`apps/web/public/fonts`, the unhinted files Google Fonts serves, kept under hashed names), `apps/web/src/fonts.css` declares their faces, and `apps/web/src/head.ts` preloads the five Latin ones that every page draws, so no page asks Google for anything. `node scripts/built-fonts.mjs` fails a build whose pages name a font file it does not hold. Newsreader is one variable file with its `opsz` axis (and a second, the italic, fetched only when a pick line is drawn); IBM Plex Sans Condensed is four files, 400, 500 (the dateline), 600 and 700, all drawn and all preloaded. `packages/ui/src/theme.css` exposes them as `--font-serif` and `--font-agate`, each followed by its sized fallbacks (`packages/ui/src/font-fallbacks.css`, written by `node scripts/font-fallbacks.ts`). `node scripts/font-load.mjs` measures how they arrive.
 
 | Role | Face | Size desktop → phone | Weight / leading / tracking |
 |---|---|---|---|
@@ -74,7 +74,7 @@ A live story swaps its heavy top rule to `--live`.
 **Masthead**
 - Utility bar: section nav (Home, Scores, Standings, Teams, Players; current item in `--kicker`) on the left, the Day/Night theme control on the right.
 - The wordmark sits centered below it.
-- Under the wordmark, a double rule (3px + 1px) carries the **dateline**: the long date, "Tonight: N games · X live · Y to come · Z final" (zero counts dropped), and "Picks this season: R right, W wrong". On a page from the cache the record can be up to about ten minutes old.
+- Under the wordmark, a double rule (3px + 1px) carries the **dateline**: the long date, "Tonight: N games · X live · Y to come · Z final" (zero counts dropped), and "Picks this season: R right, W wrong". The record is in the page's first HTML and is read again when a game goes final or a pick is made.
 
 **NHL Roundup: leads.**
 - Up to three games are drawn as full stories in a `repeat(auto-fit, minmax(300px, 1fr))` grid. Each story, top to bottom:
@@ -134,7 +134,7 @@ The prototype draws Home only. Every other route is built from the same tokens, 
 - **A team's page** opens as a story does: the heavy rule, a red kicker (place, conference, division), the club's name as a serif headline with its mark, then Next Game, and Schedule, Roster and Stats as tabs. In a schedule a win is bold and a loss grey. An opponent is its agate name on a phone and its whole name from `sm` up, in the Next Game card and in the schedule alike.
 - **A game's page** opens with the same story a lead on Home is (kicker, headline, deck, line score with the club marks and the shots, pick line, TV), then the rink, the penalty box and the plays. The rink is ink on paper with the one red for a goal; saves, shots and hits are told apart by weight and filling, with a key under the ice, and no club's colour is used. The score is in the story's header and over the ice.
 - **Players** is a search and agate rows; a player's page is a serif title with his position and club, and ledgers for his season, games and career.
-- **Not found and error pages** are a page title and a sentence of serif prose with a way back; the page drawn when the layout itself fails repeats the wordmark and its double rule.
+- **Not found and error pages** are a page title and a sentence of serif prose with a way back; the page of last resort, for a request the site could not answer at all (`apps/web/lib/render-failure.ts`), repeats the wordmark and its double rule in a device's own serif.
 - **An empty state** is a sentence of serif prose (`emptyProse`), never a box.
 
 ## Decisions
@@ -154,7 +154,7 @@ Calls made while building:
 - **Home.** The standings' team names are plain text on a phone (40px rows, as drawn) and links from `md` up. Home has no favorite-team marker, no "pick pending" and no "all scores" link. The Picks box is not drawn before any pick is decided. Day `--positive` is `#166534`, a step darker than the tuned ledger's green, for AA on the row under the pointer.
 - **The game page.** No club colours on the rink: goals are red, and saves, shots and hits differ by weight and fill, with a key. The score appears in the story header and over the rink.
 - **The NHL routes.** Scores is an agate ledger, not briefs. Teams is a CSS-column list. Wins are bold and losses grey. A standings row's link is named by the agate name.
-- **A cached page's dateline** can show a picks record up to about ten minutes old.
+- **The dateline's record of the picks** is read with the page and again whenever the Scoreboard reports a final or a new pick, and not otherwise. (While whole pages were cached it could be about ten minutes old; they no longer are: ADR 0009.)
 - **No live row is tinted**, and `--live-tint` was removed.
 - **The font swap may move a word, not the page**: `scripts/font-load.mjs` allows 0.05 of layout shift and 32px at the swap, and since #183 every load it measures is inside that (at most 0.006 and 16px with the fonts held two seconds). Until a face arrives its text is drawn in a local face resized to it, with a regular and a bold cut each (`packages/ui/src/font-fallbacks.css`): Times New Roman and Arial on iOS, macOS and Windows, Liberation Serif and Liberation Sans on Linux, Noto Serif and Roboto on Android. The script sets type unhinted, as a phone does. With hinting on, which is desktop Chrome on Linux, three loads still move more than 32px: the player's page at 1440 (37px) and the game page at 390 (62px) and 1440 (65px). No real iOS or Android device has been measured.
 - **The standings' four view tabs on a phone** are tracked at Tailwind's `tracking-wider` (.05em), not a theme token: at `tracking-head` (.1em) the strip is 3px wider than a 360px phone (measured: 329 in 326).
@@ -165,6 +165,6 @@ Calls made while building:
 - Tap targets are at least 44px on a phone, on every route (`node scripts/tap-targets.mjs`): nav items, the theme control, the conference control, rows that are links and "more" links.
 - The theme and conference controls are real `<button>`s with `aria-pressed` inside a labelled `role="group"`.
 - Tables are real `<table>`s. The line score has a caption naming the game and uses `<th scope="row">` for team names.
-- Every page has exactly one `h1`: the wordmark on Home, the page's title everywhere else. Two cases are known not to: Home's own error page (`app/error.tsx` at `/`) has the wordmark and its title, and the scaffolding routes `/skeleton/dashboard` and `/skeleton/picks` have none.
+- Every page has exactly one `h1`: the wordmark on Home, the page's title everywhere else. Two cases are known not to: Home's own error page (`apps/web/components/shell/error-page.tsx` drawn at `/`) has the wordmark and its title, and the scaffolding routes `/skeleton/dashboard` and `/skeleton/picks` have none.
 - There's a skip link to `#content`. The live dot is `aria-hidden`, because "Live" is in the text.
 - At 390px nothing scrolls sideways, on any route; the prototype is measured at a `scrollWidth` of 390.

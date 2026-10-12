@@ -1,5 +1,3 @@
-"use client";
-
 import type { GameHeader, Play } from "@yogan-hockey/schemas";
 import { Button } from "@yogan-hockey/ui/components/button";
 import { tabCellHoldsFocus, tabCellVariants } from "@yogan-hockey/ui/components/url-tabs";

@@ -2,7 +2,7 @@ import type { ScoreboardGame, ScoreboardHeard } from "@yogan-hockey/schemas";
 
 /*
  * How the Scoreboard's games read on a page: the status line of a game, the sections of
- * `/nhl/live`, the ticker's order. Nothing here touches the server, so client components use it.
+ * `/nhl/live`, the ticker's order. Nothing here touches the server, so components use it.
  * Times are not written here: `lib/game-time.ts` formats them and `LocalTime` shows them.
  */
 

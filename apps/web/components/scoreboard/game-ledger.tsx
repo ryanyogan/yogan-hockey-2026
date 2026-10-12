@@ -55,7 +55,7 @@ export const GAME_SCORE_CELL = "max-md:pt-2! max-md:pl-0 max-md:align-top";
 const scoreCell = (lost: boolean) => `${GAME_SCORE_CELL} ${lost ? "text-note" : ""}`;
 
 /** Column widths that are the same in every ledger, so one under another lines up. */
-/** Exported for the ledger's placeholder (`components/route-skeletons.tsx`), which repeats them. */
+/** Exported for the frame that holds a team's game's place (`team/team-now-frame.tsx`). */
 export const FIXED_GAME_COLUMNS = {
   // A phone's 132px holds the longest line under a status, a final's pick and its mark
   // ("WPG 88% Wrong", 123px), which 112px cut off before the mark.

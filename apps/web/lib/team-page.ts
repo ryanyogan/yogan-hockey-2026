@@ -24,21 +24,6 @@ export function teamTabOfPath(pathname: string): TeamTab {
 }
 
 /**
- * Until #94 a tab was `?tab=roster`. Those addresses are out in the world, so each goes to its
- * new one for good (308); `next.config.ts` hands these to vinext. `?tab=schedule`, and a `?tab=`
- * that names no tab, are left alone and show the schedule, as they always did: a redirect keeps
- * the query string, so one from the team's address to itself would never end.
- */
-export function legacyTeamTabRedirects() {
-  return TEAM_TABS.filter((tab) => tab !== DEFAULT_TAB).map((tab) => ({
-    source: "/nhl/teams/:id",
-    has: [{ type: "query" as const, key: "tab", value: tab }],
-    destination: teamPageHref(":id", tab),
-    permanent: true,
-  }));
-}
-
-/**
  * Where a team plays, for the red line over its name: its city, then its conference and division.
  * `standing` is the team's row in the league standings, which is where the last two come from;
  * without it the line is the city alone.

@@ -24,7 +24,7 @@ export type SeasonStat = z.infer<typeof SeasonStatSchema>;
 
 /** A player page's header and season summary. */
 export const PlayerProfileSchema = z.object({
-  /** ESPN's athlete id: the `:id` in `/players/:id` and in the `player:{id}` cache tag. */
+  /** ESPN's athlete id: the `:id` in `/players/:id` and in the player's cache keys. */
   id: z.string().min(1),
   name: z.string().min(1),
   firstName: z.string().nullable(),

@@ -3,7 +3,7 @@
  * optical size, 6 to 72) and IBM Plex Sans Condensed (400 to 700), each font-display: swap.
  *
  * The files in public/fonts are the ones Google Fonts serves a browser that asks for no hinting,
- * byte for byte the ones the site served before the port (next/font downloaded them). They are
+ * byte for byte the ones the site served before it was TanStack Start. They are
  * kept as files, not taken from Fontsource's packages, because Fontsource ships the hinted cut:
  * the same outlines and advances, drawn narrower on Linux and Windows, which rewraps a headline
  * and is not what the fallback faces were sized against (scripts/font-fallbacks.ts). Both

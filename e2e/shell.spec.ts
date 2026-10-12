@@ -153,7 +153,7 @@ test("a section followed changes the page under the masthead and leaves it", asy
   // Scrolled to the end, the sections are still at the top of the screen.
   await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
   await expect.poll(async () => (await sectionNav.boundingBox())?.y).toBe(0);
-  // The masthead is the layout's: a section followed changes the page under it and leaves it.
+  // The masthead is the root route's: a section followed changes the page under it and leaves it.
   await masthead.evaluate((node) => node.setAttribute("data-persistence-check", "kept"));
   await sectionNav.evaluate((node) => node.setAttribute("data-persistence-check", "kept"));
   await places.getByText("Players", { exact: true }).click();

@@ -14,8 +14,6 @@ account-setup-comment.md
 # Dependencies and build output.
 node_modules
 dist/
-.next
-next-env.d.ts
 *.tsbuildinfo
 
 # Written by `pnpm check:espn`: the run as JSON.

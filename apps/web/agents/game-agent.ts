@@ -99,7 +99,7 @@ export class GameAgent extends ViewerPolledAgent<GameStreamState> {
   #writingToD1: Promise<void> | null = null;
 
   /**
-   * First paint, called by a server component over Durable Object RPC: the header and every play
+   * First paint, called by the game's server function over Durable Object RPC: the header and every play
    * so far. With nobody watching what is stored is old, so ESPN is asked first when the last poll
    * is older than one polling interval. A finished game is answered from what is kept.
    *

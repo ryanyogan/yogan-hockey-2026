@@ -1,5 +1,3 @@
-"use client";
-
 import { RECONNECTING } from "../../lib/connection-drop";
 import { useScoreboardDropped } from "./scoreboard-provider";
 

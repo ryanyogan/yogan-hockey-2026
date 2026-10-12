@@ -34,8 +34,7 @@
  *
  * Spacing is one scale, 4, 8, 12, 16, 24, 32 and 48px: Tailwind's steps 1, 2, 3, 4, 6, 8 and 12.
  * An agate row's own padding is `py-row` (5px; 8px on a phone). `text-wordmark` is the masthead's
- * wordmark (its size, line and tracking; it also wants `[font-variation-settings:'opsz'_72]`),
- * which the global error page draws too.
+ * wordmark (its size, line and tracking; it also wants `[font-variation-settings:'opsz'_72]`).
  */
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -155,8 +154,8 @@
 
 @theme inline {
   /*
-   * `font-serif` and `font-agate`. The app's font loader puts the face alone in each variable
-   * (`adjustFontFallback: false`), and after it come the fallbacks of `font-fallbacks.css`: a
+   * `font-serif` and `font-agate`. The app names the face alone in each variable
+   * (`apps/web/src/globals.css`), and after it come the fallbacks of `font-fallbacks.css`: a
    * face the device has, resized so a line is as long, and wraps where, it will when the real
    * face arrives. A browser takes the first whose local face it finds: Times New Roman and Arial
    * on iOS, macOS and Windows, their Liberation stand-ins on Linux, Noto Serif and Roboto on

@@ -1,5 +1,3 @@
-"use client";
-
 import {
   applyGameStreamMessage,
   type GameSnapshot,

@@ -46,7 +46,7 @@ const WIDTHS = { 390: 844, 1440: 900 };
 const HOLD_MS = 2000;
 const SWAP_CLS = 0.05;
 const SWAP_PX = 32;
-/** The pick line's italic: not preloaded, by design (`app/layout.tsx`). */
+/** The pick line's italic: not preloaded, by design (`apps/web/src/head.ts`). */
 const lazy = (url) => /italic/i.test(url);
 
 /**

@@ -171,7 +171,7 @@ function measure({ selector, styles, sides }) {
     });
 }
 
-/** A family is the same when its first face is: the site's stack names vinext's fallback too. */
+/** A family is the same when its first face is: the site's stack names its fallback faces too. */
 const firstFace = (family) => family.split(",")[0].replaceAll(/['"]/g, "").trim();
 /** Lengths and lists of lengths ("12px", "300px 300px") to within half a pixel; the rest exactly. */
 function same(name, a, b) {

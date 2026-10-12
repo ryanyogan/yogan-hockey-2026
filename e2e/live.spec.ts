@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./test";
 
 // Nashville at Toronto, on the recorded slate of nine games still to be played.
 const GAME_ID = "401892449";

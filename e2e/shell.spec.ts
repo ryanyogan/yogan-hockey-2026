@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, hydrated, test } from "./test";
 
 const DARK_BACKGROUND = "rgb(18, 18, 18)";
 const LIGHT_BACKGROUND = "rgb(250, 250, 248)";
@@ -136,6 +136,9 @@ test("the masthead renders, switches theme, and a phone gets its sections under 
 test("a section followed changes the page under the masthead and leaves it", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/no-such-page");
+  // A section pressed before the page has hydrated is a new document, masthead and all, and the
+  // mark made on the old one is gone with it.
+  await hydrated(page);
   const masthead = page.getByRole("banner");
   const strip = page.locator('[data-slot="score-ticker"]');
   const sectionNav = page.locator('[data-slot="section-nav"]');

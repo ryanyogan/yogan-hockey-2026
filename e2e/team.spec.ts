@@ -1,4 +1,5 @@
-import { type BrowserContextOptions, expect, type Page, test } from "@playwright/test";
+import type { BrowserContextOptions, Page } from "@playwright/test";
+import { expect, hydrated, test } from "./test";
 
 const TITLE = "Toronto Maple Leafs · Yogan Hockey";
 
@@ -270,9 +271,7 @@ test("a team opens from a link the pointer rested on with no further request, an
   const link = page.getByRole("main").locator('a[href="/nhl/teams/21"]');
   // Being on screen preloads nothing: thirty-two rows are not thirty-two reads.
   await expect(link).toBeVisible();
-  await page.waitForFunction(
-    () => (window as { __APP_HYDRATED?: boolean }).__APP_HYDRATED === true,
-  );
+  await hydrated(page);
   expect(reads).toEqual(["document /nhl"]);
   reads = [];
   // The pointer rests on the row and the page is read, once: the team and its schedule.

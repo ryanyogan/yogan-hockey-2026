@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./test";
 
 test.skip(true, "The game's routes are not ported to TanStack Start yet: #189 restores this spec.");
 

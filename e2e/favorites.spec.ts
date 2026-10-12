@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./test";
 
 // Fixture mode: Toronto (21) is the recorded team, Auston Matthews its recorded player, and
 // Nashville at Toronto the second of the recorded slate's nine games by start.

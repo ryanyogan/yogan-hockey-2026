@@ -34,8 +34,7 @@
  *
  * Spacing is one scale, 4, 8, 12, 16, 24, 32 and 48px: Tailwind's steps 1, 2, 3, 4, 6, 8 and 12.
  * An agate row's own padding is `py-row` (5px; 8px on a phone). `text-wordmark` is the masthead's
- * wordmark (its size, line and tracking; it also wants `[font-variation-settings:'opsz'_72]`),
- * which the global error page draws too.
+ * wordmark (its size, line and tracking; it also wants `[font-variation-settings:'opsz'_72]`).
  */
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";

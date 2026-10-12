@@ -90,7 +90,7 @@ export async function answerWithRenderStatus(handle: () => Promise<Response>): P
   }
   const isPage = response.headers.get("content-type")?.startsWith("text/html") ?? false;
   // TanStack Start answers a page whose loader failed with a 500 of its own, which the failure's
-  // status replaces. A 200 is given it too: a failure noted by a read that was caught.
+  // status replaces.
   const answered = response.status === 200 || response.status === OWN_FAULT;
   if (render.status == null || !answered || !isPage) return response;
   const headers = new Headers(response.headers);

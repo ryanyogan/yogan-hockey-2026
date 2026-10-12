@@ -7,8 +7,8 @@ export const GAME_TABS = [
 
 export type GameTab = (typeof GAME_TABS)[number]["value"];
 
-/** The tab a `?tab=` names; the plays for anything else. */
-export function gameTabFrom(value: string | string[] | undefined): GameTab {
+/** The tab a path's last segment names; the plays for anything else. */
+function gameTabFrom(value: string | undefined): GameTab {
   return GAME_TABS.find((tab) => tab.value === value)?.value ?? "plays";
 }
 

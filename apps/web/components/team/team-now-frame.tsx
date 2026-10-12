@@ -3,12 +3,12 @@ import { LedgerSkeleton } from "@yogan-hockey/ui/components/skeleton";
 import type { ReactNode } from "react";
 import { FIXED_GAME_COLUMNS, GAME_SCORE_CELL, GAME_TEXT_CELL } from "../scoreboard/game-ledger";
 
+const TEXT = { cellClassName: GAME_TEXT_CELL };
+const SCORE = { width: "xs" as const, numeric: true, cellClassName: GAME_SCORE_CELL };
 /**
  * `GameLedger`'s six columns: status, away, score, home, score, note. A team's cell is its name
  * and its record, and a bar of `lg` holds the place of both.
  */
-const TEXT = { cellClassName: GAME_TEXT_CELL };
-const SCORE = { width: "xs" as const, numeric: true, cellClassName: GAME_SCORE_CELL };
 const GAME_COLUMNS = [
   { ...TEXT, width: "md" as const, className: FIXED_GAME_COLUMNS.status, detail: "fine" as const },
   { ...TEXT, width: "lg" as const, className: FIXED_GAME_COLUMNS.team },

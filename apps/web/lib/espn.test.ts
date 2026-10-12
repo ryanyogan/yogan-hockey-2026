@@ -16,6 +16,8 @@ import {
 } from "./espn";
 import { forget } from "./kv-cache";
 
+/** The team list's key, as `espn.ts` has it. */
+const TEAM_LIST_KEY = "espn-teams";
 const TORONTO = "21";
 const MATTHEWS = "4024123";
 const STOLARZ = "3067313";
@@ -161,8 +163,8 @@ test("a read inside its time limit does not ask ESPN again", async () => {
 
 test("a read past its time limit is answered from the cache at once and refreshed behind", async () => {
   vi.useFakeTimers({ toFake: ["Date"] });
-  // The team list's key (`TEAM_LIST_KEY` in `espn.ts`), which the site itself never forgets.
-  await forget(["espn-teams"]);
+  // The site itself never forgets the team list, so the test deletes its key.
+  await forget([TEAM_LIST_KEY]);
   const first = await cachedTeams();
   expect(first.length).toBeGreaterThan(30);
 

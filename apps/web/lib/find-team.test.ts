@@ -5,8 +5,7 @@ import { findTeam } from "./find-team";
 
 const fetchMock = vi.fn<typeof fetch>();
 
-beforeAll(() => {
-});
+beforeAll(() => {});
 
 beforeEach(() => {
   vi.stubGlobal("fetch", fetchMock);

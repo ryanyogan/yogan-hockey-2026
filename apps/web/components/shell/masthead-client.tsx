@@ -4,12 +4,7 @@ import type { SeasonRecord } from "@yogan-hockey/schemas";
 import { useTheme } from "next-themes";
 import { type ReactNode, useRef } from "react";
 import { dateline, datelineDate } from "../../lib/agate-copy";
-import {
-  currentNavItem,
-  NAV_ITEMS,
-  type NavItem,
-  showsScoreStrip,
-} from "../../lib/nav";
+import { currentNavItem, NAV_ITEMS, type NavItem, showsScoreStrip } from "../../lib/nav";
 import { useHydrated } from "../../lib/use-hydrated";
 import { usePathname, useSearchParam } from "../../lib/use-page-address";
 import { Link } from "../link";

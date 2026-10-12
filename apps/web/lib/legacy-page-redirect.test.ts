@@ -16,6 +16,23 @@ test("old game and player links consume their selector and retain unrelated quer
   );
 });
 
+test("an old team tab link goes to the tab's own page, its query kept", () => {
+  expect(legacyPageLocation(new URL("https://hockey.test/nhl/teams/21?tab=roster"))).toBe(
+    "https://hockey.test/nhl/teams/21/roster?tab=roster",
+  );
+  expect(legacyPageLocation(new URL("https://hockey.test/nhl/teams/21?tab=stats&ref=mail"))).toBe(
+    "https://hockey.test/nhl/teams/21/stats?tab=stats&ref=mail",
+  );
+  for (const path of [
+    "/nhl/teams/21",
+    "/nhl/teams/21?tab=schedule",
+    "/nhl/teams/21?tab=bogus",
+    "/nhl/teams/21/roster?tab=roster",
+    "/nhl?tab=teams",
+  ])
+    expect(legacyPageLocation(new URL(`https://hockey.test${path}`))).toBeNull();
+});
+
 test("canonical, unknown and ambiguous selectors do not redirect", () => {
   for (const path of [
     "/nhl/games/1/scoring?tab=scoring",

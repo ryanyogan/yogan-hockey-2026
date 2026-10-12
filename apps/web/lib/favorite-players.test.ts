@@ -6,8 +6,7 @@ const MATTHEWS = "4024123";
 const STOLARZ = "3067313";
 const fetchMock = vi.fn<typeof fetch>();
 
-beforeAll(() => {
-});
+beforeAll(() => {});
 
 beforeEach(() => {
   vi.stubEnv("ESPN_FIXTURES", "1");

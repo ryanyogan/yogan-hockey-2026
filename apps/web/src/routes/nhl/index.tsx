@@ -68,7 +68,11 @@ function NhlPage() {
           )}
         </div>
       </div>
-      {read.tab === "teams" ? <TeamsList teams={read.teams} /> : <Standings columns={read.columns} />}
+      {read.tab === "teams" ? (
+        <TeamsList teams={read.teams} />
+      ) : (
+        <Standings columns={read.columns} />
+      )}
     </>
   );
 }

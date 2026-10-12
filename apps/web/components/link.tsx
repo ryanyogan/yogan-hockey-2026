@@ -25,14 +25,14 @@ function PageLink({ href, ...props }: LinkProps) {
     "aria-current": _current,
     className: _className,
     ...anchor
-  } = useLinkProps({
+  }: ComponentProps<"a"> & { "data-status"?: string } = useLinkProps({
     ...props,
     // The addresses are the site's own strings (`nhlHref`, `teamPageHref`), not the route
     // tree's typed ones, so the router is told the path and the query apart.
     to: pathname,
     search: Object.fromEntries(searchParams),
     hash: hash.slice(1) || undefined,
-  } as RouterLinkProps);
+  } as RouterLinkProps as Parameters<typeof useLinkProps>[0]);
   return <a {...anchor} aria-current={props["aria-current"]} className={props.className} />;
 }
 

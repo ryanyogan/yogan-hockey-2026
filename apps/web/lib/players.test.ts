@@ -5,8 +5,7 @@ import { findPlayers, loadPlayer } from "./players";
 const MATTHEWS = "4024123";
 const fetchMock = vi.fn<typeof fetch>();
 
-beforeAll(() => {
-});
+beforeAll(() => {});
 
 beforeEach(() => {
   vi.stubEnv("ESPN_FIXTURES", "1");

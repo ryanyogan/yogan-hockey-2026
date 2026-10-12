@@ -1,11 +1,5 @@
 import type { SeasonRecord } from "@yogan-hockey/schemas";
-import {
-  Dateline,
-  SectionLinks,
-  ShortDate,
-  ThemeControl,
-  Wordmark,
-} from "./masthead-client";
+import { Dateline, SectionLinks, ShortDate, ThemeControl, Wordmark } from "./masthead-client";
 
 /**
  * The top of every page, as a newspaper's (`docs/design/agate.md`): a utility bar, the wordmark,

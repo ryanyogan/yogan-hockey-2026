@@ -122,7 +122,10 @@ export async function watchRender(
     };
   }
   const isPage = response.headers.get("content-type")?.startsWith("text/html") ?? false;
-  if (render.status == null || response.status !== 200 || !isPage) return { response, unstorable };
+  // TanStack Start answers a page whose loader failed with a 500 of its own: the failure's status
+  // replaces it, as it replaced vinext's 200.
+  const answered = response.status === 200 || response.status === OWN_FAULT;
+  if (render.status == null || !answered || !isPage) return { response, unstorable };
   const headers = new Headers(response.headers);
   headers.set("cache-control", "no-store");
   return { response: new Response(response.body, { status: render.status, headers }), unstorable };

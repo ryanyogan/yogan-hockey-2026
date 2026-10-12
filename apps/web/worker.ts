@@ -2,6 +2,7 @@ import site from "@tanstack/react-start/server-entry";
 import { routeAgentRequest } from "agents";
 
 import { legacyPageLocation } from "./lib/legacy-page-redirect";
+import { answerWithRenderStatus } from "./lib/render-failure";
 
 export * from "./agents";
 
@@ -16,7 +17,8 @@ export default {
       const location = legacyPageLocation(new URL(request.url));
       if (location) return Response.redirect(location, 308);
     }
-    // Everything else is the site's: a page, a loader's server function, a server route.
-    return site.fetch(request);
+    // Everything else is the site's: a page, a loader's server function, a server route. A page
+    // whose read failed is drawn by the site's error page and answered with the failure's status.
+    return answerWithRenderStatus(async () => site.fetch(request));
   },
 } satisfies ExportedHandler<Env>;

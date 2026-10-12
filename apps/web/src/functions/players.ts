@@ -63,5 +63,5 @@ export const readPlayer = createServerFn({ method: "GET" })
  * does, and it reads its argument as a stored list is read, since anyone can call it.
  */
 export const resolveFavoritePlayers = createServerFn({ method: "GET" })
-  .validator((ids: readonly string[]) => readFavoriteIds(ids))
+  .validator((ids: unknown) => readFavoriteIds(ids))
   .handler(({ data: ids }): Promise<FavoritePlayers> => loadFavoritePlayers(ids));

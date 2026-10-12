@@ -59,10 +59,14 @@ export function PlayerSearch({ initial }: { initial: Search }) {
   // Arriving by a link (the section nav, Back) starts the box from that address. The box's own
   // rewrites are told apart by `sent`, and a refresh of the page (the shell asks for one when a
   // game goes final) leaves the address alone, so neither disturbs the typing. The address is
-  // the one being gone to, which the router holds before its page is read.
-  const addressed = useRouterState({ select: (state) => readPlayersPage(state.location.search).q });
+  // the one being gone to, which the router holds before its page is read: null when that is
+  // another page, whose address says nothing of this box while it is still on screen.
+  const addressed = useRouterState({
+    select: ({ location }) =>
+      location.pathname === "/players" ? readPlayersPage(location.search).q : null,
+  });
   useEffect(() => {
-    if (addressed === sent.current) return;
+    if (addressed === null || addressed === sent.current) return;
     ask.cancel();
     asked.current++;
     setSearching(false);

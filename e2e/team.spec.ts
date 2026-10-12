@@ -205,8 +205,15 @@ test("a team's page shows each tab from a pasted URL, titled with the team's nam
       "/nhl?tab=teams",
     );
 
-    // Unverified row 10 of the spec. A browser is sent the title late, in the body, and shows
-    // it; a link preview reads the HTML alone, and for those the title is in <head>.
+    // An address under a team that no route answers is the site's own not-found page, alone.
+    const lost = await page.request.get("/nhl/teams/21/coaches");
+    expect(lost.status()).toBe(404);
+    const lostPage = await lost.text();
+    expect(lostPage).toContain("<title>Not found · Yogan Hockey</title>");
+    expect(lostPage).toContain("Nothing is kept at this address.");
+    expect(lostPage).not.toContain('data-slot="team-header"');
+
+    // The title is in <head> for whoever reads the HTML alone, as a link preview does.
     const response = await page.request.get("/nhl/teams/21/stats", {
       headers: { "user-agent": "Twitterbot/1.0" },
     });
@@ -238,10 +245,10 @@ test("a team that cannot be read says so inside the shell, with a retry and a wa
   await expect(main).not.toContainText("fixture");
 });
 
-test("a team opens from a link the pointer rested on with no further request, and its tabs are pages", async ({
+test("a team opens from a link the pointer rested on with no further request, and a tab asks for itself alone", async ({
   browser,
 }) => {
-  // The router prefetches nothing for a crawler, and headless Chromium says it is one.
+  // The router preloads nothing for a crawler, and headless Chromium says it is one.
   const probe = await browser.newContext();
   const userAgent = (await (await probe.newPage()).evaluate(() => navigator.userAgent)).replace(
     "HeadlessChrome",
@@ -251,43 +258,58 @@ test("a team opens from a link the pointer rested on with no further request, an
   const context = await browser.newContext({ userAgent });
   const page = await context.newPage();
 
-  // Every request for the team's page: a document, or the router asking for it (`RSC: 1`).
-  const requests: { kind: string; afterClick: boolean }[] = [];
-  let clicked = false;
+  // What a loader asks the server for is its server function, and a whole page is a document.
+  let reads: string[] = [];
   page.on("request", (request) => {
-    if (new URL(request.url()).pathname !== "/nhl/teams/21") return;
-    const kind = request.headers().rsc === "1" ? "rsc" : request.resourceType();
-    requests.push({ kind, afterClick: clicked });
+    const { pathname } = new URL(request.url());
+    if (pathname.startsWith("/_serverFn/")) reads.push(pathname);
+    else if (request.resourceType() === "document") reads.push(`document ${pathname}`);
   });
 
   await page.goto("/nhl?tab=teams");
   const link = page.getByRole("main").locator('a[href="/nhl/teams/21"]');
-  // Being on screen prefetches nothing: thirty-two rows are not thirty-two renders.
+  // Being on screen preloads nothing: thirty-two rows are not thirty-two reads.
   await expect(link).toBeVisible();
-  // The pointer rests on the row and the page is fetched, once. Until the page has hydrated a
-  // hover does nothing, so the pointer leaves and comes back.
-  await expect(async () => {
-    await page.mouse.move(0, 0);
-    await link.hover();
-    await expect.poll(() => requests.length, { timeout: 2000 }).toBe(1);
-  }).toPass();
-  expect(requests).toEqual([{ kind: "rsc", afterClick: false }]);
-  // Let the prefetch finish; the click then has nothing to ask the server.
+  await page.waitForFunction(
+    () => (window as { __APP_HYDRATED?: boolean }).__APP_HYDRATED === true,
+  );
+  expect(reads).toEqual(["document /nhl"]);
+  reads = [];
+  // The pointer rests on the row and the page is read, once: the team and its schedule.
+  await link.hover();
+  await expect.poll(() => reads.length).toBe(2);
+  // Let the reads finish; the click then has nothing to ask the server.
   await page.waitForLoadState("networkidle");
+  const preloaded = reads;
+  expect(new Set(preloaded).size).toBe(2);
+  reads = [];
 
-  clicked = true;
   await link.click();
   await expect(page).toHaveURL(/\/nhl\/teams\/21$/);
   await expect(page).toHaveTitle(TITLE);
   await expect(rows(page, /^Upcoming/)).toHaveCount(81);
-  expect(requests.filter((request) => request.afterClick)).toEqual([]);
+  expect(reads).toEqual([]);
 
-  // A tab is a page under the team's layout: the header stays, the address changes.
-  await tabs(page).getByRole("link", { name: "roster" }).click();
-  await expect(page).toHaveURL(/\/nhl\/teams\/21\/roster$/);
-  await expect(tabs(page).locator('[aria-current="page"]')).toHaveText("roster");
-  await expect(section(page, /^Toronto Maple Leafs/)).toBeVisible();
-  await expect(rows(page, /^Roster/)).toHaveCount(24);
+  // A tab is a route under the team's: the header stays, the address changes, and the one thing
+  // asked of the server is the tab's own read, never the team's again.
+  const header = section(page, /^Toronto Maple Leafs/);
+  await header.evaluate((node) => node.setAttribute("data-kept", ""));
+  for (const tab of ["roster", "stats"]) {
+    await tabs(page).getByRole("link", { name: tab }).click();
+    await expect(page).toHaveURL(new RegExp(`/nhl/teams/21/${tab}$`));
+    await expect(tabs(page).locator('[aria-current="page"]')).toHaveText(tab);
+    await page.waitForLoadState("networkidle");
+    expect(reads).toHaveLength(1);
+    expect(preloaded).not.toContain(reads[0]);
+    reads = [];
+  }
+  await expect(rows(page, /^Season stats/)).toHaveCount(1);
+  // The header is the element it was: it was not drawn again.
+  await expect(header).toHaveAttribute("data-kept", "");
+  // Back to a tab already read costs nothing.
+  await tabs(page).getByRole("link", { name: "schedule" }).click();
+  await expect(rows(page, /^Upcoming/)).toHaveCount(81);
+  expect(reads).toEqual([]);
 
   // The addresses the tabs had in the query string lead to the new ones, for good.
   for (const tab of ["roster", "stats"]) {

@@ -1,10 +1,10 @@
 import type { StandingsRow, Team } from "@yogan-hockey/schemas";
 
 /**
- * A team page's tabs, in the order they are drawn. Each is a page of its own under the team's
- * layout (`app/nhl/teams/[id]/layout.tsx`): the schedule at the team's address, the others at a
- * segment named for the tab. The header and the tab bar belong to the layout, so they are
- * rendered once and stay put while a tab's content changes beneath them.
+ * A team page's tabs, in the order they are drawn. Each is a route of its own under the team's
+ * (`src/routes/nhl/teams/$id/route.tsx`): the schedule at the team's address, the others at a
+ * segment named for the tab. The header and the tab bar belong to the team's route, so they are
+ * read once and stay put while a tab's content changes beneath them.
  */
 export const TEAM_TABS = ["schedule", "roster", "stats"] as const;
 export type TeamTab = (typeof TEAM_TABS)[number];

@@ -5,6 +5,9 @@ import { routeTree } from "./routeTree.gen";
 
 const MINUTE = 60 * 1000;
 
+/** How long what a loader read is fresh. */
+export const FRESH_FOR = 5 * MINUTE;
+
 /**
  * The rules of ADR 0009 that are the router's to keep.
  *
@@ -21,8 +24,8 @@ export function getRouter() {
   return createRouter({
     routeTree,
     scrollRestoration: true,
-    defaultStaleTime: 5 * MINUTE,
-    defaultPreloadStaleTime: 5 * MINUTE,
+    defaultStaleTime: FRESH_FOR,
+    defaultPreloadStaleTime: FRESH_FOR,
     defaultPreload: "intent",
     defaultPreloadDelay: 65,
     defaultViewTransition: true,

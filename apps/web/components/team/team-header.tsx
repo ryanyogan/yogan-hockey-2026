@@ -25,7 +25,7 @@ export function TeamHeader({
   standing,
   action,
 }: {
-  detail: TeamDetail;
+  detail: Pick<TeamDetail, "team" | "stats" | "standingSummary">;
   standing: Pick<StandingsRow, "conference" | "division"> | null;
   /** Sits at the right end of the name's line: the heart that makes the team a favorite (#45). */
   action?: ReactNode;

@@ -28,6 +28,9 @@ export default defineConfig(async () => ({
       },
     }),
   ],
+  // The routes are tested as the router runs them, so their JSX is compiled; a package's tsconfig
+  // may ask for it to be left alone.
+  oxc: { jsx: { runtime: "automatic" as const } },
   test: {
     name: "web",
     include: ["agents/**/*.test.ts", "lib/**/*.test.ts", "src/**/*.test.ts"],

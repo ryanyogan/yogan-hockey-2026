@@ -1,5 +1,3 @@
-"use client";
-
 import type { Game } from "@yogan-hockey/schemas";
 import {
   Ledger,
@@ -16,7 +14,6 @@ import { agateName } from "../../lib/agate-copy";
 import { pickNote } from "../../lib/picks";
 import { gameHref } from "../../lib/scoreboard-view";
 import { liveGame, nextGame, nextGamePick, scheduleRow } from "../../lib/team-schedule";
-import { useSlatePicks } from "../../lib/use-slate-picks";
 import { Link } from "../link";
 import { LocalTime } from "../local-time";
 import { GameLedger } from "../scoreboard/game-ledger";
@@ -28,17 +25,23 @@ import { Versus } from "./versus";
  * Next Game card. Both link to the game's page. It reads today's games from the page's Scoreboard
  * socket, so the banner appears, keeps score and gives way without a refresh.
  *
- * `listed` is the next game as the cached team page has it, which can be an hour old: the
+ * `listed` is the next game as the cached team has it, which can be an hour old: the
  * Scoreboard says whether that game has started since.
  *
- * The team's page is served from the page cache, so the server renders none of this: it belongs
- * inside a `ScoreboardGate`, and the pick is asked for after first paint (`useSlatePicks`), only
- * when the team has a game on today's slate. The pick lands in a cell that is already there.
+ * `picks` is today's slate's picks in one line each, by game id, as the team's route read them
+ * with the team (`lib/team-read.ts`). The Scoreboard moves `invalidatedAt` when a pick is
+ * written, which reads the route again.
  */
-export function TeamNow({ teamId, listed }: { teamId: string; listed: Game | null }) {
+export function TeamNow({
+  teamId,
+  listed,
+  picks,
+}: {
+  teamId: string;
+  listed: Game | null;
+  picks: Readonly<Record<string, string>>;
+}) {
   const scoreboard = useScoreboard();
-  const plays = scoreboard.games.some((game) => game.home.id === teamId || game.away.id === teamId);
-  const picks = useSlatePicks(plays, scoreboard.invalidatedAt);
   const live = liveGame(teamId, scoreboard.games);
   if (live != null) {
     return (

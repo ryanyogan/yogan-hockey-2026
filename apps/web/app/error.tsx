@@ -1,6 +1,6 @@
 "use client";
 
-import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
+import { PageHeader } from "@yogan-hockey/ui/components/section";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { Link } from "../components/link";
@@ -36,16 +36,16 @@ export default function ErrorPage({ reset }: { error: Error; reset?: () => void 
   }, [address, caughtAt, reset]);
 
   return (
-    <Section data-slot="error-page">
+    <section data-slot="error-page">
       <title>Not answering · Yogan Hockey</title>
-      <SectionHeader title={title} count="not read" />
-      <p className="border-rule-head border-t px-2 py-row">
+      <PageHeader title={title} count="not read" />
+      <p className="pt-3 font-serif text-prose text-note leading-[1.4]">
         ESPN is not answering just now, so {subject} could not be read.{" "}
         <button
           type="button"
           onClick={retry}
           disabled={retrying}
-          className="tap-target cursor-pointer font-strong underline disabled:cursor-default disabled:text-muted-foreground"
+          className="tap-target cursor-pointer font-strong underline disabled:cursor-default disabled:text-aside"
         >
           {retrying ? "Trying again" : "Try again"}
         </button>{" "}
@@ -55,6 +55,6 @@ export default function ErrorPage({ reset }: { error: Error; reset?: () => void 
         </Link>
         .
       </p>
-    </Section>
+    </section>
   );
 }

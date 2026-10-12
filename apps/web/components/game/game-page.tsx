@@ -4,13 +4,14 @@ import type { Game, GameHeader, Play, ScoreboardGame } from "@yogan-hockey/schem
 import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
 import { type ReactNode, useState } from "react";
 import type { FoundGame } from "../../lib/find-game";
-import { gamePhase, streamReading, streamStarts } from "../../lib/game/page-state";
+import { gamePhase, storyHeader, streamReading, streamStarts } from "../../lib/game/page-state";
 import type { GameTab } from "../../lib/game/tabs";
 import { useGameStream } from "../../lib/game/use-game-stream";
 import { PICK_PENDING } from "../../lib/picks";
 import { useScoreboardSoFar } from "../scoreboard/scoreboard-provider";
 import { FinishedGame } from "./finished-game";
 import { MatchupRink } from "./game-rink";
+import { GameStory } from "./game-story";
 import { GameView } from "./game-view";
 import { PeriodTimeline } from "./period-timeline";
 
@@ -117,42 +118,53 @@ function GameInPhase({
     reconnecting,
     scoreboard,
   });
-  switch (gamePhase(header.status)) {
-    case "scheduled":
-      return (
-        <ScheduledGame
-          header={header}
-          matchup={matchup}
-          // The server's answer, from before any socket: a game called off since waits for none.
-          pick={pick ?? (pickPending && header.status === "scheduled" ? <GamePickPending /> : null)}
-        />
-      );
-    case "live":
-      return (
-        <GameView
-          header={header}
-          plays={plays}
-          tab={tab}
-          pathname={pathname}
-          pick={pick}
-          status={status}
-          notice={notice}
-          clock={clock}
-        />
-      );
-    case "finished":
-      return (
-        <FinishedGame
-          gameId={gameId}
-          header={header}
-          plays={plays}
-          archived={archived}
-          notice={notice}
-          tab={tab}
-          pathname={pathname}
-          pick={pick}
-        />
-      );
+  return (
+    <>
+      <GameStory header={storyHeader({ header, plays, scoreboard })} />
+      {inPhase()}
+    </>
+  );
+
+  function inPhase() {
+    switch (gamePhase(header.status)) {
+      case "scheduled":
+        return (
+          <ScheduledGame
+            header={header}
+            matchup={matchup}
+            // The server's answer, from before any socket: a game called off since waits for none.
+            pick={
+              pick ?? (pickPending && header.status === "scheduled" ? <GamePickPending /> : null)
+            }
+          />
+        );
+      case "live":
+        return (
+          <GameView
+            header={header}
+            plays={plays}
+            tab={tab}
+            pathname={pathname}
+            pick={pick}
+            status={status}
+            notice={notice}
+            clock={clock}
+          />
+        );
+      case "finished":
+        return (
+          <FinishedGame
+            gameId={gameId}
+            header={header}
+            plays={plays}
+            archived={archived}
+            notice={notice}
+            tab={tab}
+            pathname={pathname}
+            pick={pick}
+          />
+        );
+    }
   }
 }
 
@@ -161,7 +173,10 @@ const noSelection = () => {};
 /** What a game still to come says in the pick's place until its Prediction arrives. */
 function GamePickPending() {
   return (
-    <p data-slot="game-pick-pending" className="max-w-prose text-note">
+    <p
+      data-slot="game-pick-pending"
+      className="mt-2 max-w-prose font-serif text-prose text-note leading-[1.4]"
+    >
       {PICK_PENDING}
     </p>
   );
@@ -193,7 +208,7 @@ function ScheduledGame({
           selectedId={null}
           onSelect={noSelection}
         />
-        <p data-slot="timeline-hint" className="mt-1 text-label">
+        <p data-slot="timeline-hint" className="mt-1 text-label text-small">
           {calledOff
             ? "This game will not be played as scheduled."
             : "The plays are drawn here once the puck drops. This page follows the game by itself."}

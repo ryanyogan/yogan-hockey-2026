@@ -106,3 +106,32 @@ export function streamReading({
   }
   return reading;
 }
+
+/**
+ * The header as the page's story reads it (`components/game/game-story.tsx`): a live game's clock
+ * as `streamReading` has it. The copy takes a clock that has run out for an intermission ("Live ·
+ * End 2nd", "Tied 2–2 after the 2nd"), and a header with no clock of its own says "0:00" all
+ * through a period, so the kicker and the deck called every such period over while the rink under
+ * them counted it down.
+ *
+ * - The last play ends a period: that period, run out, which is an intermission.
+ * - The header has a clock: as it is.
+ * - It has none and the Scoreboard has the same game in the same period: the Scoreboard's.
+ * - Nobody has one: no clock at all, and the copy writes the period alone ("Live · 2nd").
+ */
+export function storyHeader({
+  header,
+  plays,
+  scoreboard,
+}: {
+  header: GameHeader;
+  plays: readonly Play[];
+  scoreboard?: Pick<Game, "status" | "period" | "clock">;
+}): GameHeader {
+  if (header.status !== "live") return header;
+  const last = plays.at(-1);
+  if (last?.type === "period-end") return { ...header, period: last.period, clock: NO_CLOCK };
+  if (header.clock !== NO_CLOCK) return header;
+  const agrees = scoreboard?.status === "live" && scoreboard.period === header.period;
+  return { ...header, clock: agrees && scoreboard.clock !== NO_CLOCK ? scoreboard.clock : "" };
+}

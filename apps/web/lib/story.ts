@@ -1,5 +1,20 @@
-import type { ScoreboardGame } from "@yogan-hockey/schemas";
+import type { ScoreboardGame, ScoreboardSide } from "@yogan-hockey/schemas";
 import { agateName, headline, underWay } from "./agate-copy";
+
+/*
+ * A story's table (`docs/design/agate.md`: kicker, headline, deck, line score). The sentences are
+ * `agate-copy.ts`'s; this is the one line score, which a lead on Home and a game page's header
+ * both draw (`components/story/story-parts.tsx`).
+ */
+
+/**
+ * A game as a story reads it: the Scoreboard's, and each side's shots where the page has them. A
+ * game page's `GameHeader` is one, so it is handed over as it is.
+ */
+export type StoryGame = Omit<ScoreboardGame, "home" | "away"> & {
+  home: ScoreboardSide & { shots?: number };
+  away: ScoreboardSide & { shots?: number };
+};
 
 /** One club's row of a story's line score. */
 export type LineScoreSide = {
@@ -8,6 +23,8 @@ export type LineScoreSide = {
   name: string;
   /** "4-2-0", or null where ESPN sent none. */
   record: string | null;
+  /** Shots on goal, once there is a score and the page knows them: Home's Scoreboard does not. */
+  shots: number | null;
   /** Null for a game with no score to show yet. */
   score: number | null;
   /** The side a final went to, which is drawn bold. Nobody's while a game is on. */
@@ -24,17 +41,19 @@ export type LineScore = {
 };
 
 /**
- * The line score under a story's deck (`docs/design/agate.md`): team, record, and the score once
- * there is one. A game ESPN calls live from the warm-up has none yet, as its headline has none.
+ * The line score under a story's deck: team, record, and once there is a score the shots (where
+ * known) and the score. A game ESPN calls live from the warm-up has none yet, as its headline has
+ * none.
  */
-export function lineScore(game: ScoreboardGame): LineScore {
+export function lineScore(game: StoryGame): LineScore {
   const final = game.status === "final";
   const played = final || underWay(game);
   const top = Math.max(game.away.score, game.home.score);
-  const side = (each: ScoreboardGame["home"]): LineScoreSide => ({
+  const side = (each: StoryGame["home"]): LineScoreSide => ({
     id: each.id,
     name: agateName(each),
     record: each.record,
+    shots: played ? (each.shots ?? null) : null,
     score: played ? each.score : null,
     winner: final && each.score === top,
   });

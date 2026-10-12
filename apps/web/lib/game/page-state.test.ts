@@ -1,6 +1,7 @@
 import type { Game, GameHeader } from "@yogan-hockey/schemas";
 import { beforeAll, describe, expect, it } from "vitest";
-import { gamePhase, isGameId, streamReading, streamStarts } from "./page-state";
+import { deck, kicker } from "../agate-copy";
+import { gamePhase, isGameId, storyHeader, streamReading, streamStarts } from "./page-state";
 import { play, recordedShootout } from "./test-plays";
 
 let final: GameHeader;
@@ -146,5 +147,49 @@ describe("streamReading", () => {
   it("leaves a shootout, which has no clock, to the header", () => {
     const header = live({ period: 5 });
     expect(streamReading({ header, plays: [play({ period: 5 })], delayed: false })).toEqual({});
+  });
+});
+
+describe("storyHeader", () => {
+  const shot = play({ id: "1", type: "shot", period: 2 });
+  const end = play({ id: "2", type: "period-end", period: 2 });
+  const said = (header: GameHeader) => [kicker({ ...header, venue: null }), deck(header)];
+
+  it("leaves a game that is not live as it is", () => {
+    expect(storyHeader({ header: final, plays: [shot] })).toBe(final);
+  });
+
+  it("reads a header with no clock of its own by the Scoreboard's, so a period under way is not called over", () => {
+    const header = storyHeader({ header: live(), plays: [shot], scoreboard: onScoreboard() });
+    expect(header.clock).toBe("12:34");
+    expect(said(header)[0]).toBe("Live · 2nd 12:34");
+    expect(said(header)[1]).toMatch(/ in the 2nd\.$/);
+  });
+
+  it("says the period alone when nobody has a clock, or the Scoreboard is in another period", () => {
+    for (const scoreboard of [
+      undefined,
+      onScoreboard({ period: 1 }),
+      onScoreboard({ clock: "0:00" }),
+    ]) {
+      const header = storyHeader({ header: live(), plays: [shot], scoreboard });
+      expect(said(header)[0]).toBe("Live · 2nd");
+      expect(said(header)[1]).toMatch(/ in the 2nd\.$/);
+    }
+  });
+
+  it("is an intermission once the last play ends a period, whatever the clocks say", () => {
+    const header = storyHeader({
+      header: live({ clock: "20:00" }),
+      plays: [shot, end],
+      scoreboard: onScoreboard(),
+    });
+    expect(said(header)[0]).toBe("Live · End 2nd");
+    expect(said(header)[1]).toMatch(/ after the 2nd\.$/);
+  });
+
+  it("keeps a header's own clock", () => {
+    const header = live({ clock: "7:07" });
+    expect(storyHeader({ header, plays: [shot], scoreboard: onScoreboard() })).toBe(header);
   });
 });

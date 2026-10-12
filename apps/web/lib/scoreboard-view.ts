@@ -50,7 +50,8 @@ function liveLine(game: ScoreboardGame): string {
   // A shootout has no clock.
   if (inShootout(game)) return period;
   if (betweenPeriods(game)) return `end ${period}`;
-  return `${period} ${game.clock}`;
+  // A game page whose clock nobody has told it yet has none (`storyHeader`): the period alone.
+  return `${period} ${game.clock}`.trimEnd();
 }
 
 function finalLine(game: ScoreboardGame): string {

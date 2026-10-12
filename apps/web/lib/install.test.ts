@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { APPLE_SPLASH_IMAGES } from "./app-splash.generated";
-import { APPLE_ICON, FAVICON_PNG, shownThemeColors, webAppManifest } from "./install";
+import { APPLE_ICON, FAVICON_PNG, shownTheme, shownThemeColors, webAppManifest } from "./install";
 
 describe("the web app manifest", () => {
   const manifest = webAppManifest();
@@ -69,4 +69,13 @@ describe("the colour of the browser's own bars", () => {
     expect(shownThemeColors("dark")).toEqual({ light: "#121212", dark: "#121212" });
     expect(shownThemeColors("light")).toEqual({ light: "#fafaf8", dark: "#fafaf8" });
   });
+});
+
+it("the theme shown is the visitor's choice, and the device's where they made none", () => {
+  expect(shownTheme("dark", false)).toBe("dark");
+  expect(shownTheme("light", true)).toBe("light");
+  // next-themes writes "system" for a visitor who chose to follow the device.
+  expect(shownTheme("system", true)).toBe("dark");
+  expect(shownTheme(null, true)).toBe("dark");
+  expect(shownTheme(null, false)).toBe("light");
 });

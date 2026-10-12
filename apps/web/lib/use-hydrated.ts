@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from "react";
 
-const subscribeToNothing = () => () => {};
+/** For a `useSyncExternalStore` whose value never changes once the browser has it. */
+export const subscribeToNothing = () => () => {};
 
 /**
  * False on the server and while the page hydrates, true from then on. For what only the browser

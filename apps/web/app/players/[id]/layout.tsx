@@ -43,21 +43,21 @@ export default async function PlayerLayout({ params, children }: Props) {
     <>
       <PlayerHeader
         profile={profile}
-        action={
-          <FavoriteHeart kind="player" id={profile.id} name={profile.name} className="mr-2" />
-        }
+        action={<FavoriteHeart kind="player" id={profile.id} name={profile.name} />}
       />
       {season && <SeasonSection season={season} />}
       {children}
       {career ? (
         <CareerSection career={career} />
       ) : (
-        <p className="px-2 text-muted-foreground">{profile.name} has yet to play in the NHL.</p>
+        <p className="font-serif text-prose text-note leading-[1.4]">
+          {profile.name} has yet to play in the NHL.
+        </p>
       )}
       {profile.team && <TeamSection team={profile.team} />}
-      <p className="px-2">
-        <Link href="/players" className="tap-target underline">
-          back to players
+      <p className="font-label text-small uppercase tracking-head">
+        <Link href="/players" className="tap-target hover:underline">
+          Back to players
         </Link>
       </p>
     </>

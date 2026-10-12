@@ -682,3 +682,10 @@ describe("nothing to draw", () => {
     expect(noStandings(true)).toBe("No standings yet this season.");
   });
 });
+
+test("a side's shots are counted in words that agree with the number", async () => {
+  const { shotsOnGoal } = await import("./agate-copy");
+  expect(shotsOnGoal(0)).toBe("0 shots");
+  expect(shotsOnGoal(1)).toBe("1 shot");
+  expect(shotsOnGoal(27)).toBe("27 shots");
+});

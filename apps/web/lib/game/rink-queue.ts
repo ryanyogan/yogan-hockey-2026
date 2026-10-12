@@ -14,9 +14,6 @@ export type RinkScene = {
   /** The plays so far, in the game's order: all of `game` but in a Replay short of its end. */
   plays: readonly Play[];
   homeTeamId: string;
-  /** Each team's colour as ESPN sends it, which a goal tints its end with. */
-  homeColour?: string | null;
-  awayColour?: string | null;
   /** The play ringed and captioned. */
   focusId: string | null;
   /**

@@ -9,7 +9,7 @@ import {
   LedgerRow,
   ledgerRowLink,
 } from "@yogan-hockey/ui/components/ledger";
-import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
+import { PageHeader, Section, SectionHeader } from "@yogan-hockey/ui/components/section";
 import type { ReactNode } from "react";
 import {
   type BioFact,
@@ -21,7 +21,6 @@ import {
 } from "../../lib/player-view";
 import { Link } from "../link";
 import { teamHref } from "../nhl/team-name";
-import { TeamMark } from "../team-mark";
 
 /*
  * The parts of a player page, in the ledger's language: a header line, then one dense table per
@@ -78,7 +77,6 @@ export function PlayerHeader({ profile, action }: { profile: PlayerProfile; acti
                 href={teamHref(profile.team)}
                 className="tap-target whitespace-nowrap underline"
               >
-                <TeamMark teamId={profile.team.id} eager />
                 {profile.team.name}
               </Link>
             </>
@@ -108,23 +106,19 @@ export function HeaderLine({
 }) {
   return (
     <header data-slot="player-header">
-      <div className="mb-1 flex items-baseline justify-between gap-x-4">
-        <h1 className="font-strong text-score uppercase">
-          {name}
-          {detail ? (
-            <span className="font-quiet text-body text-label normal-case max-sm:block">
-              {" "}
-              {detail}
-            </span>
-          ) : null}
-        </h1>
+      <PageHeader
+        title={name}
+        count={detail ? <span className="max-sm:block">{detail}</span> : undefined}
+      >
         {action}
-      </div>
+      </PageHeader>
       {facts.length > 0 && (
-        <dl className="flex flex-wrap gap-x-6 gap-y-1 border-rule-head border-t px-2 py-1">
+        <dl className="flex flex-wrap gap-x-6 gap-y-1 border-rule-head border-t py-2 max-md:mt-3">
           {facts.map((fact) => (
             <div key={fact.label}>
-              <dt className="text-small text-label uppercase tracking-head">{fact.label}</dt>
+              <dt className="font-bold text-head text-label uppercase tracking-head">
+                {fact.label}
+              </dt>
               <dd>{fact.value}</dd>
             </div>
           ))}
@@ -288,7 +282,7 @@ export function GameLogSection({
         </LedgerHead>
         <LedgerBody>
           {log.rows.map((row) => (
-            <LedgerRow key={row.gameId} interactive>
+            <LedgerRow key={row.gameId}>
               <LedgerCell className="whitespace-nowrap">
                 <Link href={`/nhl/games/${row.gameId}`} className={ledgerRowLink}>
                   {row.date}
@@ -312,10 +306,9 @@ export function TeamSection({ team }: { team: Team }) {
       <SectionHeader title="Team" />
       <Ledger>
         <LedgerBody>
-          <LedgerRow interactive className="border-t border-t-rule-head">
+          <LedgerRow className="border-t border-t-rule-head">
             <LedgerCell>
               <Link href={teamHref(team)} className={ledgerRowLink}>
-                <TeamMark teamId={team.id} />
                 {team.name}
               </Link>{" "}
               <LedgerAside>{team.abbreviation}</LedgerAside>

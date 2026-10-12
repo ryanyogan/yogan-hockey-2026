@@ -54,9 +54,9 @@ const MISS = { short: 3, wide: 7 } as const;
  * `attacks` is the end the play's team shoots at in its period (`attackedEnd`), which sends a
  * shot from a team's own half to the right net; without it the shot is at the nearer net.
  * `previous` is the play before this one in the game: nothing a shot's line needs, and what a
- * goal's sequence reads the score before the goal from. `teams` says which side is at home and
- * each side's colour, which only a goal needs; the queue always gives it, and without it a goal
- * is taken for the away side's and has no tint.
+ * goal's sequence reads the score before the goal from. `teams` says which side is at home, which
+ * only a goal needs; the queue always gives it, and without it a goal is taken for the away
+ * side's.
  */
 export function describePlay(
   play: Play,

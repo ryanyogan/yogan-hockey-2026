@@ -52,12 +52,11 @@ export function doNotKeepPage(): void {
 }
 
 /**
- * The page of last resort: for a request that vinext could not answer at all, which is a failure
- * of the root layout. There is then no shell and no stylesheet to count on (`app/error.tsx` is
- * drawn inside the layout, and with it present vinext does not turn to `app/global-error.tsx`
- * on the server), so this is whole in itself, in the Agate look as far as a page with no fonts
- * to load can be: the wordmark and the title in a device's serif, the rules and the colours the
- * theme's own.
+ * The page of last resort: for a request that Start could not answer at all, which is a failure
+ * outside any route (the error page of `components/shell/` is drawn inside the shell, by the
+ * router). There is then no shell and no stylesheet to count on, so this is whole in itself, in
+ * the Agate look as far as a page with no fonts to load can be: the wordmark and the title in a
+ * device's serif, the rules and the colours the theme's own.
  */
 const LAST_RESORT_PAGE = `<!doctype html>
 <html lang="en">

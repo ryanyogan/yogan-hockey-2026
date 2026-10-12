@@ -1,16 +1,19 @@
 name: ESPN check
 
 # The early warning for ESPN changing shape (spec section 10): nothing watches the site while
-# nobody is on it. Fetches every endpoint the site reads, live, and runs the site's parsers on
+# nobody is on it, and nothing but the Worker's log says so when somebody is. Fetches every endpoint the site reads, live, and runs the site's parsers on
 # each. All of the logic is in packages/espn (`pnpm check:espn`, then scripts/report-check.ts),
 # where it is tested; this file only runs the two.
 on:
   schedule:
-    # 16:17 UTC every day, which is 12:17 in Toronto in summer and 11:17 in winter: the day's
-    # slate is up and still to be played, hours before the evening games (23:00 UTC onwards), so
-    # a failure can be fixed before anyone watches one. Off the hour, when GitHub's schedule is
-    # least delayed.
-    - cron: "17 16 * * *"
+    # Every three hours, at 43 past. GitHub promises no start time: it delays scheduled runs under
+    # load and may drop one. The once-a-day run this replaces (16:17 UTC) started between 3h45m
+    # and 5h late on each of its first five days, and on 2026-10-12 ESPN's change to the team
+    # endpoint was on the site before it had run (#213). Eight runs a day make the gap between
+    # checks about three hours however late each one is, and no single run is the only chance.
+    # Round the clock, so the runs that land in the evening (23:00 to 05:00 UTC) see live games.
+    # Off the hour, when the schedule is least delayed.
+    - cron: "43 */3 * * *"
   # By hand, from any branch: `gh workflow run espn-check.yml --ref <branch>`.
   workflow_dispatch:
 
@@ -27,8 +30,9 @@ jobs:
   check:
     name: Live ESPN check
     runs-on: ubuntu-24.04
-    # The check alone can take ten minutes when ESPN hangs: sixteen endpoints, three tries each
-    # of up to ten seconds. The report step has to come after that, so the limit is well past it.
+    # The check alone can take eleven minutes when ESPN hangs: up to eighteen endpoints, three
+    # tries each of up to ten seconds, six seconds of waits between them. The report step has to
+    # come after that, so the limit is well past it.
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
@@ -39,9 +43,10 @@ jobs:
         name: Fetch and parse every endpoint
         run: pnpm check:espn
 
-      # Runs whether the check passed or failed: a failure opens the issue or comments on the
-      # open one, a pass comments on an open issue that it cleared. Not when the steps before the
-      # check failed, since a broken install says nothing about ESPN.
+      # Runs whether the check passed or failed: a failure opens the issue, or comments on the
+      # open one when what fails has changed; a pass comments on an open issue that it cleared.
+      # Not when the steps before the check failed, since a broken install says nothing about
+      # ESPN.
       - name: File the issue
         if: ${{ !cancelled() && steps.check.outcome != 'skipped' }}
         env:

@@ -71,14 +71,46 @@ export const SAMPLES: Sample[] = (Object.keys(READS) as Read[]).flatMap((read) =
   (READS[read].samples as Args<Read>[]).map((args) => sample(read, ...args)),
 );
 
+/** The kinds of game whose summary is checked, in the order they are fetched. */
+export const SLATE_STATUSES = ["live", "scheduled", "final"] as const;
+
 /**
- * The summaries of games on a slate that are still to be played or under way: one live game and
- * one scheduled game, where the slate has them. A slate changes daily, so these are chosen when
- * the check runs. A finished game's summary is among the fixed samples.
+ * The summaries of games on a slate: one live, one scheduled and one final game, where the slate
+ * has them. A slate changes daily, so these are chosen when the check runs, and the check runs
+ * round the clock, so over a day it sees all three. The fixed finished game among the samples is
+ * from a season that is over; a final from the slate is one ESPN wrote this week.
  */
-export function unfinishedSummaries(games: Pick<Game, "id" | "status">[]): Sample[] {
-  return (["live", "scheduled"] as const).flatMap((status) => {
+export function summariesFromSlate(games: Pick<Game, "id" | "status">[]): Sample[] {
+  return SLATE_STATUSES.flatMap((status) => {
     const game = games.find((candidate) => candidate.status === status);
     return game ? [sample("summary", game.id)] : [];
   });
+}
+
+type Matchup = { home: { id: string }; away: { id: string } };
+
+/**
+ * A team whose day is the other kind from the fixed team's: one with a game today when Toronto
+ * has none, one without when it has. A team's detail carries its next game, which is a game
+ * under way or just over on the one day and a game days off on the other.
+ *
+ * `teamIds` is every team in ESPN's order, or null when the team list failed. Answers the sample,
+ * or the gap to list as not checked.
+ */
+export function secondTeam(
+  games: Matchup[],
+  teamIds: string[] | null,
+): { sample: Sample } | { gap: string } {
+  const playing = new Set(games.flatMap((game) => [game.home.id, game.away.id]));
+  if (!playing.has(TEAM_ID)) {
+    const [first] = playing;
+    return first === undefined
+      ? { gap: "a team with a game today: none on today's slate" }
+      : { sample: sample("team", first) };
+  }
+  if (teamIds === null) return { gap: "a team without a game today: the team list failed" };
+  const idle = teamIds.find((id) => !playing.has(id));
+  return idle === undefined
+    ? { gap: "a team without a game today: every team is on today's slate" }
+    : { sample: sample("team", idle) };
 }

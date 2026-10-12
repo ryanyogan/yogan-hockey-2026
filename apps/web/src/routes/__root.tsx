@@ -59,7 +59,7 @@ function Site() {
 
 declare global {
   interface Window {
-    /** True once the page has hydrated: a tap from then on is the router's, not a document load. */
+    /** True once the shell has hydrated: a tap from then on is the router's, not a document load. */
     __APP_HYDRATED?: boolean;
     /** When that was, in milliseconds since the navigation started. */
     __APP_HYDRATED_AT?: number;
@@ -67,9 +67,10 @@ declare global {
 }
 
 /**
- * Marks the page as hydrated, for whatever measures it or drives it (`scripts/`, Playwright). An
- * effect of the root route's runs once the whole document has hydrated, since nothing in it is
- * deferred.
+ * Marks the shell as hydrated, for whatever measures it or drives it (`scripts/`, Playwright):
+ * the masthead's links are the router's from here. The page under the masthead is not hydrated
+ * yet: the router draws it inside a `<Suspense>` of its own (`Outlet`, for the root route), and
+ * React hydrates what a boundary holds after the tree around it, once the route's script is in.
  */
 function useHydratedMark() {
   useEffect(() => {

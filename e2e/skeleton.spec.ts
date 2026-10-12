@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./test";
 
 /** The dev server's own view of the simulated KV namespaces. */
 const LOCAL_KV = "/cdn-cgi/local/explorer/api/storage/kv/namespaces";

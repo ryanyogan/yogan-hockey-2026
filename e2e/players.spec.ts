@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./test";
 
 // Fixture mode answers one search, "mar", and two players: Auston Matthews and a goalie.
 
@@ -31,6 +31,13 @@ test("/players searches as the visitor types and keeps the search in the URL", a
   await expect(box).toHaveValue("mar");
   await expect(results).toHaveCount(10);
 
+  // Favorites has read the browser's list, so the page under the masthead has hydrated. The
+  // masthead's links are the router's a moment sooner, and Players pressed in that moment makes
+  // React report a hydration error: it is given this search's HTML and the next page's data.
+  await expect(page.getByRole("region", { name: "Favorites" })).toHaveAttribute(
+    "aria-busy",
+    "false",
+  );
   // Arriving by a link starts the box from that link's URL.
   await expect(async () => {
     await page

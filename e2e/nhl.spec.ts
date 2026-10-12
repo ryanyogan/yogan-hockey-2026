@@ -1,4 +1,5 @@
-import { expect, type Page, test } from "@playwright/test";
+import type { Page } from "@playwright/test";
+import { expect, shellHydrated, test } from "./test";
 
 const tabs = (page: Page) => page.getByRole("navigation", { name: "NHL", exact: true });
 const views = (page: Page) => page.getByRole("navigation", { name: "Standings view" });
@@ -92,9 +93,7 @@ test("/nhl shows each standings view and the teams from a pasted URL, and reads 
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Standings by division");
   // Today's games came with the page, and the socket has spoken: neither made a loader run.
   await expect.poll(() => state).not.toBeNull();
-  await page.waitForFunction(
-    () => (window as { __APP_HYDRATED?: boolean }).__APP_HYDRATED === true,
-  );
+  await shellHydrated(page);
   expect(reads).toEqual([]);
   // The state again changes nothing: its `invalidatedAt` is the one the page was drawn with.
   say({ type: "cf_agent_state", state });

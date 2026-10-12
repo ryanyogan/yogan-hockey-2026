@@ -32,8 +32,8 @@ test("/players searches as the visitor types and keeps the search in the URL", a
   await expect(results).toHaveCount(10);
 
   // Favorites has read the browser's list, so the page under the masthead has hydrated. The
-  // masthead's links are the router's a moment before that, and one followed in that moment has
-  // React hydrate this search's HTML as the page gone to.
+  // masthead's links are the router's a moment sooner, and Players pressed in that moment makes
+  // React report a hydration error: it is given this search's HTML and the next page's data.
   await expect(page.getByRole("region", { name: "Favorites" })).toHaveAttribute(
     "aria-busy",
     "false",

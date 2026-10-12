@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader } from "@yogan-hockey/ui/components/section";
 import { useEffect } from "react";
 import { Link } from "../../../components/link";
-import { FavoritePlayers } from "../../../components/players/favorite-players";
 import { PlayerSearch } from "../../../components/players/player-search";
 import { readPlayersPage, searchLoading } from "../../../lib/player-search";
 import { readPlayers } from "../../functions/players";
@@ -20,7 +19,7 @@ const loading = searchLoading(
     : { online: () => navigator.onLine, reload: () => window.location.reload() },
 );
 
-/** Player search and the visitor's favorite players. `?q=` holds the search. */
+/** Player search. `?q=` holds the search. */
 export const Route = createFileRoute("/players/")({
   loaderDeps: ({ search }) => readPlayersPage(search),
   // A search asked for again is waited for, as one never asked is: the page that is drawn stays
@@ -39,16 +38,13 @@ function PlayersPage() {
     loading.drawn(search);
   }, [search]);
   return (
-    <>
-      <section data-slot="player-search">
-        <PageHeader title="Players" count="search the NHL">
-          <Link href="/nhl?tab=teams" className="tap-target hover:underline">
-            Browse a team's roster
-          </Link>
-        </PageHeader>
-        <PlayerSearch initial={search} />
-      </section>
-      <FavoritePlayers />
-    </>
+    <section data-slot="player-search">
+      <PageHeader title="Players" count="search the NHL">
+        <Link href="/nhl?tab=teams" className="tap-target hover:underline">
+          Browse a team's roster
+        </Link>
+      </PageHeader>
+      <PlayerSearch initial={search} />
+    </section>
   );
 }

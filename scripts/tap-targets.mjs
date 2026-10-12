@@ -15,7 +15,7 @@
 // that reaches past a line of text counts, as a finger finds it.
 import { writeFile } from "node:fs/promises";
 import { chromium } from "@playwright/test";
-import { PLAYER, ROUTES, seedPicks, TEAM } from "./look-routes.mjs";
+import { ROUTES, seedPicks } from "./look-routes.mjs";
 import { untilPageHydrated, watchHydration } from "./performance/hydration.ts";
 
 const [baseURL = "http://localhost:5173", out, only] = process.argv.slice(2);
@@ -193,14 +193,7 @@ for (const route of ROUTES) {
     timezoneId: "America/Chicago",
     reducedMotion: "reduce",
   });
-  await context.addInitScript(
-    ([team, player]) => {
-      localStorage.setItem("theme", "light");
-      localStorage.setItem("favorite_teams", JSON.stringify([team]));
-      localStorage.setItem("favorite_players", JSON.stringify([player]));
-    },
-    [TEAM, PLAYER],
-  );
+  await context.addInitScript(() => localStorage.setItem("theme", "light"));
   const page = await context.newPage();
   await watchHydration(page);
   await page.goto(`${baseURL}${route.path}`, { waitUntil: "networkidle" });

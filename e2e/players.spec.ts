@@ -1,11 +1,10 @@
-import { expect, test } from "./test";
+import { expect, pageHydrated, test } from "./test";
 
 // Fixture mode answers one search, "mar", and two players: Auston Matthews and a goalie.
 
 test("/players searches as the visitor types and keeps the search in the URL", async ({ page }) => {
   await page.goto("/players");
   await expect(page).toHaveTitle("Players · Yogan Hockey");
-  await expect(page.getByRole("heading", { name: "Favorites" })).toBeVisible();
 
   const box = page.getByRole("searchbox", { name: "player name" });
   const results = page.getByRole("table").getByRole("link");
@@ -31,13 +30,10 @@ test("/players searches as the visitor types and keeps the search in the URL", a
   await expect(box).toHaveValue("mar");
   await expect(results).toHaveCount(10);
 
-  // Favorites has read the browser's list, so the page under the masthead has hydrated. The
-  // masthead's links are the router's a moment sooner, and Players pressed in that moment makes
-  // React report a hydration error: it is given this search's HTML and the next page's data.
-  await expect(page.getByRole("region", { name: "Favorites" })).toHaveAttribute(
-    "aria-busy",
-    "false",
-  );
+  // The page under the masthead must have hydrated. The masthead's links are the router's a
+  // moment sooner, and Players pressed in that moment makes React report a hydration error: it
+  // is given this search's HTML and the next page's data.
+  await pageHydrated(page);
   // Arriving by a link starts the box from that link's URL.
   await expect(async () => {
     await page
@@ -54,9 +50,6 @@ test("/players/:id shows a player's season, games and career", async ({ page, re
   const legacy = await request.get("/players/4024123?games=all", { maxRedirects: 0 });
   expect(legacy.status()).toBe(308);
   expect(legacy.headers().location).toContain("/players/4024123/games");
-  // Wait for a browser-owned value before testing soft navigation; a pre-hydration anchor
-  // follows as a document request and would replace the header for an unrelated reason.
-  await page.addInitScript(() => localStorage.setItem("favorite_players", '["4024123"]'));
   await page.goto("/players/4024123?games=all");
   await expect(page).toHaveURL(/\/players\/4024123\/games/);
   await expect(page).toHaveTitle("Auston Matthews · Yogan Hockey");
@@ -69,10 +62,9 @@ test("/players/:id shows a player's season, games and career", async ({ page, re
   );
   await expect(header).toContainText("San Ramon, CA");
 
-  await expect(header.getByRole("button", { name: "Favorite Auston Matthews" })).toHaveAttribute(
-    "aria-pressed",
-    "true",
-  );
+  // Hydrated before a soft navigation is tested: a link pressed sooner is followed as a document
+  // request, which would replace the header for an unrelated reason.
+  await pageHydrated(page);
   await header.evaluate((node) => node.setAttribute("data-retained", "yes"));
   // Going between his tabs asks the server for nothing: his route read him once for both.
   const asked: string[] = [];

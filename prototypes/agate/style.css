@@ -553,21 +553,6 @@ button {
   color: var(--label);
 }
 
-.favorites__head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid var(--rule);
-}
-.favorites p {
-  margin: 10px 0 0;
-  font: 400 17px / 1.45 var(--font-serif);
-  color: var(--note);
-}
-.favorites p a {
-  color: var(--foreground);
-}
-
 .footer {
   margin-top: var(--band);
   border-top: 1px solid var(--rule);
@@ -728,9 +713,6 @@ button {
   }
   .glance {
     display: none;
-  }
-  .favorites {
-    order: 3;
   }
   .band-head {
     margin-bottom: 0;

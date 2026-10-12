@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { FavoriteHeart } from "../../../../../components/favorites/favorite-heart";
 import { RosterLedger } from "../../../../../components/team/roster-ledger";
 import { readTeamRosterPage } from "../../../../functions/team";
 import { failureTitled } from "../../../../head";
@@ -17,10 +16,7 @@ function TeamRosterPage() {
     // Kept to the first of two columns from `xl` up: across the whole page a name is too far
     // from its position to read across.
     <div className="grid grid-cols-1 gap-8 xl:grid-cols-2">
-      <RosterLedger
-        players={players}
-        action={(player) => <FavoriteHeart kind="player" id={player.id} name={player.name} />}
-      />
+      <RosterLedger players={players} />
     </div>
   );
 }

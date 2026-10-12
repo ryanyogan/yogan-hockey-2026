@@ -1,7 +1,7 @@
 import { getStandings } from "@yogan-hockey/espn";
 import type { ScoreboardGame } from "@yogan-hockey/schemas";
 import { beforeAll, expect, test, vi } from "vitest";
-import { gamePlayingNow, tonightGames, topOfConferences } from "./dashboard";
+import { tonightGames, topOfConferences } from "./dashboard";
 
 beforeAll(() => {
   vi.stubEnv("ESPN_FIXTURES", "1");
@@ -90,17 +90,6 @@ test("sorting leaves the shared scoreboard array and its games untouched", () =>
   expect(source).toEqual(original);
   expect(sorted).not.toBe(source);
   expect(sorted.every((each) => source.includes(each))).toBe(true);
-});
-
-test("a player is playing now when his team is in a game in progress", () => {
-  expect(gamePlayingNow("TOR", SLATE)?.id).toBe("live");
-  expect(gamePlayingNow("MTL", SLATE)?.id).toBe("live");
-  // To come, over, and called off are not now.
-  expect(gamePlayingNow("EDM", SLATE)).toBeUndefined();
-  expect(gamePlayingNow("FLA", SLATE)).toBeUndefined();
-  expect(gamePlayingNow("CAR", SLATE)).toBeUndefined();
-  // A free agent has no team.
-  expect(gamePlayingNow(undefined, SLATE)).toBeUndefined();
 });
 
 test("the dashboard's standings are each conference's top eight by points", async () => {

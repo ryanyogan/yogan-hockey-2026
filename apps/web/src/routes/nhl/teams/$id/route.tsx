@@ -1,5 +1,4 @@
 import { createFileRoute, Outlet, useChildMatches } from "@tanstack/react-router";
-import { FavoriteHeart } from "../../../../../components/favorites/favorite-heart";
 import { Link } from "../../../../../components/link";
 import { NotFoundPage } from "../../../../../components/shell/not-found-page";
 import { TeamHeader } from "../../../../../components/team/team-header";
@@ -49,21 +48,7 @@ function TeamPage() {
   return (
     <>
       <div className="grid grid-cols-1 gap-4">
-        <TeamHeader
-          detail={read}
-          standing={read.standing}
-          // Not squeezed by a long name, which would cost its reach a pixel. It ends on the
-          // column's edge, where the rules end and a roster's hearts are; its reach runs 8px
-          // into the gutter.
-          action={
-            <FavoriteHeart
-              kind="team"
-              id={read.team.id}
-              name={read.team.name}
-              className="shrink-0"
-            />
-          }
-        />
+        <TeamHeader detail={read} standing={read.standing} />
         {/* The same full-width, live-ledger-sized slot whatever the team is doing. */}
         <TeamNowFrame>
           <TeamNow teamId={id} listed={read.nextGame} picks={read.picks} />

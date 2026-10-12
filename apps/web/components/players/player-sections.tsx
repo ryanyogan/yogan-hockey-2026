@@ -59,10 +59,9 @@ export function StatCells({
 
 /**
  * The header line: his name, then position, number and team in quiet text, then the facts ESPN
- * has about him. `action` sits at the right end of the first line: the heart that makes him a
- * favorite. There is no photo: the page is drawn to read without one.
+ * has about him. There is no photo: the page is drawn to read without one.
  */
-export function PlayerHeader({ profile, action }: { profile: PlayerProfile; action?: ReactNode }) {
+export function PlayerHeader({ profile }: { profile: PlayerProfile }) {
   return (
     <HeaderLine
       name={profile.name}
@@ -84,7 +83,6 @@ export function PlayerHeader({ profile, action }: { profile: PlayerProfile; acti
         </>
       }
       facts={bioFacts(profile)}
-      action={action}
     />
   );
 }
@@ -97,21 +95,17 @@ export function HeaderLine({
   name,
   detail,
   facts,
-  action,
 }: {
   name: string;
   detail?: ReactNode;
   facts: readonly BioFact[];
-  action?: ReactNode;
 }) {
   return (
     <header data-slot="player-header">
       <PageHeader
         title={name}
         count={detail ? <span className="max-sm:block">{detail}</span> : undefined}
-      >
-        {action}
-      </PageHeader>
+      />
       {facts.length > 0 && (
         <dl className="flex flex-wrap gap-x-6 gap-y-1 border-rule-head border-t py-2 max-md:mt-3">
           {facts.map((fact) => (

@@ -2,8 +2,7 @@ import { describe, expect, it } from "vitest";
 import { render } from "../test/render";
 import { Badge } from "./badge";
 import { Button } from "./button";
-import { HeartButton } from "./heart-button";
-import { FavoriteMarker, LiveMarker } from "./marker";
+import { LiveMarker } from "./marker";
 
 const MARK = ["border", "text-tag", "font-strong", "uppercase", "tracking-mark", "leading-none"];
 
@@ -49,19 +48,6 @@ describe("LiveMarker", () => {
   });
 });
 
-describe("FavoriteMarker, a mark", () => {
-  it("is an outlined mark that keeps its star for the eye", () => {
-    const view = render(<FavoriteMarker />);
-    expect(view.text).toBe("favorite");
-    expect(view.slot("favorite-marker").classes).toEqual(
-      expect.arrayContaining([...MARK, "border-rule"]),
-    );
-    // Drawn: the face has no "★" for a device's fallback font to draw at its own size.
-    expect(view.tag("svg").attributes["aria-hidden"]).toBe("true");
-    expect(render(<FavoriteMarker>favorite team</FavoriteMarker>).text).toBe("favorite team");
-  });
-});
-
 describe("Button", () => {
   it("is a thumb tall, in a mark's capitals, filled with ink", () => {
     const button = render(<Button>Bump</Button>).slot("button");
@@ -100,18 +86,5 @@ describe("Button", () => {
     expect(button.classes).not.toContain("min-h-11");
     // Words in a sentence, set as the sentence is.
     expect(button.classes).not.toContain("uppercase");
-  });
-});
-
-describe("HeartButton", () => {
-  it("is a named button that says whether it is pressed", () => {
-    const view = render(<HeartButton pressed label="Favorite Auston Matthews" />);
-    const button = view.slot("heart-button");
-    expect(button.attributes["aria-pressed"]).toBe("true");
-    expect(button.attributes["aria-label"]).toBe("Favorite Auston Matthews");
-    expect(view.tag("svg").attributes.fill).toBe("currentColor");
-    expect(
-      render(<HeartButton pressed={false} label="Favorite" />).tag("svg").attributes.fill,
-    ).toBe("none");
   });
 });

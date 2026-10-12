@@ -10,15 +10,14 @@ import {
   LedgerRow,
   ledgerRowLink,
 } from "@yogan-hockey/ui/components/ledger";
-import { FavoriteMarker, LiveMarker } from "@yogan-hockey/ui/components/marker";
+import { LiveMarker } from "@yogan-hockey/ui/components/marker";
 import type { ReactNode } from "react";
 import { agateName, statusText } from "../../lib/agate-copy";
-import { isFavoriteGame } from "../../lib/favorites";
 import { gameHref, gameStatusLine, gameWhere, hasScore } from "../../lib/scoreboard-view";
 import { Link } from "../link";
 import { GameStatus } from "./game-status";
 
-function Team({ side, favorite }: { side: ScoreboardSide; favorite: boolean }) {
+function Team({ side }: { side: ScoreboardSide }) {
   return (
     <>
       {/* Its agate name where there is room and its abbreviation on a phone: one is shown. */}
@@ -26,12 +25,6 @@ function Team({ side, favorite }: { side: ScoreboardSide; favorite: boolean }) {
         <span className="sm:hidden">{side.abbreviation}</span>
         <span className="max-sm:hidden">{agateName(side)}</span>
       </span>{" "}
-      {/* A phone has no last column to say "favorite team" in: the star goes by the team. */}
-      {favorite && (
-        <FavoriteMarker className="text-note xl:hidden">
-          <span className="sr-only">favorite team</span>
-        </FavoriteMarker>
-      )}
       {/* Beside the team on a wide page; on a phone, where the two do not fit, under it. */}
       {side.record && (
         <LedgerAside className="max-xl:block max-xl:text-small">{side.record}</LedgerAside>
@@ -66,8 +59,8 @@ export const FIXED_GAME_COLUMNS = {
 };
 
 /**
- * Games as agate rows: status, away, home, each team with its record, then the note: the
- * favorite-team marker, the pick, and where the game is played and shown. Each row links to the
+ * Games as agate rows: status, away, home, each team with its record, then the note: the pick,
+ * and where the game is played and shown. Each row links to the
  * game's page, a game in progress has its status in the one red, the scores are bold and the
  * winner of a finished game is in bold. No row has a team's mark (agate.md, Decisions). The columns are fixed widths, so one ledger under another lines up.
  *
@@ -77,21 +70,14 @@ export const FIXED_GAME_COLUMNS = {
  */
 export function GameLedger({
   games,
-  favoriteTeamIds = [],
   pick,
 }: {
   games: ScoreboardGame[];
   /**
    * The pick for a game, as one line ("TOR 58%", "pick pending"), or nothing. It is drawn in the
-   * note column after the favorite marker; on a phone it takes the venue's place under the status.
+   * note column ahead of the venue; on a phone it takes the venue's place under the status.
    */
   pick?: (game: ScoreboardGame) => ReactNode;
-  /**
-   * The visitor's favorite teams: a game of theirs says "★ favorite team" in the last column,
-   * ahead of the venue, as the Reference UI's note column does. A phone has no room for the
-   * words and puts the star beside the favorite team.
-   */
-  favoriteTeamIds?: readonly string[];
 }) {
   const widths = FIXED_GAME_COLUMNS;
   return (
@@ -108,7 +94,6 @@ export function GameLedger({
       <LedgerBody>
         {games.map((game) => {
           const status = gameStatusLine(game);
-          const favorite = isFavoriteGame(game, favoriteTeamIds);
           const where = gameWhere(game);
           const picked = pick?.(game);
           const hasPick = picked != null && picked !== false;
@@ -139,20 +124,19 @@ export function GameLedger({
                 </LedgerDetail>
               </LedgerCell>
               <LedgerCell className={GAME_TEXT_CELL}>
-                <Team side={game.away} favorite={favoriteTeamIds.includes(game.away.id)} />
+                <Team side={game.away} />
               </LedgerCell>
               <LedgerCell tone="score" className={scoreCell(final && !game.away.winner)}>
                 {hasScore(game) ? game.away.score : null}
               </LedgerCell>
               <LedgerCell className={GAME_TEXT_CELL}>
-                <Team side={game.home} favorite={favoriteTeamIds.includes(game.home.id)} />
+                <Team side={game.home} />
               </LedgerCell>
               <LedgerCell tone="score" className={scoreCell(final && !game.home.winner)}>
                 {hasScore(game) ? game.home.score : null}
               </LedgerCell>
               {/* `max-w-0`: a long note is cut short, and never widens its column. */}
               <LedgerCell tone="note" className="max-w-0 truncate max-xl:hidden">
-                {favorite && <FavoriteMarker className="mr-4">favorite team</FavoriteMarker>}
                 {hasPick && (
                   <span data-slot="game-pick" className="mr-4 font-label">
                     {picked}

@@ -8,7 +8,6 @@ import {
   LedgerRow,
 } from "@yogan-hockey/ui/components/ledger";
 import { Section } from "@yogan-hockey/ui/components/section";
-import type { ReactNode } from "react";
 import { type TeamStanding, teamPlace, teamStandingLine } from "../../lib/team-page";
 import { storyHeadline, storyKicker, storyRule } from "../story/type";
 import { TeamMark } from "../team-mark";
@@ -24,12 +23,9 @@ import { EmptyLedger } from "./empty-ledger";
 export function TeamHeader({
   detail: { team, stats },
   standing,
-  action,
 }: {
   detail: Pick<TeamDetail, "team" | "stats">;
   standing: TeamStanding | null;
-  /** Sits at the right end of the name's line: the heart that makes the team a favorite (#45). */
-  action?: ReactNode;
 }) {
   const place = teamPlace(team, standing);
 
@@ -46,15 +42,11 @@ export function TeamHeader({
             " ",
           ])}
         </p>
-        {/* The heart stays at the end of the first line when a phone wraps the name. */}
-        <div className="mt-3 flex items-start justify-between gap-4">
-          <h1 className={storyHeadline}>
-            {/* The one place a team's mark is drawn on its page (agate.md, Decisions). */}
-            <TeamMark teamId={team.id} size="headline" eager className="mr-[0.3em]" />
-            {team.name}
-          </h1>
-          {action}
-        </div>
+        <h1 className={`mt-3 ${storyHeadline}`}>
+          {/* The one place a team's mark is drawn on its page (agate.md, Decisions). */}
+          <TeamMark teamId={team.id} size="headline" eager className="mr-[0.3em]" />
+          {team.name}
+        </h1>
       </header>
       <div className="mt-3">
         {stats == null ? (

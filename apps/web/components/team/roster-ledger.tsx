@@ -9,7 +9,6 @@ import {
   ledgerRowLink,
 } from "@yogan-hockey/ui/components/ledger";
 import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
-import type { ReactNode } from "react";
 import { playerHref } from "../../lib/roster";
 import { Link } from "../link";
 import { EmptyLedger } from "./empty-ledger";
@@ -19,17 +18,7 @@ import { EmptyLedger } from "./empty-ledger";
  * and counted as given: the page sorts them (`sortRoster`), and a player added to the list (#46)
  * is a row like any other.
  */
-export function RosterLedger({
-  players,
-  action,
-}: {
-  players: readonly RosterPlayer[];
-  /**
-   * Drawn at the end of each row: the heart that makes the player a favorite (#45). The row's
-   * link covers the whole row, so a button here needs `relative` to sit above it.
-   */
-  action?: (player: RosterPlayer) => ReactNode;
-}) {
+export function RosterLedger({ players }: { players: readonly RosterPlayer[] }) {
   return (
     <Section>
       <SectionHeader
@@ -47,7 +36,6 @@ export function RosterLedger({
             </LedgerColumn>
             <LedgerColumn className="w-full">player</LedgerColumn>
             <LedgerColumn>pos</LedgerColumn>
-            {action && <LedgerColumn />}
           </LedgerHead>
           <LedgerBody>
             {players.map((player) => (
@@ -61,7 +49,6 @@ export function RosterLedger({
                   </Link>
                 </LedgerCell>
                 <LedgerCell>{player.position}</LedgerCell>
-                {action && <LedgerCell numeric>{action(player)}</LedgerCell>}
               </LedgerRow>
             ))}
           </LedgerBody>

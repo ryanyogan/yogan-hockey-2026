@@ -2,7 +2,6 @@ import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { focusRing } from "@yogan-hockey/ui/components/nav-item";
 import { type FormEvent, useEffect, useId, useRef, useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
-import { FavoriteHeart } from "../../components/favorites/favorite-heart";
 import { PlayerLedger } from "../../components/players/player-ledger";
 import {
   MAX_SEARCH_LENGTH,
@@ -129,12 +128,7 @@ export function PlayerSearch({ initial }: { initial: Search }) {
         >
           {searchSummary(search)}
         </p>
-        {search.players.length > 0 && (
-          <PlayerLedger
-            players={search.players}
-            action={(player) => <FavoriteHeart kind="player" id={player.id} name={player.name} />}
-          />
-        )}
+        {search.players.length > 0 && <PlayerLedger players={search.players} />}
       </div>
     </>
   );

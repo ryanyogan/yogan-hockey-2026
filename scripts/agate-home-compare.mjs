@@ -25,6 +25,7 @@
 
 import { mkdirSync } from "node:fs";
 import { chromium } from "@playwright/test";
+import { pageHydrated } from "./performance/hydration.ts";
 
 const [site, outDir, prototype = "http://localhost:5129"] = process.argv.slice(2);
 if (!site) {
@@ -95,12 +96,6 @@ const PARTS = [
   ["glance cell", ".glance__grid > div", '[data-slot="glance"] dl > div'],
   ["glance figure", ".glance__n", '[data-slot="glance"] dd'],
   ["glance word", ".glance__k", '[data-slot="glance"] dt'],
-  ["favorites", ".favorites", '[data-slot="favorites"]'],
-  ["favorites head", ".favorites__head", '[data-slot="favorites"] > div'],
-  ["favorites label", ".favorites .label", "#favorites-heading"],
-  ["all players", ".favorites .more", '[data-slot="favorites"] > div a'],
-  ["favorites prose", ".favorites p", '[data-slot="favorites"] > p'],
-  ["find a player", ".favorites p a", '[data-slot="favorites"] > p a'],
 ];
 
 /** What is read of each element. A side's rule is its width, and its style and colour if it has one. */
@@ -231,8 +226,8 @@ for (const slate of SLATES) {
         await page.goto(url, { waitUntil: "networkidle" });
         // The pick line's italic is fetched when it is first drawn.
         await page.evaluate(() => document.fonts.ready);
-        if (name === "site")
-          await page.locator('[data-slot="favorites"][aria-busy="false"]').waitFor();
+        // The site's page is measured once it has hydrated, as a visitor's is.
+        if (name === "site") await page.waitForFunction(pageHydrated);
         await page.evaluate(() => document.fonts.ready);
         if (outDir)
           await page.screenshot({

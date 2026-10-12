@@ -30,8 +30,8 @@ test("/nhl/live lists the slate in sections, links each game, and follows the so
     pushState = (state) => socket.send(JSON.stringify({ type: "cf_agent_state", state }));
     sayHeardAt = (at) => socket.send(JSON.stringify({ type: "scoreboard_heard", at }));
   });
-  // Every call of a server function. This page makes none of its own once it is drawn (it lists
-  // no favorite players), so each one is a loader reading: this page's again, or the page of a
+  // Every call of a server function. This page makes none of its own once it is drawn,
+  // so each one is a loader reading: this page's again, or the page of a
   // link the pointer rests on, read ahead (`defaultPreload` in `src/router.tsx`).
   let rereads = 0;
   page.on("request", (request) => {

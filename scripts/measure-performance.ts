@@ -4,7 +4,7 @@
 //   node scripts/measure-performance.ts <base> [--out=docs/performance/results/local]
 //        [--runs=3] [--only=<route>,<route>] [--team=21] [--player=4024123]
 //        [--goalie=3067313] [--finished-game=401803652] [--scheduled-game=<id>|auto|none]
-//        [--search=mar] [--favorites=off] [--navigate=<selector>] [--kv=warm|cold]
+//        [--search=mar] [--navigate=<selector>] [--kv=warm|cold]
 //        [--label=<text>]
 //
 // Use scripts/performance-baseline.sh, which builds and serves the site first. Needs TMPDIR on
@@ -76,7 +76,6 @@ if (!Number.isInteger(runs) || runs < 1) {
 }
 const out = flag("out", "docs/performance/results/local");
 const only = flag("only", "");
-const favorites = flag("favorites", "on") !== "off";
 const navigateOverride = flag("navigate", "");
 const kv = flag("kv", "");
 if (!["", "warm", "cold"].includes(kv)) {
@@ -182,17 +181,6 @@ async function visit(browser: Browser): Promise<Visit> {
   await devtools.send("Emulation.setCPUThrottlingRate", { rate: PROFILE.cpuSlowdown });
   await page.addInitScript(watchPage);
   await watchHydration(page);
-  // A family member has favorites, and they reach the page from localStorage after it hydrates.
-  if (favorites) {
-    await page.addInitScript(
-      ([team, player]) => {
-        localStorage.setItem("favorite_teams", JSON.stringify([team]));
-        localStorage.setItem("favorite_players", JSON.stringify([player]));
-      },
-      [subjects.team, subjects.player],
-    );
-  }
-
   const scoreboard: Visit["scoreboard"] = { slate: null, push: () => {} };
   await page.routeWebSocket(SCOREBOARD_SOCKET, (socket) => {
     const agent = socket.connectToServer();

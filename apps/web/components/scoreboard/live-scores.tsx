@@ -1,10 +1,8 @@
 import type { ScoreboardGame } from "@yogan-hockey/schemas";
 import { PageHeader, Section, SectionHeader } from "@yogan-hockey/ui/components/section";
-import { favoritesFirst } from "../../lib/favorites";
 import { slateDay } from "../../lib/game-time";
 import { pickLineOutcome, pickNote } from "../../lib/picks";
 import { slateSections } from "../../lib/scoreboard-view";
-import { useFavorites } from "../../lib/use-favorites";
 import { LocalTime } from "../local-time";
 import { PickMark } from "../story/story-parts";
 import { emptyProse } from "../story/type";
@@ -17,16 +15,13 @@ const plural = (count: number, noun: string) => `${count} ${noun}${count === 1 ?
 type Picks = Readonly<Record<string, string>>;
 
 function Games({ title, games, picks }: { title: string; games: ScoreboardGame[]; picks: Picks }) {
-  const favoriteTeamIds = useFavorites("team").ids;
   // A section with nothing in it is left out.
   if (games.length === 0) return null;
   return (
     <Section aria-label={title}>
       <SectionHeader title={title} count={games.length} />
-      {/* Favorite teams' games lead each section, still in order of start among themselves. */}
       <GameLedger
-        games={favoritesFirst(games, favoriteTeamIds)}
-        favoriteTeamIds={favoriteTeamIds}
+        games={games}
         pick={(game) => {
           const line = pickNote(picks[game.id], game.status);
           // A final's pick says how it went, as a brief on Home does.

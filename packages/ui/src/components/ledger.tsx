@@ -27,8 +27,8 @@ function Ledger({ className, ...props }: ComponentProps<"table">) {
   return (
     // A table wider than a phone scrolls sideways inside its own box; the page never does.
     // Positioned, so a `ledgerRowLink` can never stretch past its own table. The box is 8px
-    // wider than the table on each side, and the table is where it was: the reach of a link or a
-    // heart in the first or last column (`tap-target`) runs past the table's edge, and would
+    // wider than the table on each side, and the table is where it was: the reach of a link
+    // in the first or last column (`tap-target`) runs past the table's edge, and would
     // otherwise be cut off on the left and scroll the box on the right.
     <div data-slot="ledger" className="relative -mx-2 overflow-x-auto px-2">
       <table className={cn("w-full border-collapse", className)} {...props} />

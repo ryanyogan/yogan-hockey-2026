@@ -12,6 +12,8 @@ vi.mock("./functions/team", () => ({
   readTeamStatsPage: vi.fn(async () => ({})),
 }));
 
+const team = await import("./functions/team");
+
 /** The routes that answer `path`, by id, or "not found" when none does; null when the server's router redirects. */
 async function answers(path: string, isServer: boolean) {
   const router = createRouter({
@@ -23,6 +25,7 @@ async function answers(path: string, isServer: boolean) {
   });
   await router.load();
   const { matches } = router.state;
+  // The server's router keeps no match when it redirects.
   if (matches.length === 0) return null;
   // `_notFound` is the router's mark on the root for an address no route answers (`src/head.ts`).
   if (matches.some((match) => match._notFound === true)) return "not found";
@@ -47,8 +50,10 @@ describe.each([
   });
 
   // What the Worker hands the site for `/nhl/teams/%20` (`lib/canonical-address.ts`): the team's
-  // page with a space for an id, which its read answers "not found", and no redirect.
+  // page asked for with a space for an id (which the team's read answers "not found":
+  // `lib/find-team.ts`), and no redirect.
   it("keeps an id that is a space when the Worker has put a slash after it", async () => {
     expect(await answers("/nhl/teams/%20/", isServer)).toBe("/nhl/teams/$id/");
+    expect(vi.mocked(team.readTeamPage)).toHaveBeenLastCalledWith({ data: { id: " " } });
   });
 });

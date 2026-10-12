@@ -15,7 +15,7 @@ export const FRESH_FOR = 5 * MINUTE;
  *
  * - By case: `/NHL` is no page. The router's own way is to match without regard to it.
  * - A slash at the end of an address is not the router's business: the Worker's entry has sent
- *   every such request to the address without it (a 308) before the site is asked, and puts one
+ *   every such request for the site to the address without it (a 308) before the site is asked, and puts one
  *   there itself to carry an address that ends in a space past Start
  *   (`lib/canonical-address.ts`). Under the router's own "never" that slash would be redirected
  *   away again. No link of the site's ends in a slash.

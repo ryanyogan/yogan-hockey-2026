@@ -44,7 +44,7 @@ node scripts/performance/server-time.ts http://localhost:5351 http://localhost:5
 - `/NHL` is answered 200 with the standings where `main` answers 404: the router matches without regard to case.
 - `/nhl/teams/%20` is answered 307 to `/nhl/teams` where `main` answers 404.
 
-Not fixed here. The first two are the router's defaults (`trailingSlash`, `caseSensitive`) or a 308 in `worker.ts` beside the old links'; each wants a test.
+Not fixed at the cutover. The first two are the router's defaults (`trailingSlash`, `caseSensitive`) or a 308 in `worker.ts` beside the old links'; each wants a test.
 
 **Fixed in #211** (`results/issue-211-address-parity.md`: the vinext site built from `304479b` against the fix, 160 addresses, the twelve and thirteen more of their kinds; 157 the same and the 3 intended). The Worker's entry answers a trailing slash with a 308 before the site is asked, the router matches by case, and the third was Start dropping a space from the end of a path, which the entry now keeps.
 

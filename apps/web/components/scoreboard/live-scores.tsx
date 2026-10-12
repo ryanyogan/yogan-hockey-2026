@@ -51,8 +51,7 @@ function Games({ title, games, picks }: { title: string; games: ScoreboardGame[]
 /**
  * The page's title, with the day's count and when the Scoreboard last heard from ESPN. On a phone
  * the "updated" stamp has a line of its own under the title, and the line is there before there
- * is anything to put on it: the placeholder (`LiveSkeleton`) draws this with nothing given, so
- * the page does not move when the socket first speaks.
+ * is anything to put on it, so the page does not move when the socket first speaks.
  */
 export function ScoresTitle({ count, heardAt }: { count?: string; heardAt?: string | null }) {
   return (

@@ -1,24 +1,22 @@
 import { expect, test } from "@playwright/test";
 
-// Fixture mode: nine games still to be played, Nashville at Toronto the second of them by start.
-// Toronto (21) is the recorded team and Auston Matthews (4024123) its recorded player.
+// Fixture mode: nine games still to be played, Nashville at Toronto the second of them by start,
+// so it is one of the three leads. Toronto (21) is the recorded team and Auston Matthews
+// (4024123) its recorded player. The picks are `picks.setup.ts`'s: Toronto at 58%, and a season
+// of 3 right, 2 wrong.
 const GAME_ID = "401892449";
-const TORONTO = "21";
 const MATTHEWS = "4024123";
 
-type Slate = { games: { id: string; [field: string]: unknown }[]; [field: string]: unknown };
+type Game = { id: string; home: object; away: object; [field: string]: unknown };
+type Slate = { games: Game[]; [field: string]: unknown };
 
-test("the dashboard keeps games in start order while favorites and live details update", async ({
+test("Home writes the slate up as leads and briefs, and follows the Scoreboard without a game changing place until its status does", async ({
   page,
 }) => {
-  // The visitor already has a favorite team and a favorite player.
-  await page.addInitScript(
-    ([team, player]) => {
-      localStorage.setItem("favorite_teams", JSON.stringify([team]));
-      localStorage.setItem("favorite_players", JSON.stringify([player]));
-    },
-    [TORONTO, MATTHEWS],
-  );
+  // The visitor already has a favorite player.
+  await page.addInitScript((player) => {
+    localStorage.setItem("favorite_players", JSON.stringify([player]));
+  }, MATTHEWS);
   // The test stands between the page and the Scoreboard, to send a state of its own later.
   let slate: Slate | undefined;
   let pushState: (state: Slate) => void = () => {};
@@ -34,93 +32,138 @@ test("the dashboard keeps games in start order while favorites and live details 
 
   await page.goto("/");
   await expect(page).toHaveTitle("Dashboard · Yogan Hockey");
-  await expect(page.getByRole("region", { name: "Tonight" })).toBeVisible();
 
-  // Tonight: every game in start order, with favorites marked without being promoted.
-  const tonight = page.getByRole("region", { name: "Tonight" });
-  await expect(tonight.getByRole("heading")).toHaveText("Tonight 9 games");
-  await expect(tonight.getByRole("row")).toHaveCount(10);
-  const toronto = tonight.getByRole("row").nth(2);
-  await expect(tonight.getByRole("row").nth(1)).toContainText("CAR at MTL");
-  await expect(tonight.getByRole("row").nth(1)).not.toContainText("favorite team");
-  await expect(toronto).toContainText("NSH at TOR");
-  await expect(toronto).toContainText("favorite team");
-  await expect(toronto.locator('[data-slot="game-pick"]')).toHaveText("TOR 58%");
-  await expect(toronto.getByRole("cell").last()).toHaveText(
-    "★ favorite teamTOR 58%Scotiabank Arena · ESPN+, Scripps Sports",
+  // The roundup: three leads, each a story, and the rest as briefs.
+  const roundup = page.getByRole("region", { name: "NHL Roundup" });
+  const briefs = page.getByRole("region", { name: "Around the league" });
+  await expect(roundup.getByRole("article")).toHaveCount(3);
+  await expect(briefs.getByRole("listitem")).toHaveCount(6);
+  const gameLink = `a[href="/nhl/games/${GAME_ID}"]`;
+  const toronto = roundup.getByRole("article").filter({ has: page.locator(gameLink) });
+  await expect(toronto.getByRole("heading")).toHaveText("Predators at Maple Leafs");
+  await expect(toronto.locator('[data-slot="kicker"]')).toHaveText(
+    /^\d{1,2}:\d{2} [AP]M · Scotiabank Arena$/,
   );
-  await expect(toronto.getByRole("link")).toHaveAttribute("href", `/nhl/games/${GAME_ID}`);
-  await expect(toronto.locator("time")).toBeVisible();
-  const gameLinks = tonight.locator("tbody a");
-  const initialOrder = await gameLinks.evaluateAll((links) =>
-    links.map((link) => link.getAttribute("href")),
+  await expect(toronto.locator('[data-slot="deck"]')).toHaveText(
+    /^The Predators \(.+\) visit the Maple Leafs \(.+\)\.$/,
   );
-  await expect(tonight.getByRole("link", { name: "all scores" })).toHaveAttribute(
+  // The line score is a table that says what it is, each team a row header; no score yet.
+  const lineScore = toronto.getByRole("table", { name: "Predators at Maple Leafs: line score" });
+  await expect(lineScore.getByRole("columnheader")).toHaveText(["Team", "Rec"]);
+  await expect(lineScore.getByRole("rowheader")).toHaveText(["Nashville", "Toronto"]);
+  await expect(toronto.locator('[data-slot="story-pick"]')).toHaveText("Our pick: Toronto, 58%.");
+  await expect(toronto.locator('[data-slot="pick-outcome"]')).toHaveCount(0);
+  await expect(toronto.locator('[data-slot="on-tv"]')).toHaveText("On TV ESPN+, Scripps Sports");
+  const games = page.locator('[data-slot="story"] h3 a, [data-slot="brief"] > a');
+  const order = () => games.evaluateAll((links) => links.map((link) => link.getAttribute("href")));
+  const initialOrder = await order();
+  expect(initialOrder).toHaveLength(9);
+
+  // The lower band. Standings: each conference's top eight, each team a link, and a way to the rest.
+  const standings = page.getByRole("region", { name: "Standings" });
+  for (const conference of ["Eastern Conference", "Western Conference"]) {
+    const table = standings.getByRole("table", { name: conference });
+    await expect(table.getByRole("row")).toHaveCount(9);
+    await expect(table.getByRole("columnheader")).toHaveText(["Team", "GP", "W", "L", "OT", "PTS"]);
+    await expect(table.getByRole("row").nth(1).getByRole("link")).toHaveAttribute(
+      "href",
+      /^\/nhl\/teams\/\d+$/,
+    );
+  }
+  await expect(standings.getByRole("link", { name: "Full standings" })).toHaveAttribute(
     "href",
-    "/nhl/live",
+    "/nhl?view=conference",
   );
-
-  await expect(page.getByRole("region", { name: "Family" })).toHaveCount(0);
-
-  // Favorites: the favorite player with his season, not playing yet.
+  // The Picks: the season's record, and nothing of tonight before a game is final.
+  const picks = page.getByRole("region", { name: "The Picks" });
+  await expect(picks.locator('[data-slot="picks-record"]')).toHaveText("3–2");
+  await expect(picks).toContainText("Right on 60% of games this season.");
+  await expect(picks).not.toContainText("tonight");
+  await expect(page.getByRole("region", { name: "Tonight at a glance" })).toHaveText(
+    "Tonight at a glanceLive0To come9Final0",
+  );
+  // Favorites: the favorite player with his club and his season, not playing yet.
   const favorites = page.getByRole("region", { name: "Favorites" });
-  const matthews = favorites.getByRole("row").filter({ hasText: "Auston Matthews" });
+  const matthews = favorites.getByRole("listitem").filter({ hasText: "Auston Matthews" });
   await expect(matthews).toContainText(/\d+ GP · \d+ G · \d+ A · \d+ PTS/);
   await expect(
     matthews.getByRole("link", { name: "Auston Matthews", exact: true }),
   ).toHaveAttribute("href", `/players/${MATTHEWS}`);
-  await expect(matthews.getByText("live")).toHaveCount(0);
-  // His team is drawn as its abbreviation and named in full.
   await expect(matthews.getByTitle("Toronto Maple Leafs")).toHaveText("TORToronto Maple Leafs");
-
-  // Standings: each conference's top eight, each team a link, and a way to the rest.
-  const east = page.getByRole("region", { name: "Eastern Conference" });
-  const west = page.getByRole("region", { name: "Western Conference" });
-  await expect(east.getByRole("row")).toHaveCount(9);
-  await expect(west.getByRole("row")).toHaveCount(9);
-  await expect(east.getByRole("row").nth(1).getByRole("link")).toHaveAttribute(
+  await expect(matthews.getByRole("link", { name: /live now/ })).toHaveCount(0);
+  await expect(favorites.getByRole("link", { name: "All players" })).toHaveAttribute(
     "href",
-    /^\/nhl\/teams\/\d+$/,
-  );
-  await expect(east.getByRole("link", { name: "full standings" })).toHaveAttribute(
-    "href",
-    "/nhl?view=conference",
+    "/players",
   );
 
-  // The Scoreboard says Toronto's game is on: the page follows without a refresh.
+  // The Scoreboard says Toronto's game is on: the story follows without a refresh, in its place.
   await expect.poll(() => slate, { message: "the socket delivered the slate" }).toBeDefined();
   if (!slate) throw new Error("no slate");
-  pushState({
-    ...slate,
-    games: slate.games
+  const playing = (change: (game: Game) => Game): Slate => ({
+    ...(slate as Slate),
+    games: (slate as Slate).games
       .toReversed()
-      .map((game) =>
-        game.id === GAME_ID ? { ...game, status: "live", period: 2, clock: "12:34" } : game,
-      ),
+      .map((game) => (game.id === GAME_ID ? change(game) : game)),
   });
-  await expect(tonight.getByRole("heading")).toHaveText("Tonight 9 games, 1 live");
-  await expect(toronto.getByRole("link")).toHaveText("NSH at TOR, live, 2nd 12:34");
+  pushState(playing((game) => ({ ...game, status: "live", period: 2, clock: "12:34" })));
   await expect(toronto).toHaveAttribute("data-live", "");
-  await expect(toronto.locator('[data-slot="game-pick"]')).toHaveText("TOR 58%");
-  expect(
-    await gameLinks.evaluateAll((links) => links.map((link) => link.getAttribute("href"))),
-  ).toEqual(initialOrder);
-  const live = matthews.getByRole("link", { name: "Auston Matthews's game, live now" });
-  await expect(live).toHaveAttribute("href", `/nhl/games/${GAME_ID}`);
+  await expect(toronto.locator('[data-slot="kicker"]')).toHaveText(
+    "Live · 2nd 12:34 · Scotiabank Arena",
+  );
+  // The dot is for the eye: "Live" is in the words.
+  await expect(toronto.locator('[data-slot="live-dot"]')).toHaveAttribute("aria-hidden", "true");
+  await expect(toronto.getByRole("heading")).toHaveText("Predators 0, Maple Leafs 0");
+  await expect(toronto.getByRole("columnheader")).toHaveText(["Team", "Rec", "Now"]);
+  await expect(toronto.locator('[data-slot="pick-outcome"]')).toHaveCount(0);
+  expect(await order()).toEqual(initialOrder);
+  await expect(page.getByRole("region", { name: "Tonight at a glance" })).toHaveText(
+    "Tonight at a glanceLive1To come8Final0",
+  );
+  await expect(
+    matthews.getByRole("link", { name: "Auston Matthews's game, live now" }),
+  ).toHaveAttribute("href", `/nhl/games/${GAME_ID}`);
 
-  // A favorite change from another tab updates the marker, never the home row order.
-  await page.evaluate(() => {
-    localStorage.setItem("favorite_teams", "[]");
-    window.dispatchEvent(
-      new StorageEvent("storage", {
-        key: "favorite_teams",
-        newValue: "[]",
-        storageArea: localStorage,
-      }),
-    );
-  });
-  await expect(toronto).not.toContainText("favorite team");
-  expect(
-    await gameLinks.evaluateAll((links) => links.map((link) => link.getAttribute("href"))),
-  ).toEqual(initialOrder);
+  // The game ends, Toronto winning: its status changed, so it gives its place among the leads to
+  // a game still to come and is a brief, its pick marked; The Picks counts it.
+  pushState(
+    playing((game) => ({
+      ...game,
+      status: "final",
+      period: 3,
+      home: { ...game.home, score: 3, winner: true },
+      away: { ...game.away, score: 1 },
+    })),
+  );
+  const brief = briefs.getByRole("listitem").filter({ has: page.locator(gameLink) });
+  await expect(brief.getByRole("link")).toHaveText("Toronto 3, Nashville 1");
+  await expect(brief.locator('[data-slot="brief-status"]')).toHaveText("Final");
+  await expect(brief.locator('[data-slot="brief-pick"]')).toHaveText("TOR 58% Right");
+  await expect(brief.locator('[data-slot="pick-outcome"]')).toHaveText("Right");
+  await expect(roundup.getByRole("article")).toHaveCount(3);
+  await expect(roundup.locator(gameLink)).toHaveCount(0);
+  await expect(picks).toContainText("Right on 60% of games this season. One of one tonight.");
+
+  // On a phone the standings show one conference at a time, by the control above them.
+  await page.setViewportSize({ width: 390, height: 844 });
+  const control = standings.getByRole("group", { name: "Conference" });
+  await expect(control.getByRole("button", { name: "Eastern" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  await expect(standings.getByRole("table")).toHaveCount(1);
+  const eastern = await standings.getByRole("table").getByRole("row").nth(1).textContent();
+  await control.getByRole("button", { name: "Western" }).click();
+  await expect(control.getByRole("button", { name: "Western" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  await expect(control.getByRole("button", { name: "Eastern" })).toHaveAttribute(
+    "aria-pressed",
+    "false",
+  );
+  await expect(standings.getByRole("table")).toHaveCount(1);
+  await expect(standings.getByRole("table").getByRole("row").nth(1)).not.toHaveText(eastern ?? "");
+  // The phone's dateline says the counts, so the glance is not drawn; nothing scrolls sideways.
+  await expect(page.getByRole("region", { name: "Tonight at a glance" })).toHaveCount(0);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
 });

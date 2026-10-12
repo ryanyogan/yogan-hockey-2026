@@ -658,3 +658,11 @@ describe("the dateline", () => {
     expect(dateline({ date: null, games: [] }, null)).toEqual({ wide: [], narrow: "" });
   });
 });
+
+describe("a time the server writes", () => {
+  test("is marked with its zone, and nothing else is", () => {
+    expect(kicker(SEA, EASTERN, " ET")).toBe("8:40 PM ET · Climate Pledge Arena");
+    expect(statusText(SEA, EASTERN, " ET")).toBe("8:40 PM ET");
+    expect(kicker(WSH, EASTERN, " ET")).toBe("Final · Capital One Arena");
+  });
+});

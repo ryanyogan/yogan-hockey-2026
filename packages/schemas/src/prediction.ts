@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { StoredPrediction } from "./stored-prediction.ts";
+import type { SlatePick } from "./stored-prediction.ts";
 
 /** The lowest and highest chance a pick may claim. Under even is not a pick; 100 is not honest. */
 const MIN_WIN_PROBABILITY = 50;
@@ -94,7 +94,7 @@ type FinalScore = {
  * score would be marked too.
  */
 export function pickOutcome(
-  prediction: StoredPrediction | null,
+  prediction: SlatePick | null,
   final: FinalScore | null,
 ): "right" | "wrong" | null {
   if (prediction?.status !== "made" || !final || final.home.score === final.away.score) return null;

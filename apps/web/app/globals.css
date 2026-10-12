@@ -38,6 +38,13 @@
   transform: none;
 }
 
+/* The dot beside "Live" in a story's kicker (`components/dashboard/roundup.tsx`). */
+@keyframes live-dot {
+  50% {
+    opacity: 0.35;
+  }
+}
+
 /* A player arriving in the penalty box (`components/game/penalty-box.tsx`). */
 @keyframes boxed-in {
   from {

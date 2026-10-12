@@ -15,14 +15,6 @@ export function tonightGames(games: readonly ScoreboardGame[]): ScoreboardGame[]
   );
 }
 
-/** "6 games, 2 live", the count beside "Tonight". Null on a day with no games. */
-export function tonightSummary(games: readonly ScoreboardGame[]): string | null {
-  if (games.length === 0) return null;
-  const live = games.filter((game) => game.status === "live").length;
-  const count = `${games.length} game${games.length === 1 ? "" : "s"}`;
-  return live > 0 ? `${count}, ${live} live` : count;
-}
-
 /** How many favorite players the dashboard lists. */
 export const DASHBOARD_FAVORITES = 4;
 

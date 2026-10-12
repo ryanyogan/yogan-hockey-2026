@@ -2,10 +2,10 @@ import type { StoredPrediction } from "@yogan-hockey/schemas";
 import { expect, test } from "vitest";
 import {
   finalResult,
+  madePicks,
   PICK_PENDING,
   pickLine,
   pickNote,
-  recordLine,
   seasonNow,
   seasonOfSlate,
   slatePicks,
@@ -103,16 +103,6 @@ test("a pending pick drawn before the game started is dropped once it has", () =
   expect(pickNote(undefined, "scheduled")).toBeUndefined();
 });
 
-test("the record line counts the picks that were right and wrong", () => {
-  expect(recordLine({ right: 34, wrong: 21 })).toBe("picks: 34 right, 21 wrong");
-  expect(recordLine({ right: 1, wrong: 0 })).toBe("picks: 1 right, 0 wrong");
-});
-
-test("there is no record line before any pick has been decided", () => {
-  expect(recordLine({ right: 0, wrong: 0 })).toBeNull();
-  expect(recordLine(null)).toBeNull();
-});
-
 test("a slate's season is ESPN's season year: the year the season ends in", () => {
   expect(seasonOfSlate("2026-10-06")).toBe(2027);
   expect(seasonOfSlate("2026-09-20")).toBe(2027);
@@ -148,4 +138,14 @@ test("a game whose start has passed without a row is not pending, whatever its s
   const late = new Date("2026-10-06T23:05:00Z");
   expect(pickLine(null, NSH_AT_TOR, late)).toBeNull();
   expect(pickLine(made("21", 58), NSH_AT_TOR, late)).toBe("TOR 58%");
+});
+
+test("a slate's picks for the browser are the made ones, and only what saying and marking them takes", () => {
+  const predictions = new Map([
+    ["401892449", made("21", 58)],
+    ["401892450", failed("401892450")],
+  ]);
+  expect(madePicks(predictions)).toEqual({
+    "401892449": { status: "made", pickTeamId: "21", winProbability: 58 },
+  });
 });

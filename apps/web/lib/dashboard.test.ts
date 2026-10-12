@@ -1,7 +1,7 @@
 import { getStandings } from "@yogan-hockey/espn";
 import type { ScoreboardGame } from "@yogan-hockey/schemas";
 import { beforeAll, expect, test, vi } from "vitest";
-import { gamePlayingNow, tonightGames, tonightSummary, topOfConferences } from "./dashboard";
+import { gamePlayingNow, tonightGames, topOfConferences } from "./dashboard";
 
 beforeAll(() => {
   vi.stubEnv("ESPN_FIXTURES", "1");
@@ -90,13 +90,6 @@ test("sorting leaves the shared scoreboard array and its games untouched", () =>
   expect(source).toEqual(original);
   expect(sorted).not.toBe(source);
   expect(sorted.every((each) => source.includes(each))).toBe(true);
-});
-
-test("the header counts the games and those in progress", () => {
-  expect(tonightSummary(SLATE)).toBe("5 games, 1 live");
-  expect(tonightSummary(SLATE.slice(0, 3))).toBe("3 games");
-  expect(tonightSummary(SLATE.slice(0, 1))).toBe("1 game");
-  expect(tonightSummary([])).toBeNull();
 });
 
 test("a player is playing now when his team is in a game in progress", () => {

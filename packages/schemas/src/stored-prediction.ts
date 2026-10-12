@@ -39,6 +39,17 @@ export const StoredPredictionSchema = z.discriminatedUnion("status", [
 ]);
 export type StoredPrediction = z.infer<typeof StoredPredictionSchema>;
 
+/**
+ * As much of a Prediction as saying a pick and marking it takes: who was picked and at what
+ * chance. It is what a page sends the browser for each game of a slate, where a whole row (its
+ * reasoning, its inputs) would be a lot. A `StoredPrediction` is one.
+ */
+export type SlatePick =
+  | Pick<MadePrediction, "status" | "pickTeamId" | "winProbability">
+  | Pick<FailedPrediction, "status">;
+/** A pick that was made, as a slate carries it. */
+export type MadeSlatePick = Extract<SlatePick, { status: "made" }>;
+
 /** How the site's picks have done over a season. */
 export const SeasonRecordSchema = z.object({
   right: z.number().int().nonnegative(),

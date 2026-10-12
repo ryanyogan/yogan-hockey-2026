@@ -134,9 +134,13 @@ const HATCH =
 const measure = () => {
   const text = (node) => {
     // The words or the control itself, not the padded box around it.
+    // A button is its picture: its word is there for a screen reader only, off to one side.
+    const picture = node.querySelector("svg");
+    const drawn = picture?.getClientRects().length ? picture : node;
     const range = document.createRange();
-    range.selectNodeContents(node);
-    const { top, bottom, left, right } = range.getBoundingClientRect();
+    range.selectNodeContents(drawn);
+    const { top, bottom, left, right } =
+      drawn === node ? range.getBoundingClientRect() : drawn.getBoundingClientRect();
     return Object.fromEntries(
       Object.entries({ top, bottom, left, right }).map(([k, v]) => [k, Math.round(v * 10) / 10]),
     );

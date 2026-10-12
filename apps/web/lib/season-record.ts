@@ -1,17 +1,15 @@
 import { env } from "cloudflare:workers";
 import { createDb, getSeasonRecord } from "@yogan-hockey/db";
 import type { ScoreboardReading, SeasonRecord } from "@yogan-hockey/schemas";
-import { cache } from "react";
 import { seasonNow } from "./picks";
 
 /**
- * A season's record of the picks, read from D1: the root route wants it for the dateline and Home
- * for The Picks box, and both ask for the same season. Under vinext `cache` made that one read a
- * request; with no server components it does nothing, and Home's first load reads it twice.
+ * A season's record of the picks, read from D1. The root route wants it for the dateline and Home
+ * for The Picks box: each is a server function of its own and reads it for itself, so Home's
+ * first load reads it twice.
  */
-export const seasonRecord = cache(
-  (season: number): Promise<SeasonRecord | null> => getSeasonRecord(createDb(env.DB), season),
-);
+export const seasonRecord = (season: number): Promise<SeasonRecord | null> =>
+  getSeasonRecord(createDb(env.DB), season);
 
 /**
  * The season's record of the picks, for the masthead's dateline on every page. It waits for the

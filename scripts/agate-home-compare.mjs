@@ -22,6 +22,12 @@
 //   of equal cells where the prototype's is a grid: a gap is read only of a box holding more than
 //   one thing, and grid columns only where both are grids. The boxes are compared either way;
 // - a part's third entry names what is not compared, with the reason beside it.
+//
+// Run it on Linux. Google answers a Linux Chrome with hinted font files, in which a semibold at
+// 13px is as wide as the regular, and every other browser with unhinted ones; the site's own
+// files are Fontsource's, which are the hinted ones (19.8 KB a weight against 14.8). So on Linux
+// the prototype is given the files the site serves, and anywhere else its words in the condensed
+// bold measure 4 to 8px wider than the site's.
 
 import { mkdirSync } from "node:fs";
 import { chromium } from "@playwright/test";
@@ -203,17 +209,6 @@ function idle(name, measured, other) {
   if (name === "rowGap" || name === "columnGap") return measured.holds <= 1 && other.holds <= 1;
   return false;
 }
-
-/*
- * The fonts are the same files on both pages only by luck of the machine. Google answers a Linux
- * Chrome with hinted font files, in which a semibold at 13px is as wide as the regular, and
- * everything else with unhinted ones. The site's own files are Fontsource's since the move to
- * TanStack Start (#187), which are the hinted ones (19.8 KB a weight against 14.8), so on Linux
- * the prototype is given what the site serves with nothing done here. Under vinext the site's
- * were the unhinted ones and this script asked Google for the prototype's as a Mac; on a machine
- * that is not Linux the prototype gets unhinted files and words in the condensed bold measure 4
- * to 8px wider than the site's.
- */
 
 const browser = await chromium.launch();
 let differences = 0;

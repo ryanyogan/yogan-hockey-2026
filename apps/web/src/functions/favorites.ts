@@ -13,5 +13,5 @@ import { readFavoriteIds } from "../../lib/favorites";
  * not throw for either.
  */
 export const resolveFavoritePlayers = createServerFn({ method: "GET" })
-  .validator((ids: readonly string[]) => readFavoriteIds(ids))
+  .validator((ids: unknown) => readFavoriteIds(ids))
   .handler(({ data: ids }) => loadFavoritePlayers(ids));

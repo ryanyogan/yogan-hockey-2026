@@ -30,7 +30,8 @@ test("/nhl/live lists the slate in sections, links each game, and follows the so
     pushState = (state) => socket.send(JSON.stringify({ type: "cf_agent_state", state }));
     sayHeardAt = (at) => socket.send(JSON.stringify({ type: "scoreboard_heard", at }));
   });
-  // Every time the page asks the server to read for it again: a loader's server function.
+  // Every call of a server function. This page makes none of its own once it is drawn (it lists
+  // no favorite players), so each one is a loader reading again.
   let rereads = 0;
   page.on("request", (request) => {
     if (new URL(request.url()).pathname.startsWith("/_serverFn/")) rereads += 1;
@@ -159,6 +160,9 @@ test("/nhl/live lists the slate in sections, links each game, and follows the so
   // root route's and this page's.
   pushState({ ...over, invalidatedAt: "2031-01-16T01:02:33.000Z" });
   await expect.poll(() => rereads).toBe(2);
+  // And no more than those two.
+  await page.waitForTimeout(500);
+  expect(rereads).toBe(2);
   // The root loader's read is older than the socket's news and does not replace it.
   await expect(final.getByRole("row")).toHaveCount(2);
   await expect(entry).toHaveText(/NSH 2.*TOR 1.*final/);

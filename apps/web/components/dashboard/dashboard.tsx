@@ -125,16 +125,17 @@ function Standings({ tables }: { tables: StandingsTable[] | null }) {
  *
  * The route hands in what its loader read: `picks`, the made picks of today's games by game id,
  * `record`, the season's, and `standings`, each conference's top eight (`topOfConferences`), or
- * null when they could not be read. Everything else follows the Scoreboard.
+ * null when they could not be read. The games are the Scoreboard's and the favorites the
+ * browser's.
  */
 export function Dashboard({
   picks = {},
   record = null,
-  standings = null,
+  standings,
 }: {
   picks?: Picks;
   record?: SeasonRecord | null;
-  standings?: StandingsTable[] | null;
+  standings: StandingsTable[] | null;
 }) {
   return (
     // One child of the shell's `<main>`, which would space several by its own measure.

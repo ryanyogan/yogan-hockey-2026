@@ -128,7 +128,7 @@ for (const route of ROUTES) {
       const failed = [];
       if (measured.theme !== theme) failed.push(`theme is ${measured.theme}`);
       if (measured.overflow > 0) failed.push(`overflows by ${measured.overflow}px`);
-      if (!measured.fontLoaded || !measured.font.includes("Geist Mono"))
+      if (!measured.fontLoaded || !measured.font.includes("IBM Plex Sans Condensed"))
         failed.push("font not loaded");
       if (errors.length > 0 && !route.overlay) failed.push("browser errors");
       if (!route.overlay && response?.status() !== (route.status ?? 200))

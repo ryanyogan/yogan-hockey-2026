@@ -13,7 +13,13 @@ describe("cn", () => {
   });
 
   it("knows a weight token from a typeface", () => {
-    expect(cn("font-mono font-body", "font-strong")).toBe("font-mono font-strong");
+    expect(cn("font-agate font-body", "font-strong")).toBe("font-agate font-strong");
+    expect(cn("font-serif font-strong", "font-quiet")).toBe("font-serif font-quiet");
+  });
+
+  it("lets a later typeface replace an earlier one and leaves the weight", () => {
+    expect(cn("font-agate font-label", "font-serif")).toBe("font-label font-serif");
+    expect(cn("font-serif", "font-agate")).toBe("font-agate");
   });
 
   it("lets a caller's padding replace a row's", () => {

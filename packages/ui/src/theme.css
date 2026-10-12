@@ -1,19 +1,28 @@
 /*
- * The Tailwind theme shared by every app that renders these components: the "Tonight ledger".
- * An app's stylesheet imports "tailwindcss" and then this file, and sets --font-geist-mono
- * (Geist Mono) on <html>.
+ * The Tailwind theme shared by every app that renders these components: Agate, the site as the
+ * sports section of a newspaper (docs/design/agate.md, prototypes/agate).
+ * An app's stylesheet imports "tailwindcss" and then this file, and sets --font-newsreader
+ * (Newsreader, with its `opsz` axis) and --font-plex-condensed (IBM Plex Sans Condensed) on <html>.
  *
- * The values are the approved prototype's (docs/design/tuned-ledger.md): its colours, its type
- * scale with the larger phone sizes, its five weights and its one spacing scale.
+ * Two voices: `font-serif` for what is read (the masthead, a headline, a deck, a big number) and
+ * `font-agate`, the default, for what is looked up (a table, a label, the nav). Newsreader sets
+ * its optical size from the type's size by itself; a headline that wants another says so with
+ * `font-variation-settings: "opsz" 60`.
  *
- * Secondary text is three solid colours a theme, each passing WCAG AA on the page:
- *   `text-note` a note, an idle link or a second line; `text-label` a column header or a count;
- *   `text-aside` an aside (a team's record, a rank, the footer).
- * Rules are three: `border-border` under a row, `border-rule-head` under a column header,
- * `border-rule` framing the shell.
+ * One red, `--kicker` (`text-kicker`): a section label, a kicker, the current place and anything
+ * live. Nothing else is coloured.
  *
- * Spacing is one scale, 4, 8, 12, 16, 24, 32 and 48px: Tailwind's steps 1, 2, 3, 4, 6, 8 and 12.
- * A ledger row's own padding is `py-row` (6px; 11px on a phone, where a row is a thumb's height).
+ * Secondary text is solid colours, each passing WCAG AA on the page, the row under the pointer
+ * and a live row's tint:
+ *   `text-note` a serif deck or a line of prose; `text-label` a column header or a count;
+ *   `text-aside` an aside (a team's record, a rank, the footer). Label and aside are one grey.
+ * Rules are three colours: `border-border` between agate rows (dotted), `border-rule-head` the
+ * hairline under a column header, `border-rule` the ink of a heavy or plain rule.
+ *
+ * The sizes, the row's padding and the spacing scale below are still the tuned ledger's
+ * (docs/design/tuned-ledger.md) until the shell, Home and the primitives are redrawn (#170 to
+ * #172). Spacing is one scale, 4, 8, 12, 16, 24, 32 and 48px: Tailwind's steps 1, 2, 3, 4, 6, 8
+ * and 12. A ledger row's own padding is `py-row` (6px; 11px on a phone).
  */
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -23,57 +32,49 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/*
- * What stands in for Geist Mono until its file arrives: whichever of these the device has. Each
- * is a monospace face six tenths of an em wide, as Geist Mono is, so no line changes length when
- * the real face is swapped in; the overrides are Geist Mono's own ascent and descent, and every
- * line's height is set in pixels besides. An app names it after Geist Mono in its font stack.
- */
-@font-face {
-  font-family: "Geist Mono Fallback";
-  src:
-    local("Menlo"), local("Roboto Mono"), local("Liberation Mono"), local("DejaVu Sans Mono"),
-    local("Courier New");
-  ascent-override: 100.5%;
-  descent-override: 29.5%;
-  line-gap-override: 0%;
-}
-
 :root {
   color-scheme: light;
   --radius: 0;
-  --background: #fbfaf7;
-  --foreground: #171717;
-  --popover: #fbfaf7;
-  --popover-foreground: #171717;
-  --primary: #171717;
-  --primary-foreground: #ffffff;
-  --secondary: #f0eee8;
-  --secondary-foreground: #171717;
-  --muted: #f0eee8;
-  --muted-foreground: #6b6660;
-  --accent: #fef9c2;
-  --accent-foreground: #171717;
+  /* Newsprint, and the ink on it. */
+  --background: #fafaf8;
+  --foreground: #111111;
+  --popover: #fafaf8;
+  --popover-foreground: #111111;
+  /* Ink on paper; what is secondary, muted or accented is the row under the pointer. */
+  --primary: #111111;
+  --primary-foreground: #fafaf8;
+  --secondary: #f0efeb;
+  --secondary-foreground: #111111;
+  --muted: #f0efeb;
+  --muted-foreground: #5c5a55;
+  --accent: #f0efeb;
+  --accent-foreground: #111111;
   --destructive: #c81e1e;
-  /* Secondary text, from the least quiet to the most. */
-  --note: #44403c;
-  --label: #57534e;
-  --aside: #6b6660;
-  /* The rule under a ledger row. */
-  --border: #c9c5bc;
-  /* The rule under a column header. */
-  --rule-head: #8a857c;
-  /* The heavier rule that frames the shell: sidebar, top bar, score strip, tab strip. */
-  --rule: #8a857c;
-  --input: #8a857c;
-  --ring: #6b6660;
+  /* Secondary text: a serif deck or prose, then the one grey of a column header and an aside. */
+  --note: #2b2a27;
+  --label: #5c5a55;
+  --aside: #5c5a55;
+  /* The one red: a section label, a kicker, the current place, anything live. */
+  --kicker: #c8102e;
+  /* The dotted rule between agate rows. */
+  --border: #c9c6bf;
+  /* The hairline under a column header. */
+  --rule-head: #d5d3ce;
+  /* The ink of a heavy or a plain rule. */
+  --rule: #111111;
+  /* A control's edge and its focus ring have to be seen, which a hairline need not be. */
+  --input: #5c5a55;
+  --ring: #5c5a55;
   /* A game in progress: the marker's colour and the tint behind its row. */
-  --live: #c81e1e;
-  --live-tint: #fdeceb;
+  --live: var(--kicker);
+  --live-tint: #fbeeef;
   /* The row under the pointer. */
-  --highlight: #fdf5b0;
-  /* A figure above or below zero, such as a goal difference. */
-  --positive: #15803d;
+  --highlight: #f0efeb;
+  /*
+   * A figure above or below zero, such as a goal difference. The green is a step darker than the
+   * tuned ledger's #15803d, which is 4.4:1 on the row under the pointer and on a live row's tint.
+   */
+  --positive: #166534;
   --negative: #c81e1e;
 
   /* Type: a body size, a small size and a score. A phone gets the larger set below. */
@@ -101,36 +102,44 @@
 
 .dark {
   color-scheme: dark;
-  --background: #0f172a;
-  --foreground: #f1f5f9;
-  --popover: #0f172a;
-  --popover-foreground: #f1f5f9;
-  --primary: #f1f5f9;
-  --primary-foreground: #0f172a;
-  --secondary: #1e293b;
-  --secondary-foreground: #f1f5f9;
-  --muted: #1e293b;
-  --muted-foreground: #94a3b8;
-  --accent: #1e293b;
-  --accent-foreground: #f1f5f9;
+  --background: #121212;
+  --foreground: #eceae4;
+  --popover: #121212;
+  --popover-foreground: #eceae4;
+  --primary: #eceae4;
+  --primary-foreground: #121212;
+  --secondary: #1f1f1e;
+  --secondary-foreground: #eceae4;
+  --muted: #1f1f1e;
+  --muted-foreground: #a3a09a;
+  --accent: #1f1f1e;
+  --accent-foreground: #eceae4;
   --destructive: #f87171;
-  --note: #cbd5e1;
-  --label: #a9b6c8;
-  --aside: #94a3b8;
-  --border: #3b4a61;
-  --rule-head: #64748b;
-  --rule: #64748b;
-  --input: #64748b;
-  --ring: #94a3b8;
-  --live: #f87171;
-  --live-tint: #3a1d2c;
-  --highlight: #1e293b;
+  --note: #d6d3cc;
+  --label: #a3a09a;
+  --aside: #a3a09a;
+  --kicker: #ff5a5f;
+  --border: #4a4843;
+  --rule-head: #34332f;
+  --rule: #eceae4;
+  --input: #a3a09a;
+  --ring: #a3a09a;
+  /* Said again so that it is this theme's red wherever `.dark` is put, not only on <html>. */
+  --live: var(--kicker);
+  --live-tint: #2a1516;
+  --highlight: #1f1f1e;
   --positive: #4ade80;
   --negative: #f87171;
 }
 
 @theme inline {
-  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  /*
+   * `font-serif` and `font-agate`. The app's font loader puts the face and a fallback sized to
+   * it in each variable, so a line keeps its length when the face arrives. A page drawn without
+   * the loader (the global error page) names the face and falls through to the device's own.
+   */
+  --font-serif: var(--font-newsreader, "Newsreader"), Georgia, "Times New Roman", serif;
+  --font-agate: var(--font-plex-condensed, "IBM Plex Sans Condensed"), "Arial Narrow", sans-serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-popover: var(--popover);
@@ -147,6 +156,7 @@
   --color-note: var(--note);
   --color-label: var(--label);
   --color-aside: var(--aside);
+  --color-kicker: var(--kicker);
   --color-border: var(--border);
   --color-rule-head: var(--rule-head);
   --color-rule: var(--rule);
@@ -169,11 +179,11 @@
   /*
    * The five weights, by what the text is: `font-quiet` an aside or a count, `font-body` (the
    * default), `font-label` a column header or the current place, `font-strong` a title or a
-   * winner, `font-score` a score. Geist Mono at the Medium treatment.
+   * winner, `font-score` a score. Agate's body is the regular weight and its labels the semibold.
    */
   --font-weight-quiet: 400;
-  --font-weight-body: 500;
-  --font-weight-label: 500;
+  --font-weight-body: 400;
+  --font-weight-label: 600;
   --font-weight-strong: 700;
   --font-weight-score: 700;
   /* `py-row`: a ledger row's padding above and below. */
@@ -191,7 +201,7 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background font-body font-mono text-body text-foreground tabular-nums antialiased;
+    @apply bg-background font-agate font-body text-body text-foreground tabular-nums antialiased;
   }
 }
 

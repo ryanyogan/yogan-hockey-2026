@@ -14,6 +14,11 @@
 // that varies with when the page hydrates, so the font is judged at the swap alone: it exits 1
 // when anything moved or shifted there, when there was no row to measure, or when the font
 // comes from another origin or is not preloaded.
+//
+// That bar was Geist Mono's, whose fallback was letter for letter as wide. Since #168 the faces
+// are Newsreader and IBM Plex Sans Condensed over resized system fonts, a held-back load does move
+// (docs/agents/build-notes.md, "Agate 1"), and so this exits 1: read its numbers, not its status,
+// until a later Agate ticket sets a new bar.
 import { writeFile } from "node:fs/promises";
 import { chromium } from "@playwright/test";
 
@@ -80,7 +85,9 @@ for (const path of PATHS) {
       if (held) {
         await page.waitForTimeout(HOLD_MS / 2);
         before = await page.evaluate(geometry);
-        before.loaded = await page.evaluate(() => document.fonts.check('13px "Geist Mono"'));
+        before.loaded = await page.evaluate(() =>
+          document.fonts.check('13px "IBM Plex Sans Condensed"'),
+        );
       }
       await page.waitForLoadState("networkidle");
       await page.evaluate(() => document.fonts.ready);

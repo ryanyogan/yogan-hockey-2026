@@ -1,7 +1,6 @@
 "use client";
 
 import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
-import type { CSSProperties } from "react";
 import "./globals.css";
 
 /**
@@ -12,8 +11,8 @@ import "./globals.css";
  */
 export default function GlobalError() {
   return (
-    // The layout's font variable went with the layout; without one the theme's stack is void.
-    <html lang="en" style={{ "--font-geist-mono": "ui-monospace" } as CSSProperties}>
+    // The layout's font variables went with the layout: the theme's stacks fall back by themselves.
+    <html lang="en">
       <body>
         <title>Not answering · Yogan Hockey</title>
         <main data-slot="global-error" className="space-y-4 p-4 md:p-6">

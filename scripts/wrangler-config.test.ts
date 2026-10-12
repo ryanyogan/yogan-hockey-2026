@@ -59,7 +59,9 @@ test("a preview gets every binding production has, on stores that are not produc
   expect(names(previews.kv_namespaces)).toEqual(names(config.kv_namespaces));
   expect(names(previews.d1_databases)).toEqual(names(config.d1_databases));
   expect(previews.ai).toEqual(config.ai);
-  expect(agents(previews.durable_objects.bindings)).toEqual(agents(config.durable_objects.bindings));
+  expect(agents(previews.durable_objects.bindings)).toEqual(
+    agents(config.durable_objects.bindings),
+  );
 
   const production = [
     ...config.kv_namespaces.map((each) => each.id),

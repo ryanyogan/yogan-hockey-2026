@@ -5,9 +5,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { parse } from "jsonc-parser";
 
-const config = parse(
-  readFileSync(new URL("../apps/web/wrangler.jsonc", import.meta.url), "utf8"),
-);
+const config = parse(readFileSync(new URL("../apps/web/wrangler.jsonc", import.meta.url), "utf8"));
 const database = config.previews.d1_databases.find((each) => each.binding === "DB");
 if (!database?.database_id) throw new Error("wrangler.jsonc has no preview database bound as DB");
 

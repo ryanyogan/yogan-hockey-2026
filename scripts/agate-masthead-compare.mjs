@@ -29,14 +29,41 @@ const THEMES = ["light", "dark"];
 /** Each part, as the prototype names it and as the site does. `at` is the widths that draw it. */
 const PARTS = [
   { part: "page", proto: ".page", site: '[data-slot="page"]', box: ["x", "width"] },
-  { part: "utility bar", proto: ".topbar", site: '[data-slot="masthead"] > div', at: [1440] },
   {
-    part: "short date",
-    proto: ".topbar__date",
-    site: '[data-slot="masthead"] > div > span',
+    part: "wordmark",
+    proto: ".wordmark",
+    site: '[data-slot="wordmark"]',
+    type: true,
+    box: ["x", "y", "width", "height"],
+  },
+  {
+    part: "date under the wordmark",
+    proto: ".masthead__date",
+    site: '[data-slot="masthead-date"]',
     at: [390],
     type: true,
-    rules: false,
+    box: ["y", "height"],
+  },
+  {
+    part: "sections' row",
+    proto: ".section-row",
+    site: '[data-slot="section-nav"]',
+    position: true,
+    box: ["x", "y", "width", "height"],
+  },
+  {
+    part: "sections' rules",
+    proto: ".section-row__inner",
+    site: '[data-slot="section-nav"] > div',
+    box: ["x", "y", "width", "height"],
+  },
+  {
+    part: "sections",
+    proto: ".sections",
+    site: 'nav[aria-label="Site"]',
+    // Its width follows its words, and the site's own font files set them a little wider.
+    box: ["centre"],
+    at: [1440],
   },
   {
     part: "section",
@@ -56,8 +83,10 @@ const PARTS = [
     part: "theme group",
     proto: ".theme",
     site: '[role="group"][aria-label="Theme"]',
-    box: ["right"],
+    box: ["right", "y"],
     rules: false,
+    // Written twice and drawn once, at any width.
+    one: true,
   },
   {
     part: "theme button",
@@ -68,17 +97,10 @@ const PARTS = [
     words: ["Day", "Night"],
   },
   {
-    part: "wordmark",
-    proto: ".wordmark",
-    site: '[data-slot="wordmark"]',
-    type: true,
-    box: ["x", "y", "width", "height"],
-  },
-  {
     part: "dateline",
     proto: ".dateline",
     site: '[data-slot="dateline"]',
-    box: ["x", "width", "height"],
+    box: ["x", "y", "width", "height"],
   },
   {
     part: "dateline line",
@@ -101,6 +123,7 @@ const TYPE = [
   "color",
   "fontVariationSettings",
 ];
+const POSITION = ["position", "top"];
 const RULES = [
   "borderTopWidth",
   "borderTopColor",
@@ -125,6 +148,7 @@ function measure({ selector, type, words }) {
   const read = (names) => Object.fromEntries(names.map((name) => [name, style[name]]));
   return {
     count: drawn.length,
+    ...read(["position", "top"]),
     ...read([
       "borderTopWidth",
       "borderTopColor",
@@ -152,6 +176,7 @@ function measure({ selector, type, words }) {
     width: rect.width,
     height: rect.height,
     right: rect.right,
+    centre: rect.x + rect.width / 2,
   };
 }
 
@@ -197,6 +222,8 @@ for (const width of WIDTHS) {
           path: `${outDir}/${name}-${width}-${theme}-foot.png`,
           clip: { x: 0, y: 900 - 140, width, height: 140 },
         });
+        // The sections' row is measured where it is drawn, not where it sticks.
+        await page.evaluate(() => scrollTo(0, 0));
       }
       const measured = {};
       for (const part of PARTS) {
@@ -228,13 +255,18 @@ for (const width of WIDTHS) {
         );
         continue;
       }
-      // The phone's hairline under the utility bar is the bar's on the site, and in the prototype
-      // its two cells': it is one line either way, so those cells' rules are not compared.
       const names = [
         ...(part.rules === false ? [] : RULES),
         ...(part.type ? TYPE : []),
+        ...(part.position ? POSITION : []),
         ...(part.box ?? []),
       ];
+      if (part.one && (proto.count !== 1 || here.count !== 1)) {
+        differences++;
+        console.log(
+          `${where}: ${part.part}: drawn ${proto.count} times in the prototype, ${here.count} on the site`,
+        );
+      }
       for (const name of names) {
         if (
           name.endsWith("Color") &&

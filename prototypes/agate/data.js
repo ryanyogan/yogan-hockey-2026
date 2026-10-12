@@ -52,7 +52,6 @@ export const TEAMS = {
 export const SLATES = {
   tonight: {
     date: "Sunday, October 11",
-    dateShort: "Sun, Oct 11",
     record: { right: 29, wrong: 14 },
     games: [
       {
@@ -86,7 +85,6 @@ export const SLATES = {
   },
   busy: {
     date: "Tuesday, October 6",
-    dateShort: "Tue, Oct 6",
     record: { right: 3, wrong: 2 },
     games: [
       {

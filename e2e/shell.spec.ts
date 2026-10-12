@@ -4,7 +4,7 @@ const DARK_BACKGROUND = "rgb(18, 18, 18)";
 const LIGHT_BACKGROUND = "rgb(250, 250, 248)";
 const SECTIONS = ["Home", "Scores", "Standings", "Teams", "Players"];
 
-test("the masthead renders, switches theme, and a phone gets its sections under the wordmark", async ({
+test("the masthead leads with the wordmark, has the sections under it at any width, and switches theme", async ({
   page,
 }) => {
   // The operating system asks for dark, and the visitor has not chosen yet.
@@ -17,16 +17,36 @@ test("the masthead renders, switches theme, and a phone gets its sections under 
   // The document a search engine is sent asks not to be indexed, in one tag (#215).
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex");
 
-  // Desktop: the masthead, with the wordmark leading home and the sections in order.
+  // Desktop: the wordmark is the first thing on the page and leads home.
   const masthead = page.getByRole("banner");
-  await expect(masthead.getByRole("link", { name: "Yogan Hockey" })).toHaveAttribute("href", "/");
-  // The sections are written for both layouts and drawn for one.
+  const wordmark = masthead.getByRole("link", { name: "Yogan Hockey" });
+  await expect(wordmark).toHaveAttribute("href", "/");
+  // The sections are written once, in a row of their own under the wordmark.
   const sections = page.getByRole("navigation", { name: "Site" });
-  await expect(sections).toHaveCount(1);
-  await expect(masthead.getByRole("navigation", { name: "Site" })).toBeVisible();
+  await expect(page.locator('nav[aria-label="Site"]')).toHaveCount(1);
+  await expect(sections).toBeVisible();
   await expect(sections.getByRole("link")).toHaveText(SECTIONS);
-  // Today's slate at a glance, from the page's one Scoreboard socket, on the dateline.
+  const sectionNav = page.locator('[data-slot="section-nav"]');
   const dateline = page.locator('[data-slot="dateline"]');
+  const inOrder = async () => {
+    const [name, row, line] = await Promise.all(
+      [wordmark, sectionNav, dateline].map((part) => part.boundingBox()),
+    );
+    // Nothing a visitor can press is above the wordmark.
+    const above = await page.evaluate(
+      (top) =>
+        [...document.querySelectorAll("a, button")].filter((node) => {
+          const box = node.getBoundingClientRect();
+          return box.height > 0 && box.bottom <= top && !node.matches(".skip-link");
+        }).length,
+      name?.y ?? 0,
+    );
+    expect(above).toBe(0);
+    expect(row?.y).toBeGreaterThanOrEqual((name?.y ?? 0) + (name?.height ?? 0));
+    expect(line?.y).toBeGreaterThanOrEqual((row?.y ?? 0) + (row?.height ?? 0));
+  };
+  await inOrder();
+  // Today's slate at a glance, from the page's one Scoreboard socket, on the dateline.
   await expect(dateline).toContainText("Tuesday, October 6");
   await expect(dateline).toContainText("Tonight: 9 games · 9 to come");
   await expect(page.getByRole("contentinfo")).toContainText("ESPN");
@@ -53,7 +73,10 @@ test("the masthead renders, switches theme, and a phone gets its sections under 
     "content",
     "#121212",
   );
-  const theme = masthead.getByRole("group", { name: "Theme" });
+  // The control is written for both layouts and drawn for one: here, at the end of the row.
+  const theme = page.getByRole("group", { name: "Theme" });
+  await expect(theme).toHaveCount(1);
+  await expect(sectionNav.getByRole("group", { name: "Theme" })).toBeVisible();
   // A press before the page has hydrated does nothing, so press until one lands.
   await expect(async () => {
     await theme.getByRole("button", { name: "Day" }).click();
@@ -90,16 +113,12 @@ test("the masthead renders, switches theme, and a phone gets its sections under 
     expect(icon.headers()["content-type"], src).toMatch(/^image\//);
   }
 
-  // Phone: the utility bar holds the short date and one theme button, and the sections come
-  // under the wordmark. There is no menu.
+  // Phone: the same order, with the date under the wordmark. There is no menu.
   const phone = { width: 390, height: 844 };
   await page.setViewportSize(phone);
-  await expect(masthead.getByRole("navigation", { name: "Site" })).toHaveCount(0);
   await expect(page.getByRole("button", { name: /menu/i })).toHaveCount(0);
-  await expect(masthead).toContainText("Tue, Oct 6");
-  // The utility bar's sections are not drawn, so the row is the one a visitor is offered.
-  await expect(sections).toHaveCount(1);
-  const sectionNav = page.locator('[data-slot="section-nav"]');
+  await expect(masthead).toContainText("Tuesday, October 6");
+  await inOrder();
   const places = sectionNav.getByRole("link");
   await expect(places).toHaveText(SECTIONS);
   // A page that is nowhere marks no place.
@@ -110,10 +129,13 @@ test("the masthead renders, switches theme, and a phone gets its sections under 
     expect(box?.width).toBeGreaterThanOrEqual(44);
   }
   // The dateline is one line, and nothing scrolls sideways.
-  await expect(dateline.locator("span:visible")).toHaveText(/^9 games( · Picks \d+–\d+)?$/);
+  await expect(dateline.locator("p span:visible")).toHaveText(/^9 games( · Picks \d+–\d+)?$/);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(phone.width);
 
-  // A phone has one theme button, which leads to the theme not shown: by day, to night.
+  // A phone has one theme button, at the end of the dateline, which leads to the theme not
+  // shown: by day, to night.
+  await expect(theme).toHaveCount(1);
+  await expect(dateline.getByRole("group", { name: "Theme" })).toBeVisible();
   await expect(theme.getByRole("button")).toHaveCount(1);
   await expect(async () => {
     // Whichever is drawn: a press that landed late has already swapped the button.
@@ -146,6 +168,10 @@ test("a section followed changes the page under the masthead and leaves it", asy
   const strip = page.locator('[data-slot="score-ticker"]');
   const sectionNav = page.locator('[data-slot="section-nav"]');
   const places = sectionNav.getByRole("link");
+  const stuck = async () => {
+    await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
+    await expect.poll(async () => (await sectionNav.boundingBox())?.y).toBe(0);
+  };
 
   await places.getByText("Home", { exact: true }).click();
   await expect(page.getByRole("region", { name: "NHL Roundup" })).toBeVisible();
@@ -153,8 +179,7 @@ test("a section followed changes the page under the masthead and leaves it", asy
   // Home's page is the scores: it has no strip.
   await expect(strip).toHaveCount(0);
   // Scrolled to the end, the sections are still at the top of the screen.
-  await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
-  await expect.poll(async () => (await sectionNav.boundingBox())?.y).toBe(0);
+  await stuck();
   // The masthead is the root route's: a section followed changes the page under it and leaves it.
   await masthead.evaluate((node) => node.setAttribute("data-persistence-check", "kept"));
   await sectionNav.evaluate((node) => node.setAttribute("data-persistence-check", "kept"));
@@ -164,4 +189,8 @@ test("a section followed changes the page under the masthead and leaves it", asy
   await expect(masthead).toHaveAttribute("data-persistence-check", "kept");
   await expect(sectionNav).toHaveAttribute("data-persistence-check", "kept");
   await expect(strip).toBeAttached();
+  // At a desk too the sections stay at the top of the screen.
+  // (A short window: the players' page with nothing searched for is not a tall one.)
+  await page.setViewportSize({ width: 1440, height: 320 });
+  await stuck();
 });

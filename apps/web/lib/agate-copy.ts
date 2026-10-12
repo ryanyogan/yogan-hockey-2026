@@ -323,14 +323,11 @@ export function picksNote(record: SeasonRecord | null, tonight: PickTally): stri
 }
 
 /**
- * A slate's date (`YYYY-MM-DD`) as the masthead writes it: "Sunday, October 11", or
- * "Sun, Oct 11" in the utility bar. Null before the first poll.
+ * A slate's date (`YYYY-MM-DD`) as the masthead writes it: "Sunday, October 11". Null before the
+ * first poll.
  */
-export function datelineDate(
-  date: string | null,
-  length: "long" | "short" = "long",
-): string | null {
-  return date == null ? null : slateDate(date, length);
+export function datelineDate(date: string | null): string | null {
+  return date == null ? null : slateDate(date);
 }
 
 /** The masthead's dateline, both ways it is written. */

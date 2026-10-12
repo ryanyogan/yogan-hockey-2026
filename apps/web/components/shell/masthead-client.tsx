@@ -1,18 +1,17 @@
 "use client";
 
 import type { SeasonRecord } from "@yogan-hockey/schemas";
-import { usePathname, useSearchParams } from "next/navigation";
 import { useTheme } from "next-themes";
-import { type ReactNode, Suspense, useRef } from "react";
+import { type ReactNode, useRef } from "react";
 import { dateline, datelineDate } from "../../lib/agate-copy";
 import {
   currentNavItem,
   NAV_ITEMS,
   type NavItem,
-  navItemByPathAlone,
   showsScoreStrip,
 } from "../../lib/nav";
 import { useHydrated } from "../../lib/use-hydrated";
+import { usePathname, useSearchParam } from "../../lib/use-page-address";
 import { Link } from "../link";
 import { useScoreboard } from "../scoreboard/scoreboard-provider";
 import { wordmark } from "./wordmark";
@@ -41,14 +40,6 @@ function Sections({ current }: { current: NavItem | undefined }) {
   ));
 }
 
-function SectionsByQuery() {
-  return <Sections current={currentNavItem(usePathname(), useSearchParams().get("tab"))} />;
-}
-
-function SectionsByPath() {
-  return <Sections current={navItemByPathAlone(usePathname())} />;
-}
-
 /**
  * The wordmark, a link home. On Home it is the page's `h1`: Home draws no title of its own, and
  * the paper's name is what that page is. Anywhere else the page's title is the `h1` and this is a
@@ -64,19 +55,11 @@ export function Wordmark() {
 }
 
 /**
- * The site's five sections as links, the current one marked. A client component only to know the
- * address.
- *
- * Reading the query string suspends while the server renders, until it knows whether the page is
- * static, and what suspends is sent after the page. So the links are drawn at once from the path,
- * which settles the section everywhere but on `/nhl`, and again when the query is known.
+ * The site's five sections as links, the current one marked. It knows the address: the path
+ * settles the section everywhere but on `/nhl`, where the `tab` in the query does.
  */
 export function SectionLinks() {
-  return (
-    <Suspense fallback={<SectionsByPath />}>
-      <SectionsByQuery />
-    </Suspense>
-  );
+  return <Sections current={currentNavItem(usePathname(), useSearchParam("tab"))} />;
 }
 
 /** The dateline's one line of type: three parts across a desk, one centred on a phone. */
@@ -104,7 +87,7 @@ export function DatelineFrame({ children }: { children?: ReactNode }) {
 /**
  * The dateline, current without a refresh: the date, where tonight's games stand, and the
  * season's record of the picks. The sentences are `dateline()`'s. It reads the page's one
- * Scoreboard socket through `useScoreboard()`, so it sits inside a `ScoreboardGate`.
+ * Scoreboard socket through `useScoreboard()`.
  */
 export function Dateline({ record }: { record: SeasonRecord | null }) {
   const { wide, narrow } = dateline(useScoreboard(), record);
@@ -122,7 +105,7 @@ export function Dateline({ record }: { record: SeasonRecord | null }) {
   );
 }
 
-/** The slate's date in short, "Sun, Oct 11": the phone's utility bar. Inside a `ScoreboardGate`. */
+/** The slate's date in short, "Sun, Oct 11": the phone's utility bar. */
 export function ShortDate() {
   return datelineDate(useScoreboard().date, "short");
 }

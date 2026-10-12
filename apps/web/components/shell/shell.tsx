@@ -16,7 +16,7 @@ export function Shell({
   record,
   children,
 }: {
-  record: Promise<SeasonRecord | null>;
+  record: SeasonRecord | null;
   children: ReactNode;
 }) {
   return (

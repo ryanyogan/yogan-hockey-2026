@@ -1,4 +1,5 @@
 import { type StandingsView, StandingsViewSchema } from "@yogan-hockey/schemas";
+import { z } from "zod";
 
 /** The two tabs of `/nhl`. The value is what the URL holds in `?tab=`. */
 export const NHL_TABS = ["standings", "teams"] as const;
@@ -10,14 +11,16 @@ export const STANDINGS_VIEWS = StandingsViewSchema.options;
 /** What `/nhl` shows: a tab, and the view of the standings (which the Teams tab ignores). */
 export type NhlPage = { tab: NhlTab; view: StandingsView };
 
+/** `NhlPage` as it arrives from outside: what the page's server function accepts. */
+export const NhlPageSchema = z.object({ tab: z.enum(NHL_TABS), view: StandingsViewSchema });
+
 const DEFAULT_PAGE: NhlPage = { tab: "standings", view: "division" };
 
-/** A page's `searchParams`: a parameter given twice arrives as a list. */
-export type Query = Record<string, string | string[] | undefined>;
+/** A page's query string, read: a parameter given twice arrives as a list. */
+export type Query = Record<string, unknown>;
 
 /** The first value of a parameter, which arrives as a list when the URL gives it twice. */
-export const first = (value: string | string[] | undefined) =>
-  Array.isArray(value) ? value[0] : value;
+export const first = (value: unknown): unknown => (Array.isArray(value) ? value[0] : value);
 
 /** Reads `/nhl`'s tab and view from its query string. Anything unknown falls back to the default. */
 export function readNhlPage(query: Query): NhlPage {

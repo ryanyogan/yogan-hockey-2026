@@ -1,62 +1,31 @@
-"use client";
-
 import type { ScoreboardReading, ScoreboardState } from "@yogan-hockey/schemas";
 import { useAgent } from "agents/react";
-import {
-  createContext,
-  type ReactNode,
-  Suspense,
-  use,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { createContext, type ReactNode, useContext, useMemo, useState } from "react";
 import { SCOREBOARD_CONNECTION } from "../../lib/scoreboard-connection";
 import { heardAtFrom, laterOf } from "../../lib/scoreboard-view";
-import { waitForScoreboard } from "../../lib/scoreboard-wait";
 import { useDropWatch } from "../../lib/use-drop-watch";
 import { useRefreshOnInvalidation } from "../../lib/use-refresh-on-invalidation";
 
-/** What the provider knows: the socket's reading once it has one, first paint's until then. */
-type ScoreboardSource =
-  | { reading: ScoreboardReading }
-  | {
-      reading: null;
-      initial: Promise<ScoreboardReading> | null;
-      /** `initial` once the browser has it, for a caller that does not wait (`useScoreboardSoFar`). */
-      rendered: ScoreboardReading | null;
-    };
-
-const ScoreboardContext = createContext<ScoreboardSource | null>(null);
+const ScoreboardContext = createContext<ScoreboardReading | null>(null);
 /** Whether the Scoreboard's socket has been down for longer than a blip. */
 const ScoreboardDroppedContext = createContext(false);
 
 /**
- * The page's one socket to the Scoreboard Agent. The root layout renders it around every page;
+ * The page's one socket to the Scoreboard Agent. The root route renders it around every page;
  * the Agent pushes each change. Anything that shows today's games reads them with
  * `useScoreboard()` and opens no socket of its own.
  *
- * `initial` is the layout's read of the Scoreboard for first paint, as a promise the layout does
- * not wait for: the shell is sent at once and the games stream in behind it. Whatever calls
- * `useScoreboard()` before the socket has spoken waits on that promise, so it belongs inside a
- * `<Suspense>` whose fallback is its own size (the ticker's is in `ScoreTickerSlot`).
- *
- * `initial` is null on a page served from the page cache (`lib/page-cache.ts`), whose HTML holds
- * nothing that changes by the minute: the games are the socket's alone, a `ScoreboardGate` holds
- * the place of whatever shows them until it has spoken, and the page counts as rendered with the
- * first `invalidatedAt` the socket reports (the cache's key answers for anything earlier). A
- * socket that stays silent is waited on for `SCOREBOARD_WAIT_MS` and no longer: the gates then
- * draw what the page knows without today's games, and the games arrive when the socket does.
+ * `initial` is the root loader's read of the Scoreboard, which is in the first HTML: every page
+ * is drawn with today's games from its first paint. Once the socket has spoken the games are the
+ * socket's alone.
  *
  * Two things arrive on the socket. The state, whenever a poll finds something different; and,
  * after a poll that finds nothing new, only the time ESPN was heard from, which is what keeps
  * `heardAt` moving on a quiet slate.
  *
- * When the Scoreboard has invalidated cached data (a game went final, or a catch-up recorded
- * games), what the server rendered is out of date: `invalidatedAt` moves past the one the page
- * was rendered with, and the page's server components are rendered again.
+ * When the Scoreboard has forgotten cached data (a game went final, or a catch-up recorded
+ * games), what the loaders read is out of date: `invalidatedAt` moves past the one the page was
+ * drawn with, and the router's loaders are run again.
  *
  * While the socket is down the scores on the page stand still; `useScoreboardDropped()` says so
  * once that has lasted longer than a reconnect usually takes, and the shell tells the visitor.
@@ -65,78 +34,45 @@ export function ScoreboardProvider({
   initial,
   children,
 }: {
-  initial: Promise<ScoreboardReading> | null;
+  initial: ScoreboardReading;
   children: ReactNode;
 }) {
   const [state, setState] = useState<ScoreboardState | null>(null);
-  // `invalidatedAt` as the socket first had it; undefined until it has spoken.
-  const [firstHeard, setFirstHeard] = useState<string | null | undefined>(undefined);
-  // What the server rendered this page with, once it has streamed in. A navigation or a refresh
-  // renders the layout again and brings a newer one.
-  const [rendered, setRendered] = useState<ScoreboardReading | null>(null);
   const [lastHeardAt, setLastHeardAt] = useState<string | null>(null);
   const drop = useDropWatch();
-  // On a cached page: whether the socket has kept the page waiting too long for its first word.
-  const [gaveUp, setGaveUp] = useState(false);
-  const wait = useRef<ReturnType<typeof waitForScoreboard> | null>(null);
-
-  useEffect(() => {
-    if (initial != null) return;
-    wait.current = waitForScoreboard(() => setGaveUp(true));
-    return wait.current.stop;
-  }, [initial]);
-
-  useEffect(() => {
-    if (initial == null) return;
-    let current = true;
-    initial.then((reading) => {
-      if (!current) return;
-      setRendered(reading);
-      setLastHeardAt((heardAt) => laterOf(heardAt, reading.heardAt));
-    });
-    return () => {
-      current = false;
-    };
-  }, [initial]);
 
   useAgent<ScoreboardState>({
     ...SCOREBOARD_CONNECTION,
     onOpen: drop.opened,
     onClose: drop.closed,
-    onStateUpdate: (next) => {
-      wait.current?.heard();
-      setState(next);
-      setFirstHeard((first) => (first === undefined ? (next.invalidatedAt ?? null) : first));
-    },
+    onStateUpdate: setState,
     onMessage: (message) => {
       const at = heardAtFrom(message.data);
       if (at != null) setLastHeardAt((heardAt) => laterOf(heardAt, at));
     },
   });
   useRefreshOnInvalidation(
-    initial == null ? firstHeard : rendered == null ? undefined : (rendered.invalidatedAt ?? null),
+    initial.invalidatedAt ?? null,
     state == null ? undefined : (state.invalidatedAt ?? null),
   );
 
-  const source = useMemo<ScoreboardSource>(
+  const reading = useMemo<ScoreboardReading>(
     () =>
       state == null
-        ? gaveUp && initial == null
-          ? { reading: NO_READING }
-          : { reading: null, initial, rendered }
+        ? { ...initial, heardAt: laterOf(initial.heardAt, lastHeardAt) }
         : // A state that arrives is itself news from ESPN, so the later of the two is the answer.
-          { reading: { ...state, heardAt: laterOf(state.updatedAt, lastHeardAt) } },
-    [state, lastHeardAt, initial, gaveUp, rendered],
+          { ...state, heardAt: laterOf(state.updatedAt, laterOf(initial.heardAt, lastHeardAt)) },
+    [state, lastHeardAt, initial],
   );
   return (
-    <ScoreboardContext value={source}>
+    <ScoreboardContext value={reading}>
       <ScoreboardDroppedContext value={drop.dropped}>{children}</ScoreboardDroppedContext>
     </ScoreboardContext>
   );
 }
 
-/** What a page shows of today's games before anything is known: none. */
-const NO_READING: ScoreboardReading = {
+/** What a page shows of today's games when the Scoreboard could not be read: none. */
+export const NO_READING: ScoreboardReading = {
   date: null,
   games: [],
   updatedAt: null,
@@ -145,24 +81,12 @@ const NO_READING: ScoreboardReading = {
 };
 
 /**
- * Holds the place of whatever calls `useScoreboard()` until there are games to give it:
- * `fallback`, which is the size of what replaces it, stands while the layout's first paint is
- * still streaming in and, on a page served from the page cache, until the socket has spoken or
- * has been waited on long enough (`lib/scoreboard-wait.ts`): the children are then drawn with no
- * games, which is what they know.
- * The server and the browser's first render agree (both draw `fallback` on a cached page), so
- * nothing is thrown away at hydration.
+ * Nothing any more: it held the place of whatever showed today's games until there were games to
+ * show, and they are now in the first HTML. It draws its children, and is kept for the pages
+ * still to be ported (#188 to #192), which drop it as they go.
  */
-export function ScoreboardGate({
-  fallback,
-  children,
-}: {
-  fallback: ReactNode;
-  children: ReactNode;
-}) {
-  const source = useContext(ScoreboardContext);
-  if (source != null && source.reading == null && source.initial == null) return fallback;
-  return <Suspense fallback={fallback}>{children}</Suspense>;
+export function ScoreboardGate({ children }: { fallback: ReactNode; children: ReactNode }) {
+  return children;
 }
 
 /**
@@ -184,39 +108,26 @@ export function StaticScoreboard({
   scoreboard: ScoreboardState;
   children: ReactNode;
 }) {
-  const source = useMemo(
-    () => ({ reading: { ...scoreboard, heardAt: scoreboard.updatedAt } }),
-    [scoreboard],
-  );
-  return <ScoreboardContext value={source}>{children}</ScoreboardContext>;
+  const reading = useMemo(() => ({ ...scoreboard, heardAt: scoreboard.updatedAt }), [scoreboard]);
+  return <ScoreboardContext value={reading}>{children}</ScoreboardContext>;
 }
 
 /**
  * Today's games, current without a refresh: `{ date, games, heardAt }`, with the rest of the
  * Scoreboard's state. `heardAt` is when the Scoreboard last heard from ESPN and is what an
- * "updated" stamp shows; `updatedAt` is when the games last changed. Call it in any client
- * component; `lib/scoreboard-view.ts` has the status line, the sections and the ticker's order.
+ * "updated" stamp shows; `updatedAt` is when the games last changed. Call it in any component;
+ * `lib/scoreboard-view.ts` has the status line, the sections and the ticker's order.
  *
- * Until the socket has spoken it answers with the layout's first paint, and suspends while that
- * is still on its way: render the caller inside a `ScoreboardGate` with a fallback of its own
- * size (a `<Suspense>` will do on a page that is never served from the page cache). Outside a
- * gate on a cached page it answers no games until the socket has spoken.
+ * Until the socket has spoken it answers with the root loader's read, so it never waits.
  */
 export function useScoreboard(): ScoreboardReading {
-  const source = useContext(ScoreboardContext);
-  if (source == null) throw new Error("useScoreboard needs the layout's ScoreboardProvider");
-  if (source.reading != null) return source.reading;
-  return source.initial == null ? NO_READING : use(source.initial);
+  const reading = useContext(ScoreboardContext);
+  if (reading == null) throw new Error("useScoreboard needs the root route's ScoreboardProvider");
+  return reading;
 }
 
 /**
- * Today's games as far as they are known, never waiting: none until the layout's first paint has
- * arrived in the browser or the socket has spoken, then as `useScoreboard()`. For a page that is
- * whole without them (a game's page, which has its own read of the game): it needs no gate and
- * holds nothing back, and what the server draws is the page without today's slate.
+ * `useScoreboard()`, which no longer waits for anything. Kept for the pages still to be ported
+ * (#188 to #192), which drop it as they go.
  */
-export function useScoreboardSoFar(): ScoreboardReading {
-  const source = useContext(ScoreboardContext);
-  if (source == null) throw new Error("useScoreboardSoFar needs the layout's ScoreboardProvider");
-  return source.reading ?? source.rendered ?? NO_READING;
-}
+export const useScoreboardSoFar = useScoreboard;

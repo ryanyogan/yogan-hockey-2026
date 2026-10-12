@@ -1,5 +1,3 @@
-import type { MetadataRoute } from "next";
-
 /**
  * What a phone needs to put the site on its home screen: the manifest, and the colour of the
  * browser's own bars. The icons and splash images are files in `public/icons/`, drawn by
@@ -35,7 +33,7 @@ export const ICON_SIZES = [192, 512] as const;
 export const APPLE_ICON = `${ICONS_PATH}apple-touch-icon-180x180.png`;
 export const FAVICON_PNG = `${ICONS_PATH}pwa-64x64.png`;
 
-export function webAppManifest(): MetadataRoute.Manifest {
+export function webAppManifest() {
   return {
     id: "/",
     name: APP_NAME,

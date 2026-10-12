@@ -3,11 +3,11 @@
 import type { GameHeader, Play } from "@yogan-hockey/schemas";
 import { Button } from "@yogan-hockey/ui/components/button";
 import { UrlTabs } from "@yogan-hockey/ui/components/url-tabs";
-import { usePathname } from "next/navigation";
 import { type ReactNode, useState } from "react";
 import type { GameClock } from "../../lib/game/penalties";
 import { focusedPlay, toggleSelection, visiblePlays } from "../../lib/game/plays";
 import { type GameTab, gameTabLinks, gameTabOfPath, shownGameTab } from "../../lib/game/tabs";
+import { usePathname } from "../../lib/use-page-address";
 import { Link } from "../link";
 import { GameRink } from "./game-rink";
 import { PeriodTimeline } from "./period-timeline";

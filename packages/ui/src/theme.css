@@ -21,7 +21,7 @@
  *
  * The sizes, the row's padding and the spacing scale below are still the tuned ledger's
  * (docs/design/tuned-ledger.md) until the shell, Home and the primitives are redrawn (#170 to
- * #173). Spacing is one scale, 4, 8, 12, 16, 24, 32 and 48px: Tailwind's steps 1, 2, 3, 4, 6, 8
+ * #172). Spacing is one scale, 4, 8, 12, 16, 24, 32 and 48px: Tailwind's steps 1, 2, 3, 4, 6, 8
  * and 12. A ledger row's own padding is `py-row` (6px; 11px on a phone).
  */
 @import "tw-animate-css";
@@ -124,6 +124,8 @@
   --rule: #eceae4;
   --input: #a3a09a;
   --ring: #a3a09a;
+  /* Said again so that it is this theme's red wherever `.dark` is put, not only on <html>. */
+  --live: var(--kicker);
   --live-tint: #2a1516;
   --highlight: #1f1f1e;
   --positive: #4ade80;

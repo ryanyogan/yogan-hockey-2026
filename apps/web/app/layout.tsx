@@ -15,10 +15,10 @@ import "./globals.css";
 
 // Agate's two voices (`docs/design/agate.md`), which `theme.css` reads as `font-serif` and
 // `font-agate`. vinext downloads the files at build time and serves them from this site, the
-// Latin ones preloaded in every page's head; until one arrives its text is drawn in the fallback
-// vinext sizes to the face (Times New Roman for the serif, Arial for the agate).
+// Latin ones (but the italic) preloaded in every page's head; until one arrives its text is drawn
+// in the fallback vinext sizes to the face (Times New Roman for the serif, Arial for the agate).
 
-// What is read: the masthead, a headline, a deck, a big number. A variable file a style, holding
+// What is read: the masthead, a headline, a deck, a big number. One variable file, holding
 // every weight (the theme uses 400 to 700) and the optical sizes 6 to 72, which `axes` asks for:
 // without it the file is cut at the 16px design and a headline is drawn in text letterforms.
 const serif = Newsreader({

@@ -1,84 +1,96 @@
 "use client";
 
+import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { focusRing } from "@yogan-hockey/ui/components/nav-item";
-import { useSearchParams } from "next/navigation";
-import { type FormEvent, useEffect, useId, useRef, useState, useTransition } from "react";
+import { type FormEvent, useEffect, useId, useRef, useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { FavoriteHeart } from "../../components/favorites/favorite-heart";
 import { PlayerLedger } from "../../components/players/player-ledger";
-import { MAX_SEARCH_LENGTH, MIN_SEARCH_LENGTH, searchHref } from "../../lib/player-search";
+import {
+  MAX_SEARCH_LENGTH,
+  MIN_SEARCH_LENGTH,
+  readPlayersPage,
+  unansweredSearch,
+} from "../../lib/player-search";
 import type { PlayerSearch as Search } from "../../lib/players";
-import { searchPlayers } from "./actions";
 
 /** How long the visitor must pause before what he has typed is searched for. */
 const TYPING_PAUSE_MS = 250;
 
 /**
- * The search box. The page renders the search named in the URL and hands it over as `initial`;
- * from then on each pause in typing asks the `searchPlayers` Server Action and writes the search
- * into the address bar, so the page can be reloaded, pasted or linked at any point.
+ * The search box. The search is the address's: `/players`' loader reads the one `?q=` names and
+ * the page hands its answer over as `initial`. Each pause in typing writes what is in the box
+ * into the address, which is what asks for it, so the page can be reloaded, pasted or linked at
+ * any point.
  *
  * Without JavaScript it is a plain form that loads `/players?q=...`.
  */
 export function PlayerSearch({ initial }: { initial: Search }) {
+  const navigate = useNavigate();
   const [text, setText] = useState(initial.query);
-  const [search, setSearch] = useState(initial);
-  const [searching, startSearch] = useTransition();
-  // Answers can arrive out of order; only the answer to the latest question is shown.
+  const [searching, setSearching] = useState(false);
+  // Only the latest question ends the wait.
   const asked = useRef(0);
   // What is in the box now, which may be more than was last asked.
   const typed = useRef(initial.query);
+  // The search this box last put in the address, which tells its own rewrites from a link's.
+  const sent = useRef(initial.query);
   const inputId = useId();
 
-  const ask = useDebouncedCallback(() => {
+  const ask = useDebouncedCallback(async () => {
     const ticket = ++asked.current;
-    const query = typed.current.trim();
-    // Before the call, not after: when the site has been deployed under an open tab, vinext
-    // drops the action's answer and reloads the URL the action was called from.
-    window.history.replaceState(null, "", searchHref(query));
-    if (query.length < MIN_SEARCH_LENGTH) {
-      setSearch({ status: "idle", query, players: [] });
-      return;
+    const q = readPlayersPage({ q: typed.current }).q;
+    sent.current = q;
+    setSearching(true);
+    try {
+      // In place: the same entry of the history, the page where it is and nothing animated.
+      await navigate({
+        to: "/players",
+        search: q === "" ? {} : { q },
+        replace: true,
+        resetScroll: false,
+        viewTransition: false,
+      });
+    } finally {
+      if (ticket === asked.current) setSearching(false);
     }
-    startSearch(async () => {
-      // No answer is a failed call: `undefined` from a tab older than the deploy (see above), or
-      // a throw when the request never arrived.
-      const answer = await searchPlayers(query).catch(() => undefined);
-      if (answer) {
-        if (ticket === asked.current) setSearch(answer);
-        return;
-      }
-      // The same search by URL needs no action, so a stale tab recovers by loading it: whatever
-      // is in the box by now, not what this call asked.
-      if (navigator.onLine) window.location.assign(searchHref(typed.current));
-      else if (ticket === asked.current) setSearch({ status: "unavailable", query, players: [] });
-    });
   }, TYPING_PAUSE_MS);
 
-  // Arriving by a link (the section nav, Back) starts the box from that URL. The box's own rewrites
-  // of the address match what is typed, and a refresh of the page (the shell asks for one when a
-  // game goes final) leaves the address alone, so neither disturbs the typing.
-  const urlQuery = (useSearchParams().get("q") ?? "").trim();
+  // Arriving by a link (the section nav, Back) starts the box from that address. The box's own
+  // rewrites are told apart by `sent`, and a refresh of the page (the shell asks for one when a
+  // game goes final) leaves the address alone, so neither disturbs the typing. The address is
+  // the one being gone to, which the router holds before its page is read: null when that is
+  // another page, whose address says nothing of this box while it is still on screen.
+  const addressed = useRouterState({
+    select: ({ location }) =>
+      location.pathname === "/players" ? readPlayersPage(location.search).q : null,
+  });
   useEffect(() => {
-    if (urlQuery === typed.current.trim()) return;
+    if (addressed === null || addressed === sent.current) return;
     ask.cancel();
     asked.current++;
-    typed.current = initial.query;
-    setText(initial.query);
-    setSearch(initial);
-  }, [urlQuery, initial, ask]);
+    setSearching(false);
+    sent.current = addressed;
+    typed.current = addressed;
+    setText(addressed);
+  }, [addressed, ask]);
+
+  // Clearing the box clears the results at once; only a search waits for its answer, with the
+  // answer before it left in place meanwhile.
+  const wanted = text.trim();
+  const search = wanted.length < MIN_SEARCH_LENGTH ? unansweredSearch(wanted) : initial;
 
   const onType = (value: string) => {
     typed.current = value;
     setText(value);
-    ask();
-    // Clearing the box clears the results at once; only a search waits for a pause.
-    if (value.trim().length < MIN_SEARCH_LENGTH) ask.flush();
+    void ask();
+    // A cleared box is put in the address at once; only a search waits for a pause.
+    if (value.trim().length < MIN_SEARCH_LENGTH) void ask.flush();
   };
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
-    ask.flush();
+    void ask.flush();
   };
 
   return (

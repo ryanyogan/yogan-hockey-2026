@@ -1,10 +1,5 @@
 import { expect, test } from "@playwright/test";
 
-test.skip(
-  true,
-  "The players' routes are not ported to TanStack Start yet: #190 restores this spec.",
-);
-
 // Fixture mode answers one search, "mar", and two players: Auston Matthews and a goalie.
 
 test("/players searches as the visitor types and keeps the search in the URL", async ({ page }) => {
@@ -72,11 +67,23 @@ test("/players/:id shows a player's season, games and career", async ({ page, re
     "true",
   );
   await header.evaluate((node) => node.setAttribute("data-retained", "yes"));
+  // Going between his tabs asks the server for nothing: his route read him once for both.
+  const asked: string[] = [];
+  page.on("request", (sent) => {
+    if (sent.resourceType() === "fetch" || sent.resourceType() === "document") {
+      asked.push(sent.url());
+    }
+  });
   await expect(async () => {
     await page.getByRole("link", { name: "show latest" }).click();
     await expect(page).toHaveURL(/\/players\/4024123#games$/);
   }).toPass();
   await expect(header).toHaveAttribute("data-retained", "yes");
+  await expect(page.getByRole("link", { name: "show all" })).toHaveCount(0);
+  await page.goBack();
+  await expect(page).toHaveURL(/\/players\/4024123\/games/);
+  await expect(page.getByRole("link", { name: "show latest" })).toBeVisible();
+  expect(asked).toEqual([]);
 
   await expect(page.getByRole("heading", { name: /^Season/ })).toContainText("2026-27");
   // The log's rows lead to their games.

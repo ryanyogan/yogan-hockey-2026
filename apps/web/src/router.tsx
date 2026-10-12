@@ -1,6 +1,7 @@
 import { createRouter } from "@tanstack/react-router";
 import { ErrorPage } from "../components/shell/error-page";
 import { NotFoundPage } from "../components/shell/not-found-page";
+import { parseSearchText, stringifySearchText } from "../lib/search-text";
 import { quietSkippedTransitions } from "../lib/skipped-transition";
 import { routeTree } from "./routeTree.gen";
 
@@ -20,6 +21,8 @@ export const FRESH_FOR = 5 * MINUTE;
  * - No route has a pending component, so the page left stays until the next is ready.
  * - A navigation is a view transition where the browser has them (`globals.css` stills it for a
  *   visitor who asked for less motion).
+ * - A query string is text, read and written as the address spells it (`lib/search-text.ts`).
+ *   The router's own way is JSON, under which `?q=99` is a number and is written back in quotes.
  */
 export function getRouter() {
   // In the browser: a navigation overtaken by the next is not an error of the page's.
@@ -34,6 +37,8 @@ export function getRouter() {
     defaultViewTransition: true,
     defaultErrorComponent: ErrorPage,
     defaultNotFoundComponent: NotFoundPage,
+    parseSearch: parseSearchText,
+    stringifySearch: stringifySearchText,
   });
 }
 

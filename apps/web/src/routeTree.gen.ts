@@ -13,7 +13,11 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ManifestDotwebmanifestRouteImport } from './routes/manifest[.]webmanifest'
 import { Route as NhlIndexRouteImport } from './routes/nhl/index'
 import { Route as NhlLiveRouteImport } from './routes/nhl/live'
+import { Route as PlayersIndexRouteImport } from './routes/players/index'
+import { Route as PlayersIdRouteRouteImport } from './routes/players/$id/route'
 import { Route as NhlTeamsIdRouteRouteImport } from './routes/nhl/teams/$id/route'
+import { Route as PlayersIdIndexRouteImport } from './routes/players/$id/index'
+import { Route as PlayersIdGamesRouteImport } from './routes/players/$id/games'
 import { Route as NhlTeamsIdIndexRouteImport } from './routes/nhl/teams/$id/index'
 import { Route as NhlTeamsIdRosterRouteImport } from './routes/nhl/teams/$id/roster'
 import { Route as NhlTeamsIdStatsRouteImport } from './routes/nhl/teams/$id/stats'
@@ -38,10 +42,30 @@ const NhlLiveRoute = NhlLiveRouteImport.update({
   path: '/nhl/live',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PlayersIndexRoute = PlayersIndexRouteImport.update({
+  id: '/players/',
+  path: '/players/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlayersIdRouteRoute = PlayersIdRouteRouteImport.update({
+  id: '/players/$id',
+  path: '/players/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NhlTeamsIdRouteRoute = NhlTeamsIdRouteRouteImport.update({
   id: '/nhl/teams/$id',
   path: '/nhl/teams/$id',
   getParentRoute: () => rootRouteImport,
+} as any)
+const PlayersIdIndexRoute = PlayersIdIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PlayersIdRouteRoute,
+} as any)
+const PlayersIdGamesRoute = PlayersIdGamesRouteImport.update({
+  id: '/games',
+  path: '/games',
+  getParentRoute: () => PlayersIdRouteRoute,
 } as any)
 const NhlTeamsIdIndexRoute = NhlTeamsIdIndexRouteImport.update({
   id: '/',
@@ -62,9 +86,13 @@ const NhlTeamsIdStatsRoute = NhlTeamsIdStatsRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
+  '/players/$id': typeof PlayersIdRouteRouteWithChildren
   '/nhl/live': typeof NhlLiveRoute
   '/nhl/': typeof NhlIndexRoute
+  '/players/': typeof PlayersIndexRoute
   '/nhl/teams/$id': typeof NhlTeamsIdRouteRouteWithChildren
+  '/players/$id/games': typeof PlayersIdGamesRoute
+  '/players/$id/': typeof PlayersIdIndexRoute
   '/nhl/teams/$id/roster': typeof NhlTeamsIdRosterRoute
   '/nhl/teams/$id/stats': typeof NhlTeamsIdStatsRoute
   '/nhl/teams/$id/': typeof NhlTeamsIdIndexRoute
@@ -74,6 +102,9 @@ export interface FileRoutesByTo {
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
   '/nhl/live': typeof NhlLiveRoute
   '/nhl': typeof NhlIndexRoute
+  '/players': typeof PlayersIndexRoute
+  '/players/$id/games': typeof PlayersIdGamesRoute
+  '/players/$id': typeof PlayersIdIndexRoute
   '/nhl/teams/$id/roster': typeof NhlTeamsIdRosterRoute
   '/nhl/teams/$id/stats': typeof NhlTeamsIdStatsRoute
   '/nhl/teams/$id': typeof NhlTeamsIdIndexRoute
@@ -82,9 +113,13 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
+  '/players/$id': typeof PlayersIdRouteRouteWithChildren
   '/nhl/live': typeof NhlLiveRoute
   '/nhl/': typeof NhlIndexRoute
+  '/players/': typeof PlayersIndexRoute
   '/nhl/teams/$id': typeof NhlTeamsIdRouteRouteWithChildren
+  '/players/$id/games': typeof PlayersIdGamesRoute
+  '/players/$id/': typeof PlayersIdIndexRoute
   '/nhl/teams/$id/roster': typeof NhlTeamsIdRosterRoute
   '/nhl/teams/$id/stats': typeof NhlTeamsIdStatsRoute
   '/nhl/teams/$id/': typeof NhlTeamsIdIndexRoute
@@ -94,9 +129,13 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/manifest.webmanifest'
+    | '/players/$id'
     | '/nhl/live'
     | '/nhl/'
+    | '/players/'
     | '/nhl/teams/$id'
+    | '/players/$id/games'
+    | '/players/$id/'
     | '/nhl/teams/$id/roster'
     | '/nhl/teams/$id/stats'
     | '/nhl/teams/$id/'
@@ -106,6 +145,9 @@ export interface FileRouteTypes {
     | '/manifest.webmanifest'
     | '/nhl/live'
     | '/nhl'
+    | '/players'
+    | '/players/$id/games'
+    | '/players/$id'
     | '/nhl/teams/$id/roster'
     | '/nhl/teams/$id/stats'
     | '/nhl/teams/$id'
@@ -113,9 +155,13 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/manifest.webmanifest'
+    | '/players/$id'
     | '/nhl/live'
     | '/nhl/'
+    | '/players/'
     | '/nhl/teams/$id'
+    | '/players/$id/games'
+    | '/players/$id/'
     | '/nhl/teams/$id/roster'
     | '/nhl/teams/$id/stats'
     | '/nhl/teams/$id/'
@@ -124,8 +170,10 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ManifestDotwebmanifestRoute: typeof ManifestDotwebmanifestRoute
+  PlayersIdRouteRoute: typeof PlayersIdRouteRouteWithChildren
   NhlLiveRoute: typeof NhlLiveRoute
   NhlIndexRoute: typeof NhlIndexRoute
+  PlayersIndexRoute: typeof PlayersIndexRoute
   NhlTeamsIdRouteRoute: typeof NhlTeamsIdRouteRouteWithChildren
 }
 
@@ -159,12 +207,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NhlLiveRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/players/': {
+      id: '/players/'
+      path: '/players'
+      fullPath: '/players/'
+      preLoaderRoute: typeof PlayersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/players/$id': {
+      id: '/players/$id'
+      path: '/players/$id'
+      fullPath: '/players/$id'
+      preLoaderRoute: typeof PlayersIdRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/nhl/teams/$id': {
       id: '/nhl/teams/$id'
       path: '/nhl/teams/$id'
       fullPath: '/nhl/teams/$id'
       preLoaderRoute: typeof NhlTeamsIdRouteRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/players/$id/': {
+      id: '/players/$id/'
+      path: '/'
+      fullPath: '/players/$id/'
+      preLoaderRoute: typeof PlayersIdIndexRouteImport
+      parentRoute: typeof PlayersIdRouteRoute
+    }
+    '/players/$id/games': {
+      id: '/players/$id/games'
+      path: '/games'
+      fullPath: '/players/$id/games'
+      preLoaderRoute: typeof PlayersIdGamesRouteImport
+      parentRoute: typeof PlayersIdRouteRoute
     }
     '/nhl/teams/$id/': {
       id: '/nhl/teams/$id/'
@@ -190,6 +266,20 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface PlayersIdRouteRouteChildren {
+  PlayersIdGamesRoute: typeof PlayersIdGamesRoute
+  PlayersIdIndexRoute: typeof PlayersIdIndexRoute
+}
+
+const PlayersIdRouteRouteChildren: PlayersIdRouteRouteChildren = {
+  PlayersIdGamesRoute: PlayersIdGamesRoute,
+  PlayersIdIndexRoute: PlayersIdIndexRoute,
+}
+
+const PlayersIdRouteRouteWithChildren = PlayersIdRouteRoute._addFileChildren(
+  PlayersIdRouteRouteChildren,
+)
+
 interface NhlTeamsIdRouteRouteChildren {
   NhlTeamsIdRosterRoute: typeof NhlTeamsIdRosterRoute
   NhlTeamsIdStatsRoute: typeof NhlTeamsIdStatsRoute
@@ -209,8 +299,10 @@ const NhlTeamsIdRouteRouteWithChildren = NhlTeamsIdRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ManifestDotwebmanifestRoute: ManifestDotwebmanifestRoute,
+  PlayersIdRouteRoute: PlayersIdRouteRouteWithChildren,
   NhlLiveRoute: NhlLiveRoute,
   NhlIndexRoute: NhlIndexRoute,
+  PlayersIndexRoute: PlayersIndexRoute,
   NhlTeamsIdRouteRoute: NhlTeamsIdRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport

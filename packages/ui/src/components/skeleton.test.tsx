@@ -38,6 +38,7 @@ describe("skeletons, the real parts with a bar where each value would be", () =>
     const view = render(<PageHeaderSkeleton />);
     expect(view.slot("page-header").classes).toContain("border-t-3");
     expect(view.html).toMatch(/<h1[^>]*><span data-slot="skeleton-bar"/);
+    expect(view.tag("h1").classes).toContain("text-title");
     expect(render(<PageHeaderSkeleton title="Live scores" />).text).toBe("Live scores");
   });
 

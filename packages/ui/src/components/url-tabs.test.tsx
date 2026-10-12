@@ -46,6 +46,13 @@ describe("UrlTabs, the conference control as links", () => {
     expect(tabCellVariants({ current: true })).toContain("bg-foreground");
   });
 
+  it("draws a cell's focus ring inside it, since the strip clips, and shares a phone equally", () => {
+    const cell = tabCellVariants({ current: false }).split(" ");
+    expect(cell).toContain("focus-visible:-outline-offset-2");
+    expect(cell).not.toContain("focus-visible:outline-offset-2");
+    expect(cell).toContain("max-md:flex-1");
+  });
+
   it("renders the app's link component when given one", () => {
     const Link = ({ href, ...props }: ComponentProps<"a">) => (
       <a data-link="" href={`/app${href}`} {...props} />

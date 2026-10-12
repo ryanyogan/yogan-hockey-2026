@@ -1,12 +1,16 @@
 import { cva } from "class-variance-authority";
 
+const ring =
+  "outline-none focus-visible:outline-2 focus-visible:outline-kicker focus-visible:outline-solid";
+
+/** The focus ring of every primitive: the prototype's 2px of the one red, 2px off the control. */
+const focusRing = `${ring} focus-visible:outline-offset-2`;
+
 /**
- * The focus ring of every primitive: the prototype's 2px of the one red, 2px off the control.
- * A control inside a box that clips (a strip of tabs that scrolls) draws it inside itself
- * instead, with `-outline-offset-2` after this.
+ * The same ring drawn inside the control, for one in a box that clips what is outside it (a
+ * strip of tabs that scrolls). One or the other: a class holds a single offset.
  */
-const focusRing =
-  "outline-none focus-visible:outline-2 focus-visible:outline-kicker focus-visible:outline-offset-2 focus-visible:outline-solid";
+const focusRingInside = `${ring} focus-visible:-outline-offset-2`;
 
 /**
  * One place in the section nav: 13px semibold capitals, 44px tall, and the one red when it is
@@ -27,4 +31,4 @@ const navItemVariants = cva(
   },
 );
 
-export { focusRing, navItemVariants };
+export { focusRing, focusRingInside, navItemVariants };

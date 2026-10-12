@@ -86,7 +86,7 @@ export function PlayerSearch({ initial }: { initial: Search }) {
         <form action="/players" method="get" onSubmit={submit}>
           <label
             htmlFor={inputId}
-            className="block py-1 font-label text-label text-small uppercase tracking-label"
+            className="block py-1 font-label text-label text-small uppercase tracking-head"
           >
             player name
           </label>

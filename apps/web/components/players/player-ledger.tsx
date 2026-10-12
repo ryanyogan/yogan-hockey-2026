@@ -52,7 +52,7 @@ export function PlayerLedger<P extends PlayerSearchResult>({
       </LedgerHead>
       <LedgerBody>
         {players.map((player) => (
-          <LedgerRow key={player.id} interactive>
+          <LedgerRow key={player.id}>
             <LedgerCell>
               <Link href={`/players/${player.id}`} className={`font-strong ${ledgerRowLink}`}>
                 {player.name}

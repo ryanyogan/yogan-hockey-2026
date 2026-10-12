@@ -58,10 +58,28 @@ export function LiveSkeleton() {
 export function GameSkeleton() {
   return (
     <div data-slot="game-skeleton">
+      {/* The story: its heavy rule, then the kicker's, the headline's and the deck's lines. */}
+      <div
+        aria-hidden="true"
+        className="mb-6 grid gap-x-8 gap-y-3 border-rule border-t-3 pt-[14px] lg:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]"
+      >
+        <div className="flex flex-col gap-3">
+          <p className="text-[12px] leading-[1.35]">
+            <SkeletonBar width="lg" />
+          </p>
+          <p className="text-[34px] leading-[1.02] md:text-[clamp(34px,3vw,40px)]">
+            <SkeletonBar width="xl" />
+          </p>
+          <p className="text-[18px] leading-[1.4] md:text-[clamp(18px,1.4vw,19px)]">
+            <SkeletonBar width="xl" />
+          </p>
+        </div>
+        <div className="h-[89px] border-rule border-y" />
+      </div>
       <div className="@container" aria-hidden="true">
         <Rink plays={[]} focus={null} />
         <PenaltyBoxSpace />
-        <p className="mt-1 min-h-10 bg-secondary px-2 py-0.5 leading-[18px] @2xl:hidden">
+        <p className="mt-1 min-h-10 border-rule-head border-b py-0.5 text-small leading-[18px] @2xl:hidden">
           <SkeletonBar width="lg" />
         </p>
       </div>

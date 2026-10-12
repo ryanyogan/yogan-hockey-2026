@@ -15,7 +15,7 @@ import { TEAM_BG, teamColour } from "./team-colour";
  */
 const ROW = "flex h-6 items-center gap-2 px-2";
 const ROWS = "min-h-12";
-const FRAME = "mt-1 border border-border text-xs leading-6 @2xl:text-sm";
+const FRAME = "mt-1 border border-rule text-tag leading-6 @2xl:text-small @2xl:leading-6";
 
 /** What a penalty is besides a minor served at once: said quietly after the infraction. */
 function note({ kind, minutes, infraction, waiting, shortHanded }: BoxedPenalty): string {
@@ -47,13 +47,13 @@ function Boxed({ penalty, side }: { penalty: BoxedPenalty; side: GameHeaderSide 
       <span aria-hidden="true" className={`h-3.5 w-[3px] shrink-0 ${TEAM_BG}`} />
       <span className="w-[3ch] shrink-0">{side.abbreviation}</span>
       <span className="shrink-0">{penalty.player ?? "Bench"}</span>
-      <span className="min-w-0 flex-1 truncate text-muted-foreground">
+      <span className="min-w-0 flex-1 truncate text-aside">
         {penalty.infraction}
         {more !== "" && ` · ${more}`}
       </span>
       <span
         data-slot="penalty-clock"
-        className={`shrink-0 font-bold tabular-nums ${penalty.waiting ? "text-muted-foreground" : ""}`}
+        className={`shrink-0 font-bold tabular-nums ${penalty.waiting ? "text-aside" : ""}`}
       >
         <span className="sr-only">time left </span>
         {clockText(penalty.remaining)}
@@ -74,14 +74,14 @@ export function PenaltyBox({ header, state }: { header: GameHeader; state: Penal
   const even = skaters.home === skaters.away;
   return (
     <section data-slot="penalty-box" aria-label="Penalty box" className={FRAME}>
-      <div className={`${ROW} justify-between border-border border-b`}>
-        <p className="text-muted-foreground uppercase">Penalty box</p>
+      <div className={`${ROW} justify-between border-rule-head border-b`}>
+        <p className="font-bold text-head text-label uppercase tracking-head">Penalty box</p>
         {ahead != null && advantage != null ? (
           <p data-slot="power-play" className="flex items-center gap-2" style={teamColour(ahead)}>
             <span aria-hidden="true" className={`size-2 shrink-0 ${TEAM_BG}`} />
             <span>
               <span className="font-bold">{ahead.abbreviation} power play</span>
-              <span className="text-muted-foreground"> · {strengthLine(skaters)} · </span>
+              <span className="text-aside"> · {strengthLine(skaters)} · </span>
               <span className="font-bold tabular-nums">{clockText(advantage.remaining)}</span>
             </span>
           </p>
@@ -89,7 +89,7 @@ export function PenaltyBox({ header, state }: { header: GameHeader; state: Penal
           // Four on four, or overtime's three on three: no advantage, and still worth saying.
           even &&
           skaters.home !== 5 && (
-            <p data-slot="strength" className="text-muted-foreground">
+            <p data-slot="strength" className="text-aside">
               {strengthLine(skaters)}
             </p>
           )
@@ -97,10 +97,7 @@ export function PenaltyBox({ header, state }: { header: GameHeader; state: Penal
       </div>
       <div className={`relative grid grid-cols-1 @2xl:grid-cols-2 ${ROWS}`}>
         {state.box.length === 0 && (
-          <p
-            data-slot="penalty-box-empty"
-            className={`${ROW} absolute inset-x-0 top-0 text-muted-foreground`}
-          >
+          <p data-slot="penalty-box-empty" className={`${ROW} absolute inset-x-0 top-0 text-aside`}>
             Nobody in the box
           </p>
         )}
@@ -109,7 +106,7 @@ export function PenaltyBox({ header, state }: { header: GameHeader; state: Penal
             key={side.id}
             data-side={index === 0 ? "away" : "home"}
             aria-label={`${side.abbreviation} penalties`}
-            className={`min-w-0 ${index === 1 ? "@2xl:border-border @2xl:border-l" : ""}`}
+            className={`min-w-0 ${index === 1 ? "@2xl:border-rule-head @2xl:border-l" : ""}`}
           >
             {state.box
               .filter((penalty) => penalty.teamId === side.id)

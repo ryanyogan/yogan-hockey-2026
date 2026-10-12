@@ -21,7 +21,7 @@ export function FavoritePlayers() {
       {status === "listed" ? (
         <FavoritePlayersLedger players={players} />
       ) : status === "waiting" || !unavailable ? (
-        <p className="border-rule-head border-t px-2 py-row text-muted-foreground">
+        <p className="py-row font-serif text-[17px] text-note leading-[1.4]">
           {status === "waiting"
             ? "Reading your favorites."
             : "No favorite players yet. Press the heart beside a player to keep him here."}
@@ -29,7 +29,7 @@ export function FavoritePlayers() {
       ) : null}
       {unavailable && (
         // Favorites that are still his: they are asked for again when the page is next opened.
-        <p role="status" className="border-rule-head border-t px-2 py-row text-muted-foreground">
+        <p role="status" className="py-row font-serif text-[17px] text-note leading-[1.4]">
           {status === "listed" ? "Some favorites" : "Your favorites"} could not be read just now.
         </p>
       )}

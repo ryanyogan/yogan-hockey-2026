@@ -30,14 +30,19 @@ const VIEW_BOX = [
 /** The goal lines stop short of the boards, where the corners have begun to turn. */
 const GOAL_LINE_REACH = 37;
 
-/** A play's dot. On white ice each colour is a step darker than on dark ice. */
+/**
+ * A play's dot, in the page's own inks (`docs/design/agate.md`: one red, and nothing else
+ * coloured). A goal is the red; a save is ink and a shot grey; a penalty and a hit are rings,
+ * ink and grey; anything else is the faintest grey. The kinds are told apart by weight and by
+ * whether they are filled, since they cannot be by hue.
+ */
 const MARK_FILL: Record<MarkKind, string> = {
-  goal: "fill-red-600 dark:fill-red-500",
-  penalty: "fill-amber-500",
-  save: "fill-sky-500 dark:fill-sky-400",
-  shot: "fill-slate-500 dark:fill-slate-400",
-  hit: "fill-violet-500 dark:fill-violet-400",
-  other: "fill-slate-400 dark:fill-slate-500",
+  goal: "fill-kicker",
+  penalty: "fill-background stroke-foreground [stroke-width:0.6]",
+  save: "fill-foreground",
+  shot: "fill-label",
+  hit: "fill-background stroke-label [stroke-width:0.5]",
+  other: "fill-border",
 };
 
 /**
@@ -45,10 +50,10 @@ const MARK_FILL: Record<MarkKind, string> = {
  * layer it is drawn in: a goal's and a save's as their dots, a miss's as a shot's.
  */
 const FX_STROKE = [
-  "group-data-[kind=goal]/fx:stroke-red-600 dark:group-data-[kind=goal]/fx:stroke-red-500",
-  "group-data-[kind=save]/fx:stroke-sky-500 dark:group-data-[kind=save]/fx:stroke-sky-400",
-  "group-data-[kind=miss]/fx:stroke-slate-500 dark:group-data-[kind=miss]/fx:stroke-slate-400",
-  "group-data-[kind=penalty]/fx:stroke-amber-500",
+  "group-data-[kind=goal]/fx:stroke-kicker",
+  "group-data-[kind=save]/fx:stroke-foreground",
+  "group-data-[kind=miss]/fx:stroke-label",
+  "group-data-[kind=penalty]/fx:stroke-foreground",
 ].join(" ");
 
 /** Radii in feet: a goal is larger than any other play, and the play in focus larger again. */
@@ -67,7 +72,7 @@ function Mark({ play, focused }: { play: Play; focused: boolean }) {
       cx={x}
       cy={y}
       r={focused ? RADIUS.focus : kind === "goal" ? RADIUS.goal : RADIUS.play}
-      className={focused ? `${MARK_FILL[kind]} stroke-foreground` : MARK_FILL[kind]}
+      className={focused ? `stroke-foreground ${MARK_FILL[kind]}` : MARK_FILL[kind]}
       strokeWidth={focused ? 1 : 0}
     >
       <title>{`${playTime(play)} ${play.text}`}</title>
@@ -84,7 +89,7 @@ function Goal({ side }: { side: 1 | -1 }) {
         data-slot="rink-crease"
         d={`M ${x} ${-creaseRadius} A ${creaseRadius} ${creaseRadius} 0 0 ${side > 0 ? 0 : 1} ${x} ${creaseRadius}`}
         strokeWidth={0.4}
-        className="fill-sky-400/20 stroke-red-600/60 data-lit:stroke-sky-500 dark:fill-sky-400/15 dark:stroke-red-500/60 dark:data-lit:stroke-sky-400"
+        className="fill-highlight stroke-foreground [stroke-opacity:0.6] data-lit:[stroke-opacity:1]"
       />
       <rect
         data-slot="rink-net"
@@ -150,7 +155,7 @@ function EndTint({ side }: { side: 1 | -1 }) {
         `A ${corner} ${corner} 0 0 ${sweep} ${turn} ${halfWidth} H ${line} Z`,
       ].join(" ")}
       opacity={0}
-      className="[fill:var(--tint,var(--live))] dark:[fill:var(--tint-dark,var(--live))]"
+      className="fill-live"
     />
   );
 }
@@ -283,12 +288,13 @@ export function Rink({
         width={2 * halfLength}
         height={2 * halfWidth}
         rx={corner}
-        className="fill-white stroke-sky-900/35 dark:fill-sky-200/[0.04] dark:stroke-sky-200/35"
+        strokeWidth={0.6}
+        className="fill-background stroke-rule"
       />
       <EndTint side={-1} />
       <EndTint side={1} />
       <PowerPlayZones powerPlay={powerPlay} />
-      <g fill="none" className="stroke-red-600 dark:stroke-red-500">
+      <g fill="none" className="stroke-foreground">
         <line data-line="centre" y1={-halfWidth} y2={halfWidth} strokeOpacity={0.6} />
         {[-goalLine, goalLine].map((x) => (
           <line
@@ -315,7 +321,7 @@ export function Rink({
           )),
         )}
       </g>
-      <g fill="none" className="stroke-blue-600 dark:stroke-blue-500">
+      <g fill="none" className="stroke-foreground">
         {[-blueLine, blueLine].map((x) => (
           <line
             key={x}

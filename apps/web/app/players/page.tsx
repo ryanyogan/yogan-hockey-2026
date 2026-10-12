@@ -1,4 +1,4 @@
-import { Section, SectionHeader } from "@yogan-hockey/ui/components/section";
+import { PageHeader } from "@yogan-hockey/ui/components/section";
 import type { Metadata } from "next";
 import { Link } from "../../components/link";
 import { findPlayers } from "../../lib/players";
@@ -19,14 +19,14 @@ export default async function PlayersPage({
 
   return (
     <>
-      <Section>
-        <SectionHeader title="Players" count="search the NHL">
-          <Link href="/nhl?tab=teams" className="tap-target underline">
-            or browse a team's roster
+      <section data-slot="player-search">
+        <PageHeader title="Players" count="search the NHL">
+          <Link href="/nhl?tab=teams" className="tap-target hover:underline">
+            Browse a team's roster
           </Link>
-        </SectionHeader>
+        </PageHeader>
         <PlayerSearch initial={search} />
-      </Section>
+      </section>
       <FavoritePlayers />
     </>
   );

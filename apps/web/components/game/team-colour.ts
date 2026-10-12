@@ -10,7 +10,10 @@ export function teamColour(side: Pick<GameHeaderSide, "color">): CSSProperties {
   return { "--team": side.color == null ? "currentColor" : `#${side.color}` } as CSSProperties;
 }
 
-/** `--team` as a background and as a stroke, lifted in the dark theme. */
-export const TEAM_BG = "bg-(--team) dark:bg-[color-mix(in_oklab,var(--team),white_30%)]";
-export const TEAM_STROKE =
-  "stroke-(--team) dark:stroke-[color-mix(in_oklab,var(--team),white_30%)]";
+/**
+ * A team's bar in the penalty box and the ruling of the zone it attacks. In the Agate look both
+ * are ink: the page has one red, and a club's colour is not it (`docs/design/agate.md`). `--team`
+ * is still set where these are used, and nothing reads it.
+ */
+export const TEAM_BG = "bg-foreground";
+export const TEAM_STROKE = "stroke-foreground";

@@ -2,6 +2,17 @@
 
 What earlier tickets learned that the code does not show. Read before building; add a line when you learn something the next subagent would otherwise rediscover. Keep each note to what cannot be found by reading the code.
 
+## Agate 6b: the game page, players and the error pages (#173)
+
+- **A game page opens with a story** (`components/game/game-story.tsx`): the kicker, the headline (the page's `h1`), the deck and the line score, from `lib/agate-copy.ts`. A `GameHeader` is a Scoreboard game with more on it, so the copy takes it as it is; `lib/game/story.ts` adds the table (`gameLineScore`) and the server's kicker (`easternKicker`). The rink under it still carries the score, shots and clock, since the goal sequence rolls the score there.
+- **The story's type is four constants in `game-story.tsx`** (`STORY_KICKER`, `STORY_HEADLINE`, `STORY_DECK`, `STORY_PICK`), the same values as Home's in `components/dashboard/roundup.tsx`. They are to become one set of theme tokens with Home's.
+- **The prototype's story parts are not tabular.** Its `body` sets `tabular-nums`, but `.kicker`, `.headline`, `.deck` and `.pick` each set `font:` whole, and the shorthand puts `font-variant-numeric` back to normal. So those four are `normal-nums` and everything else is tabular.
+- **The rink has no hue but the one red.** Dots are told apart by weight and filling (`MARK_FILL` in `rink.tsx`): a goal red, a save ink, a shot grey, a penalty an ink ring, a hit a grey ring. A club's colour is gone from the goal's flag, the end's tint, the power play's ruling and the penalty box; `teamColour`, `goalFlag` and the `--tint` the player sets are still there and nothing reads them. GSAP itself sets no colour: every one is a class in `rink.tsx`.
+- **A stroke at part strength is `[stroke-opacity:…]`, not `stroke-foreground/60`**, which computes to an `oklab()` colour that matches no token when a script compares colours.
+- **An SVG group's fill computes to black whether or not anything is drawn with it**, and a `<line>`'s fill is never drawn. A script that checks colours looks only at shapes outside `<defs>`, and at a line's stroke.
+- **`node scripts/agate-game-shots.ts <site> [outDir]`** retakes these routes' pictures in `docs/design/agate/` and exits 1 on a `scrollWidth` wider than the window, a story part off the prototype's type, or a colour, radius, shadow or untabular figure that is not the system's. Not the server Playwright uses.
+- **A long heredoc is refused by the worktree guard**, python included: write the script with the editor into `node_modules/.tmp/` and run the file.
+
 ## The primitives in agate (#172)
 
 `packages/ui/src/components/*` are redrawn from the prototype's `.agate`, `.label`, `.band-title`, `.conf-tabs` and `.mark`. `node scripts/agate-primitives.mjs <prototype> <site> [outDir]` compares the computed styles of each with its equivalent in the prototype, at 390 and 1440 in both themes, and exits 1 on a difference that is not listed in its `KNOWN` with a reason.

@@ -3,14 +3,14 @@ import { type MarkKind, markKind, playTime } from "../../lib/game/plays";
 import { layoutTimeline } from "../../lib/game/timeline";
 
 /**
- * A tick: 4px by 16px for any play, 6px by 32px and red for a goal, and amber with a square
- * standing clear above it for a penalty. All stand on one line, 4px above the foot of the bar.
+ * A tick: 4px by 16px and grey for any play, 6px by 32px and the one red for a goal, and ink with
+ * a square standing clear above it for a penalty. All stand on one line, 4px above the foot of the bar.
  */
 const TICK = {
-  play: "h-4 w-1 bg-slate-500 dark:bg-slate-400",
-  goal: "z-20 h-8 w-1.5 bg-red-600 dark:bg-red-500",
+  play: "h-4 w-1 bg-label",
+  goal: "z-20 h-8 w-1.5 bg-kicker",
   penalty:
-    "z-10 h-4 w-1 bg-amber-500 before:absolute before:-top-2 before:left-1/2 before:size-1.5 before:-translate-x-1/2 before:bg-amber-500",
+    "z-10 h-4 w-1 bg-foreground before:absolute before:-top-2 before:left-1/2 before:size-1.5 before:-translate-x-1/2 before:bg-foreground",
 } as const;
 
 const tickClass = (kind: MarkKind) =>
@@ -53,7 +53,9 @@ export function PeriodTimeline({
           className={`absolute inset-y-0 border-rule ${period.start > 0 ? "border-l" : ""}`}
           style={{ left: `${period.start * 100}%`, width: `${period.width * 100}%` }}
         >
-          <span className="absolute top-0.5 left-1 text-label text-small">{period.label}</span>
+          <span className="absolute top-1 left-1 font-bold text-head text-label uppercase tracking-head">
+            {period.label}
+          </span>
         </div>
       ))}
       {[...ticks, ...upcoming].map((play, index) => {
@@ -71,9 +73,9 @@ export function PeriodTimeline({
             aria-pressed={play.id === selectedId}
             title={play.text}
             onClick={() => onSelect(play.id)}
-            className={`absolute bottom-1 -translate-x-1/2 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring ${tickClass(
+            className={`absolute bottom-1 -translate-x-1/2 cursor-pointer outline-ring outline-offset-2 focus-visible:outline-2 ${tickClass(
               kind,
-            )} ${focused ? "z-30 ring-2 ring-foreground" : ""} ${ahead ? "opacity-30" : ""}`}
+            )} ${focused ? "z-30 outline-2 outline-foreground" : ""} ${ahead ? "opacity-30" : ""}`}
             style={{ left: `${(positions.get(play.id) ?? 0) * 100}%` }}
           />
         );

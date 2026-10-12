@@ -1,0 +1,86 @@
+// The Worker's only configuration: what `vite dev`, `vite build`, `wrangler deploy`,
+// `wrangler types` and the Workers-runtime tests (vitest.config.ts) all read.
+// The top level is production. `previews` is what a preview gets in its place.
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "yogan-hockey",
+  "main": "./worker.ts",
+  "compatibility_date": "2026-10-06",
+  "compatibility_flags": ["nodejs_compat"],
+  // The directory is the build's own: the Vite plugin names it.
+  "assets": { "binding": "ASSETS", "not_found_handling": "none" },
+
+  // hockey.yogan.dev is the site's only address. Both workers.dev switches are said outright:
+  // left unset, `preview_urls` takes the account's default, and each version could get a public
+  // `<version>-yogan-hockey.<subdomain>.workers.dev` address.
+  "routes": [{ "pattern": "hockey.yogan.dev", "custom_domain": true }],
+  "workers_dev": false,
+  "preview_urls": false,
+
+  "observability": {
+    "enabled": true,
+    "logs": { "enabled": true, "invocation_logs": true },
+    "traces": { "enabled": true },
+    "issues": { "enabled": true }
+  },
+
+  // The Agent classes, declared as `cf` declared them when it created them in production: an
+  // `exports` map, not a `migrations` list. The deployed Worker has no migration tag, and
+  // Cloudflare refuses a `migrations` list on a Worker once it has been deployed with `exports`.
+  // Never add `migrations` here. To retire or rename a class, change its entry's `state`
+  // (https://developers.cloudflare.com/durable-objects/reference/durable-objects-migrations/).
+  "exports": {
+    "GameAgent": { "type": "durable-object", "storage": "sqlite" },
+    "ScoreboardAgent": { "type": "durable-object", "storage": "sqlite" },
+    "SkeletonAgent": { "type": "durable-object", "storage": "sqlite" }
+  },
+  "durable_objects": {
+    "bindings": [
+      { "name": "GameAgent", "class_name": "GameAgent" },
+      { "name": "ScoreboardAgent", "class_name": "ScoreboardAgent" },
+      { "name": "SkeletonAgent", "class_name": "SkeletonAgent" }
+    ]
+  },
+
+  // The disposable cache behind vinext's data cache (kvDataAdapter's default binding name).
+  "kv_namespaces": [{ "binding": "VINEXT_KV_CACHE", "id": "07aa4f9113d04eec9cbbf1b6a10ee94b" }],
+
+  // The permanent record. Local dev files its simulated database under this id too
+  // (`.wrangler/state`); nothing local reaches Cloudflare. No `preview_database_id`: with one,
+  // `wrangler deploy` prints the preview's id beside `env.DB` while binding this one.
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "yogan-hockey",
+      "database_id": "a8122b7b-aee0-41ef-acbf-66fd3e0326b0",
+      "migrations_dir": "../../packages/db/migrations"
+    }
+  ],
+
+  // Workers AI, which makes the Predictions. It has no local simulation: under `pnpm dev` every
+  // call fails, and each scheduled game gets a failed row. `AI_REMOTE=1 pnpm dev` sends the calls
+  // to the account wrangler is logged in to (vite.config.ts reads the switch).
+  "ai": { "binding": "AI" },
+
+  // What `wrangler preview` binds, in place of everything above: the pair of stores previews
+  // share, never production's. The Agent bindings name no other Worker, so they are the
+  // preview's own. Previews are switched off (scripts/deploy-gate.sh says why).
+  "previews": {
+    "kv_namespaces": [{ "binding": "VINEXT_KV_CACHE", "id": "d204ecab5f10483c8dc4c128c33d3c15" }],
+    "d1_databases": [
+      {
+        "binding": "DB",
+        "database_name": "yogan-hockey-preview",
+        "database_id": "15e38710-c86b-4e57-88f4-189bdae2e86a"
+      }
+    ],
+    "ai": { "binding": "AI" },
+    "durable_objects": {
+      "bindings": [
+        { "name": "GameAgent", "class_name": "GameAgent" },
+        { "name": "ScoreboardAgent", "class_name": "ScoreboardAgent" },
+        { "name": "SkeletonAgent", "class_name": "SkeletonAgent" }
+      ]
+    }
+  }
+}

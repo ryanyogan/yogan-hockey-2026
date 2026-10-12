@@ -1,5 +1,5 @@
 import { fileURLToPath } from "node:url";
-import { cloudflareTest, readD1Migrations } from "@cloudflare/vitest-pool-workers";
+import { cloudflareTest, readD1Migrations } from "@cloudflare/vitest-plugin";
 import { defineConfig } from "vitest/config";
 
 const MIGRATIONS = fileURLToPath(new URL("./migrations", import.meta.url));
@@ -9,8 +9,8 @@ export default defineConfig(async () => ({
   plugins: [
     cloudflareTest({
       miniflare: {
-        // The newest date the pool's own workerd accepts (see apps/web/vitest.config.ts).
-        compatibilityDate: "2026-08-22",
+        // The Worker's own date (apps/web/wrangler.jsonc).
+        compatibilityDate: "2026-10-06",
         compatibilityFlags: ["nodejs_compat"],
         d1Databases: ["DB"],
         bindings: {

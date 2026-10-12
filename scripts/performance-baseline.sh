@@ -57,12 +57,9 @@ trap stop EXIT
 
 cd apps/web
 ESPN_FIXTURES=1 pnpm build >"$TMPDIR/performance-build.log" 2>&1
-# A build reads the database by production's id, in the local simulated store: `--local` is what
-# keeps this off Cloudflare. cf often applies and then fails to exit (see the build notes), so it
-# gets a time limit; prepare-fixtures.ts fails below if the tables are not there.
-d1=$(node -p 'require("./cloudflare.resources.json").production.d1')
-timeout 30 pnpm exec cf d1 migrations apply "$d1" --local --persist-to .cloudflare/state \
-  --dir ../../packages/db/migrations </dev/null >"$TMPDIR/performance-migrate.log" 2>&1 || true
+# The simulated database, which the preview and `pnpm dev` share: `--local` is what keeps this
+# off Cloudflare. prepare-fixtures.ts fails below if the tables are not there.
+pnpm db:migrate:local </dev/null >"$TMPDIR/performance-migrate.log" 2>&1 || true
 ESPN_FIXTURES=1 setsid pnpm exec vite preview --port "$inner" --strictPort \
   >"$TMPDIR/performance-preview.log" 2>&1 &
 preview=$!

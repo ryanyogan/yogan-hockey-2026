@@ -3,13 +3,12 @@
 #
 #   scripts/deploy-gate.sh production|preview
 #
-# A deploy needs the two GitHub secrets account setup (#32) creates and the ids of the target's
-# KV namespace and D1 database in apps/web/cloudflare.resources.json. Missing any of them, the
-# deploy is skipped with a notice on the run, not failed: a pull request from a fork never has
-# the secrets, and neither did this repository before account setup ran.
+# A deploy needs the two GitHub secrets account setup (#32) creates. Missing either, the deploy
+# is skipped with a notice on the run, not failed: a pull request from a fork never has the
+# secrets, and neither did this repository before account setup ran. The KV and D1 a target
+# uses are in apps/web/wrangler.jsonc, which wrangler checks for itself.
 #
-# Writes `enabled` (true or false) and, when enabled, `d1` (the database id the migrations are
-# applied to) to $GITHUB_OUTPUT. Run by hand it prints them instead.
+# Writes `enabled` (true or false) to $GITHUB_OUTPUT. Run by hand it prints it instead.
 set -euo pipefail
 
 target="${1:?usage: deploy-gate.sh production|preview}"
@@ -18,7 +17,6 @@ case "$target" in
   *) echo "deploy-gate: unknown target \"$target\"" >&2 && exit 2 ;;
 esac
 
-resources="$(dirname "$0")/../apps/web/cloudflare.resources.json"
 output="${GITHUB_OUTPUT:-/dev/stdout}"
 
 skip() {
@@ -28,10 +26,11 @@ skip() {
 }
 
 # Previews are switched off until two things found in #33 are settled (docs/spec.md, Unverified
-# row 7). The Agent bindings name the production Worker, which `cf previews deploy` sends as it
-# stands, so a preview's page may drive production's Agents and through them production's KV and
-# D1. And a preview answers on a public workers.dev address. Take this block out once a preview
-# is known to get Agents of its own.
+# row 7). Nobody has seen whether a preview gets Agents of its own: `wrangler preview` sends the
+# Agent bindings under `previews` in wrangler.jsonc, which name no other Worker, but if a preview
+# shares production's Agents its page drives them, and through them production's KV and D1. And
+# a preview answers on a public workers.dev address. Take this block out once a preview is known
+# to get Agents of its own.
 if [[ "$target" == "preview" ]]; then
   skip notice "Previews are off until a preview is known not to reach production's Agents. See Unverified row 7 in docs/spec.md."
 fi
@@ -43,15 +42,5 @@ if ((${#missing[@]})); then
   skip notice "GitHub secret not set: ${missing[*]}. scripts/account-setup.sh (#32) sets it; a pull request from a fork never has it."
 fi
 
-kv=$(jq -r --arg target "$target" '.[$target].kv // empty' "$resources")
-d1=$(jq -r --arg target "$target" '.[$target].d1 // empty' "$resources")
-if [[ -z "$kv" || -z "$d1" ]]; then
-  # A warning, not a notice: the secrets are there, so somebody expects this deploy to happen.
-  skip warning "The secrets are set, but apps/web/cloudflare.resources.json has no $target KV and D1 ids. Copy them from the account setup comment on #32."
-fi
-
-echo "::notice title=${target^} deploy enabled::Applying migrations to D1 $d1, then deploying."
-{
-  echo "enabled=true"
-  echo "d1=$d1"
-} >>"$output"
+echo "::notice title=${target^} deploy enabled::Applying the D1 migrations, then deploying."
+echo "enabled=true" >>"$output"

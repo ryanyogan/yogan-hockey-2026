@@ -240,6 +240,10 @@ TMP=$(mktemp -d)
 trap 'rm -rf "$TMP"' EXIT
 CF_ERR="$TMP/cf.err"
 
+# cloudflare_api and cloudflare_account: what wrangler has no command for.
+# shellcheck source=scripts/lib/cloudflare-api.sh
+source scripts/lib/cloudflare-api.sh
+
 # ── Helpers for these stages ──────────────────────────────────────────────
 
 ok()  { printf '  %s✓%s %s\n' "$GREEN" "$RESET" "$1"; }
@@ -248,13 +252,23 @@ die() { printf '\n  %s✗ %s%s\n\n' "$RED" "$1" "$RESET" >&2; exit 1; }
 # todo "what is left": warn now and list it in the closing summary.
 todo() { SKIPPED+=("$1"); warn "not done: $1"; }
 
-# cfq ARGS...: run cf without a terminal on stdin. JSON goes to stdout, cf's
-# error text to $CF_ERR.
-cfq() { cf "$@" </dev/null 2>"$CF_ERR"; }
+# wq ARGS...: run wrangler (the repo's own, in apps/web) without a terminal on
+# stdin. JSON goes to stdout, wrangler's error text to $CF_ERR.
+wq() { (cd apps/web && pnpm exec wrangler "$@" </dev/null) 2>"$CF_ERR"; }
 
-# cf_error: show why the last cfq failed. Never call it after a command that
-# was given a secret.
-cf_error() { sed -e '/^[[:space:]]*$/d' -e 's/^/      /' "$CF_ERR" | head -n 8; }
+# api METHOD PATH [JSON]: Cloudflare's API, for what wrangler has no command
+# for. Prints the answer's `result`; error text goes to $CF_ERR. Wrangler's
+# login has no scope for DNS records, the account's plan or the AI Gateway:
+# those calls work only with CLOUDFLARE_API_TOKEN set to a token that may.
+api() { cloudflare_api "$@" 2>"$CF_ERR" | jq -ec '.result' 2>>"$CF_ERR"; }
+
+# cf_error: show why the last wq or api failed. Never call it after a command
+# that was given a secret.
+cf_error() {
+  sed -e '/^[[:space:]]*$/d' -e 's/^/      /' "$CF_ERR" | head -n 8
+  note "wrangler's login cannot read everything. If this was refused, rerun with"
+  note "CLOUDFLARE_API_TOKEN set to a token that may, or do the step in the dashboard."
+}
 
 # ask_default KEY "Prompt" DEFAULT: like ask, with a fallback default.
 ask_default() {
@@ -269,25 +283,28 @@ ask_default() {
 # The find_* functions print the id of the named resource, or nothing if it
 # does not exist. They fail only if the listing itself failed.
 find_kv() {
-  cfq kv namespaces list --per-page 1000 |
+  wq kv namespace list |
     jq -r --arg n "$1" 'first(.[] | select(.title == $n) | .id) // empty'
 }
 find_d1() {
-  cfq d1 list --name "$1" |
+  wq d1 list --json |
     jq -r --arg n "$1" 'first(.[] | select(.name == $n) | .uuid) // empty'
 }
 find_gateway() {
-  cfq ai-gateway gateways list --search "$1" |
+  api GET "/accounts/$CLOUDFLARE_ACCOUNT_ID/ai-gateway/gateways?search=$1" |
     jq -r --arg n "$1" 'first(.[] | select(.id == $n) | .id) // empty'
 }
-create_kv()      { cfq kv namespaces create --title "$1" >/dev/null; }
-create_d1()      { cfq d1 create --name "$1" >/dev/null; }
+# Neither is written into wrangler.jsonc: the ids are copied there by hand,
+# from the comment the last stage posts.
+create_kv()      { wq kv namespace create "$1" >/dev/null; }
+create_d1()      { wq d1 create "$1" >/dev/null; }
 # Logging on; no caching (a Prediction is made once) and no rate limit (the
 # daily cap is enforced in our own code). The API requires all four fields.
 create_gateway() {
-  cfq ai-gateway gateways create --id "$1" --collect-logs \
-    --cache-ttl 0 --cache-invalidate-on-update=false \
-    --rate-limiting-interval 0 --rate-limiting-limit 0 >/dev/null
+  api POST "/accounts/$CLOUDFLARE_ACCOUNT_ID/ai-gateway/gateways" "$(jq -nc --arg id "$1" '{
+    id: $id, collect_logs: true, cache_ttl: 0, cache_invalidate_on_update: false,
+    rate_limiting_interval: 0, rate_limiting_limit: 0
+  }')" >/dev/null
 }
 
 # ensure KEY "label" find_fn create_fn NAME: find the resource or offer to
@@ -340,16 +357,17 @@ banner "Yogan Hockey 2026: Cloudflare account setup (issue #$ISSUE)"
 # ── 1 ─────────────────────────────────────────────────────────────────────
 stage "Preflight"
 say "Checking the tools and logins this wizard drives."
-for tool in cf gh jq curl; do
+for tool in pnpm gh jq curl; do
   command -v "$tool" >/dev/null 2>&1 || die "$tool is not installed."
 done
 git check-ignore -q "$ENV_FILE" || die "$ENV_FILE is not gitignored; refusing to write ids to it."
 ok "$ENV_FILE is gitignored"
 
-cfq auth whoami >"$TMP/whoami.json" || die "cf is not logged in. Run: cf auth login"
-jq -e '.authenticated and .tokenValid' "$TMP/whoami.json" >/dev/null ||
-  die "cf's login has expired. Run: cf auth login"
-ok "cf is logged in"
+[[ -x apps/web/node_modules/.bin/wrangler ]] || die "wrangler is not installed. Run: pnpm install"
+# `whoami --json` exits non-zero when wrangler is not logged in.
+wq whoami --json >"$TMP/whoami.json" ||
+  die "wrangler is not logged in. Run, in apps/web: pnpm exec wrangler login"
+ok "wrangler is logged in"
 
 gh auth status >/dev/null 2>&1 || die "gh is not logged in. Run: gh auth login"
 REPO=$(gh repo view --json nameWithOwner -q .nameWithOwner)
@@ -359,10 +377,10 @@ ok "gh is logged in; repository $REPO"
 
 mapfile -t account_ids < <(jq -r '.accounts[].id' "$TMP/whoami.json")
 case "${#account_ids[@]}" in
-  0) die "cf sees no Cloudflare account." ;;
+  0) die "wrangler sees no Cloudflare account." ;;
   1) CLOUDFLARE_ACCOUNT_ID="${account_ids[0]}" ;;
   *)
-    say "cf can see more than one account:"
+    say "wrangler can see more than one account:"
     jq -r '.accounts | to_entries[] | "    \(.key + 1)) \(.value.name)  \(.value.id)"' "$TMP/whoami.json"
     pick=""
     until [[ "$pick" =~ ^[1-9][0-9]*$ ]] && (( pick <= ${#account_ids[@]} )); do
@@ -381,14 +399,16 @@ pause
 stage "Workers Paid"
 say "The site needs the Workers Paid plan (about \$5 a month)."
 is_paid() {
-  cfq accounts subscriptions get |
+  api GET "/accounts/$CLOUDFLARE_ACCOUNT_ID/subscriptions" |
     jq -e 'any(.[]; .rate_plan.id == "workers_paid")' >/dev/null 2>&1
 }
 if is_paid; then
   ok "the account is already on Workers Paid"
   WORKERS_PAID="yes"
 else
-  warn "cf does not list a Workers Paid subscription on this account."
+  warn "Could not confirm a Workers Paid subscription on this account."
+  note "wrangler's login cannot read the plan: without CLOUDFLARE_API_TOKEN set to a"
+  note "token that can, look in the dashboard and answer below."
   open_url "https://dash.cloudflare.com/$CLOUDFLARE_ACCOUNT_ID/workers/plans"
   step "If that link misses, go to Workers & Pages, then Plans, in the dashboard."
   step "Choose the Workers Paid plan and complete the purchase."
@@ -418,7 +438,7 @@ stage "$SITE_HOST on the $ZONE_NAME zone"
 say "The Worker does not exist yet, so nothing can be attached today. The"
 say "hostname becomes a Worker custom domain on the first deploy (#33). This"
 say "stage checks the zone is ready for that."
-if zone=$(cfq zones list --name "$ZONE_NAME" | jq -c --arg n "$ZONE_NAME" 'first(.[] | select(.name == $n)) // empty') && [[ -n "$zone" ]]; then
+if zone=$(api GET "/zones?name=$ZONE_NAME" | jq -c --arg n "$ZONE_NAME" 'first(.[] | select(.name == $n)) // empty') && [[ -n "$zone" ]]; then
   ZONE_ID=$(jq -r '.id' <<<"$zone")
   ZONE_STATUS=$(jq -r '.status' <<<"$zone")
   write_env CLOUDFLARE_ZONE_ID "$ZONE_ID"
@@ -427,7 +447,7 @@ if zone=$(cfq zones list --name "$ZONE_NAME" | jq -c --arg n "$ZONE_NAME" 'first
   if [[ "$(jq -r '.account.id' <<<"$zone")" != "$CLOUDFLARE_ACCOUNT_ID" ]]; then
     todo "zone $ZONE_NAME belongs to a different account than the one chosen in stage 1"
   fi
-  if records=$(cfq dns records list --zone "$ZONE_NAME" --name "$SITE_HOST" | jq -r '[.[] | .type] | join(", ")'); then
+  if records=$(api GET "/zones/$ZONE_ID/dns_records?name=$SITE_HOST" | jq -r '[.[] | .type] | join(", ")'); then
     if [[ -z "$records" ]]; then
       ok "no DNS record holds $SITE_HOST yet, so the custom domain can take it"
       DNS_RECORDS="none"
@@ -463,7 +483,7 @@ else
   write_env ACCESS_EMAIL "$ACCESS_EMAIL"
 
   find_access_app() {
-    cfq zero-trust access applications list --domain "$SITE_HOST" |
+    api GET "/accounts/$CLOUDFLARE_ACCOUNT_ID/access/apps" |
       jq -c --arg d "$SITE_HOST" 'first(.[] | select(
           .domain == $d or ((.domain // "") | startswith($d + "/"))
           or ((.self_hosted_domains // []) | any(. == $d or startswith($d + "/")))
@@ -478,7 +498,7 @@ else
   elif confirm "Create the Access application \"$ACCESS_APP_NAME\" on $SITE_HOST?"; then
     jq -n --arg n "$ACCESS_APP_NAME" --arg d "$SITE_HOST" \
       '{name: $n, domain: $d, type: "self_hosted", session_duration: "730h"}' >"$TMP/app.json"
-    if cfq zero-trust access applications create --body "@$TMP/app.json" >/dev/null &&
+    if api POST "/accounts/$CLOUDFLARE_ACCOUNT_ID/access/apps" "$(cat "$TMP/app.json")" >/dev/null &&
       app=$(find_access_app) && [[ -n "$app" ]]; then
       ok "created the Access application"
     else
@@ -497,7 +517,7 @@ else
       if confirm "Add the policy \"$ACCESS_POLICY_NAME\": allow only $ACCESS_EMAIL?"; then
         jq -n --arg n "$ACCESS_POLICY_NAME" --arg e "$ACCESS_EMAIL" \
           '{name: $n, decision: "allow", include: [{email: {email: $e}}]}' >"$TMP/policy.json"
-        if cfq zero-trust access applications policies create "$ACCESS_APP_ID" --body "@$TMP/policy.json" >/dev/null; then
+        if api POST "/accounts/$CLOUDFLARE_ACCOUNT_ID/access/apps/$ACCESS_APP_ID/policies" "$(cat "$TMP/policy.json")" >/dev/null; then
           ok "added the policy"
           refreshed=$(find_access_app || true)
           [[ -n "$refreshed" ]] && app="$refreshed"
@@ -525,7 +545,7 @@ else
       step "Leave exactly one policy: action Allow, one Include rule, Emails, your address."
       todo "Access policy needs fixing by hand, then rerun to confirm"
     fi
-    if org=$(cfq zero-trust organizations list); then
+    if org=$(api GET "/accounts/$CLOUDFLARE_ACCOUNT_ID/access/organizations"); then
       ACCESS_TEAM_DOMAIN=$(jq -r '(if type == "array" then .[0] else . end) | .auth_domain // empty' <<<"$org")
     fi
     note "Login is by one-time PIN to your email unless you have set up another"
@@ -543,7 +563,7 @@ pause
 
 # ── 7 ─────────────────────────────────────────────────────────────────────
 stage "GitHub Actions: Cloudflare API token and account id"
-say "CI deploys with a scoped token. cf's own login is not allowed to mint"
+say "CI deploys with a scoped token. wrangler's own login is not allowed to mint"
 say "tokens, so this one is made in the dashboard."
 set_secret CLOUDFLARE_ACCOUNT_ID "$CLOUDFLARE_ACCOUNT_ID"
 has_gh_secret CLOUDFLARE_ACCOUNT_ID && ACCOUNT_SECRET="set"
@@ -579,7 +599,7 @@ pause
 stage "Worker name"
 say "The Worker is created by the first deploy (#33). Its name is recorded on"
 say "the issue with the ids."
-ask_default WORKER_NAME "Worker name (the name in apps/web/cloudflare.config.ts):" "yogan-hockey"
+ask_default WORKER_NAME "Worker name (the name in apps/web/wrangler.jsonc):" "yogan-hockey"
 write_env WORKER_NAME "$WORKER_NAME"
 pause
 
@@ -714,6 +734,7 @@ or_not_done() { printf '%s' "${1:-NOT DONE}"; }
   printf '| GitHub Actions secret | `CLOUDFLARE_ACCOUNT_ID` | %s |\n' "$(or_not_done "$ACCOUNT_SECRET")"
   printf '| Branch protection on `main` | | %s |\n' "$(or_not_done "$BRANCH_PROTECTION")"
   printf '| Local env file | `%s` (gitignored) | holds the ids above and the Worker name |\n' "$ENV_FILE"
+  printf '\nThe KV and D1 ids are the Worker'"'"'s configuration only once they are in `apps/web/wrangler.jsonc`: production'"'"'s at the top level, the preview pair under `previews`.\n'
   if (( ${#SKIPPED[@]} )); then
     printf '\n### Still to do\n\n'
     for item in "${SKIPPED[@]}"; do printf -- '- %s\n' "$item"; done

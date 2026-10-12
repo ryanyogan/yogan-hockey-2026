@@ -3,21 +3,33 @@
 #
 #   scripts/worker-logs.sh [minutes] [limit]      default: the last 30 minutes, 50 events
 #   RAW=1 scripts/worker-logs.sh ...              the whole JSON answer instead
+#   scripts/worker-logs.sh --tail [wrangler tail's flags]
+#                                                 what the Worker does from now on, as it happens
 #
-# Uses the cf CLI's own login. Each line: time, what ran (a request, an Agent's alarm or socket),
-# its outcome, wall and CPU time in milliseconds, and the message of a log line.
+# `wrangler tail` (wrangler's own login) shows only what happens while it runs. The stored logs
+# come from an API wrangler has no command for and its login has no scope for: they need
+# CLOUDFLARE_API_TOKEN set to a token with Account > Workers Observability > Read. Each line:
+# time, what ran (a request, an Agent's alarm or socket), its outcome, wall and CPU time in
+# milliseconds, and the message of a log line.
 set -euo pipefail
+
+worker="yogan-hockey"
+root="$(cd "$(dirname "$0")" && pwd)"
+
+if [[ "${1:-}" == "--tail" ]]; then
+  shift
+  cd "$root/../apps/web"
+  exec pnpm exec wrangler tail "$worker" "$@"
+fi
+
+# shellcheck source=scripts/lib/cloudflare-api.sh
+source "$root/lib/cloudflare-api.sh"
 
 minutes="${1:-30}"
 limit="${2:-50}"
-worker="yogan-hockey"
-
-cd "$(dirname "$0")/../apps/web"
 
 to=$(date +%s%3N)
 from=$((to - minutes * 60 * 1000))
-# The timeframe goes in the body: cf 1.0.0-beta.12's --timeframe-from and --timeframe-to flags
-# are not sent as the nested object the API wants, and the query is refused.
 body=$(jq -n --arg worker "$worker" --argjson from "$from" --argjson to "$to" --argjson limit "$limit" '{
   queryId: "adhoc",
   dry: true,
@@ -30,7 +42,14 @@ body=$(jq -n --arg worker "$worker" --argjson from "$from" --argjson to "$to" --
   }
 }')
 
-answer=$(pnpm exec cf observability telemetry query --body "$body" </dev/null)
+account=$(cloudflare_account)
+answer=$(cloudflare_api POST "/accounts/$account/workers/observability/telemetry/query" "$body") || {
+  # Seen on 2026-10-12: wrangler's login is refused here (403), where cf's was not.
+  echo "worker-logs: Cloudflare refused the query. wrangler's own login has no scope for the stored" >&2
+  echo "  logs: set CLOUDFLARE_API_TOKEN to a token with Account > Workers Observability > Read," >&2
+  echo "  or watch the Worker live with: scripts/worker-logs.sh --tail" >&2
+  exit 1
+}
 
 if [[ -n "${RAW:-}" ]]; then
   echo "$answer"

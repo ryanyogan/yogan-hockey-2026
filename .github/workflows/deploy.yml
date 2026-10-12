@@ -19,13 +19,11 @@ jobs:
     timeout-minutes: 2
     outputs:
       enabled: ${{ steps.gate.outputs.enabled }}
-      d1: ${{ steps.gate.outputs.d1 }}
     steps:
       - uses: actions/checkout@v7
         with:
           sparse-checkout: |
             scripts/deploy-gate.sh
-            apps/web/cloudflare.resources.json
           sparse-checkout-cone-mode: false
       - id: gate
         env:
@@ -56,14 +54,18 @@ jobs:
       - uses: ./.github/actions/setup
 
       # Migrations first: they are additive only, so the Worker still running works on the new
-      # schema, and the new Worker never meets the old one.
+      # schema, and the new Worker never meets the old one. Before the build, too: once there is
+      # a build, wrangler reads the configuration the build wrote in place of wrangler.jsonc.
+      # `DB` is the binding; wrangler.jsonc names the database and where its migrations are.
       - name: Apply the D1 migrations
-        env:
-          D1_ID: ${{ needs.gate.outputs.d1 }}
-        run: pnpm exec cf d1 migrations apply "$D1_ID" --dir ../../packages/db/migrations </dev/null
+        run: pnpm exec wrangler d1 migrations apply DB --remote </dev/null
 
-      # The Worker has no secrets, so the deploy uploads none.
+      - name: Build
+        run: pnpm build
+
+      # Uploads what the build wrote (dist/, found through .wrangler/deploy/config.json). The
+      # Worker has no secrets, so the deploy uploads none.
       - name: Deploy the Worker
         run: |
           subject=$(git log -1 --pretty=%s | cut -c1-100)
-          pnpm exec cf deploy --tag "${GITHUB_SHA::7}" --message "$subject" </dev/null
+          pnpm exec wrangler deploy --tag "${GITHUB_SHA::7}" --message "$subject" </dev/null

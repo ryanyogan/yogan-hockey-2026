@@ -8,8 +8,10 @@
 # Written by scripts/account-setup.sh only if it cannot post to the issue.
 account-setup-comment.md
 
-# The cf CLI caches the account it resolved here.
-.cloudflare/
+# Wrangler's and the Vite plugin's local state (the simulated KV, D1 and Agents), and the types
+# `wrangler types` generates before every typecheck.
+.wrangler/
+worker-configuration.d.ts
 
 # Dependencies and build output.
 node_modules

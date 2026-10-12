@@ -27,7 +27,13 @@ test("the walking skeleton page exercises all four joins", async ({ page, reques
   await expect(serial).toHaveText(serialBefore);
 
   // 2. The cache is the local KV namespace, and the entry carries its tag and time limit.
-  const kv = `${LOCAL_KV}/VINEXT_KV_CACHE-yogan-hockey`;
+  // The namespace is listed under its binding's name; its id is the one in wrangler.jsonc.
+  const namespaces = await (await request.get(LOCAL_KV)).json();
+  const namespace = namespaces.result.find(
+    (found: { title: string }) => found.title === "VINEXT_KV_CACHE",
+  );
+  expect(namespace).toBeDefined();
+  const kv = `${LOCAL_KV}/${namespace.id}`;
   const keys = await (await request.get(`${kv}/keys`)).json();
   const entryKey = keys.result
     .map((key: { name: string }) => key.name)

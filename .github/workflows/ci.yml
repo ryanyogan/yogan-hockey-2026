@@ -32,10 +32,11 @@ jobs:
         run: pnpm typecheck
       - name: Vitest
         run: pnpm test
-      # The production build, then the checks `cf deploy` makes before it uploads. It uploads nothing.
+      # The production build, then the checks `wrangler deploy` makes before it uploads. It
+      # uploads nothing.
       - name: Production build
         working-directory: apps/web
-        run: pnpm exec cf deploy --dry-run </dev/null
+        run: pnpm build && pnpm exec wrangler deploy --dry-run </dev/null
 
   e2e:
     name: Playwright smoke tests

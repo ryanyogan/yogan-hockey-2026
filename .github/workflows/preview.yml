@@ -1,7 +1,7 @@
 name: Preview
 
 # A preview of each pull request, on the preview KV and D1, never the production pair
-# (apps/web/lib/deploy-target.ts). It does not wait for CI and CI does not wait for it.
+# (`previews` in apps/web/wrangler.jsonc). It does not wait for CI and CI does not wait for it.
 #
 # Switched off for now by scripts/deploy-gate.sh, which says why: the gate answers no, so the
 # deploy job below is skipped and has never run against Cloudflare.
@@ -18,13 +18,11 @@ jobs:
     timeout-minutes: 2
     outputs:
       enabled: ${{ steps.gate.outputs.enabled }}
-      d1: ${{ steps.gate.outputs.d1 }}
     steps:
       - uses: actions/checkout@v7
         with:
           sparse-checkout: |
             scripts/deploy-gate.sh
-            apps/web/cloudflare.resources.json
           sparse-checkout-cone-mode: false
       - id: gate
         env:
@@ -56,15 +54,22 @@ jobs:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
 
+      # `wrangler d1 migrations apply` knows only the databases at the top level of a
+      # configuration, which is production's. So the preview database is handed to it in a
+      # configuration of its own, written from `previews` in wrangler.jsonc.
       - name: Apply the D1 migrations to the preview database
-        env:
-          D1_ID: ${{ needs.gate.outputs.d1 }}
-        run: pnpm exec cf d1 migrations apply "$D1_ID" --dir ../../packages/db/migrations </dev/null
+        run: |
+          node ../../scripts/preview-d1-config.mjs >"$RUNNER_TEMP/preview-d1.json"
+          pnpm exec wrangler d1 migrations apply DB --remote --config "$RUNNER_TEMP/preview-d1.json" </dev/null
 
+      - name: Build
+        run: pnpm build
+
+      # Never run: the names of the URLs in wrangler's JSON are a guess until one has.
       - name: Deploy the preview
         env:
           PREVIEW_NAME: pr-${{ github.event.number }}
         run: |
-          pnpm exec cf previews deploy "$PREVIEW_NAME" --quiet </dev/null | tee "$RUNNER_TEMP/preview.json"
-          urls=$(jq -r '[.preview_urls[]?, .deployment_urls[]?] | join(" ")' "$RUNNER_TEMP/preview.json" || true)
-          echo "::notice title=Preview deployed::$PREVIEW_NAME ${urls:-(cf printed no URL; see the log)}"
+          pnpm exec wrangler preview --name "$PREVIEW_NAME" --json </dev/null | tee "$RUNNER_TEMP/preview.json"
+          urls=$(jq -r '[.. | strings | select(startswith("https://"))] | unique | join(" ")' "$RUNNER_TEMP/preview.json" || true)
+          echo "::notice title=Preview deployed::$PREVIEW_NAME ${urls:-(wrangler printed no URL; see the log)}"

@@ -1,29 +1,24 @@
 import { fileURLToPath } from "node:url";
-import { cloudflareTest, readD1Migrations } from "@cloudflare/vitest-pool-workers";
+import { cloudflareTest, readD1Migrations } from "@cloudflare/vitest-plugin";
 import { defineConfig } from "vitest/config";
 
 const MIGRATIONS = fileURLToPath(new URL("../../packages/db/migrations", import.meta.url));
 
 /**
- * Agent tests run inside the Workers runtime. The pool reads Wrangler config and
- * there is none, so the bindings from cloudflare.config.ts are repeated here.
+ * Agent tests run inside the Workers runtime, with the bindings `wrangler.jsonc` declares: a new
+ * Agent or binding goes there and nowhere else. `AI` is declared but has nothing behind
+ * it here (see "Predictions" in the build notes).
  * The entry is the Agents and their routing alone: the site's entry needs vinext's build.
  */
 export default defineConfig(async () => ({
   plugins: [
     cloudflareTest({
+      wrangler: { configPath: "./wrangler.jsonc" },
       main: "./agents/test-worker.ts",
+      // Off: on, the plugin opens a session with the Cloudflare account for the AI binding, which
+      // needs a login that CI does not have.
+      remoteBindings: false,
       miniflare: {
-        // The newest date the pool's own workerd accepts; the Worker itself runs on 2026-10-06.
-        compatibilityDate: "2026-08-22",
-        compatibilityFlags: ["nodejs_compat"],
-        durableObjects: {
-          GameAgent: { className: "GameAgent", useSQLite: true },
-          ScoreboardAgent: { className: "ScoreboardAgent", useSQLite: true },
-          SkeletonAgent: { className: "SkeletonAgent", useSQLite: true },
-        },
-        d1Databases: ["DB"],
-        kvNamespaces: ["VINEXT_KV_CACHE"],
         bindings: { TEST_MIGRATIONS: await readD1Migrations(MIGRATIONS) },
       },
     }),

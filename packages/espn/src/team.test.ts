@@ -99,6 +99,145 @@ describe("team detail", () => {
   });
 });
 
+/**
+ * ESPN changed the team response on 2026-10-12: a headshot is the URL itself, the record is one
+ * "total" item whose summary leaves the overtime losses out, and `pointDifferential`, the two
+ * special-teams percentages and the home and road items are gone. `team-21.json` is the shape
+ * before and `team-21-20261012.json` the shape since, and the site reads both.
+ */
+describe("team detail in the shape ESPN has sent since 2026-10-12", () => {
+  const recorded = () => loadFixture({ ...endpoints.team(TORONTO), fixture: "team-21-20261012" });
+
+  test("has the roster, a headshot being the URL itself or absent", async () => {
+    const { roster } = translateTeam(await recorded(), TORONTO);
+
+    expect(roster).toHaveLength(25);
+    expect(roster[0]).toEqual({
+      id: "4781550",
+      name: "Nick Blankenburg",
+      jersey: "3",
+      position: "D",
+      headshot: "https://a.espncdn.com/i/headshots/nhl/players/full/4781550.png",
+    });
+    expect(
+      roster.filter((player) => player.headshot === null).map((player) => player.name),
+    ).toEqual(["Luke Haymes", "Matt Hellickson"]);
+  });
+
+  test("has the team's stats, the difference being ESPN's `pointsDiff` and the percentages worked out from the counts", async () => {
+    const detail = translateTeam(await recorded(), TORONTO);
+
+    expect(detail.stats).toEqual({
+      gamesPlayed: 6,
+      wins: 3,
+      losses: 2,
+      otLosses: 1,
+      points: 7,
+      goalsFor: 20,
+      goalsAgainst: 18,
+      goalDifferential: 2,
+      // 5 goals on 19 power plays, and 1 goal against in 20 times short-handed.
+      powerPlayPct: 26.316,
+      penaltyKillPct: 95,
+    });
+  });
+
+  test("has the records with their overtime losses, the home and road ones from the total's counts", async () => {
+    const detail = translateTeam(await recorded(), TORONTO);
+
+    // ESPN's own summary is "3-2".
+    expect(detail.record).toEqual({ overall: "3-2-1", home: "2-2-0", road: "1-0-1" });
+  });
+
+  test("has the next game", async () => {
+    const detail = translateTeam(await recorded(), TORONTO);
+
+    expect(detail.nextGame).toMatchObject({
+      id: "401892500",
+      status: "scheduled",
+      home: { abbreviation: "UTA" },
+      away: { abbreviation: "TOR" },
+    });
+  });
+
+  test("matches the snapshot", async () => {
+    expect(translateTeam(await recorded(), TORONTO)).toMatchSnapshot();
+  });
+});
+
+describe("a team record's figures, where ESPN leaves some out", () => {
+  /** A team response with only a total record, whose stats are these. */
+  const withStats = (stats: Record<string, number>, summary = "1-2") => ({
+    team: {
+      id: "21",
+      abbreviation: "TOR",
+      displayName: "Toronto Maple Leafs",
+      shortDisplayName: "Maple Leafs",
+      location: "Toronto",
+      record: {
+        items: [
+          {
+            type: "total",
+            summary,
+            stats: Object.entries(stats).map(([name, value]) => ({ name, value })),
+          },
+        ],
+      },
+    },
+  });
+  const counts = { gamesPlayed: 3, wins: 1, losses: 2, otLosses: 0, points: 2 };
+
+  test("the goal difference is goals for less goals against when ESPN sends neither of its names for it", () => {
+    const detail = translateTeam(withStats({ ...counts, pointsFor: 6, pointsAgainst: 7 }), TORONTO);
+
+    expect(detail.stats?.goalDifferential).toBe(-1);
+  });
+
+  test("a percentage ESPN sends is read as sent, whatever the counts say", () => {
+    const detail = translateTeam(
+      withStats({
+        ...counts,
+        pointsFor: 6,
+        pointsAgainst: 7,
+        powerPlayPct: 18.182,
+        powerPlayGoals: 1,
+        powerPlayOpportunities: 2,
+      }),
+      TORONTO,
+    );
+
+    expect(detail.stats?.powerPlayPct).toBe(18.182);
+  });
+
+  test("a percentage is absent without its counts, and before the first power play either way", () => {
+    const none = translateTeam(withStats({ ...counts, pointsFor: 6, pointsAgainst: 7 }), TORONTO);
+    const unplayed = translateTeam(
+      withStats({
+        ...counts,
+        pointsFor: 6,
+        pointsAgainst: 7,
+        powerPlayGoals: 0,
+        powerPlayOpportunities: 0,
+        powerPlayGoalsAgainst: 0,
+        timesShortHanded: 0,
+      }),
+      TORONTO,
+    );
+
+    expect(none.stats).toMatchObject({ powerPlayPct: null, penaltyKillPct: null });
+    expect(unplayed.stats).toMatchObject({ powerPlayPct: null, penaltyKillPct: null });
+  });
+
+  test("the home and road records are absent without their counts, and a three-part summary is kept", () => {
+    const detail = translateTeam(
+      withStats({ ...counts, pointsFor: 6, pointsAgainst: 7, homeWins: 1, homeLosses: 2 }, "9-9-9"),
+      TORONTO,
+    );
+
+    expect(detail.record).toEqual({ overall: "9-9-9", home: null, road: null });
+  });
+});
+
 describe("a team's schedule", () => {
   const recorded = () => loadFixture(endpoints.teamSchedule(TORONTO));
 

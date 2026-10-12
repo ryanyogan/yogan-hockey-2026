@@ -1,4 +1,5 @@
 import type { FinalGame, GameStatus, SeasonRecord, StoredPrediction } from "@yogan-hockey/schemas";
+import { NHL_TIME_ZONE } from "./game-time";
 
 /** What a game still to come says until its Prediction arrives. */
 export const PICK_PENDING = "pick pending";
@@ -64,6 +65,16 @@ export function slatePicks(
  */
 export function pickNote(line: string | undefined, status: GameStatus): string | undefined {
   return line === PICK_PENDING && status !== "scheduled" ? undefined : line;
+}
+
+/**
+ * The season under way: the slate's when its date is known, and otherwise that of the day it is
+ * where the NHL keeps its days. For a page drawn without today's games (the page cache's).
+ */
+export function seasonNow(slateDate: string | null, now: Date): number {
+  // The Canadian form of a date is year-month-day.
+  const today = () => new Intl.DateTimeFormat("en-CA", { timeZone: NHL_TIME_ZONE }).format(now);
+  return seasonOfSlate(slateDate ?? today());
 }
 
 /** The season record of the picks as the dashboard says it. Null until a pick has been decided. */

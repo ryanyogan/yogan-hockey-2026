@@ -25,10 +25,13 @@ import { useScoreboard } from "./scoreboard-provider";
 function Side({
   side,
   scored,
+  live,
   className = "",
 }: {
   side: ScoreboardSide;
   scored: boolean;
+  /** A game in progress has its scores in the one red. */
+  live: boolean;
   className?: string;
 }) {
   return (
@@ -38,7 +41,7 @@ function Side({
         <TeamMark teamId={side.id} eager className="mr-1 md:mr-[0.45em]" />
         <span data-slot="team">{side.abbreviation}</span>
       </span>
-      {scored && <span className="tabular-nums"> {side.score}</span>}
+      {scored && <span className={`tabular-nums ${live ? "text-kicker" : ""}`}> {side.score}</span>}
     </span>
   );
 }
@@ -59,7 +62,7 @@ const LAYOUT = {
     status: "max-md:col-start-1 max-md:row-start-1 max-md:text-[11px] max-md:leading-[14px]",
   },
   row: {
-    link: "flex min-h-11 items-center gap-2 px-4 md:min-h-0 md:px-6 md:py-row",
+    link: "flex min-h-11 items-center gap-2 px-2 md:min-h-0 md:py-row",
     marker: "",
     side: "",
     at: "",
@@ -85,21 +88,21 @@ function Entry({
       href={gameHref(game)}
       data-live={live ? "" : undefined}
       data-favorite={favorite ? "" : undefined}
-      className={`whitespace-nowrap hover:bg-highlight ${classes.link} ${live ? "bg-live-tint" : ""}`}
+      className={`whitespace-nowrap hover:bg-highlight ${classes.link}`}
     >
       {favorite && (
         <FavoriteMarker className={classes.marker}>
           <span className="sr-only">favorite team, </span>
         </FavoriteMarker>
       )}
-      <Side side={game.away} scored={scored} className={classes.side} />
+      <Side side={game.away} scored={scored} live={live} className={classes.side} />
       <span className={`text-label ${classes.at}`}>
         <span aria-hidden="true">@</span>
         <span className="sr-only">at</span>
       </span>
-      <Side side={game.home} scored={scored} className={classes.side} />
+      <Side side={game.home} scored={scored} live={live} className={classes.side} />
       <span className={`${live ? "font-strong text-live" : "text-label"} ${classes.status}`}>
-        {/* The tint says "live" to the eye only. */}
+        {/* The red says "live" to the eye only. */}
         {live && status !== "live" && <span className="sr-only">live, </span>}
         <GameStatus game={game} />
       </span>
@@ -189,8 +192,9 @@ function fadeOf({ before, after }: StripReach): string {
 }
 
 /**
- * The score ticker: today's games across the top of every page, each linking to its game. Away
- * then home, the winner in bold, a game in progress tinted. "scores" stays put at its start and
+ * The score ticker: today's games in a slim agate strip under the masthead (13px, between
+ * hairlines), each linking to its game. Away then home, the winner in bold, the scores and the
+ * status of a game in progress in the one red. "scores" stays put at its start and
  * leads to `/nhl/live`.
  *
  * The strip scrolls sideways inside itself, by touch (stopping on an entry's edge), a sideways
@@ -238,10 +242,10 @@ export function ScoreTicker() {
   if (date == null) return null;
   return (
     <nav aria-label="Scores">
-      <div className={`flex ${TICKER_STRIP_HEIGHT}`}>
+      <div className={`flex text-[13px] ${TICKER_STRIP_HEIGHT}`}>
         <Link
           href="/nhl/live"
-          className="flex shrink-0 items-center border-rule border-r pr-3 pl-4 font-strong uppercase hover:bg-highlight max-md:text-(length:--fs-small) md:px-6"
+          className="flex shrink-0 items-center border-rule-head border-r pr-3 font-semibold text-kicker text-[12px] uppercase tracking-[0.14em] hover:bg-highlight"
         >
           scores
         </Link>
@@ -256,7 +260,7 @@ export function ScoreTicker() {
             {ordered.map((game) => (
               <li
                 key={game.id}
-                className="shrink-0 snap-start border-rule border-r last:border-r-0"
+                className="shrink-0 snap-start border-rule-head border-r last:border-r-0"
               >
                 <Entry game={game} favorite={isFavoriteGame(game, favoriteTeamIds)} layout="cell" />
               </li>
@@ -271,7 +275,7 @@ export function ScoreTicker() {
             aria-controls={open ? slateId : undefined}
             onClick={() => setOpenOn(open ? null : pathname)}
             // One width open or closed on a phone, so the strip beside it does not move.
-            className="flex w-12 shrink-0 cursor-pointer items-center justify-center gap-2 border-rule border-l font-strong hover:bg-highlight md:w-auto md:min-w-11 md:px-4"
+            className="flex w-12 shrink-0 cursor-pointer items-center justify-center gap-2 border-rule-head border-l font-strong hover:bg-highlight md:w-auto md:min-w-11 md:px-4"
           >
             <span className="sr-only">
               {open ? "Close the slate" : `All ${ordered.length} games`}
@@ -281,7 +285,7 @@ export function ScoreTicker() {
                 +{reach.hidden}
               </span>
             )}
-            {/* Drawn, not typed: Geist Mono has no arrow, and each fallback font draws its own. */}
+            {/* Drawn, not typed: a typed arrow is whatever font has one. */}
             <span
               aria-hidden="true"
               className={`size-0 border-x-4 border-x-transparent border-t-4 border-t-current ${open ? "rotate-180" : ""}`}
@@ -291,7 +295,7 @@ export function ScoreTicker() {
       </div>
       {open && (
         // The last row's rule is cut off: the rule under the ticker closes the slate.
-        <div className="overflow-hidden border-rule border-t">
+        <div className="overflow-hidden border-rule-head border-t">
           <ul
             id={slateId}
             aria-label="All of today's games"

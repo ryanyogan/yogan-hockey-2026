@@ -121,8 +121,8 @@ for (const route of ROUTES) {
           row: height('[data-slot="ledger-body"] [data-slot="ledger-row"]'),
           tab: height('[data-slot="url-tabs"] a'),
           strip: height('[data-slot="score-ticker"]'),
-          tabBar: height('[data-slot="tab-bar"]'),
-          tabBarPlace: height('[data-slot="tab-bar"] a'),
+          sectionNav: height('[data-slot="section-nav"]'),
+          section: height('[data-slot="section-nav"] a'),
         };
       });
       const failed = [];

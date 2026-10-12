@@ -11,7 +11,7 @@ const under = (pathname: string, root: string) =>
 /** The one `tab` that changes which place a page belongs to: `/nhl` is Standings without it. */
 const TEAMS_TAB = "teams";
 
-/** The same five destinations belong to the desktop sidebar and the phone's tab bar. */
+/** The five sections of the masthead's nav, at any width. */
 export const NAV_ITEMS: readonly NavItem[] = [
   { label: "Home", href: "/", owns: (pathname) => pathname === "/" },
   {
@@ -45,4 +45,12 @@ export function currentNavItem(pathname: string, tab: string | null): NavItem | 
 export function navItemByPathAlone(pathname: string): NavItem | undefined {
   const without = currentNavItem(pathname, null);
   return currentNavItem(pathname, TEAMS_TAB) === without ? without : undefined;
+}
+
+/**
+ * Whether a page carries the score strip under the masthead. Home does not: its stories and
+ * briefs are the scores.
+ */
+export function showsScoreStrip(pathname: string): boolean {
+  return pathname !== "/";
 }

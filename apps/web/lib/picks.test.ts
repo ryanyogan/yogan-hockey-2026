@@ -6,6 +6,7 @@ import {
   pickLine,
   pickNote,
   recordLine,
+  seasonNow,
   seasonOfSlate,
   slatePicks,
 } from "./picks";
@@ -118,6 +119,14 @@ test("a slate's season is ESPN's season year: the year the season ends in", () =
   expect(seasonOfSlate("2027-01-02")).toBe(2027);
   expect(seasonOfSlate("2027-06-20")).toBe(2027);
   expect(seasonOfSlate("2027-07-01")).toBe(2028);
+});
+
+test("the season now is the slate's, and the NHL's own day's when no slate is known", () => {
+  // Half past midnight UTC on July 1 is still June 30 where the NHL keeps its days.
+  const lateJune = new Date("2027-07-01T00:30:00Z");
+  expect(seasonNow("2026-10-06", lateJune)).toBe(2027);
+  expect(seasonNow(null, lateJune)).toBe(2027);
+  expect(seasonNow(null, new Date("2027-07-01T12:00:00Z"))).toBe(2028);
 });
 
 test("a finished game's result names the winner, home or away, with the final score", () => {

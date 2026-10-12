@@ -2,20 +2,24 @@ import { AsyncLocalStorage } from "node:async_hooks";
 import { EspnFetchError, EspnParseError } from "@yogan-hockey/espn";
 
 /**
- * The status of a page whose render failed.
+ * The status of a page whose read failed.
  *
- * vinext answers 200 for a failed render that an `error.tsx` catches: the status is decided
- * before the boundary is drawn and nothing in a page can change it. So the Worker's entry runs
- * each request inside `answerWithRenderStatus`, `instrumentation.ts` reports each failed render
- * to `noteRenderFailure`, and the page that comes back is given the failure's status:
+ * TanStack Start answers 500 for a page whose loader threw, whatever threw, and draws the site's
+ * error page inside the shell. So the Worker's entry runs each request inside
+ * `answerWithRenderStatus`, a page's read reports its failure to `noteRenderFailure`
+ * (`pageRead` in `src/functions/page-read.ts`), and the page that comes back is given the
+ * failure's status:
  *
  * - 503 when the failed read was ESPN's (it did not answer, or answered what cannot be read):
  *   the page is unavailable for now and worth asking for again;
  * - 500 for anything else, which is a fault of this site's.
  *
- * Only a whole page is touched. A navigation inside the site (an RSC answer) keeps its 200, since
- * vinext's client draws the boundary from it; so does a failure that streams in after the
- * response has started, whose status has already gone.
+ * Only a whole page is touched: a navigation inside the site asks for a server function's answer,
+ * not a page, and the router draws the error page from it.
+ *
+ * (Under vinext, which answered 200 for a failed render, the same did for a 200. `doNotKeepPage`
+ * and `watchRender`'s `unstorable` were its page cache's, and are kept only until the routes that
+ * still call them are ported: #188 to #192.)
  */
 type Render = { status: number | null; keep: boolean };
 
@@ -48,12 +52,11 @@ export function doNotKeepPage(): void {
 }
 
 /**
- * The page of last resort: for a request that vinext could not answer at all, which is a failure
- * of the root layout. There is then no shell and no stylesheet to count on (`app/error.tsx` is
- * drawn inside the layout, and with it present vinext does not turn to `app/global-error.tsx`
- * on the server), so this is whole in itself, in the Agate look as far as a page with no fonts
- * to load can be: the wordmark and the title in a device's serif, the rules and the colours the
- * theme's own.
+ * The page of last resort: for a request that Start could not answer at all, which is a failure
+ * outside any route (the error page of `components/shell/` is drawn inside the shell, by the
+ * router). There is then no shell and no stylesheet to count on, so this is whole in itself, in
+ * the Agate look as far as a page with no fonts to load can be: the wordmark and the title in a
+ * device's serif, the rules and the colours the theme's own.
  */
 const LAST_RESORT_PAGE = `<!doctype html>
 <html lang="en">

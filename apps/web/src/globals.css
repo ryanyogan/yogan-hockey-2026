@@ -2,25 +2,11 @@
 @import "@yogan-hockey/ui/theme.css";
 
 /*
- * Agate's two voices (`docs/design/agate.md`), self-hosted from Fontsource's packages, each
- * `font-display: swap`. Until a file arrives its text is drawn in a local face sized to it, which
- * is the theme's (`font-fallbacks.css` in `packages/ui`).
- *
- * Newsreader is what is read: one variable file holding every weight and the optical sizes 6 to
- * 72 (`opsz`), without which a headline is drawn in text letterforms. Its italic is the pick
- * line's alone, a second file the browser fetches when a page first sets italic serif.
- *
- * IBM Plex Sans Condensed is what is looked up, and the page's default. It has no variable file,
- * so each weight is its own.
- *
- * The Latin files are preloaded by `src/head.ts`.
+ * Agate's two voices (`docs/design/agate.md`): the faces are `fonts.css`'s, whose files are the
+ * site's own (`public/fonts`). Until a file arrives its text is drawn in a local face sized to
+ * it, which is the theme's (`font-fallbacks.css` in `packages/ui`).
  */
-@import "@fontsource-variable/newsreader/opsz.css";
-@import "@fontsource-variable/newsreader/opsz-italic.css";
-@import "@fontsource/ibm-plex-sans-condensed/400.css";
-@import "@fontsource/ibm-plex-sans-condensed/500.css";
-@import "@fontsource/ibm-plex-sans-condensed/600.css";
-@import "@fontsource/ibm-plex-sans-condensed/700.css";
+@import "./fonts.css";
 
 /* Vinext's routes, still to be ported (#188 to #192), are not pages of this build. */
 @source not "../app";
@@ -33,7 +19,7 @@
  */
 :root {
   /* The faces' names, which `theme.css` turns into `font-serif` and `font-agate`. */
-  --font-newsreader: "Newsreader Variable";
+  --font-newsreader: "Newsreader";
   --font-plex-condensed: "IBM Plex Sans Condensed";
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-right: env(safe-area-inset-right, 0px);

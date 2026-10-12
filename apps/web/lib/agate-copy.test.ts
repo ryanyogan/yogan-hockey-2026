@@ -602,7 +602,7 @@ describe("the dateline", () => {
   const TONIGHT = { date: "2026-10-11", games: [WSH, NYR, MTL] };
   const record = { right: 29, wrong: 14 };
 
-  test("the date is written out, and short for the phone's top bar", () => {
+  test("the date is written out", () => {
     expect(datelineDate("2026-10-11")).toBe("Sunday, October 11");
     expect(datelineDate(null)).toBeNull();
   });

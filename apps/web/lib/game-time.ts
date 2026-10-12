@@ -50,11 +50,10 @@ export function slateDay(date: string): string {
 }
 
 /**
- * "Sunday, October 11", or "Sun, Oct 11" when short: a slate's date (`YYYY-MM-DD`) written out,
- * as the masthead's dateline has it.
+ * "Sunday, October 11": a slate's date (`YYYY-MM-DD`) written out, as the masthead has it.
  */
-export function slateDate(date: string, length: "long" | "short" = "long"): string {
-  const parts = formatter("UTC", { weekday: length, month: length, day: "numeric" }).formatToParts(
+export function slateDate(date: string): string {
+  const parts = formatter("UTC", { weekday: "long", month: "long", day: "numeric" }).formatToParts(
     new Date(`${date}T00:00:00Z`),
   );
   return `${part(parts, "weekday")}, ${part(parts, "month")} ${part(parts, "day")}`;

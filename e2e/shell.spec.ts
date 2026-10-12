@@ -27,11 +27,10 @@ test("the masthead leads with the wordmark, has the sections under it at any wid
   await expect(sections).toBeVisible();
   await expect(sections.getByRole("link")).toHaveText(SECTIONS);
   const sectionNav = page.locator('[data-slot="section-nav"]');
-  const below = async () => {
+  const dateline = page.locator('[data-slot="dateline"]');
+  const inOrder = async () => {
     const [name, row, line] = await Promise.all(
-      [wordmark, sectionNav, page.locator('[data-slot="dateline"]')].map((part) =>
-        part.boundingBox(),
-      ),
+      [wordmark, sectionNav, dateline].map((part) => part.boundingBox()),
     );
     // Nothing a visitor can press is above the wordmark.
     const above = await page.evaluate(
@@ -46,9 +45,8 @@ test("the masthead leads with the wordmark, has the sections under it at any wid
     expect(row?.y).toBeGreaterThanOrEqual((name?.y ?? 0) + (name?.height ?? 0));
     expect(line?.y).toBeGreaterThanOrEqual((row?.y ?? 0) + (row?.height ?? 0));
   };
-  await below();
+  await inOrder();
   // Today's slate at a glance, from the page's one Scoreboard socket, on the dateline.
-  const dateline = page.locator('[data-slot="dateline"]');
   await expect(dateline).toContainText("Tuesday, October 6");
   await expect(dateline).toContainText("Tonight: 9 games · 9 to come");
   await expect(page.getByRole("contentinfo")).toContainText("ESPN");
@@ -120,7 +118,7 @@ test("the masthead leads with the wordmark, has the sections under it at any wid
   await page.setViewportSize(phone);
   await expect(page.getByRole("button", { name: /menu/i })).toHaveCount(0);
   await expect(masthead).toContainText("Tuesday, October 6");
-  await below();
+  await inOrder();
   const places = sectionNav.getByRole("link");
   await expect(places).toHaveText(SECTIONS);
   // A page that is nowhere marks no place.

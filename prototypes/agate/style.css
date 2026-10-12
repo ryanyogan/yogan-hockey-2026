@@ -17,7 +17,7 @@
   --label: #5c5a55; /* column heads, counts, records (6.6:1) */
   --aside: #5c5a55; /* GP, TV line, footer */
   --border: #c9c6bf; /* the DOTTED rule between agate rows */
-  --rule-head: #d5d3ce; /* hairline under a column head, utility bar */
+  --rule-head: #d5d3ce; /* hairline under a column head, the phone's dateline */
   --rule: #111111; /* heavy and double rules: story tops, masthead, table frame */
   --kicker: #c8102e; /* section labels, kickers, current nav, live (5.6:1) */
   --live: var(--kicker);
@@ -208,7 +208,7 @@ button {
 .theme--phone {
   display: none;
 }
-/* The row's rules are the buttons' top and bottom: only their sides are drawn. */
+/* The row's rules are the buttons' top and bottom, so they draw no border of their own. */
 .theme button {
   min-height: var(--tap);
   padding: 0 12px;

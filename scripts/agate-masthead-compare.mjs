@@ -85,6 +85,8 @@ const PARTS = [
     site: '[role="group"][aria-label="Theme"]',
     box: ["right", "y"],
     rules: false,
+    // Written twice and drawn once, at any width.
+    one: true,
   },
   {
     part: "theme button",
@@ -259,10 +261,11 @@ for (const width of WIDTHS) {
         ...(part.position ? POSITION : []),
         ...(part.box ?? []),
       ];
-      // Written twice and drawn once: the theme's control at any width.
-      if (part.part === "theme group" && (proto.count !== 1 || here.count !== 1)) {
+      if (part.one && (proto.count !== 1 || here.count !== 1)) {
         differences++;
-        console.log(`${where}: theme groups drawn: prototype ${proto.count}, site ${here.count}`);
+        console.log(
+          `${where}: ${part.part}: drawn ${proto.count} times in the prototype, ${here.count} on the site`,
+        );
       }
       for (const name of names) {
         if (

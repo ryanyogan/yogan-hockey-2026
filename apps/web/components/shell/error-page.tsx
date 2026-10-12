@@ -22,7 +22,6 @@ export function ErrorPage() {
 
   return (
     <section data-slot="error-page">
-      <title>Not answering · Yogan Hockey</title>
       <PageHeader title={title} count="not read" />
       <p className="pt-3 font-serif text-prose text-note leading-[1.4]">
         ESPN is not answering just now, so {subject} could not be read.{" "}

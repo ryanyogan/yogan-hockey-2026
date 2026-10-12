@@ -35,7 +35,7 @@ export default defineConfig({
       },
       env: {
         ASSETS: bindings.assets(),
-        // The disposable cache behind vinext's data cache (kvDataAdapter's default binding name).
+        // The disposable cache: what the site read from ESPN, each with a time limit (`lib/kv-cache.ts`).
         CACHE: bindings.kv({ id: target.kvId }),
         // The permanent record.
         DB: bindings.d1({ id: target.d1Id, name: target.d1Name }),

@@ -45,6 +45,17 @@ describe("the status of a page whose render failed", () => {
     expect((await failing("thrown text")).status).toBe(500);
   });
 
+  it("is 503 in place of the 500 TanStack Start gives a page whose loader failed on ESPN", async () => {
+    const response = await failing(new EspnFetchError("standings", null, "no response"), html(500));
+    expect(response.status).toBe(503);
+    expect(await response.text()).toBe("<p>the error page</p>");
+    expect(response.headers.get("cache-control")).toBe("no-store");
+  });
+
+  it("leaves Start's 500 a 500 when the fault was the site's own", async () => {
+    expect((await failing(new Error("a fault of our own"), html(500))).status).toBe(500);
+  });
+
   it("keeps the first failure's status when a render reports several", async () => {
     const response = await answerWithRenderStatus(async () => {
       noteRenderFailure(new EspnFetchError("teams/1", 500, "HTTP 500"));

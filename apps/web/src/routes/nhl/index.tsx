@@ -14,7 +14,8 @@ export const Route = createFileRoute("/nhl/")({
   // Anything unknown in the query falls back to the default, so the page is always one of these.
   loaderDeps: ({ search }) => readNhlPage(search),
   loader: ({ deps }) => readNhl({ data: deps }),
-  head: ({ loaderData }) => titled(loaderData?.tab === "teams" ? "NHL teams" : "NHL standings"),
+  head: ({ match, loaderData }) =>
+    titled(match, loaderData?.tab === "teams" ? "NHL teams" : "NHL standings"),
   component: NhlPage,
 });
 

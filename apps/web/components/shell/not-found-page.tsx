@@ -5,7 +5,6 @@ import { Link } from "../link";
 export function NotFoundPage() {
   return (
     <section data-slot="not-found">
-      <title>Not found · Yogan Hockey</title>
       <PageHeader title="Not found" count="404" />
       <p className="pt-3 font-serif text-prose text-note leading-[1.4]">
         Nothing is kept at this address.{" "}

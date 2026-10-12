@@ -12,9 +12,28 @@ export function pageTitle(title?: string): string {
   return title == null ? APP_NAME : `${title} · ${APP_NAME}`;
 }
 
-/** A route's `head` for a page with this title. */
-export function titled(title: string) {
-  return { meta: [{ title: pageTitle(title) }] };
+/** What `titled` reads of a route's match: how its read came out. */
+type Outcome = { status: string; _notFound?: boolean };
+
+/**
+ * A route's `head` for a page with this title, given the `match` its `head` was called with. The
+ * title is the page's own only when its read answered: a read that failed is drawn by the error
+ * page and one that found nothing by the not-found page (`components/shell/`), and the tab says
+ * so. The router calls `head` for the match that failed and for none beneath it, so the last
+ * title in the document is the right one.
+ *
+ * `_notFound` is the router's own mark on the root's match for an address no route answers, or a
+ * `notFound()` no route beneath catches (router-core 1.171: `load-server.ts`, `load-client.ts`).
+ * It has no public name, so a router upgrade is checked against `e2e/shell.spec.ts`.
+ */
+export function titled(match: Outcome, title?: string) {
+  return { meta: [{ title: pageTitle(outcomeTitle(match) ?? title) }] };
+}
+
+function outcomeTitle(match: Outcome): string | undefined {
+  if (match.status === "error") return "Not answering";
+  if (match.status === "notFound" || match._notFound) return "Not found";
+  return undefined;
 }
 
 /**
@@ -25,7 +44,7 @@ export function titled(title: string) {
 const PRELOADED_FONTS = [newsreader, plex400, plex500, plex600, plex700];
 
 /** What every page's `<head>` holds, whatever the page. */
-export function siteHead() {
+export function siteHead({ match }: { match: Outcome }) {
   return {
     meta: [
       { charSet: "utf-8" },
@@ -33,7 +52,7 @@ export function siteHead() {
       // makes `env(safe-area-inset-*)` say how far the notch and the home bar reach in
       // (`globals.css`). The bars' colour is `ThemeColor`'s, since it follows the theme shown.
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { title: pageTitle() },
+      ...titled(match).meta,
       { name: "application-name", content: APP_NAME },
       // iOS takes its home screen name, bars and splash from these, not from the manifest.
       // "default" keeps the page below the status bar, which iOS draws itself;

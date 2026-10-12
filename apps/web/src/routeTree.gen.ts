@@ -8,80 +8,79 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from "./routes/__root";
-import { Route as ManifestDotwebmanifestRouteImport } from "./routes/manifest[.]webmanifest";
-import { Route as NhlIndexRouteImport } from "./routes/nhl/index";
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as ManifestDotwebmanifestRouteImport } from './routes/manifest[.]webmanifest'
+import { Route as NhlIndexRouteImport } from './routes/nhl/index'
 
 const ManifestDotwebmanifestRoute = ManifestDotwebmanifestRouteImport.update({
-  id: "/manifest.webmanifest",
-  path: "/manifest.webmanifest",
+  id: '/manifest.webmanifest',
+  path: '/manifest.webmanifest',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const NhlIndexRoute = NhlIndexRouteImport.update({
-  id: "/nhl/",
-  path: "/nhl/",
+  id: '/nhl/',
+  path: '/nhl/',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 
 export interface FileRoutesByFullPath {
-  "/manifest.webmanifest": typeof ManifestDotwebmanifestRoute;
-  "/nhl/": typeof NhlIndexRoute;
+  '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
+  '/nhl/': typeof NhlIndexRoute
 }
 export interface FileRoutesByTo {
-  "/manifest.webmanifest": typeof ManifestDotwebmanifestRoute;
-  "/nhl": typeof NhlIndexRoute;
+  '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
+  '/nhl': typeof NhlIndexRoute
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport;
-  "/manifest.webmanifest": typeof ManifestDotwebmanifestRoute;
-  "/nhl/": typeof NhlIndexRoute;
+  __root__: typeof rootRouteImport
+  '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
+  '/nhl/': typeof NhlIndexRoute
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath;
-  fullPaths: "/manifest.webmanifest" | "/nhl/";
-  fileRoutesByTo: FileRoutesByTo;
-  to: "/manifest.webmanifest" | "/nhl";
-  id: "__root__" | "/manifest.webmanifest" | "/nhl/";
-  fileRoutesById: FileRoutesById;
+  fileRoutesByFullPath: FileRoutesByFullPath
+  fullPaths: '/manifest.webmanifest' | '/nhl/'
+  fileRoutesByTo: FileRoutesByTo
+  to: '/manifest.webmanifest' | '/nhl'
+  id: '__root__' | '/manifest.webmanifest' | '/nhl/'
+  fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  ManifestDotwebmanifestRoute: typeof ManifestDotwebmanifestRoute;
-  NhlIndexRoute: typeof NhlIndexRoute;
+  ManifestDotwebmanifestRoute: typeof ManifestDotwebmanifestRoute
+  NhlIndexRoute: typeof NhlIndexRoute
 }
 
-declare module "@tanstack/react-router" {
+declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    "/manifest.webmanifest": {
-      id: "/manifest.webmanifest";
-      path: "/manifest.webmanifest";
-      fullPath: "/manifest.webmanifest";
-      preLoaderRoute: typeof ManifestDotwebmanifestRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/nhl/": {
-      id: "/nhl/";
-      path: "/nhl";
-      fullPath: "/nhl/";
-      preLoaderRoute: typeof NhlIndexRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+    '/manifest.webmanifest': {
+      id: '/manifest.webmanifest'
+      path: '/manifest.webmanifest'
+      fullPath: '/manifest.webmanifest'
+      preLoaderRoute: typeof ManifestDotwebmanifestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nhl/': {
+      id: '/nhl/'
+      path: '/nhl'
+      fullPath: '/nhl/'
+      preLoaderRoute: typeof NhlIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   ManifestDotwebmanifestRoute: ManifestDotwebmanifestRoute,
   NhlIndexRoute: NhlIndexRoute,
-};
+}
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>();
+  ._addFileTypes<FileRouteTypes>()
 
-import type { createStart } from "@tanstack/react-start";
-import type { getRouter } from "./router.tsx";
-
-declare module "@tanstack/react-start" {
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
   interface Register {
-    ssr: true;
-    router: Awaited<ReturnType<typeof getRouter>>;
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
   }
 }

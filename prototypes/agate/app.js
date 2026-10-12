@@ -1,5 +1,6 @@
 // PROTOTYPE (Agate). Draws Home from data.js with the sentences of copy.js.
 // Address options: ?slate=tonight|busy  &theme=light|dark  &chrome=0 (hide the switcher)
+// &picks=1 (the sections with Picks among them)
 
 import {
   agateName,
@@ -30,30 +31,46 @@ const esc = (s) =>
 const SUN = `<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>`;
 const MOON = `<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>`;
 
+// The theme's two buttons. They are written twice and drawn once: at the end of the sections' row
+// at a desk, and at the end of the dateline on a phone, where the row has no room for them.
+function themeControl(place, dark) {
+  return `<div class="theme theme--${place}" role="group" aria-label="Theme">
+        <button type="button" data-theme="light" aria-pressed="${!dark}">${SUN}<span class="theme__word">Day</span></button>
+        <button type="button" data-theme="dark" aria-pressed="${dark}">${MOON}<span class="theme__word">Night</span></button>
+      </div>`;
+}
+
+// The nameplate first, as a newspaper's; then the sections between the double rule and a plain
+// one, in a row that stays at the top of the screen; then the dateline. `?picks=1` adds the
+// section the Picks page (#218) will bring, to show the row has room for it.
 function masthead() {
   const c = counts(slate.games);
   const dark = document.documentElement.classList.contains("dark");
-  const nav = ["Home", "Scores", "Standings", "Teams", "Players"]
+  const places = ["Home", "Scores", "Standings", "Teams", "Players"];
+  if (params.get("picks") === "1") places.push("Picks");
+  const nav = places
     .map((n, i) => `<a href="#"${i === 0 ? ' aria-current="page"' : ""}>${n}</a>`)
     .join("");
   return `
   <header class="masthead">
-    <div class="topbar">
-      <span class="topbar__date">${esc(slate.dateShort)}</span>
-      <nav class="sections" aria-label="Main">${nav}</nav>
-      <div class="theme" role="group" aria-label="Theme">
-        <button type="button" data-theme="light" aria-pressed="${!dark}">${SUN}<span class="theme__word">Day</span></button>
-        <button type="button" data-theme="dark" aria-pressed="${dark}">${MOON}<span class="theme__word">Night</span></button>
-      </div>
-    </div>
     <h1 class="wordmark"><a href="#">Yogan Hockey</a></h1>
-    <div class="dateline"><div class="dateline__inner">
+    <p class="masthead__date">${esc(slate.date)}</p>
+  </header>
+  <div class="section-row">
+    <div class="section-row__inner">
+      <nav class="sections" aria-label="Main">${nav}</nav>
+      ${themeControl("desk", dark)}
+    </div>
+  </div>
+  <div class="dateline">
+    <p class="dateline__inner">
       <span class="dateline__wide">${esc(slate.date)}</span>
       <span class="dateline__wide">Tonight: ${c.total} games${c.live ? ` · ${c.live} live` : ""}${c.toCome ? ` · ${c.toCome} to come` : ""}${c.final ? ` · ${c.final} final` : ""}</span>
       <span class="dateline__wide">Picks this season: ${slate.record.right} right, ${slate.record.wrong} wrong</span>
       <span class="dateline__narrow">${c.total} games${c.live ? ` · ${c.live} live` : ""}${c.final ? ` · ${c.final} final` : ""} · Picks ${slate.record.right}–${slate.record.wrong}</span>
-    </div></div>
-  </header>`;
+    </p>
+    ${themeControl("phone", dark)}
+  </div>`;
 }
 
 function lineScore(g) {
@@ -214,7 +231,10 @@ document.addEventListener("click", (event) => {
     } catch {}
     document.querySelector('meta[name="theme-color"]').content = dark ? "#121212" : "#fafaf8";
     render();
-    document.querySelector(`.theme [data-theme="${dark ? "light" : "dark"}"]`)?.focus();
+    // The one drawn: the desk's and the phone's are both written.
+    [...document.querySelectorAll(`.theme [data-theme="${dark ? "light" : "dark"}"]`)]
+      .find((button) => button.offsetParent != null)
+      ?.focus();
     return;
   }
   const conf = event.target.closest(".conf-tabs [data-conf]");

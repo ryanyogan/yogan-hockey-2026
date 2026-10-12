@@ -22,18 +22,16 @@
   --safe-right: env(safe-area-inset-right, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
-  /* The phone's section nav, which stays at the top of the screen: its rules (3, 2, 1, 1) and 44px. */
+  /* The sections' row, which stays at the top of the screen: its rules (3, 2, 1, 1) and 44px. */
   --section-nav: 3.1875rem;
 }
 
 /*
- * Whatever the browser scrolls into view on a phone (a focused link, a `#` target) stops short of
- * the section nav, which itself stops below the status bar.
+ * Whatever the browser scrolls into view (a focused link, a `#` target) stops short of the
+ * sections' row, which itself stops below the status bar.
  */
-@media (max-width: 767.98px) {
-  html {
-    scroll-padding-top: calc(var(--section-nav) + var(--safe-top));
-  }
+html {
+  scroll-padding-top: calc(var(--section-nav) + var(--safe-top));
 }
 
 .skip-link {

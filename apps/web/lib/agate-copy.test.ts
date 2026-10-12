@@ -604,7 +604,6 @@ describe("the dateline", () => {
 
   test("the date is written out, and short for the phone's top bar", () => {
     expect(datelineDate("2026-10-11")).toBe("Sunday, October 11");
-    expect(datelineDate("2026-10-11", "short")).toBe("Sun, Oct 11");
     expect(datelineDate(null)).toBeNull();
   });
 

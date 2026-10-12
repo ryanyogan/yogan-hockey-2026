@@ -135,21 +135,53 @@ button {
 
 /* ---------- masthead ---------- */
 
-.topbar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px 24px;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--rule-head);
+/*
+ * The nameplate leads, with nothing above it. Under it the sections' row, between the double rule
+ * (3px, a 2px gap, 1px) and a plain one, which stays at the top of the screen as the page scrolls;
+ * then the dateline. The header, the row and the dateline are the page column's own children: a
+ * sticky box travels no further than the box that holds it.
+ */
+.masthead {
+  text-align: center;
 }
-.topbar__date {
+.wordmark {
+  margin: 28px 0 0;
+  font: 700 clamp(54px, 9vw, 120px) / 0.92 var(--font-serif);
+  font-variation-settings: "opsz" 72;
+  letter-spacing: -0.025em;
+}
+.wordmark a {
+  text-decoration: none;
+}
+.wordmark a:hover {
+  color: inherit;
+}
+
+/* The date under the nameplate is the phone's: at a desk the dateline leads with it. */
+.masthead__date {
   display: none;
 }
+
+.section-row {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  margin-top: 20px;
+  border-top: 3px solid var(--rule);
+  padding-top: 2px;
+  background: var(--background);
+}
+/* The sections in the middle of the row, the theme at its end. */
+.section-row__inner {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
 .sections {
+  grid-column: 2;
   display: flex;
-  flex-wrap: wrap;
   gap: 0 20px;
 }
 .sections a {
@@ -169,10 +201,18 @@ button {
   display: flex;
   gap: 4px;
 }
+.theme--desk {
+  grid-column: 3;
+  justify-self: end;
+}
+.theme--phone {
+  display: none;
+}
+/* The row's rules are the buttons' top and bottom: only their sides are drawn. */
 .theme button {
   min-height: var(--tap);
   padding: 0 12px;
-  border: 1px solid var(--rule);
+  border: 0;
   background: transparent;
   display: inline-flex;
   align-items: center;
@@ -190,29 +230,11 @@ button {
   display: none;
 }
 
-.masthead {
-  text-align: center;
-}
-.wordmark {
-  margin: 28px 0 0;
-  font: 700 clamp(54px, 9vw, 120px) / 0.92 var(--font-serif);
-  font-variation-settings: "opsz" 72;
-  letter-spacing: -0.025em;
-}
-.wordmark a {
-  text-decoration: none;
-}
-.wordmark a:hover {
-  color: inherit;
-}
 .dateline {
-  margin-top: 20px;
-  border-top: 3px solid var(--rule);
   border-bottom: 1px solid var(--rule);
-  padding-top: 3px;
 }
 .dateline__inner {
-  border-top: 1px solid var(--rule);
+  margin: 0;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -570,36 +592,50 @@ button {
 /* ---------- phone: under Tailwind's md, like theme.css ---------- */
 
 @media (max-width: 767.98px) {
-  .masthead {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    grid-template-areas: "date theme" "title title" "nav nav" "line line";
+  .wordmark {
+    margin-top: 18px;
+    font-size: 54px;
+    line-height: 0.95;
   }
-  .topbar {
-    display: contents;
-  }
-  .topbar__date {
-    display: flex;
-    align-items: center;
-    grid-area: date;
-    min-height: 48px;
-    border-bottom: 1px solid var(--rule-head);
+  .masthead__date {
+    display: block;
+    margin: 10px 0 0;
     font: 600 12px / 1 var(--font-agate);
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--label);
   }
-  .theme {
-    grid-area: theme;
-    border-bottom: 1px solid var(--rule-head);
+  .section-row {
+    margin-top: 12px;
+  }
+  /* The sections fill the row, and it scrolls sideways before it wraps. */
+  .section-row__inner {
+    display: block;
+  }
+  .sections {
+    justify-content: space-between;
+    overflow-x: auto;
+    white-space: nowrap;
+    gap: 0;
+    scrollbar-width: none;
+  }
+  /* 3px either side and tighter tracking: six sections fit a 390px phone, and five a 360px one. */
+  .sections a {
+    padding: 0 3px;
+    letter-spacing: 0.06em;
+  }
+  .theme--desk {
+    display: none;
+  }
+  /* One button, which leads to the theme not shown: a moon by day, a sun by night. */
+  .theme--phone {
+    display: flex;
     margin-right: -10px;
   }
   .theme button {
-    border: 0;
     padding: 0;
     width: var(--tap);
     justify-content: center;
-    background: transparent;
   }
   .theme button[aria-pressed="true"] {
     display: none;
@@ -614,46 +650,16 @@ button {
     overflow: hidden;
     clip: rect(0 0 0 0);
   }
-  .wordmark {
-    grid-area: title;
-    margin-top: 18px;
-    font-size: 54px;
-    line-height: 0.95;
-  }
-  .sections {
-    grid-area: nav;
-    position: relative;
-    margin-top: 19px;
-    flex-wrap: nowrap;
-    justify-content: space-between;
-    overflow-x: auto;
-    white-space: nowrap;
-    gap: 0;
-    border-top: 1px solid var(--rule);
-    border-bottom: 1px solid var(--rule);
-  }
-  .sections::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: -6px;
-    border-top: 3px solid var(--rule);
-  }
-  .sections a {
-    padding: 0 6px;
-  }
+  /* The dateline is one line, with the theme's button at its end. */
   .dateline {
-    grid-area: line;
-    margin: 0;
-    border: 0;
-    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    border-bottom-color: var(--rule-head);
   }
   .dateline__inner {
-    border-top: 0;
-    border-bottom: 1px solid var(--rule-head);
     padding: 9px 0;
-    justify-content: center;
     font-size: 12px;
     color: var(--note);
   }

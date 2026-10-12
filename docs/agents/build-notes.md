@@ -268,6 +268,19 @@ Scores, Standings, Teams and the team page, which the prototype does not draw. `
 - **`/skeleton` is where the primitives are seen side by side** (the title, every mark, both markers, two buttons); there are no stories. `scripts/agate-primitives.mjs` measures the title and the marks there.
 - **A team mark is 1.2 times its type**, so it went from 15.6px to 18px with the body's size. Since #173 no row draws one, which `e2e/nhl.spec.ts` now holds; the score strip's is the mark at that size.
 
+## The masthead leads with the wordmark (#216)
+
+The utility bar above the wordmark is gone. The order at every width is the wordmark, the sections' row (`[data-slot="section-nav"]`, sticky at every width now), the dateline. The notes under "Agate 3" below are history where they speak of the utility bar, the short date or sections written twice.
+
+- **The sections are written once; the theme control is written twice.** `ThemeControl` takes the classes that say at which widths it is drawn: `hidden md:flex` at the end of the sections' row, `flex md:hidden` at the end of the dateline. A test or script asks for the one drawn: `page.getByRole("group", { name: "Theme" })` finds one, and `document.querySelector('[role="group"][aria-label="Theme"]')` finds the desk's first, drawn or not.
+- **The `<header>` holds the wordmark and the phone's date and nothing else.** The nav and the dateline are its siblings in the column, so `getByRole("banner")` does not contain the sections or the theme control. The sticky row cannot be the header's child (the note on sticky boxes below).
+- **`scroll-padding-top` is `--section-nav` at every width now**, not under `md` only: anything scrolled into view at a desk stops under the stuck row.
+- **The site's own font files set the sections about 3px a word wider than the prototype's Google Fonts files do** (368px against 352 for the five at a desk), so `agate-masthead-compare.mjs` compares where the sections' middle is, not their width. It also measures the sections' row at the top of the page: it scrolled to the foot for the footer's shot, where a sticky row is somewhere else.
+- **A phone's dateline with the date in it wraps.** "Tue, Oct 6 · 9 games · 4 live · 3 final · Picks 3–2" is 304px of the 314 a 390px phone leaves beside the theme button, and a season's record of three figures a side is longer. So the date is a line of its own under the wordmark there.
+- **Six sections on a phone**: measured on the site with a sixth link, "Picks", added in the page: at 6px either side and .1em of tracking, as the five were, six are 369px in a 390px phone's 358, so the phone's sections are 3px either side and tracked at .06em, which makes six 350px. At 360px six still scroll sideways by 22px (five fit). #218 adds the sixth. Measure on the site, not the prototype: the prototype's font files set the same words narrower.
+- **`e2e/shell.spec.ts` proves the row sticks at a desk in a 320px-tall window**: `/players` with nothing searched for is shorter than a desk's screen and does not scroll far enough at 600.
+- **The kept pictures were all retaken in this ticket** (`prototypes/agate/capture.mjs`, `agate-routes.mjs`, `agate-game-shots.ts`), since the masthead is at the top of each.
+
 ## Agate 3: the masthead (#170)
 
 The shell is `components/shell/`: `shell.tsx` (the column), `masthead.tsx` with its interactive parts in one file, `masthead-client.tsx`, then `score-ticker-slot.tsx` and `site-footer.tsx`. The sidebar, the phone's top bar and the tab bar are gone, and with them `nav-links.tsx`, `theme-toggle.tsx` and `scripts/sidebar-shots.mjs`; the notes on them below (#153, #139) are history, kept for what outlives them (run-time classes, `tap-target`).

@@ -11,14 +11,18 @@ import { wordmark } from "./wordmark";
 
 /*
  * The parts of the masthead that the browser must draw: the sections (the path), the dateline and
- * the short date (the Scoreboard), the theme, and whether the page has a score strip (the path).
+ * the phone's date (the Scoreboard), the theme, and whether the page has a score strip (the path).
  * They are one file so that they are one script: each is a few hundred bytes, and a file of its
  * own costs about as much again on every page.
  */
 
-/** A section: 13px semibold capitals, 44px to press, the current one in the one red. */
+/**
+ * A section: 13px semibold capitals, 44px to press, the current one in the one red. On a phone
+ * 3px either side and tracked at .06em, not .1em: six sections fit a 390px phone's row (350px of
+ * its 358), and five a 360px one's.
+ */
 const SECTION =
-  "inline-flex min-h-11 items-center font-semibold text-[13px] leading-none tracking-[0.1em] uppercase hover:text-label aria-[current=page]:text-kicker max-md:px-1.5";
+  "inline-flex min-h-11 items-center font-semibold text-[13px] leading-none tracking-[0.1em] uppercase hover:text-label aria-[current=page]:text-kicker max-md:px-[3px] max-md:tracking-[0.06em]";
 
 function Sections({ current }: { current: NavItem | undefined }) {
   return NAV_ITEMS.map((item) => (
@@ -55,14 +59,14 @@ export function SectionLinks() {
   return <Sections current={currentNavItem(usePathname(), useSearchParam("tab"))} />;
 }
 
-/** The dateline's one line of type: three parts across a desk, one centred on a phone. */
+/** The dateline's one line of type: three parts across a desk, one on a phone. */
 const DATELINE_LINE =
-  "flex flex-wrap justify-center gap-x-6 gap-y-1.5 border-rule-head border-b py-[9px] font-medium text-[12px] text-note uppercase leading-[1.3] tracking-[0.06em] md:justify-between md:border-rule md:border-t md:border-b-0 md:py-2 md:text-[13px] md:text-foreground";
+  "flex flex-wrap gap-x-6 gap-y-1.5 py-[9px] font-medium text-[12px] text-note uppercase leading-[1.3] tracking-[0.06em] md:justify-between md:py-2 md:text-[13px] md:text-foreground";
 
 /**
- * The dateline's rules and its line, around whatever is written on it. From `md` up it is the
- * double rule under the wordmark (3px, then 1px) with a plain rule beneath; on a phone the double
- * rule is the section nav's, above it, and the line sits over a hairline.
+ * The dateline's line and the rule under it, around whatever is written on it. The rule above it
+ * is the sections' row's. On a phone the line is over a hairline and ends with the theme's one
+ * button, which makes it 44px tall.
  *
  * With no children it holds the line's height, so nothing under it moves when the words arrive.
  */
@@ -70,9 +74,10 @@ function DatelineFrame({ children }: { children?: ReactNode }) {
   return (
     <div
       data-slot="dateline"
-      className="border-rule md:mt-5 md:border-t-[3px] md:border-b md:pt-[3px]"
+      className="flex items-center justify-between gap-x-2 border-rule-head border-b md:block md:border-rule"
     >
       <p className={DATELINE_LINE}>{children ?? <span aria-hidden="true">&nbsp;</span>}</p>
+      <ThemeControl className="flex md:hidden" />
     </div>
   );
 }
@@ -98,9 +103,12 @@ export function Dateline({ record }: { record: SeasonRecord | null }) {
   );
 }
 
-/** The slate's date in short, "Sun, Oct 11": the phone's utility bar. */
-export function ShortDate() {
-  return datelineDate(useScoreboard().date, "short");
+/**
+ * The slate's date, "Sunday, October 11": the phone's line under the wordmark. Before the
+ * Scoreboard's first poll it holds the line's height.
+ */
+export function MastheadDate() {
+  return datelineDate(useScoreboard().date) ?? "\u00a0";
 }
 
 /** Whatever is drawn where the score strip goes, on the pages that have one: all but Home. */
@@ -141,11 +149,12 @@ const MOON = (
 );
 
 /*
- * A theme's button. From `md` up: a ruled cell with its word, 44px tall. On a phone: its icon
- * alone in a 44px square, the word kept for a screen reader.
+ * A theme's button. From `md` up: a cell with its word, as tall as the sections' row, whose
+ * rules are its top and bottom. On a phone: its icon alone in a 44px square, the word kept for a
+ * screen reader.
  */
 const THEME_BUTTON =
-  "inline-flex min-h-11 cursor-pointer items-center gap-1.5 border border-rule px-3 font-semibold text-[12px] leading-none tracking-[0.12em] uppercase max-md:w-11 max-md:justify-center max-md:border-0 max-md:px-0";
+  "inline-flex min-h-11 cursor-pointer items-center gap-1.5 px-3 font-semibold text-[12px] leading-none tracking-[0.12em] uppercase max-md:w-11 max-md:justify-center max-md:px-0";
 /*
  * The button of the theme shown is filled in, and on a phone it is the one not drawn: the phone
  * has one button, which leads to the other theme (a moon by day, a sun by night). Both are
@@ -161,8 +170,11 @@ const NIGHT_BUTTON = "dark:max-md:hidden dark:md:bg-foreground dark:md:text-back
  * to the other. The values are next-themes' `light` and `dark`. Until a button is first pressed
  * the site follows the operating system; after that the choice is remembered. `aria-pressed`
  * says which is shown once the browser knows.
+ *
+ * The masthead writes it twice, for where each width has room (`masthead.tsx`): `className` says
+ * at which widths this one is drawn.
  */
-export function ThemeControl() {
+export function ThemeControl({ className }: { className: string }) {
   const { resolvedTheme, setTheme } = useTheme();
   // The theme is the browser's to know: the server and the first render say nothing of it.
   const known = useHydrated();
@@ -179,7 +191,7 @@ export function ThemeControl() {
   };
   return (
     // biome-ignore lint/a11y/useSemanticElements: a fieldset is for a form's fields.
-    <div role="group" aria-label="Theme" className="flex gap-1 max-md:-mr-2.5 max-md:self-stretch">
+    <div role="group" aria-label="Theme" className={`gap-1 max-md:-mr-2.5 ${className}`}>
       <button
         ref={day}
         type="button"

@@ -25,10 +25,12 @@ const [base = "http://localhost:5173", out = "node_modules/.tmp/install-check"] 
   process.argv.slice(2);
 const INSETS = { top: 47, right: 0, bottom: 34, left: 0 };
 const PHONE = { width: 390, height: 844 };
-// The same phone on its side: the notch at one end, and wide enough for the desk's masthead.
+// The same phone on its side: the notch at one end, and wide enough for the desk's masthead
+// (the theme's control at the end of the sections' row).
 const SIDEWAYS = { width: 844, height: 390 };
 const SIDEWAYS_INSETS = { top: 0, right: 47, bottom: 21, left: 47 };
-// A small phone on its side is still narrower than `md`: it keeps the phone's masthead.
+// A small phone on its side is still narrower than `md`: it keeps the phone's masthead (the
+// theme's one button at the end of the dateline).
 const SMALL_SIDEWAYS = { width: 667, height: 375 };
 
 await mkdir(out, { recursive: true });
@@ -145,11 +147,17 @@ const measure = () => {
     );
   };
   const shown = (node) => node.getClientRects().length > 0;
-  const masthead = document.querySelector('[data-slot="masthead"]');
   const nav = document.querySelector('[data-slot="section-nav"]');
   return {
     osPrefersDark: matchMedia("(prefers-color-scheme: dark)").matches,
-    mastheadContent: [...masthead.querySelectorAll("a, button")].filter(shown).map(text),
+    // The wordmark first, then the theme's control wherever this width draws it.
+    mastheadContent: [
+      ...document.querySelectorAll(
+        '[data-slot="masthead"] a, [role="group"][aria-label="Theme"] button',
+      ),
+    ]
+      .filter(shown)
+      .map(text),
     sectionNavShown: shown(nav),
     sectionNavBox: nav.getBoundingClientRect().toJSON(),
     sectionNavPlaces: [...nav.querySelectorAll("a")].filter(shown).map(text),
@@ -203,7 +211,7 @@ async function standalone(theme) {
   await page.screenshot({ path: `${out}/standalone-${theme}-390-top.png` });
   check(`${theme}: the operating system prefers ${os}`, top.osPrefersDark === (os === "dark"), top);
   check(
-    `${theme}: the masthead's date, theme button and wordmark clear the status bar`,
+    `${theme}: the masthead's wordmark and theme button clear the status bar`,
     top.mastheadContent.length >= 2 && top.mastheadContent.every((item) => item.top >= INSETS.top),
     top.mastheadContent,
   );
@@ -249,7 +257,7 @@ async function standalone(theme) {
 
 /**
  * The phone on its side, the notch at one end: wide enough for the desk's masthead at 844, and
- * still the phone's (the sections under the wordmark) at 667.
+ * still the phone's at 667. The sections are under the wordmark at both.
  */
 async function sideways(viewport) {
   const name = `sideways ${viewport.width}`;
@@ -276,10 +284,9 @@ async function sideways(viewport) {
   );
   const { left, right, bottom } = SIDEWAYS_INSETS;
   const top = await page.evaluate(measure);
-  const phone = viewport.width < 768;
   check(
-    `${name}: the sections are ${phone ? "under" : "above"} the wordmark`,
-    top.sectionNavShown === phone,
+    `${name}: the sections are under the wordmark`,
+    top.sectionNavShown && top.sectionNavBox.top >= top.mastheadContent[0]?.bottom - 0.5,
     top,
   );
   const pressed = [...top.mastheadContent, ...top.sectionNavPlaces];

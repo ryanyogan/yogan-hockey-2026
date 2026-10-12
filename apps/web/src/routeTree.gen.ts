@@ -11,10 +11,19 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ManifestDotwebmanifestRouteImport } from './routes/manifest[.]webmanifest'
+import { Route as PicksRouteImport } from './routes/picks'
 import { Route as NhlIndexRouteImport } from './routes/nhl/index'
 import { Route as NhlLiveRouteImport } from './routes/nhl/live'
+import { Route as PlayersIndexRouteImport } from './routes/players/index'
+import { Route as PlayersIdRouteRouteImport } from './routes/players/$id/route'
+import { Route as SkeletonIndexRouteImport } from './routes/skeleton/index'
+import { Route as SkeletonDashboardRouteImport } from './routes/skeleton/dashboard'
+import { Route as SkeletonLiveRouteImport } from './routes/skeleton/live'
+import { Route as SkeletonPicksRouteImport } from './routes/skeleton/picks'
 import { Route as NhlGamesIdRouteRouteImport } from './routes/nhl/games/$id/route'
 import { Route as NhlTeamsIdRouteRouteImport } from './routes/nhl/teams/$id/route'
+import { Route as PlayersIdIndexRouteImport } from './routes/players/$id/index'
+import { Route as PlayersIdGamesRouteImport } from './routes/players/$id/games'
 import { Route as NhlGamesIdIndexRouteImport } from './routes/nhl/games/$id/index'
 import { Route as NhlGamesIdPickRouteImport } from './routes/nhl/games/$id/pick'
 import { Route as NhlGamesIdScoringRouteImport } from './routes/nhl/games/$id/scoring'
@@ -32,6 +41,11 @@ const ManifestDotwebmanifestRoute = ManifestDotwebmanifestRouteImport.update({
   path: '/manifest.webmanifest',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PicksRoute = PicksRouteImport.update({
+  id: '/picks',
+  path: '/picks',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NhlIndexRoute = NhlIndexRouteImport.update({
   id: '/nhl/',
   path: '/nhl/',
@@ -40,6 +54,36 @@ const NhlIndexRoute = NhlIndexRouteImport.update({
 const NhlLiveRoute = NhlLiveRouteImport.update({
   id: '/nhl/live',
   path: '/nhl/live',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlayersIndexRoute = PlayersIndexRouteImport.update({
+  id: '/players/',
+  path: '/players/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlayersIdRouteRoute = PlayersIdRouteRouteImport.update({
+  id: '/players/$id',
+  path: '/players/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SkeletonIndexRoute = SkeletonIndexRouteImport.update({
+  id: '/skeleton/',
+  path: '/skeleton/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SkeletonDashboardRoute = SkeletonDashboardRouteImport.update({
+  id: '/skeleton/dashboard',
+  path: '/skeleton/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SkeletonLiveRoute = SkeletonLiveRouteImport.update({
+  id: '/skeleton/live',
+  path: '/skeleton/live',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SkeletonPicksRoute = SkeletonPicksRouteImport.update({
+  id: '/skeleton/picks',
+  path: '/skeleton/picks',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NhlGamesIdRouteRoute = NhlGamesIdRouteRouteImport.update({
@@ -51,6 +95,16 @@ const NhlTeamsIdRouteRoute = NhlTeamsIdRouteRouteImport.update({
   id: '/nhl/teams/$id',
   path: '/nhl/teams/$id',
   getParentRoute: () => rootRouteImport,
+} as any)
+const PlayersIdIndexRoute = PlayersIdIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PlayersIdRouteRoute,
+} as any)
+const PlayersIdGamesRoute = PlayersIdGamesRouteImport.update({
+  id: '/games',
+  path: '/games',
+  getParentRoute: () => PlayersIdRouteRoute,
 } as any)
 const NhlGamesIdIndexRoute = NhlGamesIdIndexRouteImport.update({
   id: '/',
@@ -86,10 +140,19 @@ const NhlTeamsIdStatsRoute = NhlTeamsIdStatsRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
+  '/picks': typeof PicksRoute
+  '/players/$id': typeof PlayersIdRouteRouteWithChildren
   '/nhl/live': typeof NhlLiveRoute
+  '/skeleton/dashboard': typeof SkeletonDashboardRoute
+  '/skeleton/live': typeof SkeletonLiveRoute
+  '/skeleton/picks': typeof SkeletonPicksRoute
   '/nhl/': typeof NhlIndexRoute
+  '/players/': typeof PlayersIndexRoute
+  '/skeleton/': typeof SkeletonIndexRoute
   '/nhl/games/$id': typeof NhlGamesIdRouteRouteWithChildren
   '/nhl/teams/$id': typeof NhlTeamsIdRouteRouteWithChildren
+  '/players/$id/games': typeof PlayersIdGamesRoute
+  '/players/$id/': typeof PlayersIdIndexRoute
   '/nhl/games/$id/pick': typeof NhlGamesIdPickRoute
   '/nhl/games/$id/scoring': typeof NhlGamesIdScoringRoute
   '/nhl/teams/$id/roster': typeof NhlTeamsIdRosterRoute
@@ -100,8 +163,16 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
+  '/picks': typeof PicksRoute
   '/nhl/live': typeof NhlLiveRoute
+  '/skeleton/dashboard': typeof SkeletonDashboardRoute
+  '/skeleton/live': typeof SkeletonLiveRoute
+  '/skeleton/picks': typeof SkeletonPicksRoute
   '/nhl': typeof NhlIndexRoute
+  '/players': typeof PlayersIndexRoute
+  '/skeleton': typeof SkeletonIndexRoute
+  '/players/$id/games': typeof PlayersIdGamesRoute
+  '/players/$id': typeof PlayersIdIndexRoute
   '/nhl/games/$id/pick': typeof NhlGamesIdPickRoute
   '/nhl/games/$id/scoring': typeof NhlGamesIdScoringRoute
   '/nhl/teams/$id/roster': typeof NhlTeamsIdRosterRoute
@@ -113,10 +184,19 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
+  '/picks': typeof PicksRoute
+  '/players/$id': typeof PlayersIdRouteRouteWithChildren
   '/nhl/live': typeof NhlLiveRoute
+  '/skeleton/dashboard': typeof SkeletonDashboardRoute
+  '/skeleton/live': typeof SkeletonLiveRoute
+  '/skeleton/picks': typeof SkeletonPicksRoute
   '/nhl/': typeof NhlIndexRoute
+  '/players/': typeof PlayersIndexRoute
+  '/skeleton/': typeof SkeletonIndexRoute
   '/nhl/games/$id': typeof NhlGamesIdRouteRouteWithChildren
   '/nhl/teams/$id': typeof NhlTeamsIdRouteRouteWithChildren
+  '/players/$id/games': typeof PlayersIdGamesRoute
+  '/players/$id/': typeof PlayersIdIndexRoute
   '/nhl/games/$id/pick': typeof NhlGamesIdPickRoute
   '/nhl/games/$id/scoring': typeof NhlGamesIdScoringRoute
   '/nhl/teams/$id/roster': typeof NhlTeamsIdRosterRoute
@@ -129,10 +209,19 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/manifest.webmanifest'
+    | '/picks'
+    | '/players/$id'
     | '/nhl/live'
+    | '/skeleton/dashboard'
+    | '/skeleton/live'
+    | '/skeleton/picks'
     | '/nhl/'
+    | '/players/'
+    | '/skeleton/'
     | '/nhl/games/$id'
     | '/nhl/teams/$id'
+    | '/players/$id/games'
+    | '/players/$id/'
     | '/nhl/games/$id/pick'
     | '/nhl/games/$id/scoring'
     | '/nhl/teams/$id/roster'
@@ -143,8 +232,16 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/manifest.webmanifest'
+    | '/picks'
     | '/nhl/live'
+    | '/skeleton/dashboard'
+    | '/skeleton/live'
+    | '/skeleton/picks'
     | '/nhl'
+    | '/players'
+    | '/skeleton'
+    | '/players/$id/games'
+    | '/players/$id'
     | '/nhl/games/$id/pick'
     | '/nhl/games/$id/scoring'
     | '/nhl/teams/$id/roster'
@@ -155,10 +252,19 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/manifest.webmanifest'
+    | '/picks'
+    | '/players/$id'
     | '/nhl/live'
+    | '/skeleton/dashboard'
+    | '/skeleton/live'
+    | '/skeleton/picks'
     | '/nhl/'
+    | '/players/'
+    | '/skeleton/'
     | '/nhl/games/$id'
     | '/nhl/teams/$id'
+    | '/players/$id/games'
+    | '/players/$id/'
     | '/nhl/games/$id/pick'
     | '/nhl/games/$id/scoring'
     | '/nhl/teams/$id/roster'
@@ -170,8 +276,15 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ManifestDotwebmanifestRoute: typeof ManifestDotwebmanifestRoute
+  PicksRoute: typeof PicksRoute
+  PlayersIdRouteRoute: typeof PlayersIdRouteRouteWithChildren
   NhlLiveRoute: typeof NhlLiveRoute
+  SkeletonDashboardRoute: typeof SkeletonDashboardRoute
+  SkeletonLiveRoute: typeof SkeletonLiveRoute
+  SkeletonPicksRoute: typeof SkeletonPicksRoute
   NhlIndexRoute: typeof NhlIndexRoute
+  PlayersIndexRoute: typeof PlayersIndexRoute
+  SkeletonIndexRoute: typeof SkeletonIndexRoute
   NhlGamesIdRouteRoute: typeof NhlGamesIdRouteRouteWithChildren
   NhlTeamsIdRouteRoute: typeof NhlTeamsIdRouteRouteWithChildren
 }
@@ -192,6 +305,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ManifestDotwebmanifestRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/picks': {
+      id: '/picks'
+      path: '/picks'
+      fullPath: '/picks'
+      preLoaderRoute: typeof PicksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/nhl/': {
       id: '/nhl/'
       path: '/nhl'
@@ -204,6 +324,48 @@ declare module '@tanstack/react-router' {
       path: '/nhl/live'
       fullPath: '/nhl/live'
       preLoaderRoute: typeof NhlLiveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/players/': {
+      id: '/players/'
+      path: '/players'
+      fullPath: '/players/'
+      preLoaderRoute: typeof PlayersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/players/$id': {
+      id: '/players/$id'
+      path: '/players/$id'
+      fullPath: '/players/$id'
+      preLoaderRoute: typeof PlayersIdRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/skeleton/': {
+      id: '/skeleton/'
+      path: '/skeleton'
+      fullPath: '/skeleton/'
+      preLoaderRoute: typeof SkeletonIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/skeleton/dashboard': {
+      id: '/skeleton/dashboard'
+      path: '/skeleton/dashboard'
+      fullPath: '/skeleton/dashboard'
+      preLoaderRoute: typeof SkeletonDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/skeleton/live': {
+      id: '/skeleton/live'
+      path: '/skeleton/live'
+      fullPath: '/skeleton/live'
+      preLoaderRoute: typeof SkeletonLiveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/skeleton/picks': {
+      id: '/skeleton/picks'
+      path: '/skeleton/picks'
+      fullPath: '/skeleton/picks'
+      preLoaderRoute: typeof SkeletonPicksRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/nhl/games/$id': {
@@ -219,6 +381,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/nhl/teams/$id'
       preLoaderRoute: typeof NhlTeamsIdRouteRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/players/$id/': {
+      id: '/players/$id/'
+      path: '/'
+      fullPath: '/players/$id/'
+      preLoaderRoute: typeof PlayersIdIndexRouteImport
+      parentRoute: typeof PlayersIdRouteRoute
+    }
+    '/players/$id/games': {
+      id: '/players/$id/games'
+      path: '/games'
+      fullPath: '/players/$id/games'
+      preLoaderRoute: typeof PlayersIdGamesRouteImport
+      parentRoute: typeof PlayersIdRouteRoute
     }
     '/nhl/games/$id/': {
       id: '/nhl/games/$id/'
@@ -265,6 +441,20 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface PlayersIdRouteRouteChildren {
+  PlayersIdGamesRoute: typeof PlayersIdGamesRoute
+  PlayersIdIndexRoute: typeof PlayersIdIndexRoute
+}
+
+const PlayersIdRouteRouteChildren: PlayersIdRouteRouteChildren = {
+  PlayersIdGamesRoute: PlayersIdGamesRoute,
+  PlayersIdIndexRoute: PlayersIdIndexRoute,
+}
+
+const PlayersIdRouteRouteWithChildren = PlayersIdRouteRoute._addFileChildren(
+  PlayersIdRouteRouteChildren,
+)
+
 interface NhlGamesIdRouteRouteChildren {
   NhlGamesIdPickRoute: typeof NhlGamesIdPickRoute
   NhlGamesIdScoringRoute: typeof NhlGamesIdScoringRoute
@@ -300,8 +490,15 @@ const NhlTeamsIdRouteRouteWithChildren = NhlTeamsIdRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ManifestDotwebmanifestRoute: ManifestDotwebmanifestRoute,
+  PicksRoute: PicksRoute,
+  PlayersIdRouteRoute: PlayersIdRouteRouteWithChildren,
   NhlLiveRoute: NhlLiveRoute,
+  SkeletonDashboardRoute: SkeletonDashboardRoute,
+  SkeletonLiveRoute: SkeletonLiveRoute,
+  SkeletonPicksRoute: SkeletonPicksRoute,
   NhlIndexRoute: NhlIndexRoute,
+  PlayersIndexRoute: PlayersIndexRoute,
+  SkeletonIndexRoute: SkeletonIndexRoute,
   NhlGamesIdRouteRoute: NhlGamesIdRouteRouteWithChildren,
   NhlTeamsIdRouteRoute: NhlTeamsIdRouteRouteWithChildren,
 }

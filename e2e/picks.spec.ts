@@ -1,7 +1,5 @@
 import { expect, test } from "./test";
 
-test.skip(true, "The game page is not ported to TanStack Start yet: #189 restores this spec.");
-
 // The rows are the sample picks `picks.setup.ts` seeded (`apps/web/lib/sample-picks.ts`):
 // Toronto at 58% over Nashville, a failed Prediction for 401892450, Dallas over Buffalo in the
 // recorded final (which Dallas won in a shootout), and a season record of 3 right, 2 wrong.

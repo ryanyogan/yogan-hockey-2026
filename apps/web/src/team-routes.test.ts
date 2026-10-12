@@ -24,12 +24,12 @@ function asked(): string[] {
   return names.sort();
 }
 
-/** The site's routes with the freshness `src/router.tsx` gives them, opened at `path`. */
-async function open(path: string) {
+/** The site's routes, opened at `path`, with the freshness `src/router.tsx` gives them unless told. */
+async function open(path: string, staleTime = FRESH_FOR) {
   const router = createRouter({
     routeTree,
     history: createMemoryHistory({ initialEntries: [path] }),
-    defaultStaleTime: FRESH_FOR,
+    defaultStaleTime: staleTime,
     // The browser's router, which keeps what it read; the server's reads everything each time.
     isServer: false,
     origin: "http://localhost",
@@ -67,6 +67,23 @@ describe("a team's page", () => {
     // A tab already read is not asked for again while its read is fresh.
     await go(router, "/nhl/teams/21");
     expect(asked()).toEqual([]);
+  });
+
+  // With nothing fresh at all, every read here is older than its time limit. The team's is still
+  // left alone: the router reads a stale route again when it is entered, and a parent kept
+  // across a change of tab is stayed on, at any age. The tab come back to is entered, so it is
+  // read again; a background read would show within the wait.
+  it("leaves the team alone on a tab change however old its read, and reads a stale tab again", async () => {
+    const router = await open("/nhl/teams/21", 0);
+    asked();
+
+    await go(router, "/nhl/teams/21/roster");
+    await new Promise((done) => setTimeout(done, 20));
+    expect(asked()).toEqual(["readTeamRosterPage"]);
+
+    await go(router, "/nhl/teams/21");
+    await new Promise((done) => setTimeout(done, 20));
+    expect(asked()).toEqual(["readTeamSchedulePage"]);
   });
 
   it("reads another team's header with that team's tab", async () => {

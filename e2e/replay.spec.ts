@@ -1,7 +1,5 @@
 import { expect, test } from "./test";
 
-test.skip(true, "The game's routes are not ported to TanStack Start yet: #189 restores this spec.");
-
 // The recorded shootout, Dallas 4 at Buffalo 3 (event 401803652): a finished game nobody watched,
 // so this page's first open is what archives it, and the Replay is drawn from D1.
 test("the Replay opens laid out, plays, pauses, jumps to a tick, and follows the key-plays toggle", async ({

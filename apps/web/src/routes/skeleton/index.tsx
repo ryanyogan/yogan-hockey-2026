@@ -1,6 +1,5 @@
-import { env, exports } from "cloudflare:workers";
-import { createDb, latestSkeletonBumps } from "@yogan-hockey/db";
-import { PulseSchema } from "@yogan-hockey/schemas";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { Badge } from "@yogan-hockey/ui/components/badge";
 import { Button } from "@yogan-hockey/ui/components/button";
 import {
@@ -13,25 +12,32 @@ import {
 } from "@yogan-hockey/ui/components/ledger";
 import { FavoriteMarker, LiveMarker } from "@yogan-hockey/ui/components/marker";
 import { PageHeader, Section, SectionHeader } from "@yogan-hockey/ui/components/section";
-import { getAgentByName } from "agents";
-import type { Metadata } from "next";
-import { cachedSkeletonReading, SKELETON_AGENT_NAME } from "../../lib/skeleton";
-import { bumpSkeleton } from "./actions";
-import { PulseLive } from "./pulse-live";
-
-export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Walking skeleton" };
+import type { FormEvent } from "react";
+import { PulseLive } from "../../../components/skeleton/pulse-live";
+import { useFailure } from "../../../components/skeleton/use-failure";
+import { bumpSkeleton, readSkeleton } from "../../functions/skeleton";
+import { titled } from "../../head";
 
 /** Walking skeleton (#31): one page exercising each join the design rests on. */
-export default async function SkeletonPage() {
-  const agent = await getAgentByName(exports.SkeletonAgent, SKELETON_AGENT_NAME);
-  const [reading, bumps, rpcPulse] = await Promise.all([
-    cachedSkeletonReading(),
-    latestSkeletonBumps(createDb(env.DB), 5),
-    agent.getPulse(),
-  ]);
-  // An RPC result is not a plain object; parsing copies it into one for the client component.
-  const pulse = PulseSchema.parse(rpcPulse);
+export const Route = createFileRoute("/skeleton/")({
+  loader: () => readSkeleton(),
+  head: ({ match }) => titled(match, "Walking skeleton"),
+  component: SkeletonPage,
+});
+
+function SkeletonPage() {
+  const { reading, bumps, pulse, agentName } = Route.useLoaderData();
+  const router = useRouter();
+  const bump = useServerFn(bumpSkeleton);
+  const fail = useFailure();
+
+  function bumpAndReadAgain(event: FormEvent) {
+    event.preventDefault();
+    // The Agent forgot the cached reading and wrote a row: the loader reads both again.
+    bump()
+      .then(() => router.invalidate())
+      .catch(fail);
+  }
 
   return (
     <>
@@ -52,7 +58,7 @@ export default async function SkeletonPage() {
           <FavoriteMarker>favorite team</FavoriteMarker>
           <LiveMarker>2nd 12:34</LiveMarker>
         </p>
-        <form action={bumpSkeleton} className="flex flex-wrap gap-2">
+        <form onSubmit={bumpAndReadAgain} className="flex flex-wrap gap-2">
           <Button type="submit">Bump the Agent</Button>
           <Button type="button" variant="outline" size="sm">
             outline, small
@@ -103,7 +109,7 @@ export default async function SkeletonPage() {
 
       <Section data-testid="join-agent">
         <SectionHeader title="4. Agent" count="first paint over RPC, then pushes over the socket" />
-        <PulseLive name={SKELETON_AGENT_NAME} initial={pulse} />
+        <PulseLive name={agentName} initial={pulse} />
       </Section>
     </>
   );

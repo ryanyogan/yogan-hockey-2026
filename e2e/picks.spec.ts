@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test.skip(true, "The picks' pages are not ported to TanStack Start yet: #192 restores this spec.");
+test.skip(true, "The game page is not ported to TanStack Start yet: #189 restores this spec.");
 
 // The rows are the sample picks `picks.setup.ts` seeded (`apps/web/lib/sample-picks.ts`):
 // Toronto at 58% over Nashville, a failed Prediction for 401892450, Dallas over Buffalo in the

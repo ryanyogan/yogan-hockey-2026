@@ -87,30 +87,32 @@ export function summariesFromSlate(games: Pick<Game, "id" | "status">[]): Sample
   });
 }
 
-type Matchup = { home: { id: string }; away: { id: string } };
+type Matchup = Pick<Game, "status"> & { home: { id: string }; away: { id: string } };
 
 /**
  * A team whose day is the other kind from the fixed team's: one with a game today when Toronto
  * has none, one without when it has. A team's detail carries its next game, which is a game
  * under way or just over on the one day and a game days off on the other.
  *
- * `teamIds` is every team in ESPN's order, or null when the team list failed. Answers the sample,
- * or the gap to list as not checked.
+ * `teamIds` is every team in ESPN's list, in its order, or null when the list failed. Only a team
+ * on that list is chosen: a slate can name a side that has no team page (an All-Star division,
+ * a preseason guest), and asking ESPN for it would be a failure of the check's own making. A
+ * postponed game is not a game today. Answers the sample, or the gap to list as not checked.
  */
 export function secondTeam(
   games: Matchup[],
   teamIds: string[] | null,
 ): { sample: Sample } | { gap: string } {
-  const playing = new Set(games.flatMap((game) => [game.home.id, game.away.id]));
-  if (!playing.has(TEAM_ID)) {
-    const [first] = playing;
-    return first === undefined
-      ? { gap: "a team with a game today: none on today's slate" }
-      : { sample: sample("team", first) };
-  }
-  if (teamIds === null) return { gap: "a team without a game today: the team list failed" };
-  const idle = teamIds.find((id) => !playing.has(id));
-  return idle === undefined
-    ? { gap: "a team without a game today: every team is on today's slate" }
-    : { sample: sample("team", idle) };
+  if (teamIds === null) return { gap: "a second team: the team list failed" };
+  const playing = new Set(
+    games
+      .filter((game) => game.status !== "postponed")
+      .flatMap((game) => [game.home.id, game.away.id]),
+  );
+  const wanted = playing.has(TEAM_ID)
+    ? { id: teamIds.find((id) => !playing.has(id)), kind: "without a game today" }
+    : { id: teamIds.find((id) => playing.has(id)), kind: "with a game today" };
+  return wanted.id === undefined
+    ? { gap: `a team ${wanted.kind}: none in ESPN's team list` }
+    : { sample: sample("team", wanted.id) };
 }

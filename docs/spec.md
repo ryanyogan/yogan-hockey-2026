@@ -316,7 +316,7 @@ No coverage target. Most of the effort goes on the Agents.
 - **`packages/espn`**: Vitest on committed fixtures, with snapshots of the translated shapes. `pnpm record:fixtures` refetches a fixed list of endpoints and is rerun by hand.
 - **Agents**: Vitest inside the Workers runtime (`@cloudflare/vitest-pool-workers`), with ESPN replaced by fixtures. Cases: polling starts and stops with viewers; new, changed and removed plays; a stall; a final triggering the cache invalidation and the D1 writes; catch-up after a quiet spell.
 - **Site**: one Playwright smoke test per route, against `pnpm dev` in fixture mode.
-- **Live check**: a scheduled GitHub Actions run fetches live ESPN and runs the parsers, every three hours, since GitHub starts a scheduled run hours late and one a day came after ESPN's change of 2026-10-12 had reached the site. On failure it opens or updates an issue labelled `needs-triage` naming the endpoint and the parse error; the first run that passes comments on it that the check cleared. The issue is the alert: nothing is pushed.
+- **Live check**: a scheduled GitHub Actions run fetches live ESPN and runs the parsers, every three hours, since GitHub starts a scheduled run hours late and one a day came after ESPN's change of 2026-10-12 had reached the site. On failure it opens an issue labelled `needs-triage` naming the endpoint and the parse error, or comments on the open one when what fails has changed; the first run that passes comments on it that the check cleared. The issue is the alert: nothing is pushed.
 - **Parity**: a checklist issue, one line per carried-over behaviour. Ryan ticks it by eye with both sites side by side.
 
 ## 11. Launch and cutover

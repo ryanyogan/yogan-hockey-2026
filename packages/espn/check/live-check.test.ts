@@ -266,7 +266,7 @@ describe("the daily live check", () => {
     ]);
   });
 
-  test("when the team list fails, the team without a game is listed as not checked", async () => {
+  test("when the team list fails, the second team is listed as not checked", async () => {
     const { fetcher } = await recordedEspn({
       [endpoints.teams().url]: () => new Response("gone", { status: 404 }),
     });
@@ -274,7 +274,7 @@ describe("the daily live check", () => {
     const summary = await check(fetcher);
 
     expect(summary.results.some((r) => r.endpoint === IDLE_TEAM.name)).toBe(false);
-    expect(summary.notChecked).toContain("a team without a game today: the team list failed");
+    expect(summary.notChecked).toContain("a second team: the team list failed");
   });
 
   test("when today's slate does not parse, what it would have chosen is listed as not checked", async () => {
@@ -318,11 +318,15 @@ describe("choosing summaries from today's slate", () => {
 });
 
 describe("choosing a second team from today's slate", () => {
-  const game = (home: string, away: string) => ({ home: { id: home }, away: { id: away } });
+  const game = (home: string, away: string, status: "scheduled" | "postponed" = "scheduled") => ({
+    status,
+    home: { id: home },
+    away: { id: away },
+  });
   const TEAMS = ["1", "2", "21", "25"];
 
-  test("Toronto has no game: a team that has one", () => {
-    const chosen = secondTeam([game("2", "25")], TEAMS);
+  test("Toronto has no game: the first team in ESPN's list that has one", () => {
+    const chosen = secondTeam([game("25", "2")], TEAMS);
 
     expect(chosen).toMatchObject({ sample: { endpoint: { name: "teams/2" } } });
   });
@@ -333,21 +337,33 @@ describe("choosing a second team from today's slate", () => {
     expect(chosen).toMatchObject({ sample: { endpoint: { name: "teams/2" } } });
   });
 
+  test("a side that is not in ESPN's team list is never chosen", () => {
+    const chosen = secondTeam([game("900", "901"), game("25", "902")], TEAMS);
+
+    expect(chosen).toMatchObject({ sample: { endpoint: { name: "teams/25" } } });
+  });
+
+  test("a postponed game is not a game today", () => {
+    const chosen = secondTeam([game("1", "21", "postponed"), game("2", "25")], TEAMS);
+
+    expect(chosen).toMatchObject({ sample: { endpoint: { name: "teams/2" } } });
+  });
+
   test("a day with no games has no team with one", () => {
     expect(secondTeam([], TEAMS)).toEqual({
-      gap: "a team with a game today: none on today's slate",
+      gap: "a team with a game today: none in ESPN's team list",
     });
   });
 
-  test("Toronto has a game and the team list failed", () => {
+  test("the team list failed", () => {
     expect(secondTeam([game("1", "21")], null)).toEqual({
-      gap: "a team without a game today: the team list failed",
+      gap: "a second team: the team list failed",
     });
   });
 
   test("Toronto has a game and so has every other team", () => {
     expect(secondTeam([game("1", "21"), game("2", "25")], TEAMS)).toEqual({
-      gap: "a team without a game today: every team is on today's slate",
+      gap: "a team without a game today: none in ESPN's team list",
     });
   });
 });

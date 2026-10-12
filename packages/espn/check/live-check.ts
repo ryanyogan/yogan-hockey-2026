@@ -67,21 +67,24 @@ export type LiveCheckOptions = {
 function issuesOf(error: unknown): string[] {
   const cause = error instanceof Error ? error.cause : undefined;
   if (!(cause instanceof z.ZodError)) return [];
-  const fields = new Map<string, { first: string; places: number }>();
-  for (const issue of cause.issues) {
-    const everyRow = issue.path
+  /** By the field's path with every list index written `[]`, and what is wrong with it. */
+  const fields = new Map<string, { first: string; message: string; places: number }>();
+  for (const { path, message } of cause.issues) {
+    const anyRow = path
       .map((key) => (typeof key === "number" ? "[]" : `.${String(key)}`))
       .join("")
       .replace(/^\./, "");
-    const key = `${everyRow || "(root)"}: ${issue.message}`;
-    const field = fields.get(key);
+    const field = fields.get(`${anyRow}: ${message}`);
     if (field) field.places++;
-    else fields.set(key, { first: issue.path.join(".") || "(root)", places: 1 });
+    else
+      fields.set(`${anyRow}: ${message}`, {
+        first: path.join(".") || "(root)",
+        message,
+        places: 1,
+      });
   }
-  const lines = [...fields].map(([line, { first, places }]) =>
-    places === 1
-      ? `${first}${line.slice(line.indexOf(": "))}`
-      : `${line} (${places} places, first at ${first})`,
+  const lines = [...fields].map(([everywhere, { first, message, places }]) =>
+    places === 1 ? `${first}: ${message}` : `${everywhere} (${places} places, first at ${first})`,
   );
   const more = lines.length - ISSUES_LISTED;
   return more > 0 ? [...lines.slice(0, ISSUES_LISTED), `and ${more} more`] : lines;
@@ -195,15 +198,14 @@ export async function runLiveCheck(options: LiveCheckOptions = {}): Promise<Chec
       }
     }
     const teams = translated.get(endpoints.teams().url);
-    const chosen = secondTeam(
-      games,
+    const teamIds =
       teams === undefined
         ? null
         : z
             .array(TeamSchema)
             .parse(teams)
-            .map((team) => team.id),
-    );
+            .map((t) => t.id);
+    const chosen = secondTeam(games, teamIds);
     if ("sample" in chosen) fromTodaysSlate.push(chosen.sample);
     else notChecked.push(chosen.gap);
   }

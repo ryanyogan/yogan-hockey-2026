@@ -9,6 +9,7 @@
  *   to close: a parse failure can depend on what is on that day (a live game's summary, say), so
  *   one pass does not prove the cause is gone.
  */
+import { createHash } from "node:crypto";
 import { z } from "zod";
 import { type CheckResult, type CheckSummary, triesNote } from "./live-check.ts";
 
@@ -23,15 +24,44 @@ export const LABEL = "needs-triage";
 const FAILED_MARK = "<!-- espn-check: failed";
 const CLEARED_MARK = "<!-- espn-check: cleared -->";
 
-/** `<!-- espn-check: failed: parse teams/21, fetch standings -->` */
+/**
+ * `<!-- espn-check: failed: parse teams/21, fetch standings #1f0c9a2b7d44 -->`. The endpoints are
+ * there to be read. The digest is what the next failing run compares: the kind of each endpoint
+ * and its fields or status, so the same endpoint failing on another field is a different mark.
+ * It leaves out what differs from run to run without anything having changed: which game or team
+ * the slate gave (`summary?event=N`, `teams/N`) and how many rows a field is wrong in.
+ */
 function failedMark(summary: CheckSummary | null): string {
-  const failed =
-    summary?.results
-      .filter((result) => result.outcome !== "ok")
-      .map((result) => `${result.outcome.replace("-failure", "")} ${result.endpoint}`)
-      .join(", ") ?? "no summary";
+  const names =
+    summary === null
+      ? "no summary"
+      : failed(summary)
+          .map((result) => `${result.outcome.replace("-failure", "")} ${result.endpoint}`)
+          .join(", ");
   // An endpoint's name is ESPN's path and query, which a `>` would not survive in a URL anyway.
-  return `${FAILED_MARK}: ${failed.replaceAll(">", "")} -->`;
+  return `${FAILED_MARK}: ${names.replaceAll(">", "")} ${digestEnd(failed(summary))}`;
+}
+
+/** The endpoints that failed; none for a run that wrote no summary. */
+function failed(summary: CheckSummary | null): CheckResult[] {
+  return summary?.results.filter((result) => result.outcome !== "ok") ?? [];
+}
+
+/** The end of a failure's mark, which is the same for two runs that failed the same way. */
+function digestEnd(results: CheckResult[]): string {
+  const kinds = results.map((result) =>
+    JSON.stringify([
+      result.outcome,
+      result.endpoint.replace(/\d+/g, "N"),
+      result.status,
+      result.issues.map((issue) => issue.replace(/ \(\d+ places, first at .*\)$/, "")),
+    ]),
+  );
+  const digest = createHash("sha256")
+    .update([...new Set(kinds)].sort().join("\n"))
+    .digest("hex")
+    .slice(0, 12);
+  return `#${digest} -->`;
 }
 
 /** Runs the `gh` CLI with these arguments, `input` on its stdin, and answers its stdout. */
@@ -211,7 +241,7 @@ export async function reportCheck(options: ReportOptions): Promise<Reported> {
     );
     return { issue: "opened", issueUrl: created.trim() };
   }
-  if ((await lastWritten(gh, open)).includes(failedMark(summary))) {
+  if ((await lastWritten(gh, open)).includes(digestEnd(failed(summary)))) {
     return { issue: "unchanged", issueUrl: open.url };
   }
   await gh(

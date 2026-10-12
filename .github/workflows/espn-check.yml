@@ -1,7 +1,7 @@
 name: ESPN check
 
 # The early warning for ESPN changing shape (spec section 10): nothing watches the site while
-# nobody is on it, and nothing but the Worker's log says so when somebody is. Fetches every endpoint the site reads, live, and runs the site's parsers on
+# nobody is on it. Fetches every endpoint the site reads, live, and runs the site's parsers on
 # each. All of the logic is in packages/espn (`pnpm check:espn`, then scripts/report-check.ts),
 # where it is tested; this file only runs the two.
 on:

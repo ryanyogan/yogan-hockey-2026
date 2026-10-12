@@ -10,10 +10,10 @@
 // page) and the page's height moved when the real faces took over from the fallbacks, and the
 // layout shift in the frames after they arrived.
 //
-// The bar is Agate's. Newsreader and IBM Plex Sans Condensed stand over Times New Roman and Arial
-// resized to each face's average width (vinext's fallbacks), which are not letter for letter as
-// wide, so a held-back load does move a little: a word, and whatever is set beside it. What it
-// must not do is move the page. So it exits 1 when:
+// The bar is Agate's. Until Newsreader and IBM Plex Sans Condensed arrive a page is drawn in the
+// local faces of `packages/ui/src/font-fallbacks.css`, each resized to the face it stands for.
+// They are not letter for letter as wide, so a held-back load does move a little: a word, and
+// whatever is set beside it. What it must not do is move the page. So it exits 1 when:
 // - a font comes from another origin, or a font the page needs at once is not preloaded (the
 //   serif's italic is the pick line's alone and is fetched when first used, on purpose);
 // - the layout shift in the frames after the faces arrive is over SWAP_CLS (0.05, half of what
@@ -21,9 +21,20 @@
 // - anything measured moved more than SWAP_PX (32px; the worst measured in #168 was 24px, a
 //   ledger cell on the player's page);
 // - there was nothing to measure.
-// Run on #174 it exits 1: Home at 390 shifts 0.054 and grows 104px (three headlines take a
-// second line in Newsreader), and the game page at 390 moves 66px. The other eight loads pass.
-// The bar stands; see the build notes.
+// Run on #183 it exits 0: no load shifts more than 0.006 at the swap or moves more than 16px.
+// Before #183 Home at 390 shifted 0.054 and grew 104px, and the game page at 390 moved 66px.
+// That was this Linux machine's unsized Liberation faces: vinext's fallback, one regular cut
+// over `local("Arial")` and `local("Times New Roman")`, found no face here and never applied.
+//
+// The browser is launched with `--font-render-hinting=none`, which Ryan accepted in #183.
+// Headless Chromium on Linux otherwise rounds each letter's advance to a whole pixel, so a face's
+// width to the em changes with the type size (the same bold Plex line is 34.7 units to the em at
+// 15px and 32.4 at 30px) and no fallback can follow it. iOS, Android and macOS do not hint that
+// way, and the bar exists for phones. What that leaves out, plainly:
+// - with hinting on, which is desktop Chrome on Linux, three held-back loads still move more
+//   than 32px: the player's page at 1440 (37px) and the game page at 390 (62px) and 1440 (65px);
+// - no real iOS or Android device has been measured. The phones' numbers come from this desk.
+//
 // A page shifts for reasons that are not the fonts (a time rewritten in the visitor's zone,
 // favorites read from the browser), so the fonts are judged at the swap alone.
 import { writeFile } from "node:fs/promises";
@@ -56,7 +67,8 @@ const geometry = () => {
   };
 };
 
-const browser = await chromium.launch();
+// Letters at their designed widths (#183; the header says why and what it leaves unmeasured).
+const browser = await chromium.launch({ args: ["--font-render-hinting=none"] });
 const results = [];
 
 for (const path of PATHS) {

@@ -41,7 +41,7 @@ The installed site's colours are these too: `THEME_COLORS = { light: "#fafaf8", 
 
 ## Type
 
-Both faces are self-hosted: `apps/web/app/layout.tsx` names them through `next/font/google`, and vinext downloads the files at build time and serves them from the site, so no page asks Google for anything. Newsreader is one variable file with its `opsz` axis (and a second, the italic, fetched only when a pick line is drawn); IBM Plex Sans Condensed is four files, 400, 500 (the dateline), 600 and 700, all drawn and all preloaded. `theme.css` exposes them as `--font-serif` and `--font-agate`. `node scripts/font-load.mjs` measures how they arrive.
+Both faces are self-hosted: `apps/web/app/layout.tsx` names them through `next/font/google`, and vinext downloads the files at build time and serves them from the site, so no page asks Google for anything. Newsreader is one variable file with its `opsz` axis (and a second, the italic, fetched only when a pick line is drawn); IBM Plex Sans Condensed is four files, 400, 500 (the dateline), 600 and 700, all drawn and all preloaded. `theme.css` exposes them as `--font-serif` and `--font-agate`, each followed by its sized fallbacks (`font-fallbacks.css`, written by `node scripts/font-fallbacks.ts`). `node scripts/font-load.mjs` measures how they arrive.
 
 | Role | Face | Size desktop → phone | Weight / leading / tracking |
 |---|---|---|---|
@@ -156,7 +156,7 @@ Calls made while building:
 - **The NHL routes.** Scores is an agate ledger, not briefs. Teams is a CSS-column list. Wins are bold and losses grey. A standings row's link is named by the agate name.
 - **A cached page's dateline** can show a picks record up to about ten minutes old.
 - **No live row is tinted**, and `--live-tint` was removed.
-- **The font swap may move a word, not the page**: `scripts/font-load.mjs` allows 0.05 of layout shift and 32px at the swap. Not yet met on a phone: with the fonts held two seconds Home at 390 shifts 0.054 and grows 104px (three headlines take a second line) and the game page moves 66px; the other eight loads measured pass.
+- **The font swap may move a word, not the page**: `scripts/font-load.mjs` allows 0.05 of layout shift and 32px at the swap, and since #183 every load it measures is inside that (at most 0.006 and 16px with the fonts held two seconds). Until a face arrives its text is drawn in a local face resized to it, with a regular and a bold cut each (`packages/ui/src/font-fallbacks.css`): Times New Roman and Arial on iOS, macOS and Windows, Liberation Serif and Liberation Sans on Linux, Noto Serif and Roboto on Android. The script sets type unhinted, as a phone does. With hinting on, which is desktop Chrome on Linux, three loads still move more than 32px: the player's page at 1440 (37px) and the game page at 390 (62px) and 1440 (65px). No real iOS or Android device has been measured.
 - **The standings' four view tabs on a phone** are tracked at Tailwind's `tracking-wider` (.05em), not a theme token: at `tracking-head` (.1em) the strip is 3px wider than a 360px phone (measured: 329 in 326).
 
 ## Accessibility

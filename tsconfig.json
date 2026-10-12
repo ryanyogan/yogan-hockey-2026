@@ -8,6 +8,8 @@
     "e2e",
     "scripts/vitest.config.ts",
     "scripts/performance",
-    "scripts/measure-performance.ts"
+    "scripts/measure-performance.ts",
+    "scripts/font-fallbacks.ts",
+    "scripts/font-fallbacks.test.ts"
   ]
 }

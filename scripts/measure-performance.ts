@@ -4,7 +4,8 @@
 //   node scripts/measure-performance.ts <base> [--out=docs/performance/results/local]
 //        [--runs=3] [--only=<route>,<route>] [--team=21] [--player=4024123]
 //        [--goalie=3067313] [--finished-game=401803652] [--scheduled-game=<id>|auto|none]
-//        [--search=mar] [--favorites=off] [--navigate=<selector>]
+//        [--search=mar] [--favorites=off] [--navigate=<selector>] [--kv=warm|cold]
+//        [--label=<text>]
 //
 // Use scripts/performance-baseline.sh, which builds and serves the site first. Needs TMPDIR on
 // disk (see the build notes). It only reads: every request is a GET or the Scoreboard's socket.
@@ -20,15 +21,23 @@
 //      entries, what INP is made of: from the tap to the next paint).
 //   4. In a second new profile, tap a link and watch every frame: when the page first changes
 //      (the next shell), when the next page's content is whole, and whether `<main>` was ever empty.
+//      "Changes" is what `<main>` draws, never the address, which one router changes at the tap.
 // A page the cache keeps is measured twice: answered from the cache (asked for once beforehand),
 // and rendered (`?uncached=<n>`, a query parameter the page does not read, which bypasses it).
 // A site with no page cache (TanStack Start, ADR 0009: no answer carries `x-page-cache`) renders
-// every page for its request, so each route is measured once, as rendered.
+// every page for its request, so each route is measured once, as rendered. What it does keep is
+// each ESPN read, in KV, and nothing in an answer says whether a read came from there. `--kv`
+// says which is being measured and is written beside every row: `warm` asks for each page twice
+// beforehand, so its reads are in KV; `cold` asks for nothing beforehand, and is only true if
+// whoever runs the script emptied KV first (scripts/performance/serve-build.sh restart-cold).
+// `--label` is kept in the JSON: the commit measured, say.
+// Hydration is the watch's of scripts/performance/hydration.ts, the same on any site; the site's
+// own mark is recorded beside it.
 // `--navigate` taps a link of your choosing in place of each route's own, for a build in which
 // the route's own link leads to a page not yet ported.
 // Times are the median run; a shift is the worst run.
 import { mkdirSync, writeFileSync } from "node:fs";
-import { cpus } from "node:os";
+import { cpus, loadavg } from "node:os";
 import { dirname } from "node:path";
 import { gzipSync } from "node:zlib";
 import { type Browser, type BrowserContext, chromium, type Page } from "@playwright/test";
@@ -43,6 +52,7 @@ import {
   type Shift,
   type Weight,
 } from "./performance/budgets.ts";
+import { hydrationMarks, untilPageHydrated, watchHydration } from "./performance/hydration.ts";
 import {
   FIXTURE_SUBJECTS,
   type Interaction,
@@ -68,6 +78,12 @@ const out = flag("out", "docs/performance/results/local");
 const only = flag("only", "");
 const favorites = flag("favorites", "on") !== "off";
 const navigateOverride = flag("navigate", "");
+const kv = flag("kv", "");
+if (!["", "warm", "cold"].includes(kv)) {
+  console.error(`--kv=${kv} is neither warm nor cold`);
+  process.exit(1);
+}
+const loadBefore = loadavg();
 
 const SETTLE_MS = 3000;
 const SCOREBOARD_SOCKET = /\/agents\/scoreboard-agent\/main/;
@@ -133,25 +149,6 @@ const contentReady = () => {
   return (main?.textContent ?? "").trim() !== "" && main?.querySelector("[aria-busy=true]") == null;
 };
 
-/**
- * The site's mark that the page has hydrated, and when (ms from the navigation's start): the
- * root route's under TanStack Start (`apps/web/src/routes/__root.tsx`), vinext's own before it.
- */
-type HydrationMarks = {
-  __APP_HYDRATED?: boolean;
-  __APP_HYDRATED_AT?: number;
-  __NEXT_HYDRATED?: boolean;
-  __NEXT_HYDRATED_AT?: number;
-};
-const hydrated = () => {
-  const marks = window as unknown as HydrationMarks;
-  return marks.__APP_HYDRATED === true || marks.__NEXT_HYDRATED === true;
-};
-const hydratedAt = () => {
-  const marks = window as unknown as HydrationMarks;
-  return marks.__APP_HYDRATED_AT ?? marks.__NEXT_HYDRATED_AT ?? null;
-};
-
 type Slate = { games: Record<string, unknown>[] } & Record<string, unknown>;
 type Visit = {
   context: BrowserContext;
@@ -160,6 +157,8 @@ type Visit = {
   scoreboard: { slate: Slate | null; push: (message: unknown) => void };
   responses: Map<string, { kind: string; raw: number; gzip: number }>;
   rscRequests: () => number;
+  /** Every error the page logged or threw: a hydration error among them, if React reported one. */
+  errors: string[];
 };
 
 async function visit(browser: Browser): Promise<Visit> {
@@ -182,6 +181,7 @@ async function visit(browser: Browser): Promise<Visit> {
   });
   await devtools.send("Emulation.setCPUThrottlingRate", { rate: PROFILE.cpuSlowdown });
   await page.addInitScript(watchPage);
+  await watchHydration(page);
   // A family member has favorites, and they reach the page from localStorage after it hydrates.
   if (favorites) {
     await page.addInitScript(
@@ -209,6 +209,11 @@ async function visit(browser: Browser): Promise<Visit> {
     scoreboard.push = (message) => socket.send(JSON.stringify(message));
   });
 
+  const errors: string[] = [];
+  page.on("console", (message) => {
+    if (message.type() === "error") errors.push(message.text().slice(0, 200));
+  });
+  page.on("pageerror", (error) => errors.push(String(error).slice(0, 200)));
   const responses: Visit["responses"] = new Map();
   let rsc = 0;
   // What a navigation asks the server for: an RSC answer under vinext, a loader's server
@@ -233,7 +238,7 @@ async function visit(browser: Browser): Promise<Visit> {
       // A redirect, or a page closed under the read: it sent no body to weigh.
     }
   });
-  return { context, page, scoreboard, responses, rscRequests: () => rsc };
+  return { context, page, scoreboard, responses, rscRequests: () => rsc, errors };
 }
 
 const weigh = (visitor: Visit, kind: string): Weight => {
@@ -322,7 +327,7 @@ async function measureNavigation(
     await page.goto(base + path, { waitUntil: "load", timeout: 90_000 });
     await page.waitForFunction(contentReady, undefined, { timeout: 60_000 });
     // Not before the page has hydrated: until then a tap on a link is a whole document load.
-    await page.waitForFunction(hydrated, undefined, { timeout: 60_000 });
+    await untilPageHydrated(page);
     await page.waitForTimeout(SETTLE_MS);
     const link = page.locator(selector).filter({ visible: true }).first();
     if ((await link.count()) === 0) return null;
@@ -337,7 +342,9 @@ async function measureNavigation(
         const element = main();
         const heading = element?.querySelector("h1, h2")?.textContent ?? "";
         const busy = element?.querySelectorAll("[aria-busy=true]").length ?? 0;
-        return `${location.pathname}|${heading}|${busy}|${element?.textContent?.length ?? -1}`;
+        // What is drawn, and not the address: TanStack's router changes the address at the tap
+        // and the page when its loader has answered, so an address in here would time the tap.
+        return `${heading}|${busy}|${element?.textContent?.length ?? -1}`;
       };
       const navigation = { startedAt: -1, before: "", frames: [] as unknown[] };
       seen.navigation = navigation;
@@ -381,8 +388,25 @@ async function measureNavigation(
     const before = visitor.rscRequests();
     await link.tap();
     await page.waitForURL((url) => url.pathname === toPath, { timeout: 60_000 });
+    // The next page is drawn (or the tap loaded a new document, which watches no frames).
+    await page.waitForFunction(
+      () => {
+        const { navigation } = (
+          window as unknown as {
+            __seen: { navigation: null | { before: string; frames: { drawn: string }[] } };
+          }
+        ).__seen;
+        return (
+          navigation == null || navigation.frames.some((frame) => frame.drawn !== navigation.before)
+        );
+      },
+      undefined,
+      { timeout: 60_000 },
+    );
     await page.waitForFunction(contentReady, undefined, { timeout: 60_000 });
     await page.waitForTimeout(1500);
+    // A link to a page the site does not have would otherwise be timed as a fast navigation.
+    const notFound = (await page.locator('main [data-slot="not-found"]').count()) > 0;
     const seen = await page.evaluate(
       () =>
         (
@@ -418,6 +442,7 @@ async function measureNavigation(
         viewTransition: false,
         requestsAfterTap: visitor.rscRequests() - before,
         documentLoad: true,
+        notFound,
       };
     }
     const { frames, before: drawnBefore } = seen.navigation;
@@ -434,6 +459,7 @@ async function measureNavigation(
       viewTransition: seen.viewTransitions > 0,
       requestsAfterTap: visitor.rscRequests() - before,
       documentLoad: false,
+      notFound,
     };
   } finally {
     await visitor.context.close();
@@ -447,6 +473,8 @@ type Run = {
   largestPaintMs: number;
   largestPaintElement: string;
   hydratedMs: number | null;
+  pageHydratedMs: number | null;
+  errors: string[];
   loadShifts: Shift[];
   liveShifts: Shift[] | null;
   interactions: InteractionResult[];
@@ -462,8 +490,8 @@ async function measureOnce(browser: Browser, route: MeasuredRoute, path: string)
   try {
     const response = await page.goto(base + path, { waitUntil: "load", timeout: 90_000 });
     await page.waitForFunction(contentReady, undefined, { timeout: 60_000 });
-    await page.waitForFunction(hydrated, undefined, { timeout: 60_000 });
-    const hydratedMs = await page.evaluate(hydratedAt);
+    await untilPageHydrated(page);
+    const marks = await hydrationMarks(page);
     // The Scoreboard's first word is part of the load: a cached page has no slate until then.
     for (let waited = 0; scoreboard.slate == null && waited < 8000; waited += 250) {
       await page.waitForTimeout(250);
@@ -511,13 +539,19 @@ async function measureOnce(browser: Browser, route: MeasuredRoute, path: string)
       });
     }
     return {
-      cacheStatus: response?.headers()["x-page-cache"] ?? "none",
+      cacheStatus: response?.headers()["x-page-cache"] ?? (kv === "" ? "none" : `kv ${kv}`),
       ...timing,
-      hydratedMs,
+      hydratedMs: marks.shellMs,
+      // The watch sees React's fibers, which are hung in the render before the commit the
+      // site's mark is set after: a page has not hydrated before its shell.
+      pageHydratedMs:
+        marks.pageMs == null ? null : Math.max(marks.pageMs, marks.shellMs ?? marks.pageMs),
       loadShifts,
       liveShifts,
       interactions,
       navigation: await measureNavigation(browser, path, navigateOverride || route.navigate),
+      // Read last: what the page said while it loaded, as scores arrived and under each tap.
+      errors: [...new Set(visitor.errors)],
       ...weights,
     };
   } finally {
@@ -551,6 +585,21 @@ function summarize(route: MeasuredRoute, mode: RouteResult["mode"], path: string
       (run) => run.largestPaintMs,
     ).largestPaintElement,
     hydratedMs: medianOf(all.map((run) => run.hydratedMs)),
+    pageHydratedMs: medianOf(all.map((run) => run.pageHydratedMs)),
+    errors: [...new Set(all.flatMap((run) => run.errors))],
+    perRun: all.map((run) => ({
+      firstPaintMs: run.firstPaintMs,
+      largestPaintMs: run.largestPaintMs,
+      hydratedMs: run.hydratedMs,
+      pageHydratedMs: run.pageHydratedMs,
+      loadShift: totalShift(run.loadShifts),
+      liveShift: run.liveShifts == null ? null : totalShift(run.liveShifts),
+      slowestTapMs: run.interactions.reduce<number | null>(
+        (slowest, tap) => (tap.ms == null ? slowest : Math.max(slowest ?? 0, tap.ms)),
+        null,
+      ),
+      shellMs: run.navigation?.shellMs ?? null,
+    })),
     loadShift: totalShift(loadShifts),
     loadShifts,
     liveShift: liveShifts == null ? null : totalShift(liveShifts),
@@ -572,6 +621,7 @@ function summarize(route: MeasuredRoute, mode: RouteResult["mode"], path: string
               ...navigations.map((navigation) => navigation.requestsAfterTap),
             ),
             documentLoad: navigations.some((navigation) => navigation.documentLoad),
+            notFound: navigations.some((navigation) => navigation.notFound),
           },
     script: worst(
       (run) => run.script,
@@ -623,12 +673,22 @@ if (routes.length === 0) {
   await browser.close();
   process.exit(1);
 }
+const ask = async (path: string) => {
+  const answer = await fetch(base + path, { headers: { "user-agent": PROFILE.userAgent } });
+  await answer.arrayBuffer();
+  return answer;
+};
 // Whether the site keeps whole pages at all: one that does says so on every page it answers.
-const probe = await fetch(base + (routes[0] as MeasuredRoute).path, {
-  headers: { "user-agent": PROFILE.userAgent },
-});
-await probe.arrayBuffer();
-const pageCache = probe.headers.has("x-page-cache");
+// Not asked of a site measured with KV cold: the question would be the read that warms it.
+const pageCache =
+  kv === "cold"
+    ? false
+    : (await ask((routes[0] as MeasuredRoute).path)).headers.has("x-page-cache");
+if (pageCache && kv !== "") {
+  console.error(`--kv=${kv} is for a site with no page cache, and this one has one`);
+  await browser.close();
+  process.exit(1);
+}
 const results: RouteResult[] = [];
 const failures: { route: string; mode: string; error: string }[] = [];
 
@@ -646,6 +706,8 @@ for (const route of routes) {
         if (["hit", "stale"].includes(warm.headers.get("x-page-cache") ?? "")) break;
       }
     }
+    // Twice: cachified answers the first from ESPN and the second from KV.
+    if (kv === "warm") for (let asked = 0; asked < 2; asked++) await ask(route.path);
     const all: Run[] = [];
     let path = route.path;
     try {
@@ -665,7 +727,7 @@ for (const route of routes) {
     const result = summarize(route, mode, mode === "rendered" ? route.path : path, all);
     results.push(result);
     console.error(
-      `${result.route} ${mode} [${result.cacheStatus.join(",")}] largest paint ${Math.round(result.largestPaintMs)} ms, shift ${result.loadShift.toFixed(4)} / ${result.liveShift?.toFixed(4) ?? "n/a"}, shell ${result.navigation?.shellMs == null ? "n/a" : Math.round(result.navigation.shellMs)} ms, script ${(result.script.gzipBytes / 1024).toFixed(1)} kB`,
+      `${result.route} ${mode} [${result.cacheStatus.join(",")}] largest paint ${Math.round(result.largestPaintMs)} ms, hydrated ${result.pageHydratedMs == null ? "n/a" : Math.round(result.pageHydratedMs)} ms, shift ${result.loadShift.toFixed(4)} / ${result.liveShift?.toFixed(4) ?? "n/a"}, shell ${result.navigation?.shellMs == null ? "n/a" : Math.round(result.navigation.shellMs)} ms, script ${(result.script.gzipBytes / 1024).toFixed(1)} kB`,
     );
   }
 }
@@ -679,6 +741,10 @@ const measurement = {
   profile: PROFILE,
   budgets: BUDGETS,
   machine: `${cpus()[0]?.model ?? "unknown"} x ${cpus().length}, ${process.platform}`,
+  // The machine's 1, 5 and 15 minute load as the run began and ended: the CPU is slowed, not
+  // isolated, so a busy machine reads slow.
+  load: { before: loadBefore, after: loadavg() },
+  label: flag("label", ""),
   chromium: chromiumVersion,
   subjects,
   failures,

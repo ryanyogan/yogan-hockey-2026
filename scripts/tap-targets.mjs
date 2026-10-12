@@ -16,6 +16,7 @@
 import { writeFile } from "node:fs/promises";
 import { chromium } from "@playwright/test";
 import { PLAYER, ROUTES, seedPicks, TEAM } from "./look-routes.mjs";
+import { untilPageHydrated, watchHydration } from "./performance/hydration.ts";
 
 const [baseURL = "http://localhost:5173", out, only] = process.argv.slice(2);
 const MINIMUM = 44;
@@ -202,15 +203,18 @@ for (const route of ROUTES) {
     [TEAM, PLAYER],
   );
   const page = await context.newPage();
+  await watchHydration(page);
   await page.goto(`${baseURL}${route.path}`, { waitUntil: "networkidle" });
   await page.evaluate(() => document.fonts.ready);
   if (route.waitFor) await page.locator(route.waitFor).first().waitFor();
-  // The page answers a tap only once it has hydrated.
-  if (!route.overlay) await page.waitForFunction(() => window.__APP_HYDRATED === true);
+  // The page answers a tap only once it has hydrated: every control, not the shell alone, which
+  // is all the site's own `__APP_HYDRATED` says (scripts/performance/hydration.ts).
+  await untilPageHydrated(page);
   await page.waitForTimeout(300);
   if (route.overlay) {
+    // Vite's own error overlay, if the dev server drew one: the page under it is what is measured.
     await page.evaluate(() => {
-      document.getElementById("__vinext_dev_error_overlay_root")?.remove();
+      for (const overlay of document.querySelectorAll("vite-error-overlay")) overlay.remove();
     });
   }
 

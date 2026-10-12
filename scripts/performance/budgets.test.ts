@@ -22,6 +22,16 @@ const recorded = (target: "local" | "deployed"): { json: Measurement; markdown: 
   return { json: JSON.parse(read("json")), markdown: read("md") };
 };
 
+const detailOf = (result: RouteResult) =>
+  report({
+    base: "http://localhost:1",
+    measuredAt: "2026-10-12T00:00:00.000Z",
+    runs: 1,
+    machine: "a machine",
+    failures: [],
+    results: [result],
+  });
+
 const measured = (changes: Partial<RouteResult> = {}): RouteResult => ({
   route: "/nhl",
   path: "/nhl",
@@ -113,6 +123,50 @@ describe("judge", () => {
     );
     expect(judge(measured({ navigation: null })).navigation).toBe("not measured");
   });
+
+  it("misses a navigation that arrived at the not-found page, however fast", () => {
+    const navigation = measured().navigation;
+    if (navigation == null) throw new Error("the sample has a navigation");
+    expect(judge(measured({ navigation: { ...navigation, notFound: true } })).navigation).toBe(
+      "miss",
+    );
+    expect(judge(measured({ navigation: { ...navigation, notFound: false } })).navigation).toBe(
+      "pass",
+    );
+  });
+});
+
+describe("hydration in the report", () => {
+  it("prints the site's own mark and the time every control had hydrated side by side", () => {
+    const text = report({
+      base: "http://localhost:1",
+      measuredAt: "2026-10-12T00:00:00.000Z",
+      runs: 1,
+      machine: "a machine",
+      load: { before: [3.21, 3, 3], after: [4.56, 4, 4] },
+      label: "tanstack-start abc1234",
+      failures: [],
+      results: [measured({ hydratedMs: 2400, pageHydratedMs: 2731 })],
+    });
+    expect(text).toContain("| Site's own hydration mark ms | Every control hydrated ms |");
+    expect(text).toContain("| 2400 | 2731 |");
+    expect(text).toContain("(tanstack-start abc1234)");
+    expect(text).toContain("its load 3.2 as the run began and 4.6 as it ended");
+  });
+
+  it("lists what a page logged as an error, and has no such table when none did", () => {
+    const text = detailOf(measured({ errors: ["Minified React error #418; visit"] }));
+    expect(text).toContain("### Errors the pages logged");
+    expect(text).toContain("| `/nhl` | cached | Minified React error #418; visit |");
+    expect(detailOf(measured({ errors: [] }))).not.toContain("Errors the pages logged");
+  });
+
+  it("prints a measurement taken before the watch existed as it was printed then", () => {
+    const text = detailOf(measured({ hydratedMs: 2400 }));
+    expect(text).toContain("| Taps work from ms |");
+    expect(text).not.toContain("Every control hydrated");
+    expect(text).not.toContain("Arrived at not-found");
+  });
 });
 
 describe("the script budget", () => {
@@ -131,11 +185,10 @@ describe("the script budget", () => {
       [...sent].map(([route, gzipBytes]) => [route, scriptBudgetKb(gzipBytes)]),
     );
     expect(SCRIPT_BUDGETS_KB).toEqual(fromBaseline);
-    expect(Object.keys(SCRIPT_BUDGETS_KB).sort()).toEqual(
-      measuredRoutes(FIXTURE_SUBJECTS)
-        .map((route) => route.route)
-        .sort(),
-    );
+    // Every route measured has its budget but the not-found page, which the baseline left out.
+    const routes = measuredRoutes(FIXTURE_SUBJECTS).map((route) => route.route);
+    expect(routes.filter((route) => SCRIPT_BUDGETS_KB[route] == null)).toEqual(["not found"]);
+    expect(Object.keys(SCRIPT_BUDGETS_KB).filter((route) => !routes.includes(route))).toEqual([]);
   });
 
   it("is missed by a route that sends a byte more, and met at the budget itself", () => {

@@ -127,7 +127,8 @@ for (let run = 0; run < Number(runs); run++) {
     page.on("request", (request) => {
       const url = new URL(request.url());
       if (request.resourceType() === "document") documents++;
-      if (request.headers().rsc === "1" && url.pathname.startsWith(to.split("?")[0])) {
+      // What a navigation asks the server for: a loader's server function (TanStack Start).
+      if (url.pathname.startsWith("/_serverFn/")) {
         rsc++;
         if (clicked) rscAfterClick++;
       }
@@ -173,8 +174,8 @@ console.log(
         clickToContentMs: median(click.toContent),
         layoutShift: Math.max(...click.shift),
         documentRequests: Math.max(...click.documents),
-        rscRequestsForThePage: median(click.rsc),
-        rscRequestsAfterTheClick: Math.max(...click.rscAfterClick),
+        serverFunctionRequests: median(click.rsc),
+        serverFunctionRequestsAfterTheClick: Math.max(...click.rscAfterClick),
         lastRunShifts: shiftsSeen,
       },
     },

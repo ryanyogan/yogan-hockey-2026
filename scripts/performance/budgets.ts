@@ -83,6 +83,20 @@ export type NavigationResult = {
   requestsAfterTap: number;
   /** The tap loaded a whole new document: the router did not take it. */
   documentLoad: boolean;
+  /** The page arrived at was the not-found page: the link led nowhere, and its time means nothing. */
+  notFound?: boolean;
+};
+
+/** One run's own numbers, kept so that a spread can be reported and not only a median. */
+export type RunNumbers = {
+  firstPaintMs: number;
+  largestPaintMs: number;
+  hydratedMs: number | null;
+  pageHydratedMs: number | null;
+  loadShift: number;
+  liveShift: number | null;
+  slowestTapMs: number | null;
+  shellMs: number | null;
 };
 
 export type Weight = { files: number; rawBytes: number; gzipBytes: number };
@@ -92,14 +106,29 @@ export type RouteResult = {
   path: string;
   /** `cached`: answered from the page cache. `rendered`: rendered by the Worker for this request. */
   mode: "cached" | "rendered";
-  /** `x-page-cache` of each run's document, or "none" for a route with no cache policy. */
+  /**
+   * `x-page-cache` of each run's document, or "none" for a route with no cache policy. For a site
+   * with no page cache, "kv warm" or "kv cold" when the run said which (`--kv`).
+   */
   cacheStatus: string[];
   ttfbMs: number;
   firstPaintMs: number;
   largestPaintMs: number;
   largestPaintElement: string;
-  /** When the page had hydrated: before it a tap on a link loads a whole document and a button is dead. */
+  /**
+   * The site's own mark of hydration: vinext's `__NEXT_HYDRATED_AT`, or the TanStack Start site's
+   * `__APP_HYDRATED_AT`, which is its shell's. Before it a tap on a link loads a whole document.
+   */
   hydratedMs: number | null;
+  /**
+   * When every control drawn was React's (scripts/performance/hydration.ts): the same question
+   * on any site. Absent from measurements taken before #193, which have only the site's mark.
+   */
+  pageHydratedMs?: number | null;
+  /** What the page logged as an error or threw, in any run. Absent before #193. */
+  errors?: string[];
+  /** Each run's own numbers. Absent from measurements taken before #193. */
+  perRun?: RunNumbers[];
   /** The worst run's shift from the first byte until the page is settled, and what moved. */
   loadShift: number;
   loadShifts: Shift[];
@@ -167,7 +196,8 @@ export function judge(result: RouteResult): Judgement {
         ? "not measured"
         : navigation.shellMs < BUDGETS.shellMs &&
             navigation.blankFrames === 0 &&
-            !navigation.documentLoad
+            !navigation.documentLoad &&
+            navigation.notFound !== true
           ? "pass"
           : "miss",
   };
@@ -277,6 +307,10 @@ export function detailTables(results: RouteResult[]): string {
       ]),
     ),
   );
+  // A measurement taken before #193 has neither the watch's hydration nor where a navigation
+  // arrived, and is printed as it was then: the recorded baseline's tables do not change.
+  const watched = results.some((result) => result.pageHydratedMs !== undefined);
+  const arrivals = results.some((result) => result.navigation?.notFound !== undefined);
   const navigations = table(
     [
       "From",
@@ -287,6 +321,7 @@ export function detailTables(results: RouteResult[]): string {
       "Blank frames",
       "Requests after the tap",
       "Whole document loaded",
+      ...(arrivals ? ["Arrived at not-found"] : []),
     ],
     results.flatMap((result) =>
       result.navigation == null
@@ -301,6 +336,7 @@ export function detailTables(results: RouteResult[]): string {
               String(result.navigation.blankFrames),
               String(result.navigation.requestsAfterTap),
               result.navigation.documentLoad ? "**yes** ✗" : "no",
+              ...(arrivals ? [result.navigation.notFound === true ? "**yes** ✗" : "no"] : []),
             ],
           ],
     ),
@@ -327,7 +363,9 @@ export function detailTables(results: RouteResult[]): string {
       "Page",
       "First paint ms",
       "Largest paint ms",
-      "Taps work from ms",
+      ...(watched
+        ? ["Site's own hydration mark ms", "Every control hydrated ms"]
+        : ["Taps work from ms"]),
       "The largest element",
     ],
     results.map((result) => [
@@ -336,10 +374,21 @@ export function detailTables(results: RouteResult[]): string {
       ms(result.firstPaintMs),
       ms(result.largestPaintMs),
       ms(result.hydratedMs),
+      ...(watched ? [ms(result.pageHydratedMs ?? null)] : []),
       result.largestPaintElement,
     ]),
   );
+  const said = results.flatMap((result) =>
+    (result.errors ?? []).map((error) => [
+      named(result),
+      result.mode,
+      error.replace(/\s+/g, " ").replaceAll("|", "\\|"),
+    ]),
+  );
   return [
+    ...(said.length === 0
+      ? []
+      : ["### Errors the pages logged", table(["Route", "Page", "Error"], said)]),
     "### Every tap",
     taps,
     "### Every navigation",
@@ -356,6 +405,10 @@ export type Measurement = {
   measuredAt: string;
   runs: number;
   machine: string;
+  /** The machine's 1, 5 and 15 minute load averages as the run began and ended. */
+  load?: { before: number[]; after: number[] };
+  /** Whatever the run was told to call itself: the commit measured, say. */
+  label?: string;
   failures: { route: string; mode: string; error: string }[];
   results: RouteResult[];
 };
@@ -365,7 +418,7 @@ export function report(measurement: Measurement): string {
   const { base, failures, results } = measurement;
   return [
     `<!-- Written by scripts/measure-performance.ts. Do not edit: measure again. -->`,
-    `Measured ${measurement.measuredAt} against \`${base}\`, ${measurement.runs} runs a route, on ${measurement.machine}.`,
+    `Measured ${measurement.measuredAt} against \`${base}\`${measurement.label ? ` (${measurement.label})` : ""}, ${measurement.runs} runs a route, on ${measurement.machine}${measurement.load ? `, its load ${measurement.load.before[0]?.toFixed(1)} as the run began and ${measurement.load.after[0]?.toFixed(1)} as it ended` : ""}.`,
     ...(failures.length === 0
       ? []
       : [

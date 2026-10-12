@@ -54,9 +54,10 @@ function SectionHeader({
 }
 
 /**
- * A page's title: a serif section title over a heavy ink rule, the page's first heading
- * ("Standings", a team's name). A count sits beside it in quiet agate, and children at the right
- * end of the line, as in a `SectionHeader`.
+ * A page's title: a heavy ink rule and, under it, a serif section title, the page's first heading
+ * ("Standings", a team's name), as the prototype's lower band opens with its rule above
+ * "Standings" (`.lower`, `.band-head`, `.band-title`). A count sits beside the title in quiet
+ * agate, and children at the right end of the line, as in a `SectionHeader`.
  *
  *   <PageHeader title="Standings" count="league">
  *     <Link href="/nhl?tab=teams">Teams</Link>
@@ -73,7 +74,7 @@ function PageHeader({
     <header
       data-slot="page-header"
       className={cn(
-        "flex flex-wrap items-baseline justify-between gap-x-4 border-rule border-b-3 pb-2",
+        "flex flex-wrap items-baseline justify-between gap-x-4 border-rule border-t-3 pt-3 md:pt-4 md:pb-3.5",
         className,
       )}
       {...props}

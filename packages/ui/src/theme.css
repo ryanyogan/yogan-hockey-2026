@@ -27,8 +27,8 @@
  * `tracking-mark` a mark, a button or a tab, `tracking-label` a red label.
  *
  * Spacing is one scale, 4, 8, 12, 16, 24, 32 and 48px: Tailwind's steps 1, 2, 3, 4, 6, 8 and 12.
- * An agate row's own padding is `py-row` (5px; 8px on a phone). `text-wordmark` is still the
- * tuned ledger's until the shell is redrawn (#170).
+ * An agate row's own padding is `py-row` (5px; 8px on a phone). `text-wordmark` is the tuned
+ * ledger's, and only the global error page, drawn without the layout, still uses it.
  */
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";

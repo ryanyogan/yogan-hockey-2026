@@ -30,6 +30,7 @@ const SHOTS = [
 const TYPE = ["fontFamily", "fontSize", "fontWeight", "lineHeight", "letterSpacing"];
 const CAPS = [...TYPE, "textTransform", "color"];
 const RULE = ["borderBottomWidth", "borderBottomStyle", "borderBottomColor"];
+const RULE_ABOVE = ["borderTopWidth", "borderTopStyle", "borderTopColor"];
 const PAD = ["paddingTop", "paddingBottom"];
 
 /**
@@ -100,6 +101,21 @@ const PARTS = [
     prototype: ".band-title",
     site: ["/skeleton", '[data-slot="page-header"] h1'],
     styles: TYPE,
+  },
+  {
+    // The heavy rule is above the title: the lower band's at a desk, the standings' on a phone.
+    name: "page title's rule",
+    prototype: ".lower",
+    site: ["/skeleton", '[data-slot="page-header"]'],
+    styles: [...RULE_ABOVE, "paddingTop", "borderBottomWidth"],
+    desk: true,
+  },
+  {
+    name: "page title's rule",
+    prototype: ".standings",
+    site: ["/skeleton", '[data-slot="page-header"]'],
+    styles: [...RULE_ABOVE, "paddingTop", "borderBottomWidth"],
+    phone: true,
   },
   {
     name: "tab",

@@ -4,7 +4,7 @@ import { Badge } from "./badge";
 import { Button } from "./button";
 import { HeartButton } from "./heart-button";
 import { FavoriteMarker, LiveMarker } from "./marker";
-import { navItemVariants, tabBarItemVariants } from "./nav-item";
+import { navItemVariants } from "./nav-item";
 
 const MARK = ["border", "text-tag", "font-strong", "uppercase", "tracking-mark", "leading-none"];
 
@@ -133,13 +133,7 @@ describe("a place in the nav", () => {
     expect(navItemVariants({ current: true }).split(" ")).toContain("text-kicker");
   });
 
-  it("is a filled cell in the tab bar when current, with no radius or shadow anywhere", () => {
-    expect(tabBarItemVariants({ current: true })).toContain("bg-foreground");
-    for (const classes of [
-      navItemVariants({ current: true }),
-      tabBarItemVariants({ current: true }),
-    ]) {
-      expect(classes).not.toMatch(/rounded|shadow/);
-    }
+  it("has no radius or shadow", () => {
+    expect(navItemVariants({ current: true })).not.toMatch(/rounded|shadow/);
   });
 });

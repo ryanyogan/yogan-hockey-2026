@@ -27,21 +27,4 @@ const navItemVariants = cva(
   },
 );
 
-/**
- * One place in the phone's tab bar: a cell 56px tall, a fifth of the screen wide, ruled off from
- * the cell before it. Words only; the current one is filled with ink, as a pressed control is.
- */
-const tabBarItemVariants = cva(
-  `flex h-14 items-center justify-center border-rule border-l font-label text-tag uppercase leading-none first:border-l-0 ${focusRing} -outline-offset-2`,
-  {
-    variants: {
-      current: {
-        true: "bg-foreground text-background",
-        false: "hover:bg-highlight",
-      },
-    },
-    defaultVariants: { current: false },
-  },
-);
-
-export { focusRing, navItemVariants, tabBarItemVariants };
+export { focusRing, navItemVariants };

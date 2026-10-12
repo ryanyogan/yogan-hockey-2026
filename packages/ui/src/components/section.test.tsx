@@ -48,13 +48,14 @@ describe("SectionHeader, a red label over an ink rule", () => {
   });
 });
 
-describe("PageHeader, a serif title over a heavy rule", () => {
-  it("is the page's first heading, in the serif, over a 3px ink rule", () => {
+describe("PageHeader, a serif title under a heavy rule", () => {
+  it("is the page's first heading, in the serif, with a 3px ink rule above it and none below", () => {
     const view = render(<PageHeader title="Standings" />);
     expect(view.slot("page-header").tag).toBe("header");
     expect(view.slot("page-header").classes).toEqual(
-      expect.arrayContaining(["border-b-3", "border-rule"]),
+      expect.arrayContaining(["border-t-3", "border-rule"]),
     );
+    expect(view.slot("page-header").classes.join(" ")).not.toMatch(/border-b/);
     expect(view.tag("h1").classes).toEqual(
       expect.arrayContaining(["font-serif", "text-title", "font-strong", "tracking-[-0.01em]"]),
     );

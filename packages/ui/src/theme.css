@@ -155,8 +155,8 @@
 
 @theme inline {
   /*
-   * `font-serif` and `font-agate`. The app's font loader puts the face alone in each variable
-   * (`adjustFontFallback: false`), and after it come the fallbacks of `font-fallbacks.css`: a
+   * `font-serif` and `font-agate`. The app names the face alone in each variable
+   * (`apps/web/src/globals.css`), and after it come the fallbacks of `font-fallbacks.css`: a
    * face the device has, resized so a line is as long, and wraps where, it will when the real
    * face arrives. A browser takes the first whose local face it finds: Times New Roman and Arial
    * on iOS, macOS and Windows, their Liberation stand-ins on Linux, Noto Serif and Roboto on

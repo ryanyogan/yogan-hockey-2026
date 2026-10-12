@@ -11,12 +11,6 @@ export const MIN_SEARCH_LENGTH = 2;
 /** Longer than any name. What is typed past it is not searched for. */
 export const MAX_SEARCH_LENGTH = 50;
 
-/** The address of a search, which can be pasted, reloaded and linked. */
-export function searchHref(query: string): string {
-  const wanted = query.trim();
-  return wanted === "" ? "/players" : `/players?q=${encodeURIComponent(wanted)}`;
-}
-
 /** What `/players` shows: the search its address names, "" for none. */
 export type PlayersPage = { q: string };
 

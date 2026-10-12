@@ -3,7 +3,6 @@ import {
   MAX_SEARCH_LENGTH,
   PlayersPageSchema,
   readPlayersPage,
-  searchHref,
   unansweredSearch,
 } from "./player-search";
 
@@ -33,12 +32,6 @@ test("the server function refuses what is not a search", () => {
   expect(PlayersPageSchema.safeParse({ q: "m".repeat(MAX_SEARCH_LENGTH + 1) }).success).toBe(false);
   expect(PlayersPageSchema.safeParse({ q: 99 }).success).toBe(false);
   expect(PlayersPageSchema.safeParse({}).success).toBe(false);
-});
-
-test("a search has one address, and no search is /players", () => {
-  expect(searchHref(" mar ")).toBe("/players?q=mar");
-  expect(searchHref("de la")).toBe("/players?q=de%20la");
-  expect(searchHref("  ")).toBe("/players");
 });
 
 test("a search that got no answer says so, unless it was too short to ask", () => {

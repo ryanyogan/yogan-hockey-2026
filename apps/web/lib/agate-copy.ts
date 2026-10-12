@@ -3,7 +3,7 @@ import {
   type ScoreboardGame,
   type ScoreboardSide,
   type SeasonRecord,
-  type StoredPrediction,
+  type SlatePick,
 } from "@yogan-hockey/schemas";
 import { tonightGames } from "./dashboard";
 import { gameTime, slateDate } from "./game-time";
@@ -20,8 +20,11 @@ import { betweenPeriods, gameStatusLine, periodLabel, slateCounts } from "./scor
  * given none (`lib/game-time.ts`): the server passes the NHL's, the browser the visitor's own.
  */
 
-/** A Prediction as a page has it: the row, or nothing where a game has none. */
-type Prediction = StoredPrediction | null | undefined;
+/**
+ * A Prediction as a page has it: the row, or the little of it a slate carries to the browser, or
+ * nothing where a game has none.
+ */
+type Prediction = SlatePick | null | undefined;
 /** What naming a club takes. A standings row's team has it too. */
 type Named = Pick<ScoreboardSide, "abbreviation" | "location" | "shortName">;
 
@@ -59,7 +62,8 @@ function sides(game: ScoreboardGame): [ahead: ScoreboardSide, behind: Scoreboard
 }
 
 /** A game ESPN calls live from the warm-up: it has no period yet, so it reads as one to come. */
-const underWay = (game: ScoreboardGame) => game.status === "live" && periodLabel(game) !== "";
+export const underWay = (game: ScoreboardGame) =>
+  game.status === "live" && periodLabel(game) !== "";
 
 /**
  * The headline.
@@ -89,17 +93,20 @@ function gameLine(game: ScoreboardGame, name: (side: ScoreboardSide) => string):
 /**
  * A game's status as a brief says it, and as a kicker begins: "Final/OT", "Live · 3rd 18:44",
  * "Live · End 2nd", "8:40 PM", "Postponed" (in ESPN's own word, so also "Canceled").
+ *
+ * `zoneMark` follows a start time and nothing else: " ET" where the server writes the NHL's time
+ * for a visitor whose own it cannot know, as `LocalTime` does.
  */
-export function statusText(game: ScoreboardGame, timeZone?: string): string {
+export function statusText(game: ScoreboardGame, timeZone?: string, zoneMark = ""): string {
   const line = gameStatusLine(game);
-  if (line == null) return gameTime(game.startTime, timeZone);
+  if (line == null) return `${gameTime(game.startTime, timeZone)}${zoneMark}`;
   if (game.status !== "live") return capitalized(line);
   return underWay(game) ? `Live · ${capitalized(line)}` : "Live";
 }
 
 /** The red line above the headline: status · venue. */
-export function kicker(game: ScoreboardGame, timeZone?: string): string {
-  const status = statusText(game, timeZone);
+export function kicker(game: ScoreboardGame, timeZone?: string, zoneMark = ""): string {
+  const status = statusText(game, timeZone, zoneMark);
   return game.venue ? `${status} · ${game.venue}` : status;
 }
 
@@ -189,6 +196,19 @@ export function gamePickOutcome(
   return pickOutcome(prediction ?? null, game);
 }
 
+/**
+ * What the roundup says with no game to lead with. Without a date the Scoreboard has not
+ * answered, which is not a day off.
+ */
+export const noGames = (date: string | null): string =>
+  date == null
+    ? "Today's games could not be read. They appear here as soon as they can be."
+    : "No games scheduled today.";
+
+/** What Home's standings say with no table to draw: ESPN did not answer, or the season is new. */
+export const noStandings = (read: boolean): string =>
+  read ? "No standings yet this season." : "The standings could not be read just now.";
+
 /** How many games a slate leads with. */
 export const MAX_LEADS = 3;
 
@@ -235,7 +255,7 @@ export type PickTally = { right: number; decided: number };
 /** Tonight's tally: picked finals only. A live pick is not decided, and a final without one is not counted. */
 export function tonightPicks(
   games: readonly ScoreboardGame[],
-  predictions: ReadonlyMap<string, StoredPrediction>,
+  predictions: ReadonlyMap<string, SlatePick>,
 ): PickTally {
   const outcomes = games
     .map((game) => gamePickOutcome(predictions.get(game.id), game))

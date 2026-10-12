@@ -112,7 +112,7 @@ test("the masthead renders, switches theme, and a phone gets its sections under 
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(phone.width);
 
   await places.getByText("Home", { exact: true }).click();
-  await expect(page.getByRole("region", { name: "Tonight" })).toBeVisible();
+  await expect(page.getByRole("region", { name: "NHL Roundup" })).toBeVisible();
   await expect(sectionNav.locator('[aria-current="page"]')).toHaveText("Home");
   // Home's page is the scores: it has no strip.
   await expect(strip).toHaveCount(0);

@@ -9,20 +9,26 @@ const FINAL_GAME = "401803652";
 
 test.use({ timezoneId: "America/Toronto" });
 
-test("the pick is on the game rows, the scheduled game page and the Replay, and a failed one shows nothing", async ({
+test("the pick is on Home, the game rows, the scheduled game page and the Replay, and a failed one shows nothing", async ({
   page,
 }) => {
-  // The dashboard: the one-line pick in the note, and the season record in Tonight's header.
+  // Home: the pick as a sentence in the game's story, and the season's record in The Picks.
   await page.goto("/");
-  const tonight = page.getByRole("region", { name: "Tonight" });
-  const row = (id: string) =>
-    tonight.getByRole("row").filter({ has: page.locator(`a[href="/nhl/games/${id}"]`) });
-  await expect(row(SCHEDULED_GAME).locator('[data-slot="game-pick"]')).toHaveText("TOR 58%");
-  await expect(tonight.locator('[data-slot="picks-record"]')).toHaveText("picks: 3 right, 2 wrong");
-  // A failed Prediction: the row is there and says nothing of a pick.
-  await expect(row(FAILED_GAME)).toHaveCount(1);
-  await expect(row(FAILED_GAME).locator('[data-slot="game-pick"]')).toHaveCount(0);
-  await expect(tonight).not.toContainText("pick pending");
+  const written = (id: string) =>
+    page
+      .locator('[data-slot="story"], [data-slot="brief"]')
+      .filter({ has: page.locator(`a[href="/nhl/games/${id}"]`) });
+  await expect(written(SCHEDULED_GAME).locator('[data-slot="story-pick"]')).toHaveText(
+    "Our pick: Toronto, 58%.",
+  );
+  await expect(page.locator('[data-slot="picks-record"]')).toHaveText("3–2");
+  // A failed Prediction: the game is there and says nothing of a pick, nor that one is pending.
+  await expect(written(FAILED_GAME)).toHaveCount(1);
+  await expect(written(FAILED_GAME).locator('[data-slot="story-pick"]')).toHaveCount(0);
+  await expect(written(FAILED_GAME)).not.toContainText("%");
+  await expect(page.getByRole("main")).not.toContainText("pick pending");
+  // No game of the slate is final, so nothing on Home is marked.
+  await expect(page.getByRole("main").locator('[data-slot="pick-outcome"]')).toHaveCount(0);
 
   // Every other list of games says the same.
   await page.goto("/nhl/live");

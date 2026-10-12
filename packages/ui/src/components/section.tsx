@@ -7,6 +7,14 @@ function Section({ className, ...props }: ComponentProps<"section">) {
 }
 
 /**
+ * The red label (`.label` in the prototype): the one red's 12px bold capitals. A `SectionHeader`
+ * is this over a rule; a heading that is the whole of its line, or one of another level, takes
+ * the classes: `sectionLabel`, and `sectionRule` for the plain ink rule under it.
+ */
+const sectionLabel = "font-strong text-kicker text-tag uppercase tracking-label";
+const sectionRule = "border-rule border-b pb-1.5";
+
+/**
  * The label above a ledger: the subject in the one red's bold capitals over a plain ink rule,
  * then a count or a view in quiet text ("TONIGHT 6 games, 2 live", "STANDINGS league"). Children
  * sit at the right end of the line, set as the prototype's "more" links are.
@@ -22,12 +30,13 @@ function SectionHeader({
     <div
       data-slot="section-header"
       className={cn(
-        "flex flex-wrap items-baseline justify-between gap-x-4 border-rule border-b pb-1.5",
+        "flex flex-wrap items-baseline justify-between gap-x-4",
+        sectionRule,
         className,
       )}
       {...props}
     >
-      <h2 className="font-strong text-kicker text-tag uppercase tracking-label">
+      <h2 className={sectionLabel}>
         {title}
         {count != null && (
           <>
@@ -105,4 +114,4 @@ function PageHeader({
   );
 }
 
-export { PageHeader, Section, SectionHeader };
+export { PageHeader, Section, SectionHeader, sectionLabel, sectionRule };

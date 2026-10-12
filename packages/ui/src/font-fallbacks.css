@@ -1,0 +1,97 @@
+/*
+ * Written by `node scripts/font-fallbacks.ts`, which says what these are. Not edited by hand.
+ */
+/* From letter frequencies alone: size-adjust 105.4769%. */
+@font-face {
+  font-weight: 100 599;
+  font-family: "Newsreader Fallback: Times New Roman";
+  src: local('Times New Roman'), local('TimesNewRomanPSMT'), local('Liberation Serif');
+  ascent-override: 73.81%;
+  descent-override: 26.6118%;
+  line-gap-override: 0%;
+  size-adjust: 99.58%;
+}
+/* From letter frequencies alone: size-adjust 106.6763%. */
+@font-face {
+  font-weight: 600 900;
+  font-family: "Newsreader Fallback: Times New Roman";
+  src: local('Times New Roman Bold'), local('TimesNewRomanPS-BoldMT'), local('Liberation Serif Bold');
+  ascent-override: 68.8073%;
+  descent-override: 24.8081%;
+  line-gap-override: 0%;
+  size-adjust: 106.82%;
+}
+/* From letter frequencies alone: size-adjust 89.0852%. */
+@font-face {
+  font-weight: 100 599;
+  font-family: "Newsreader Fallback: Noto Serif";
+  src: local('Noto Serif Regular'), local('NotoSerif-Regular'), local('Noto Serif');
+  ascent-override: 83.9233%;
+  descent-override: 30.258%;
+  size-adjust: 87.58%;
+}
+/* From letter frequencies alone: size-adjust 90.1367%. */
+@font-face {
+  font-weight: 600 900;
+  font-family: "Newsreader Fallback: Noto Serif";
+  src: local('Noto Serif Bold'), local('NotoSerif-Bold'), local('Noto Serif'), local('NotoSerif-Regular');
+  ascent-override: 78.2331%;
+  descent-override: 28.2065%;
+  size-adjust: 93.95%;
+}
+/* From letter frequencies alone: size-adjust 91.2964%. */
+@font-face {
+  font-weight: 100 599;
+  font-family: "IBM Plex Sans Condensed Fallback: Arial";
+  src: local('Arial'), local('ArialMT'), local('Liberation Sans');
+  ascent-override: 114.359%;
+  descent-override: 30.6817%;
+  line-gap-override: 0%;
+  size-adjust: 89.63%;
+}
+/* From letter frequencies alone: size-adjust 89.1703%. */
+@font-face {
+  font-weight: 600 900;
+  font-family: "IBM Plex Sans Condensed Fallback: Arial";
+  src: local('Arial Bold'), local('Arial-BoldMT'), local('Liberation Sans Bold');
+  ascent-override: 115.1039%;
+  descent-override: 30.8815%;
+  line-gap-override: 0%;
+  size-adjust: 89.05%;
+}
+/* From letter frequencies alone: size-adjust 91.4968%. */
+@font-face {
+  font-weight: 100 599;
+  font-family: "IBM Plex Sans Condensed Fallback: Roboto";
+  src: local('Roboto Regular'), local('Roboto-Regular'), local('Roboto');
+  ascent-override: 112.7861%;
+  descent-override: 30.2597%;
+  size-adjust: 90.88%;
+}
+/* From letter frequencies alone: size-adjust 94.6592%. */
+@font-face {
+  font-weight: 600 900;
+  font-family: "IBM Plex Sans Condensed Fallback: Roboto";
+  src: local('Roboto Bold'), local('Roboto-Bold'), local('Roboto'), local('Roboto-Regular');
+  ascent-override: 112.4767%;
+  descent-override: 30.1767%;
+  size-adjust: 91.13%;
+}
+/* From letter frequencies alone: size-adjust 85.865%. */
+@font-face {
+  font-weight: 100 599;
+  font-family: "IBM Plex Sans Condensed Fallback: Noto Sans";
+  src: local('Noto Sans Regular'), local('NotoSans-Regular'), local('Noto Sans');
+  ascent-override: 117.9788%;
+  descent-override: 31.6529%;
+  size-adjust: 86.88%;
+}
+/* From letter frequencies alone: size-adjust 85.0895%. */
+@font-face {
+  font-weight: 600 900;
+  font-family: "IBM Plex Sans Condensed Fallback: Noto Sans";
+  src: local('Noto Sans Bold'), local('NotoSans-Bold'), local('Noto Sans'), local('NotoSans-Regular');
+  ascent-override: 115.9896%;
+  descent-override: 31.1192%;
+  size-adjust: 88.37%;
+}

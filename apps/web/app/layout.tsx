@@ -16,8 +16,10 @@ import "./globals.css";
 
 // Agate's two voices (`docs/design/agate.md`), which `theme.css` reads as `font-serif` and
 // `font-agate`. vinext downloads the files at build time and serves them from this site, the
-// Latin ones (but the italic) preloaded in every page's head; until one arrives its text is drawn
-// in the fallback vinext sizes to the face (Times New Roman for the serif, Arial for the agate).
+// Latin ones (but the italic) preloaded in every page's head. Until one arrives its text is drawn
+// in a local face sized to it, which is the theme's (`font-fallbacks.css` in `packages/ui`) and
+// not vinext's, so each call says `adjustFontFallback: false`: vinext's is one regular cut sized
+// by letter frequency, under which a bold headline wrapped a line early (#183).
 
 // What is read: the masthead, a headline, a deck, a big number. One variable file, holding
 // every weight (the theme uses 400 to 700) and the optical sizes 6 to 72, which `axes` asks for:
@@ -27,6 +29,7 @@ const serif = Newsreader({
   axes: ["opsz"],
   variable: "--font-newsreader",
   display: "swap",
+  adjustFontFallback: false,
 });
 
 // Its italic is the pick line's alone, so it is a second request that is not preloaded (the Latin
@@ -36,6 +39,7 @@ Newsreader({
   axes: ["opsz"],
   preload: false,
   display: "swap",
+  adjustFontFallback: false,
 });
 
 // What is looked up, and the page's default: a table, a label, the nav. It has no variable file,
@@ -45,6 +49,7 @@ const agate = IBM_Plex_Sans_Condensed({
   weight: ["400", "500", "600", "700"],
   variable: "--font-plex-condensed",
   display: "swap",
+  adjustFontFallback: false,
 });
 
 export const metadata: Metadata = {

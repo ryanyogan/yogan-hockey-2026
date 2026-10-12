@@ -12,7 +12,7 @@ This replaces what ADR 0006 and ADR 0007 say about vinext, server components and
 - **Loader data is fresh for five minutes, and the Scoreboard's socket ends that early.** When `invalidatedAt` moves, the router's loaders are run again. After first paint, today's games are the socket's alone.
 - **Whole pages are not cached.** Every document is rendered for its request, with the Scoreboard in it.
 - **ESPN reads are cached in KV with a time limit each, and a final deletes the keys of what it changed**: the standings, both teams and their players. Pages are still fresh at the horn.
-- **The Worker is configured in `wrangler.jsonc` and deployed with wrangler**, on the released Cloudflare Vite plugin.
+- **The Cloudflare tooling stays `cf` and `cloudflare.config.ts`.** Cloudflare has named `cf` as Wrangler's successor, so the site does not move to `wrangler.jsonc`. The Agent classes are declared as `exports`, never in a `migrations` list.
 
 ## Considered Options
 

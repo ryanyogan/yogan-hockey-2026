@@ -4,24 +4,27 @@ import { mergeProps } from "@base-ui/react/merge-props";
 import { useRender } from "@base-ui/react/use-render";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../cn";
+import { mark } from "./marker";
 
-/** A small label in the ledger's language: square, capitals, the size of a column header. */
-const badgeVariants = cva(
-  "inline-flex w-fit shrink-0 items-center justify-center gap-1 border border-transparent px-2 py-px text-small uppercase tracking-label whitespace-nowrap focus-visible:ring-2 focus-visible:ring-ring [&>svg]:pointer-events-none [&>svg]:size-3!",
-  {
-    variants: {
-      variant: {
-        default: "bg-primary text-primary-foreground",
-        secondary: "bg-secondary text-secondary-foreground",
-        outline: "border-rule text-note",
-        live: "bg-live-tint text-live",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
+/**
+ * A badge is a mark (`.mark` in the prototype): filled with ink for the positive state (a pick
+ * that was right, a socket that is open), outlined for the other, and the one red for anything
+ * live.
+ */
+const badgeVariants = cva(mark, {
+  variants: {
+    variant: {
+      default: "border-rule bg-foreground text-background",
+      /** Outlined, on the tint of a row under the pointer: a state that is neither. */
+      secondary: "border-rule bg-highlight",
+      outline: "border-rule",
+      live: "border-kicker text-kicker",
     },
   },
-);
+  defaultVariants: {
+    variant: "default",
+  },
+});
 
 function Badge({
   className,

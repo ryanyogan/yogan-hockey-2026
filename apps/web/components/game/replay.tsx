@@ -2,7 +2,7 @@
 
 import type { GameHeader, Play } from "@yogan-hockey/schemas";
 import { Button } from "@yogan-hockey/ui/components/button";
-import { navItemVariants } from "@yogan-hockey/ui/components/nav-item";
+import { tabCellHoldsFocus, tabCellVariants } from "@yogan-hockey/ui/components/url-tabs";
 import { type ReactNode, useEffect, useState } from "react";
 import {
   headerAt,
@@ -129,7 +129,7 @@ function ReplayTransport({
     >
       <Button
         data-slot="replay-play"
-        className="w-16 max-sm:h-11 max-sm:w-20"
+        className="w-20"
         aria-label={replay.playing ? "Pause the replay" : "Play the replay"}
         onClick={() => dispatch({ type: replay.playing ? "pause" : "play" })}
       >
@@ -138,7 +138,7 @@ function ReplayTransport({
       <Button
         data-slot="replay-end"
         variant="outline"
-        className="aria-disabled:cursor-default aria-disabled:opacity-50 aria-disabled:hover:bg-transparent max-sm:h-11 max-sm:px-3"
+        className="aria-disabled:cursor-default aria-disabled:opacity-50 aria-disabled:hover:bg-transparent"
         // Not `disabled`: the button turns idle under the finger that pressed it, and a disabled
         // button drops the keyboard's focus.
         aria-disabled={wholeGame && !replay.playing}
@@ -180,14 +180,12 @@ function ReplaySpeedChoice({
   onChange: (speed: ReplaySpeed) => void;
 }) {
   return (
-    <fieldset data-slot="replay-speed" className="flex">
+    <fieldset data-slot="replay-speed" className="flex w-fit border border-rule">
       <legend className="sr-only">Replay speed</legend>
       {REPLAY_SPEEDS.map((choice) => (
         <label
           key={choice}
-          className={`cursor-pointer has-focus-visible:ring-2 has-focus-visible:ring-ring max-sm:px-4 max-sm:py-row ${navItemVariants(
-            { current: choice === speed },
-          )}`}
+          className={`${tabCellHoldsFocus} ${tabCellVariants({ current: choice === speed })}`}
         >
           <input
             type="radio"
@@ -210,7 +208,7 @@ function ReplaySpeedChoice({
 export function ReplayPending({ gaveUp }: { gaveUp: boolean }) {
   return (
     <div data-slot="replay-pending" className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-2">
-      <Button className="w-16 max-sm:h-11 max-sm:w-20" disabled>
+      <Button className="w-20" disabled>
         play
       </Button>
       <p

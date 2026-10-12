@@ -1,37 +1,34 @@
 import { cva } from "class-variance-authority";
 
+const ring =
+  "outline-none focus-visible:outline-2 focus-visible:outline-kicker focus-visible:outline-solid";
+
+/** The focus ring of every primitive: the prototype's 2px of the one red, 2px off the control. */
+const focusRing = `${ring} focus-visible:outline-offset-2`;
+
 /**
- * One choice in a list of places: a sidebar link or a tab. The current one is a solid block, the
- * rest are quiet text. Put it on a link: `className={navItemVariants({ current })}`.
+ * The same ring drawn inside the control, for one in a box that clips what is outside it (a
+ * strip of tabs that scrolls). One or the other: a class holds a single offset.
+ */
+const focusRingInside = `${ring} focus-visible:-outline-offset-2`;
+
+/**
+ * One place in the section nav: 13px semibold capitals, 44px tall, and the one red when it is
+ * the current place (`.sections a` in the prototype). Put it on a link:
+ * `className={navItemVariants({ current })}`. A choice among views of one page is not a place:
+ * that is a tab (`tabCellVariants` in `url-tabs`).
  */
 const navItemVariants = cva(
-  "block px-2 py-1 outline-none focus-visible:ring-2 focus-visible:ring-ring",
+  `inline-flex min-h-11 items-center font-label text-small uppercase leading-none tracking-head ${focusRing}`,
   {
     variants: {
       current: {
-        true: "bg-primary font-label text-primary-foreground",
-        false: "text-note hover:text-foreground",
+        true: "text-kicker",
+        false: "hover:text-label",
       },
     },
     defaultVariants: { current: false },
   },
 );
 
-/**
- * One place in the phone's tab bar: a cell 56px tall, a fifth of the screen wide, ruled off from
- * the cell before it. Words only; the current one is the sidebar's solid block.
- */
-const tabBarItemVariants = cva(
-  "flex h-14 items-center justify-center border-rule border-l text-small outline-none first:border-l-0 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
-  {
-    variants: {
-      current: {
-        true: "bg-primary font-strong text-primary-foreground",
-        false: "font-label text-note hover:text-foreground",
-      },
-    },
-    defaultVariants: { current: false },
-  },
-);
-
-export { navItemVariants, tabBarItemVariants };
+export { focusRing, focusRingInside, navItemVariants };

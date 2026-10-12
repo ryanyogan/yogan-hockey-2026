@@ -1,19 +1,36 @@
+import { cva } from "class-variance-authority";
 import type { ElementType, ReactNode } from "react";
 import { cn } from "../cn";
-import { navItemVariants } from "./nav-item";
+import { focusRingInside } from "./nav-item";
 
 /**
- * On a phone the tabs are one ruled strip of cells, each 44px tall and sharing the width; a set
- * too long for the screen scrolls sideways inside its own strip.
+ * A set of tabs is the prototype's Eastern/Western control (`.conf-tabs`): one box ruled in ink,
+ * its cells 44px tall, 13px semibold capitals, each ruled off from the one before, and the
+ * current cell filled with ink. On a phone the cells share the screen's width equally, as the
+ * prototype's two do, and a set too long for it scrolls sideways inside its own box (a cell is
+ * never narrower than its words); at a desk the box is as wide as its words.
  *
  * Exported for a set of choices that is not links (the game page's radios) and looks the same:
- * `tabStrip` on what holds them, `tabCell` beside `navItemVariants` on each. The first cell is
+ * `tabStrip` on what holds them and `tabCellVariants({ current })` on each. The first cell is
  * the first of its element, not the first child: a fieldset's first child is its legend.
  */
 const tabStrip =
-  "flex flex-wrap max-md:w-full max-md:flex-nowrap max-md:overflow-x-auto max-md:border max-md:border-rule";
-const tabCell =
-  "max-md:flex max-md:min-h-11 max-md:flex-auto max-md:items-center max-md:justify-center max-md:whitespace-nowrap max-md:border-rule max-md:border-l max-md:py-0 max-md:text-[13px] max-md:first-of-type:border-l-0";
+  "flex w-fit max-w-full overflow-x-auto border border-rule [scrollbar-width:none] max-md:w-full";
+const tabCell = `flex min-h-11 flex-auto max-md:flex-1 cursor-pointer items-center justify-center whitespace-nowrap border-rule border-l px-4 font-label text-small uppercase leading-none tracking-mark first-of-type:border-l-0 ${focusRingInside}`;
+
+/** Beside `tabCellVariants` on a label that holds a radio: the ring is the label's. */
+const tabCellHoldsFocus =
+  "has-focus-visible:outline-2 has-focus-visible:outline-kicker has-focus-visible:-outline-offset-2 has-focus-visible:outline-solid";
+
+const tabCellVariants = cva(tabCell, {
+  variants: {
+    current: {
+      true: "bg-foreground text-background",
+      false: "hover:bg-highlight",
+    },
+  },
+  defaultVariants: { current: false },
+});
 
 type UrlTab = { value: string; label: ReactNode; href: string };
 
@@ -48,7 +65,7 @@ function UrlTabs({
           key={tab.value}
           href={tab.href}
           aria-current={tab.value === current ? "page" : undefined}
-          className={cn(navItemVariants({ current: tab.value === current }), tabCell)}
+          className={tabCellVariants({ current: tab.value === current })}
         >
           {tab.label}
         </Link>
@@ -57,4 +74,4 @@ function UrlTabs({
   );
 }
 
-export { tabCell, tabStrip, type UrlTab, UrlTabs };
+export { tabCellHoldsFocus, tabCellVariants, tabStrip, type UrlTab, UrlTabs };

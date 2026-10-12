@@ -75,7 +75,7 @@ export default async function TeamLayout({ params, children }: Props) {
           </ScoreboardGate>
         </TeamNowFrame>
       </div>
-      <div className="space-y-2">
+      <div className="space-y-3">
         <TeamTabs teamId={id} />
         {children}
       </div>

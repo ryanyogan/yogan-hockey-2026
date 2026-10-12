@@ -56,7 +56,8 @@ const LAYOUT = {
   cell: {
     // A phone's cell is the prototype's: 13px on an 18px line under a status of 11px on 14.
     link: "h-full max-md:grid max-md:w-22 max-md:grid-cols-[1fr_auto] max-md:content-center max-md:gap-x-1 max-md:px-2 max-md:text-[13px] max-md:leading-[18px] md:flex md:items-center md:gap-2 md:px-3",
-    marker: "max-md:col-start-2 max-md:row-start-1 max-md:text-[11px] max-md:leading-[14px]",
+    // The star's box is tightened to the status's 14px line, or it is the tallest thing on it.
+    marker: "max-md:col-start-2 max-md:row-start-1 max-md:px-1 max-md:py-px max-md:text-[11px]",
     side: "max-md:col-span-2 max-md:flex max-md:justify-between max-md:gap-2",
     at: "max-md:sr-only",
     status: "max-md:col-start-1 max-md:row-start-1 max-md:text-[11px] max-md:leading-[14px]",
@@ -285,7 +286,11 @@ export function ScoreTicker() {
                 +{reach.hidden}
               </span>
             )}
-            {/* Drawn, not typed: a typed arrow is whatever font has one. */}
+            {/*
+             * Drawn, not typed. The served subset of IBM Plex Sans Condensed carries "↑" and "↓"
+             * and no other arrow or triangle, so a typed caret ("▾") would be whatever a device's
+             * fallback font draws, and a "↓" is an arrow, not a caret.
+             */}
             <span
               aria-hidden="true"
               className={`size-0 border-x-4 border-x-transparent border-t-4 border-t-current ${open ? "rotate-180" : ""}`}

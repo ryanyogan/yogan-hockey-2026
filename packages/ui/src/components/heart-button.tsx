@@ -6,10 +6,12 @@ import { cn } from "../cn";
  * state; give it `pressed`, an `onClick` and a `label` that names what it marks ("Favorite Auston
  * Matthews"), which stays the same either way since `aria-pressed` says which.
  *
- * The heart is drawn, not typed (Geist Mono has no "♥"), the size of a score (16px; 20px on a
- * phone), which is no taller than its line. What takes the tap is wider than what is drawn: 32px
+ * The heart is drawn, not typed (IBM Plex Sans Condensed has no "♥"), the size of a score
+ * (16px), which is no taller than its line. What takes the tap is wider than what is drawn: 32px
  * square at a desk and 44px square on a phone, inside the row and no further. `relative z-10`
- * puts it above a ledger row's stretched link.
+ * puts it above a ledger row's stretched link. It is centred on its line by measurement
+ * (`align-[-2.5px]`; `align-middle` sits it 1.3px low), because on a phone its reach is as tall
+ * as its row, and one that pokes out is cut off and scrolls the table.
  */
 function HeartButton({
   className,
@@ -27,10 +29,10 @@ function HeartButton({
       aria-pressed={pressed}
       aria-label={label}
       className={cn(
-        "relative z-10 inline-flex size-(--fs-score) cursor-pointer align-middle outline-none",
+        "relative z-10 inline-flex size-(--fs-score) cursor-pointer align-[-2.5px] outline-none",
         // No further right than a ledger cell's padding, or the ledger would scroll sideways.
-        "after:absolute after:-inset-2 after:content-[''] max-md:after:-inset-y-3 max-md:after:-left-4",
-        "focus-visible:outline-1 focus-visible:outline-solid focus-visible:outline-foreground focus-visible:outline-offset-4",
+        "after:absolute after:-inset-2 after:content-[''] max-md:after:-inset-y-3.5 max-md:after:-left-5",
+        "focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-kicker focus-visible:outline-offset-4",
         pressed ? "text-foreground" : "text-aside hover:text-foreground",
         className,
       )}

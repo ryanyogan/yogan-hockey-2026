@@ -9,7 +9,7 @@ import {
   LedgerHead,
   LedgerRow,
 } from "./ledger";
-import { Section, SectionHeader } from "./section";
+import { PageHeader, Section, SectionHeader } from "./section";
 
 /**
  * Placeholders for content that is still being read, drawn from the ledger's own parts so that
@@ -25,7 +25,7 @@ import { Section, SectionHeader } from "./section";
  * The rule that keeps it exact: a skeleton is the real component's markup with a `SkeletonBar`
  * where each value would be. Give `columns` the real ledger's columns, with the same `numeric`
  * and the same `className` (the `w-full` that takes the slack, a `max-sm:hidden`). A row is then
- * the real row's height by construction (33px, and 45px on a phone), whatever the tokens become.
+ * the real row's height by construction, whatever the tokens become.
  *
  * What a skeleton cannot know is how many rows are coming. Where the number is fixed (a team's
  * record, a Next Game card) say it. Where it is not (a schedule, a roster), give enough rows to
@@ -148,4 +148,15 @@ function SectionSkeleton({
   );
 }
 
-export { LedgerSkeleton, SectionSkeleton, SkeletonBar, type SkeletonColumn };
+/**
+ * A page title's placeholder: the real `PageHeader`, with the title when it is known before the
+ * data is ("Live scores") and a bar in the title's own size when it is data (a team's name).
+ */
+function PageHeaderSkeleton({
+  title,
+  ...props
+}: Omit<ComponentProps<typeof PageHeader>, "title"> & { title?: ReactNode }) {
+  return <PageHeader title={title ?? <SkeletonBar width="xl" />} {...props} />;
+}
+
+export { LedgerSkeleton, PageHeaderSkeleton, SectionSkeleton, SkeletonBar, type SkeletonColumn };

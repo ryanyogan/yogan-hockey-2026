@@ -1,6 +1,7 @@
 import { createRouter } from "@tanstack/react-router";
 import { ErrorPage } from "../components/shell/error-page";
 import { NotFoundPage } from "../components/shell/not-found-page";
+import { quietSkippedTransitions } from "../lib/skipped-transition";
 import { routeTree } from "./routeTree.gen";
 
 const MINUTE = 60 * 1000;
@@ -21,6 +22,8 @@ export const FRESH_FOR = 5 * MINUTE;
  *   visitor who asked for less motion).
  */
 export function getRouter() {
+  // In the browser: a navigation overtaken by the next is not an error of the page's.
+  if (typeof document !== "undefined") quietSkippedTransitions(document);
   return createRouter({
     routeTree,
     scrollRestoration: true,

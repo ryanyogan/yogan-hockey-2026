@@ -155,16 +155,8 @@ function measure({ selector, type, words }) {
   };
 }
 
-/**
- * A family is the same when its first face is: the site's stack names its fallbacks too, and
- * Fontsource names the variable file's family "Newsreader Variable".
- */
-const firstFace = (family) =>
-  family
-    .split(",")[0]
-    .replaceAll(/['"]/g, "")
-    .trim()
-    .replace(/ Variable$/, "");
+/** A family is the same when its first face is: the site's stack names its fallbacks too. */
+const firstFace = (family) => family.split(",")[0].replaceAll(/['"]/g, "").trim();
 const same = (name, a, b) => {
   if (name === "fontFamily") return firstFace(a) === firstFace(b);
   if (typeof a === "number") return Math.abs(a - b) <= 0.5;

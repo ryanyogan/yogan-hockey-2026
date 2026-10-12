@@ -1,8 +1,3 @@
-import plex400 from "@fontsource/ibm-plex-sans-condensed/files/ibm-plex-sans-condensed-latin-400-normal.woff2?url";
-import plex500 from "@fontsource/ibm-plex-sans-condensed/files/ibm-plex-sans-condensed-latin-500-normal.woff2?url";
-import plex600 from "@fontsource/ibm-plex-sans-condensed/files/ibm-plex-sans-condensed-latin-600-normal.woff2?url";
-import plex700 from "@fontsource/ibm-plex-sans-condensed/files/ibm-plex-sans-condensed-latin-700-normal.woff2?url";
-import newsreader from "@fontsource-variable/newsreader/files/newsreader-latin-opsz-normal.woff2?url";
 import { APPLE_SPLASH_IMAGES } from "../lib/app-splash.generated";
 import { APP_NAME, APP_SHORT_NAME, APPLE_ICON, FAVICON_PNG } from "../lib/install";
 import stylesheet from "./globals.css?url";
@@ -51,11 +46,18 @@ function outcomeTitle(match: Outcome, notFoundTitle = "Not found"): string | und
 }
 
 /**
- * The Latin files of Agate's two voices (`globals.css` has their faces), preloaded on every page:
- * Newsreader's one variable file and the four weights of IBM Plex Sans Condensed. The italic is
- * the pick line's alone and is fetched when a page first sets italic serif.
+ * The Latin files of Agate's two voices (`fonts.css` has their faces, `public/fonts` the files),
+ * preloaded on every page: Newsreader's one variable file and the four weights of IBM Plex Sans
+ * Condensed. The italic is the pick line's alone and is fetched when a page first sets italic
+ * serif. `scripts/built-fonts.mjs` fails a build whose pages name a font file it does not hold.
  */
-const PRELOADED_FONTS = [newsreader, plex400, plex500, plex600, plex700];
+const PRELOADED_FONTS = [
+  "/fonts/newsreader-f0c28dac.woff2",
+  "/fonts/ibm-plex-sans-condensed-27f92ea8.woff2",
+  "/fonts/ibm-plex-sans-condensed-bb4fdf61.woff2",
+  "/fonts/ibm-plex-sans-condensed-6cd67044.woff2",
+  "/fonts/ibm-plex-sans-condensed-b4687cfe.woff2",
+];
 
 /** What every page's `<head>` holds, whatever the page. */
 export function siteHead({ match }: { match: Outcome }) {

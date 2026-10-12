@@ -49,7 +49,7 @@ type Comment = { body: string };
 
 /** A stand-in for the `gh` CLI over a tracker holding the issues given. */
 function tracker(
-  open: { number: number; title: string; url: string; comments?: Comment[] }[],
+  open: { number: number; title: string; url: string; body?: string; comments?: Comment[] }[],
   labels: string[] = ["needs-triage", "ready-for-agent"],
 ) {
   const calls: { args: string[]; input: string | undefined }[] = [];
@@ -59,7 +59,7 @@ function tracker(
     if (noun === "issue" && verb === "list") return JSON.stringify(open);
     if (noun === "issue" && verb === "view") {
       const issue = open.find((candidate) => String(candidate.number) === args[2]);
-      return JSON.stringify({ comments: issue?.comments ?? [] });
+      return JSON.stringify({ body: issue?.body ?? "", comments: issue?.comments ?? [] });
     }
     if (noun === "label" && verb === "list")
       return JSON.stringify(labels.map((name) => ({ name })));
@@ -82,6 +82,13 @@ function report(summary: CheckSummary | null, gh: ReturnType<typeof tracker>["gh
 
 const EXISTING = { number: 90, title: ISSUE_TITLE, url: ISSUE_URL };
 
+/** The text of the issue the check opens for this run. */
+async function issueOpenedFor(summary: CheckSummary): Promise<string> {
+  const { gh, writes } = tracker([]);
+  await report(summary, gh);
+  return writes()[0]?.input ?? "";
+}
+
 describe("a failed check", () => {
   test("opens an issue labelled needs-triage naming each endpoint and its parse error", async () => {
     const { gh, writes } = tracker([{ number: 12, title: "Something else", url: "x" }]);
@@ -101,7 +108,7 @@ describe("a failed check", () => {
       "--body-file",
       "-",
     ]);
-    expect(input).toContain("failed on 2026-10-07");
+    expect(input).toContain("failed on 2026-10-07 at 16:17 UTC");
     expect(input).toContain(RUN_URL);
     expect(input).toContain("`standings`");
     expect(input).toContain("children.0.name: Invalid input: expected string, received undefined");
@@ -144,6 +151,80 @@ describe("a failed check", () => {
     expect(args).toEqual(["issue", "comment", "90", "--body-file", "-"]);
     expect(input).toContain("failed again on 2026-10-07");
     expect(input).toContain("`standings`");
+  });
+
+  test("says nothing when the same endpoints fail the same way as the last time it wrote", async () => {
+    const body = await issueOpenedFor(FAILED);
+    const { gh, writes } = tracker([{ ...EXISTING, body }]);
+
+    const reported = await report({ ...FAILED, checkedAt: "2026-10-07T19:43:02.000Z" }, gh);
+
+    expect(reported).toEqual({ issue: "unchanged", issueUrl: ISSUE_URL });
+    expect(writes()).toEqual([]);
+  });
+
+  test("comments when what fails has changed since the last time it wrote", async () => {
+    const body = await issueOpenedFor(FAILED);
+    const { gh, writes } = tracker([{ ...EXISTING, body }]);
+    const more: CheckSummary = {
+      ...FAILED,
+      results: [
+        ...FAILED.results,
+        result("teams/21", { outcome: "parse-failure", issues: ["team.record: Invalid input"] }),
+      ],
+    };
+
+    const reported = await report(more, gh);
+
+    expect(reported.issue).toBe("commented");
+    expect(writes()[0]?.input).toContain("`teams/21`");
+  });
+
+  test("says nothing when the game the slate gave is another one and its summary fails the same way", async () => {
+    const summaryOf = (game: string, places: number): CheckSummary => ({
+      ...FAILED,
+      results: [
+        result(`summary?event=${game}`, {
+          outcome: "parse-failure",
+          issues: [`plays[].clock: Invalid input (${places} places, first at plays.0.clock)`],
+        }),
+      ],
+    });
+    const body = await issueOpenedFor(summaryOf("401892486", 212));
+    const { gh, writes } = tracker([{ ...EXISTING, body }]);
+
+    const reported = await report(summaryOf("401892490", 87), gh);
+
+    expect(reported.issue).toBe("unchanged");
+    expect(writes()).toEqual([]);
+  });
+
+  test("comments when an endpoint already failing fails on another field", async () => {
+    const body = await issueOpenedFor(FAILED);
+    const { gh, writes } = tracker([{ ...EXISTING, body }]);
+    const another: CheckSummary = {
+      ...FAILED,
+      results: FAILED.results.map((r) =>
+        r.endpoint === "standings" ? { ...r, issues: [...r.issues, "seasons: Invalid input"] } : r,
+      ),
+    };
+
+    const reported = await report(another, gh);
+
+    expect(reported.issue).toBe("commented");
+    expect(writes()[0]?.input).toContain("seasons: Invalid input");
+  });
+
+  test("comments when the same failure comes back after the check had cleared", async () => {
+    const body = await issueOpenedFor(FAILED);
+    const second = tracker([{ ...EXISTING, body }]);
+    await report(PASSED, second.gh);
+    const cleared = second.writes()[0]?.input ?? "";
+    const { gh } = tracker([{ ...EXISTING, body, comments: [{ body: cleared }] }]);
+
+    const reported = await report(FAILED, gh);
+
+    expect(reported.issue).toBe("commented");
   });
 
   test("a check that wrote no summary is reported as a failure too", async () => {

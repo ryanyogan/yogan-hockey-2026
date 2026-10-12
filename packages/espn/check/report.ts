@@ -3,11 +3,13 @@
  * is failing. Kept apart from the workflow so it can be tested without a runner.
  *
  * - A failure with no issue open opens one, labelled `needs-triage`.
- * - A failure with the issue open comments on it: there is only ever one open issue.
+ * - A failure with the issue open comments on it: there is only ever one open issue. The check
+ *   runs eight times a day, so it comments only when what fails is not what it last wrote.
  * - A pass with the issue open comments, once, that it cleared. The issue stays open for a person
  *   to close: a parse failure can depend on what is on that day (a live game's summary, say), so
  *   one pass does not prove the cause is gone.
  */
+import { createHash } from "node:crypto";
 import { z } from "zod";
 import { type CheckResult, type CheckSummary, triesNote } from "./live-check.ts";
 
@@ -17,8 +19,50 @@ export const LABEL = "needs-triage";
 
 // Each thing the check writes carries one of these, so the next run can tell where things stand
 // from the last one written, whatever people have said in between.
-const FAILED_MARK = "<!-- espn-check: failed -->";
+// A failure's mark also says what failed, which is how the next failing run knows whether it has
+// anything new to say.
+const FAILED_MARK = "<!-- espn-check: failed";
 const CLEARED_MARK = "<!-- espn-check: cleared -->";
+
+/**
+ * `<!-- espn-check: failed: parse teams/21, fetch standings #1f0c9a2b7d44 -->`. The endpoints are
+ * there to be read. The digest is what the next failing run compares: the kind of each endpoint
+ * and its fields or status, so the same endpoint failing on another field is a different mark.
+ * It leaves out what differs from run to run without anything having changed: which game or team
+ * the slate gave (`summary?event=N`, `teams/N`) and how many rows a field is wrong in.
+ */
+function failedMark(summary: CheckSummary | null): string {
+  const names =
+    summary === null
+      ? "no summary"
+      : failed(summary)
+          .map((result) => `${result.outcome.replace("-failure", "")} ${result.endpoint}`)
+          .join(", ");
+  // An endpoint's name is ESPN's path and query, which a `>` would not survive in a URL anyway.
+  return `${FAILED_MARK}: ${names.replaceAll(">", "")} ${digestEnd(failed(summary))}`;
+}
+
+/** The endpoints that failed; none for a run that wrote no summary. */
+function failed(summary: CheckSummary | null): CheckResult[] {
+  return summary?.results.filter((result) => result.outcome !== "ok") ?? [];
+}
+
+/** The end of a failure's mark, which is the same for two runs that failed the same way. */
+function digestEnd(results: CheckResult[]): string {
+  const kinds = results.map((result) =>
+    JSON.stringify([
+      result.outcome,
+      result.endpoint.replace(/\d+/g, "N"),
+      result.status,
+      result.issues.map((issue) => issue.replace(/ \(\d+ places, first at .*\)$/, "")),
+    ]),
+  );
+  const digest = createHash("sha256")
+    .update([...new Set(kinds)].sort().join("\n"))
+    .digest("hex")
+    .slice(0, 12);
+  return `#${digest} -->`;
+}
 
 /** Runs the `gh` CLI with these arguments, `input` on its stdin, and answers its stdout. */
 export type Gh = (args: string[], input?: string) => Promise<string>;
@@ -32,7 +76,8 @@ export type ReportOptions = {
 };
 
 export type Reported = {
-  issue: "opened" | "commented" | "cleared" | "none";
+  /** `unchanged`: the issue is open and already says what this run found, so nothing was written. */
+  issue: "opened" | "commented" | "unchanged" | "cleared" | "none";
   /** The check's open issue, if there is one after this run. */
   issueUrl: string | null;
 };
@@ -42,7 +87,10 @@ type OpenIssue = { number: number; url: string };
 // What `gh --json` answers, for the three questions asked of it.
 const GhIssues = z.array(z.object({ number: z.number(), title: z.string(), url: z.string() }));
 const GhLabels = z.array(z.object({ name: z.string() }));
-const GhComments = z.object({ comments: z.array(z.object({ body: z.string() })) });
+const GhThread = z.object({
+  body: z.string(),
+  comments: z.array(z.object({ body: z.string() })),
+});
 
 async function findOpenIssue(gh: Gh): Promise<OpenIssue | null> {
   // Listed, not searched: GitHub's search lags behind an issue just opened.
@@ -75,14 +123,14 @@ async function ensureLabel(gh: Gh): Promise<void> {
   ]);
 }
 
-/** Whether the last thing the check wrote on its issue was that it had cleared. */
-async function alreadyCleared(gh: Gh, issue: OpenIssue): Promise<boolean> {
-  const viewed = await gh(["issue", "view", String(issue.number), "--json", "comments"]);
-  const { comments } = GhComments.parse(JSON.parse(viewed));
-  const last = comments.findLast(
-    ({ body }) => body.includes(FAILED_MARK) || body.includes(CLEARED_MARK),
+/** The last thing the check wrote on its issue, the issue's own text included. */
+async function lastWritten(gh: Gh, issue: OpenIssue): Promise<string> {
+  const viewed = await gh(["issue", "view", String(issue.number), "--json", "body,comments"]);
+  const { body, comments } = GhThread.parse(JSON.parse(viewed));
+  const written = [body, ...comments.map((comment) => comment.body)];
+  return (
+    written.findLast((text) => text.includes(FAILED_MARK) || text.includes(CLEARED_MARK)) ?? ""
   );
-  return last?.body.includes(CLEARED_MARK) ?? false;
 }
 
 const failuresOf = (summary: CheckSummary, outcome: CheckResult["outcome"]) =>
@@ -110,7 +158,7 @@ function failureDetail(summary: CheckSummary | null): string[] {
       ? [
           "### Fetch failures: ESPN or the network was down",
           "",
-          "One that passes tomorrow needs nothing done.",
+          "One that passes on a later run needs nothing done.",
           "",
           ...failureList(fetched),
         ]
@@ -122,7 +170,10 @@ function failureDetail(summary: CheckSummary | null): string[] {
 }
 
 function when(summary: CheckSummary | null): string {
-  return summary ? ` on ${summary.checkedAt.slice(0, 10)}` : "";
+  // The hour too: the check runs eight times a day.
+  return summary
+    ? ` on ${summary.checkedAt.slice(0, 10)} at ${summary.checkedAt.slice(11, 16)} UTC`
+    : "";
 }
 
 function runLink(runUrl: string | undefined): string {
@@ -131,21 +182,21 @@ function runLink(runUrl: string | undefined): string {
 
 function issueBody(summary: CheckSummary | null, runUrl: string | undefined): string {
   return [
-    FAILED_MARK,
-    `The daily live ESPN check failed${when(summary)}.${runLink(runUrl)}`,
+    failedMark(summary),
+    `The live ESPN check failed${when(summary)}.${runLink(runUrl)}`,
     "",
     ...failureDetail(summary),
     "### What to do",
     "",
     'Run `pnpm check:espn` to see it now. A parse failure names the endpoint and the path in ESPN\'s response that the schema in `packages/espn/src` no longer matches: fix the schema and its translation, then `pnpm record:fixtures` and `pnpm test -u` so the fixtures show the new shape. `docs/agents/build-notes.md` has more under "The daily live ESPN check".',
     "",
-    "Each later failing run comments here, and the first run that passes comments that it cleared. Nothing closes this issue but a person.",
+    "A later failing run comments here when what fails has changed, and the first run that passes comments that it cleared. Nothing closes this issue but a person.",
   ].join("\n");
 }
 
 function failedAgainBody(summary: CheckSummary | null, runUrl: string | undefined): string {
   return [
-    FAILED_MARK,
+    failedMark(summary),
     `The check failed again${when(summary)}.${runLink(runUrl)}`,
     "",
     ...failureDetail(summary),
@@ -172,7 +223,9 @@ export async function reportCheck(options: ReportOptions): Promise<Reported> {
 
   if (summary?.ok) {
     if (open === null) return { issue: "none", issueUrl: null };
-    if (await alreadyCleared(gh, open)) return { issue: "none", issueUrl: open.url };
+    if ((await lastWritten(gh, open)).includes(CLEARED_MARK)) {
+      return { issue: "none", issueUrl: open.url };
+    }
     await gh(
       ["issue", "comment", String(open.number), "--body-file", "-"],
       clearedBody(summary, runUrl),
@@ -187,6 +240,9 @@ export async function reportCheck(options: ReportOptions): Promise<Reported> {
       issueBody(summary, runUrl),
     );
     return { issue: "opened", issueUrl: created.trim() };
+  }
+  if ((await lastWritten(gh, open)).includes(digestEnd(failed(summary)))) {
+    return { issue: "unchanged", issueUrl: open.url };
   }
   await gh(
     ["issue", "comment", String(open.number), "--body-file", "-"],

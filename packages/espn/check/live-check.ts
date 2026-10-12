@@ -3,18 +3,18 @@
  * the site's own translation on it. It is the early warning for ESPN changing shape, since
  * nothing watches the site while nobody is on it.
  */
-import { ScoreboardSchema } from "@yogan-hockey/schemas";
+import { ScoreboardSchema, TeamSchema } from "@yogan-hockey/schemas";
 import { z } from "zod";
 import { fetchJson } from "../src/client.ts";
 import { endpoints } from "../src/endpoints.ts";
 import { EspnFetchError, EspnParseError } from "../src/errors.ts";
-import { SAMPLES, type Sample, unfinishedSummaries } from "./samples.ts";
+import { SAMPLES, type Sample, SLATE_STATUSES, secondTeam, summariesFromSlate } from "./samples.ts";
 
 /** How many times an endpoint is fetched before a fetch failure is believed. */
 const TRIES = 3;
 /** The wait before the second try; the wait before the third is twice it. */
 const RETRY_WAIT_MS = 2000;
-/** Zod reports every wrong field; past this many the rest are counted, not listed. */
+/** Zod reports every wrong field; past this many different ones the rest are counted, not listed. */
 const ISSUES_LISTED = 20;
 
 /** What became of one endpoint. */
@@ -58,14 +58,36 @@ export type LiveCheckOptions = {
   now?: () => Date;
 };
 
+/**
+ * Where a parse failed, a line for each field: `path.to.field: what is wrong`. A field that is
+ * wrong the same way in many rows of a list is one line, with the list's index written `[]` and
+ * the first place named in full: when ESPN changes a roster every player's row fails, and thirty
+ * lines of one field would push the other fields that changed past the limit.
+ */
 function issuesOf(error: unknown): string[] {
   const cause = error instanceof Error ? error.cause : undefined;
   if (!(cause instanceof z.ZodError)) return [];
-  const listed = cause.issues
-    .slice(0, ISSUES_LISTED)
-    .map((issue) => `${issue.path.join(".") || "(root)"}: ${issue.message}`);
-  const more = cause.issues.length - listed.length;
-  return more > 0 ? [...listed, `and ${more} more`] : listed;
+  /** By the field's path with every list index written `[]`, and what is wrong with it. */
+  const fields = new Map<string, { first: string; message: string; places: number }>();
+  for (const { path, message } of cause.issues) {
+    const anyRow = path
+      .map((key) => (typeof key === "number" ? "[]" : `.${String(key)}`))
+      .join("")
+      .replace(/^\./, "");
+    const field = fields.get(`${anyRow}: ${message}`);
+    if (field) field.places++;
+    else
+      fields.set(`${anyRow}: ${message}`, {
+        first: path.join(".") || "(root)",
+        message,
+        places: 1,
+      });
+  }
+  const lines = [...fields].map(([everywhere, { first, message, places }]) =>
+    places === 1 ? `${first}: ${message}` : `${everywhere} (${places} places, first at ${first})`,
+  );
+  const more = lines.length - ISSUES_LISTED;
+  return more > 0 ? [...lines.slice(0, ISSUES_LISTED), `and ${more} more`] : lines;
 }
 
 /**
@@ -138,8 +160,9 @@ async function checkOne(
 }
 
 /**
- * Runs the check: every sample in `samples.ts`, then the summaries of a live and a scheduled game
- * chosen from today's slate. Every endpoint is checked whatever became of the ones before it.
+ * Runs the check: every sample in `samples.ts`, then what is chosen from today's slate: the
+ * summaries of a live, a scheduled and a final game, and a second team. Every endpoint is checked
+ * whatever became of the ones before it.
  */
 export async function runLiveCheck(options: LiveCheckOptions = {}): Promise<CheckSummary> {
   const fetcher = options.fetch ?? fetch;
@@ -149,25 +172,42 @@ export async function runLiveCheck(options: LiveCheckOptions = {}): Promise<Chec
 
   const results: CheckResult[] = [];
   const notChecked: string[] = [];
-  const todaysSlate = endpoints.scoreboard().url;
-  let fromTodaysSlate: Sample[] = [];
+  /** What each sample that passed translated to, by its URL. */
+  const translated = new Map<string, unknown>();
 
   for (const sample of SAMPLES) {
     const { result, value } = await checkOne(sample, fetcher, sleep);
     results.push(result);
-    if (sample.endpoint.url !== todaysSlate) continue;
-    if (result.outcome !== "ok") {
-      notChecked.push("the summary of a live or scheduled game: today's scoreboard failed");
-      continue;
-    }
-    // The translation has just promised this shape; parsing it again is how the type is known here.
-    const { games } = ScoreboardSchema.parse(value);
-    fromTodaysSlate = unfinishedSummaries(games);
-    for (const status of ["live", "scheduled"] as const) {
+    if (result.outcome === "ok") translated.set(sample.endpoint.url, value);
+  }
+
+  const fromTodaysSlate: Sample[] = [];
+  const slate = translated.get(endpoints.scoreboard().url);
+  if (slate === undefined) {
+    notChecked.push(
+      "the summaries of games on today's slate, and a second team: today's scoreboard failed",
+    );
+  } else {
+    // The translations have just promised these shapes; parsing again is how the types are
+    // known here.
+    const { games } = ScoreboardSchema.parse(slate);
+    fromTodaysSlate.push(...summariesFromSlate(games));
+    for (const status of SLATE_STATUSES) {
       if (!games.some((game) => game.status === status)) {
         notChecked.push(`the summary of a ${status} game: none on today's slate`);
       }
     }
+    const teams = translated.get(endpoints.teams().url);
+    const teamIds =
+      teams === undefined
+        ? null
+        : z
+            .array(TeamSchema)
+            .parse(teams)
+            .map((t) => t.id);
+    const chosen = secondTeam(games, teamIds);
+    if ("sample" in chosen) fromTodaysSlate.push(chosen.sample);
+    else notChecked.push(chosen.gap);
   }
   for (const sample of fromTodaysSlate) {
     results.push((await checkOne(sample, fetcher, sleep)).result);

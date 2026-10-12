@@ -207,7 +207,7 @@ Each Agent alerts on what it sees while in use:
 
 The Agent records when a problem starts and when it clears, in its own storage, and logs each once: an error line for the start, which Workers observability groups into an Issue, and a plain line for the all-clear. Nothing is pushed to a phone. That waits for the site to be a PWA with real push, and the one function that announces a start or an all-clear (`announce` in `apps/web/agents/espn-alert.ts`) is where it will be sent from.
 
-Nothing watches the site while nobody is on it, and until push exists nobody is told of an Agent's alert: it is there to be read in the logs. The daily GitHub check (see [Testing](#10-testing)) is the early warning for ESPN changing shape, and its issue, with the failed run, is the one notice that goes out.
+Nothing watches the site while nobody is on it, and until push exists nobody is told of an Agent's alert: it is there to be read in the logs. The GitHub check, run every three hours (see [Testing](#10-testing)), is the early warning for ESPN changing shape, and its issue, with the failed run, is the one notice that goes out.
 
 ## 5. Game pages
 
@@ -316,7 +316,7 @@ No coverage target. Most of the effort goes on the Agents.
 - **`packages/espn`**: Vitest on committed fixtures, with snapshots of the translated shapes. `pnpm record:fixtures` refetches a fixed list of endpoints and is rerun by hand.
 - **Agents**: Vitest inside the Workers runtime (`@cloudflare/vitest-pool-workers`), with ESPN replaced by fixtures. Cases: polling starts and stops with viewers; new, changed and removed plays; a stall; a final triggering the cache invalidation and the D1 writes; catch-up after a quiet spell.
 - **Site**: one Playwright smoke test per route, against `pnpm dev` in fixture mode.
-- **Daily live check**: a scheduled GitHub Actions run fetches live ESPN and runs the parsers. On failure it opens or updates an issue labelled `needs-triage` naming the endpoint and the parse error; the first run that passes comments on it that the check cleared. The issue is the alert: nothing is pushed.
+- **Live check**: a scheduled GitHub Actions run fetches live ESPN and runs the parsers, every three hours, since GitHub starts a scheduled run hours late and one a day came after ESPN's change of 2026-10-12 had reached the site. On failure it opens an issue labelled `needs-triage` naming the endpoint and the parse error, or comments on the open one when what fails has changed; the first run that passes comments on it that the check cleared. The issue is the alert: nothing is pushed.
 - **Parity**: a checklist issue, one line per carried-over behaviour. Ryan ticks it by eye with both sites side by side.
 
 ## 11. Launch and cutover

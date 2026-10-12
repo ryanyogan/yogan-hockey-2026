@@ -2,8 +2,8 @@
 
 import type { GameHeader, Play } from "@yogan-hockey/schemas";
 import { type ReactNode, useEffect, useState } from "react";
-import { loadReplayPlays } from "../../app/nhl/games/[id]/actions";
 import type { GameTab } from "../../lib/game/tabs";
+import { readReplayPlays } from "../../src/functions/game";
 import { Replay, ReplayPending } from "./replay";
 
 export type FinishedGameProps = {
@@ -63,8 +63,8 @@ export function FinishedGame({
     let stopped = false;
     let timer: ReturnType<typeof setTimeout> | undefined;
     const ask = async (asked: number) => {
-      // The action answers null for anything it cannot serve; a throw is the call itself failing.
-      const fromD1 = await loadReplayPlays(gameId).catch(() => null);
+      // The read answers null for anything it cannot serve; a throw is the call itself failing.
+      const fromD1 = await readReplayPlays({ data: gameId }).catch(() => null);
       if (stopped) return;
       if (fromD1 != null) setLoaded(fromD1);
       else if (asked < ASKS) timer = setTimeout(() => ask(asked + 1), ASK_AGAIN_MILLISECONDS);

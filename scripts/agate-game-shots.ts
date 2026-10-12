@@ -166,7 +166,11 @@ async function measure(page: Page, wide: boolean) {
                 ? value
                 : named(style.color)
               : property === "fontFamily"
-                ? style.fontFamily.split(",")[0].replaceAll(/["']/g, "")
+                ? // Fontsource names a variable face "Newsreader Variable": the same face.
+                  style.fontFamily
+                    .split(",")[0]
+                    .replaceAll(/["']/g, "")
+                    .replace(/ Variable$/, "")
                 : style[property];
           if (got !== value)
             faults.add(`${slot}: ${property} is ${got}, the prototype's is ${value}`);

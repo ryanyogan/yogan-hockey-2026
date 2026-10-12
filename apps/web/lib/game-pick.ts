@@ -18,8 +18,8 @@ export type GamePickReading =
   | { state: "none" };
 
 /**
- * A game's pick, read from D1 by its page's server component (prediction rows are behind no
- * cache tag). The pick is an extra: when D1 cannot be read the page is drawn without it.
+ * A game's pick, read from D1 for its page's read (`lib/game-page.ts`; prediction rows are in no
+ * cache). The pick is an extra: when D1 cannot be read the page is drawn without it.
  */
 export async function readGamePick(
   header: Pick<GameHeader, "id" | "status" | "startTime"> & {

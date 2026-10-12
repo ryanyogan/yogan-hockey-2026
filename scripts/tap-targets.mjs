@@ -24,12 +24,11 @@ const PHONE = { width: Number(process.env.WIDTH ?? 390), height: 844 };
 const PLACES = ["Home", "Scores", "Standings", "Teams", "Players"];
 /**
  * Controls that are left smaller than the minimum on purpose, by their `data-slot`, each with
- * the reason. They are measured and counted, and do not fail the run.
+ * the reason. They are measured and counted, and do not fail the run. There are none: a game's
+ * timeline ticks were here until #215, when the timeline became one control, its whole line,
+ * which is measured as any other (a tap on it picks the nearest tick's play).
  */
-const EXEMPT = {
-  "timeline-tick":
-    "A game's plays on a line 358px long, each tick 4 to 6px wide and 16 or 32px tall: a hundred of them cannot each be 44px wide. On the plays tab the rows of the plays list pick the same plays at full size; on the scoring and pick tabs nothing else does.",
-};
+const EXEMPT = {};
 
 /**
  * A page as a visitor leaves it after doing something that draws more to tap. Each is measured

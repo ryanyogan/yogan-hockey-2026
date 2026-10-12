@@ -83,3 +83,22 @@ export function layoutTimeline(
     positions,
   };
 }
+
+/**
+ * The play a tap on the line picks: of the plays drawn there, the one whose tick is nearest `at`
+ * (0 at the line's start, 1 at its end), and the later of two as near as each other. Null when
+ * no tick is drawn.
+ */
+export function nearestPlay(
+  drawn: readonly Pick<Play, "id">[],
+  positions: Timeline["positions"],
+  at: number,
+): string | null {
+  let nearest: string | null = null;
+  let reach = Number.POSITIVE_INFINITY;
+  for (const { id } of drawn) {
+    const away = Math.abs((positions.get(id) ?? 0) - at);
+    if (away <= reach) [nearest, reach] = [id, away];
+  }
+  return nearest;
+}

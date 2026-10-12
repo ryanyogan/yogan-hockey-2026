@@ -44,6 +44,7 @@ const LAST_RESORT_PAGE = `<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
 <title>Not answering · Yogan Hockey</title>
 <style>
 :root { color-scheme: light dark; --background: #fafaf8; --foreground: #111111; }

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { play, recordedShootout } from "./test-plays";
-import { layoutTimeline } from "./timeline";
+import { layoutTimeline, nearestPlay } from "./timeline";
 
 const REGULAR_SEASON = 2;
 const PLAYOFFS = 3;
@@ -102,5 +102,36 @@ describe("layoutTimeline", () => {
     const odd = play({ period: 1, clock: "21:15" });
     const { positions } = layoutTimeline([odd], { period: 1, seasonType: REGULAR_SEASON });
     expect(positions.get(odd.id)).toBe(1 / 3);
+  });
+});
+
+describe("nearestPlay", () => {
+  const early = play({ period: 1, clock: "5:00" });
+  const middle = play({ period: 2, periodText: "2nd", clock: "10:00" });
+  const late = play({ period: 3, periodText: "3rd", clock: "15:00" });
+  const { positions } = layoutTimeline([early, middle, late], {
+    period: 3,
+    seasonType: REGULAR_SEASON,
+  });
+
+  test("a tap anywhere on the line is the play whose tick is nearest", () => {
+    const drawn = [early, middle, late];
+    expect(nearestPlay(drawn, positions, 0)).toBe(early.id);
+    expect(nearestPlay(drawn, positions, 0.45)).toBe(middle.id);
+    expect(nearestPlay(drawn, positions, 1)).toBe(late.id);
+  });
+
+  test("only a play with a tick can be picked", () => {
+    expect(nearestPlay([early, late], positions, 0.5)).toBe(late.id);
+  });
+
+  test("of two ticks as near as each other, the later play's, which is drawn on top", () => {
+    const again = play({ period: 2, periodText: "2nd", clock: "10:00" });
+    const both = layoutTimeline([early, middle, again], { period: 3, seasonType: REGULAR_SEASON });
+    expect(nearestPlay([early, middle, again], both.positions, 0.5)).toBe(again.id);
+  });
+
+  test("a line with no ticks picks nothing", () => {
+    expect(nearestPlay([], positions, 0.5)).toBeNull();
   });
 });

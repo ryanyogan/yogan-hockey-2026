@@ -14,7 +14,7 @@ type Outcome = { status: string; _notFound?: boolean };
  * A route's `head` for a page with this title, given the `match` its `head` was called with. The
  * title is the page's own only when its read answered: a read that failed is drawn by the error
  * page and one that found nothing by the not-found page (`components/shell/`), and the tab says
- * so. The router calls `head` for the match that failed and for none beneath it, so the last
+ * so, and asks not to be indexed (`failureMeta`). The router calls `head` for the match that failed and for none beneath it, so the last
  * title in the document is the right one.
  *
  * `_notFound` is the router's own mark on the root's match for an address no route answers, or a
@@ -22,7 +22,8 @@ type Outcome = { status: string; _notFound?: boolean };
  * It has no public name, so a router upgrade is checked against `e2e/shell.spec.ts`.
  */
 export function titled(match: Outcome, title?: string, notFoundTitle?: string) {
-  return { meta: [{ title: pageTitle(outcomeTitle(match, notFoundTitle) ?? title) }] };
+  const failure = outcomeTitle(match, notFoundTitle);
+  return { meta: failure == null ? [{ title: pageTitle(title) }] : failureMeta(failure) };
 }
 
 /**
@@ -30,8 +31,18 @@ export function titled(match: Outcome, title?: string, notFoundTitle?: string) {
  * while its read answers, so the parent's title stands, and the failure's title when it does not.
  */
 export function failureTitled(match: Outcome) {
-  const title = outcomeTitle(match);
-  return { meta: title == null ? [] : [{ title: pageTitle(title) }] };
+  const failure = outcomeTitle(match);
+  return { meta: failure == null ? [] : failureMeta(failure) };
+}
+
+/**
+ * A failure page's title, and its word to a search engine: the page is answered with a 404, 500
+ * or 503 and is nobody's to index. `HeadContent` keeps one `meta` of a name, so the document has
+ * one such tag however many matches say it. The page of last resort has its own
+ * (`lib/render-failure.ts`).
+ */
+function failureMeta(title: string) {
+  return [{ title: pageTitle(title) }, { name: "robots", content: "noindex" }];
 }
 
 /**

@@ -89,6 +89,7 @@ describe("the status of a page whose render failed", () => {
     expect(page).toContain("Yogan Hockey</a>");
     expect(page).not.toContain("YOGAN/HOCKEY");
     expect(page).toContain("Try again");
+    expect(page).toContain('<meta name="robots" content="noindex">');
     expect(page).not.toContain("espn.com");
   });
 

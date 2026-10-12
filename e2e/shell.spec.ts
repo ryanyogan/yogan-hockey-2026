@@ -131,12 +131,9 @@ test("the masthead renders, switches theme, and a phone gets its sections under 
   }
 });
 
-// Home (#191) and Players (#190) are not ported to TanStack Start yet. Whichever lands second
-// makes this `test` again; it was the middle of the test above, and goes back there at the
-// cutover if one hard navigation a spec still matters.
-test.fixme("a section followed changes the page under the masthead and leaves it (#190, #191)", async ({
-  page,
-}) => {
+// This was the middle of the test above, and goes back there at the cutover if one hard
+// navigation a spec still matters.
+test("a section followed changes the page under the masthead and leaves it", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/no-such-page");
   const masthead = page.getByRole("banner");

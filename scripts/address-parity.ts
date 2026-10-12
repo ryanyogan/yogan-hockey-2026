@@ -7,7 +7,7 @@
 // recorded ones. It exits 1 when a status or a `location` differs at an address that is not
 // marked as meant to (`intended` in scripts/addresses.ts). A difference in title, media type or
 // `allow` is printed and does not fail. It reads, and sends POST, PUT, PATCH and DELETE with no
-// body only to `/picks` and `/nhl`, which refuse them or ignore them.
+// body only to `/picks`, `/nhl` and `/nhl/`, which refuse them, ignore them or redirect them.
 import { writeFileSync } from "node:fs";
 import {
   type Address,

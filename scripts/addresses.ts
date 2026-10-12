@@ -128,6 +128,11 @@ export function addresses(): Address[] {
       "/nhl/teams/21abc",
       "/nhl/teams/-1",
       "/nhl/teams/%20",
+      // A space at the very end of a path, which Start's server drops unless the Worker keeps it.
+      "/nhl/teams/21%20",
+      `/players/${SKATER}%20`,
+      `/nhl/games/${FINISHED}%20`,
+      "/nhl%20",
     ]),
     ...page("unknown paths", [
       "/no-such-page",
@@ -146,6 +151,10 @@ export function addresses(): Address[] {
       "/family/rylan",
       "/yogan",
       "/NHL",
+      "/Players",
+      "/nhl/Live",
+      "/PICKS",
+      `${team}/Roster`,
       "/picks/more",
     ]),
     ...page("old links", [
@@ -181,7 +190,12 @@ export function addresses(): Address[] {
       "/picks/",
       "/skeleton/",
       "/no-such-page/",
+      "/nhl/?x=1",
+      "/nhl//",
+      `${team}/?tab=roster`,
+      "/nhl/teams/%20/",
     ]),
+    { method: "POST", path: "/nhl/", group: "trailing slashes" },
     ...page("search parameters no page reads", [
       "/?x=1",
       "/nhl?x=1",

@@ -1,11 +1,6 @@
 import { EspnFetchError, EspnParseError } from "@yogan-hockey/espn";
 import { describe, expect, it } from "vitest";
-import {
-  answerWithRenderStatus,
-  doNotKeepPage,
-  noteRenderFailure,
-  watchRender,
-} from "./render-failure";
+import { answerWithRenderStatus, noteRenderFailure } from "./render-failure";
 
 const html = (status = 200) =>
   new Response("<p>the error page</p>", {
@@ -13,7 +8,7 @@ const html = (status = 200) =>
     headers: { "content-type": "text/html; charset=utf-8", "x-kept": "yes" },
   });
 
-/** A render that fails with `error` and still answers, as vinext does with an `error.tsx`. */
+/** A render that fails with `error` and still answers, with the error page for its body. */
 const failing = (error: unknown, response: Response = html()) =>
   answerWithRenderStatus(async () => {
     await Promise.resolve();
@@ -99,63 +94,5 @@ describe("the status of a page whose render failed", () => {
 
   it("ignores a failure reported outside any request", () => {
     expect(() => noteRenderFailure(new Error("x"))).not.toThrow();
-  });
-});
-
-describe("whether a rendered page may be kept by the page cache", () => {
-  it("may, for a page that rendered", async () => {
-    const { unstorable } = await watchRender(async () => html());
-    expect(unstorable()).toBe(false);
-  });
-
-  it("may not once a render has failed", async () => {
-    const { unstorable } = await watchRender(async () => {
-      noteRenderFailure(new Error("x"));
-      return html();
-    });
-    expect(unstorable()).toBe(true);
-  });
-
-  it("may not once a render has said so, and the page keeps its status and its headers", async () => {
-    const page = html();
-    const { response, unstorable } = await watchRender(async () => {
-      doNotKeepPage();
-      return page;
-    });
-    expect(unstorable()).toBe(true);
-    expect(response).toBe(page);
-  });
-
-  it("may not when a render says so after the response has started, as a streamed part does", async () => {
-    let stream = () => {};
-    const { unstorable } = await watchRender(async () => {
-      // What streams in later runs in the request's own context.
-      void new Promise<void>((resolve) => {
-        stream = resolve;
-      }).then(doNotKeepPage);
-      return html();
-    });
-    expect(unstorable()).toBe(false);
-    stream();
-    await Promise.resolve();
-    expect(unstorable()).toBe(true);
-  });
-
-  it("keeps two requests apart", async () => {
-    const [fallback, whole] = await Promise.all([
-      watchRender(async () => {
-        doNotKeepPage();
-        return html();
-      }),
-      watchRender(async () => {
-        await new Promise((resolve) => setTimeout(resolve, 5));
-        return html();
-      }),
-    ]);
-    expect([fallback.unstorable(), whole.unstorable()]).toEqual([true, false]);
-  });
-
-  it("ignores a render that says so outside any request", () => {
-    expect(() => doNotKeepPage()).not.toThrow();
   });
 });

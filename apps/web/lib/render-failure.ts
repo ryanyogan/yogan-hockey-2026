@@ -16,12 +16,8 @@ import { EspnFetchError, EspnParseError } from "@yogan-hockey/espn";
  *
  * Only a whole page is touched: a navigation inside the site asks for a server function's answer,
  * not a page, and the router draws the error page from it.
- *
- * (Under vinext, which answered 200 for a failed render, the same did for a 200. `doNotKeepPage`
- * and `watchRender`'s `unstorable` were its page cache's, and are kept only until the routes that
- * still call them are ported: #188 to #192.)
  */
-type Render = { status: number | null; keep: boolean };
+type Render = { status: number | null };
 
 const renders = new AsyncLocalStorage<Render>();
 
@@ -34,21 +30,6 @@ export function noteRenderFailure(error: unknown): void {
   if (render == null || render.status != null) return;
   const upstream = error instanceof EspnFetchError || error instanceof EspnParseError;
   render.status = upstream ? UPSTREAM_UNAVAILABLE : OWN_FAULT;
-}
-
-/**
- * The page being rendered must not be kept by the page cache (`lib/page-cache.ts`), though it
- * answers 200 and nothing failed. Call it wherever a render on a cacheable page draws something
- * in place of the page's own content:
- *
- * - a fallback for a read that failed and was caught (a header without its conference), which
- *   would otherwise be every visitor's page until the entry is rendered again;
- * - a not-found page (`pageNotFound` in `lib/page-not-found.ts`): beneath a `loading.tsx` the
- *   shell has been sent by the time `notFound()` is thrown, so it streams inside a 200.
- */
-export function doNotKeepPage(): void {
-  const render = renders.getStore();
-  if (render != null) render.keep = false;
 }
 
 /**
@@ -96,40 +77,23 @@ p { margin: 0; padding-top: 12px; }
  * A `handle` that throws is answered with the page of last resort, never the platform's own.
  */
 export async function answerWithRenderStatus(handle: () => Promise<Response>): Promise<Response> {
-  return (await watchRender(handle)).response;
-}
-
-/**
- * `answerWithRenderStatus`, and with the answer a way to ask later whether the page cache must
- * decline to keep it (`lib/page-cache.ts`): a render failed, or called `doNotKeepPage`. Either
- * can come after the response has started, when its status has gone, so it is asked once the
- * body has been read.
- */
-export async function watchRender(
-  handle: () => Promise<Response>,
-): Promise<{ response: Response; unstorable(): boolean }> {
-  const render: Render = { status: null, keep: true };
-  const unstorable = () => render.status != null || !render.keep;
+  const render: Render = { status: null };
   let response: Response;
   try {
     response = await renders.run(render, handle);
   } catch (error) {
     console.error("The site could not answer a request", error);
-    render.status = OWN_FAULT;
-    return {
-      response: new Response(LAST_RESORT_PAGE, {
-        status: OWN_FAULT,
-        headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" },
-      }),
-      unstorable,
-    };
+    return new Response(LAST_RESORT_PAGE, {
+      status: OWN_FAULT,
+      headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" },
+    });
   }
   const isPage = response.headers.get("content-type")?.startsWith("text/html") ?? false;
-  // TanStack Start answers a page whose loader failed with a 500 of its own: the failure's status
-  // replaces it, as it replaced vinext's 200.
+  // TanStack Start answers a page whose loader failed with a 500 of its own, which the failure's
+  // status replaces. A 200 is given it too: a failure noted by a read that was caught.
   const answered = response.status === 200 || response.status === OWN_FAULT;
-  if (render.status == null || !answered || !isPage) return { response, unstorable };
+  if (render.status == null || !answered || !isPage) return response;
   const headers = new Headers(response.headers);
   headers.set("cache-control", "no-store");
-  return { response: new Response(response.body, { status: render.status, headers }), unstorable };
+  return new Response(response.body, { status: render.status, headers });
 }

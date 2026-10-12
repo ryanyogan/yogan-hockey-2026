@@ -2,6 +2,20 @@
 
 What earlier tickets learned that the code does not show. Read before building; add a line when you learn something the next subagent would otherwise rediscover. Keep each note to what cannot be found by reading the code.
 
+## TanStack Start: Home and `/nhl/live` (#191)
+
+`/` is `src/routes/index.tsx` with `readHome` (`src/functions/home.ts`); `/nhl/live` is `src/routes/nhl/live.tsx` with `readLive` (`src/functions/live.ts`). Neither reads today's games: those are the root loader's and then the socket's.
+
+- **`Dashboard` takes the standings as a prop.** Its `Standings` was an async server component that read ESPN itself; it now draws `standings` (each conference's top eight, or null when they could not be read), which `readHome` reads beside the picks. Anything else that draws `Dashboard` (`/skeleton/dashboard`) has to hand them in, or it draws "could not be read".
+- **Resolving Favorites is `resolveFavoritePlayers` in `src/functions/favorites.ts`**, a GET server function called from `useFavoritePlayers`, not from a loader: only the browser knows the ids. Its validator is `readFavoriteIds`, the reader of the stored list. A call that fails leaves every id asked for "unread", as it did.
+- **A client component must not import from `app/`.** `use-favorite-players.ts` still imported the Server Action from `app/players/actions.ts`; Start compiles a server function's handler out of the browser's bundle, but a plain `"use server"` file is just a module to it, and its server imports come along.
+- **Fontsource's font files are the hinted ones; vinext's were unhinted.** IBM Plex Sans Condensed is 19.8 KB a weight from `@fontsource`, against the 14.8 KB files vinext fetched (the note on Google's two sets under "Agate 4: Home"). In headless Chromium on Linux a word in the condensed bold is 4 to 8px narrower on the Start site than on `main`, so a headline or a deck can wrap on another line: Home at 390 in fixture mode is 10px shorter than `main`'s (one lead's headline takes one line where it took two, its deck two where it took one), with the markup of `<main>` identical. macOS, iOS and Android ignore hinting. It is the shell's (#187), not a page's.
+- **`agate-home-compare.mjs` no longer asks Google for the prototype's fonts as a Mac**: on Linux Google gives the prototype the hinted files, which is what the site now serves, and the two measure the same. It reads "Newsreader Variable", Fontsource's name for the face, as Newsreader. On a machine that is not Linux the prototype gets the unhinted files and the script will report widths.
+- **The Favorites block moves the page as much as on `main`, which is not nothing.** Served, it is 79.6px tall ("Reading your favorites."); settled it is 104.3px with no favorites and 100.5px with one, so the footer under it moves 24px or 21px, the same on both. It is under the fold at 390x900 and 1440x900, and Chrome counted no layout shift for it on either site.
+- **Home's first load reads the Scoreboard and the season's record more than once**: the root's server function and Home's are separate calls, and `perRequest` and React's `cache` no longer join them. Left as it is, since the reads are wrapped and not rewritten; it is something for the cutover's measurement (#193) to weigh.
+- **A spec that counted re-renders counts server function calls**: a request whose path starts `/_serverFn/`. A later `invalidatedAt` makes two on `/nhl/live`, the root's and the page's.
+- **`agate-routes.mjs` writes its kept shots into `docs/design/agate/` even when a route answered 404**, so a run before `/skeleton/live` exists overwrites `scores-live-*.png` with the not-found page. `git checkout -- docs/design/agate` after such a run.
+
 ## The team's pages on TanStack Start (#188)
 
 - **A page with tabs is a directory**: `src/routes/nhl/teams/$id/route.tsx` is the parent (its loader reads the team; its component draws the header, the tab bar and `<Outlet />`), and `index.tsx`, `roster.tsx` and `stats.tsx` beside it are the tabs, each with a loader and a server function of its own (`src/functions/team.ts`, wrapping `lib/team-read.ts`). The game's and the player's pages can copy it.

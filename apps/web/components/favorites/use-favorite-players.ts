@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { resolveFavoritePlayers } from "../../app/players/actions";
 import type { FavoritePlayer } from "../../lib/favorite-players";
 import { favoritesToShow, MAX_FAVORITES } from "../../lib/favorites";
 import { useFavorites } from "../../lib/use-favorites";
+import { resolveFavoritePlayers } from "../../src/functions/favorites";
 
 export type ResolvedFavoritePlayers = {
   /**
@@ -24,7 +24,7 @@ type Answer = FavoritePlayer | "unread" | null;
 
 /**
  * The visitor's favorite players as rows to show: the ids from the browser, resolved by the
- * `resolveFavoritePlayers` Server Action. `limit` is how many the caller shows (the dashboard's
+ * `resolveFavoritePlayers` server function. `limit` is how many the caller shows (the dashboard's
  * four): the oldest `limit` favorites are asked for, and when one of them turns out to be nobody's
  * the next is asked for in its place. One that could not be read just now keeps its place.
  *
@@ -58,11 +58,11 @@ export function useFavoritePlayers(limit: number = MAX_FAVORITES): ResolvedFavor
         return after;
       });
     };
-    // No answer at all is a tab older than the last deploy: vinext reloads the page itself.
-    resolveFavoritePlayers(asked).then(
-      (resolved) => answer(resolved?.players ?? [], resolved ? resolved.unread : null),
-      () => answer([], null),
-    );
+    // A call that fails (the network dropped, or the tab is older than the last deploy) leaves
+    // every id unread: the list says so, and asks again when the page is next opened.
+    resolveFavoritePlayers({ data: asked })
+      .then((resolved) => answer(resolved.players, resolved.unread))
+      .catch(() => answer([], null));
     return () => {
       superseded = true;
     };

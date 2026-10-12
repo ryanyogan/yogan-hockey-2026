@@ -171,8 +171,16 @@ function measure({ selector, styles, sides }) {
     });
 }
 
-/** A family is the same when its first face is: the site's stack names vinext's fallback too. */
-const firstFace = (family) => family.split(",")[0].replaceAll(/['"]/g, "").trim();
+/**
+ * A family is the same when its first face is: the site's stack names its fallback faces too, and
+ * Fontsource calls the variable Newsreader "Newsreader Variable".
+ */
+const firstFace = (family) =>
+  family
+    .split(",")[0]
+    .replaceAll(/['"]/g, "")
+    .replace(/ Variable$/, "")
+    .trim();
 /** Lengths and lists of lengths ("12px", "300px 300px") to within half a pixel; the rest exactly. */
 function same(name, a, b) {
   if (name === "fontFamily") return firstFace(a) === firstFace(b);
@@ -197,12 +205,15 @@ function idle(name, measured, other) {
 }
 
 /*
- * Google answers a Linux Chrome with hinted font files, in which a semibold at 13px is as wide as
- * the regular; everything else, the site's own build included, gets the unhinted ones. Asking as
- * a Mac gives the prototype the files the site serves, so a line of words is as wide on both.
+ * The fonts are the same files on both pages only by luck of the machine. Google answers a Linux
+ * Chrome with hinted font files, in which a semibold at 13px is as wide as the regular, and
+ * everything else with unhinted ones. The site's own files are Fontsource's since the move to
+ * TanStack Start (#187), which are the hinted ones (19.8 KB a weight against 14.8), so on Linux
+ * the prototype is given what the site serves with nothing done here. Under vinext the site's
+ * were the unhinted ones and this script asked Google for the prototype's as a Mac; on a machine
+ * that is not Linux the prototype gets unhinted files and words in the condensed bold measure 4
+ * to 8px wider than the site's.
  */
-const UNHINTED =
-  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36";
 
 const browser = await chromium.launch();
 let differences = 0;
@@ -225,9 +236,6 @@ for (const slate of SLATES) {
           reducedMotion: "reduce",
         });
         const page = await context.newPage();
-        await page.route("https://fonts.googleapis.com/**", (route) =>
-          route.continue({ headers: { ...route.request().headers(), "user-agent": UNHINTED } }),
-        );
         await page.goto(url, { waitUntil: "networkidle" });
         // The pick line's italic is fetched when it is first drawn.
         await page.evaluate(() => document.fonts.ready);

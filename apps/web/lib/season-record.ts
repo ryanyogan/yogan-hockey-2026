@@ -5,8 +5,9 @@ import { cache } from "react";
 import { seasonNow } from "./picks";
 
 /**
- * A season's record of the picks, read from D1 once a request: the layout wants it for the
- * dateline and Home for The Picks box, and both ask for the same season.
+ * A season's record of the picks, read from D1: the root route wants it for the dateline and Home
+ * for The Picks box, and both ask for the same season. Under vinext `cache` made that one read a
+ * request; with no server components it does nothing, and Home's first load reads it twice.
  */
 export const seasonRecord = cache(
   (season: number): Promise<SeasonRecord | null> => getSeasonRecord(createDb(env.DB), season),

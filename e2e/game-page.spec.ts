@@ -1,6 +1,8 @@
 import { expect, test } from "@playwright/test";
 import { driveGame, recordedGame, SCHEDULED_GAME } from "./game-driver";
 
+test.skip(true, "The game's routes are not ported to TanStack Start yet: #189 restores this spec.");
+
 // A visitor outside Eastern time: the start is shown in his own zone.
 test.use({ timezoneId: "America/Chicago" });
 

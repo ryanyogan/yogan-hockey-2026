@@ -206,7 +206,7 @@ for (const route of ROUTES) {
   await page.evaluate(() => document.fonts.ready);
   if (route.waitFor) await page.locator(route.waitFor).first().waitFor();
   // The page answers a tap only once it has hydrated.
-  if (!route.overlay) await page.waitForFunction(() => window.__NEXT_HYDRATED === true);
+  if (!route.overlay) await page.waitForFunction(() => window.__APP_HYDRATED === true);
   await page.waitForTimeout(300);
   if (route.overlay) {
     await page.evaluate(() => {

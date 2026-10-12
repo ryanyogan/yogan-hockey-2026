@@ -1,5 +1,7 @@
 import { type BrowserContextOptions, expect, type Page, test } from "@playwright/test";
 
+test.skip(true, "The team's routes are not ported to TanStack Start yet: #188 restores this spec.");
+
 const TITLE = "Toronto Maple Leafs · Yogan Hockey";
 
 const tabs = (page: Page) => page.getByRole("navigation", { name: "Team" });

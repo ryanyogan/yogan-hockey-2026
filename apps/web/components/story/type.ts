@@ -14,9 +14,19 @@ export const storyRule = "border-rule border-t-3 pt-3.5 data-live:border-live";
 export const storyKicker =
   "font-label text-kicker text-tag uppercase normal-nums leading-[1.35] tracking-kicker";
 
-/** The serif headline. Its optical size is a class, since a size's token cannot carry one. */
-export const storyHeadline =
-  "text-balance font-serif font-strong text-headline normal-nums [font-variation-settings:'opsz'_60]";
+/** A headline's face. Its optical size is a class, since a size's token cannot carry one. */
+const headlineFace = "font-serif font-strong normal-nums [font-variation-settings:'opsz'_60]";
+
+/** The serif headline. */
+export const storyHeadline = `text-balance text-headline ${headlineFace}`;
+
+/**
+ * A club's name as its page's headline: one line on any screen, a little smaller than a headline
+ * where the column is narrow (30px at 390), inside an `@container`. A name that wrapped did so on
+ * different lines in the fallback face than in Newsreader, and no resizing of the fallback follows
+ * 32 names letter for letter, so the page under it dropped a line when the font arrived (#225).
+ */
+export const nameplate = `whitespace-nowrap text-nameplate ${headlineFace}`;
 
 export const storyDeck = "font-serif text-deck text-note normal-nums";
 

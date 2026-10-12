@@ -12,6 +12,7 @@ describe("cn", () => {
   it("lets a later size replace an earlier one, and a later colour an earlier one", () => {
     expect(cn("text-body", "text-small")).toBe("text-small");
     expect(cn("text-note", "text-aside")).toBe("text-aside");
+    expect(cn("text-headline text-note", "text-nameplate")).toBe("text-note text-nameplate");
   });
 
   it("knows a weight token from a typeface", () => {

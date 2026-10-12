@@ -9,14 +9,14 @@ import {
 } from "@yogan-hockey/ui/components/ledger";
 import { Section } from "@yogan-hockey/ui/components/section";
 import { type TeamStanding, teamPlace, teamStandingLine } from "../../lib/team-page";
-import { storyHeadline, storyKicker, storyRule } from "../story/type";
+import { nameplate, storyKicker, storyRule } from "../story/type";
 import { TeamMark } from "../team-mark";
 import { EmptyLedger } from "./empty-ledger";
 
 /**
  * The head of a team's page, set as a story is (docs/design/agate.md § Page anatomy): a heavy
  * rule, a red line saying where the team plays and in which conference and division, its name as
- * the headline with its mark, and its record so far in agate, ending in its place in the division.
+ * the headline with its mark (on one line, so the header is the size of its column's container), and its record so far in agate, ending in its place in the division.
  * `standing` is where the league standings have the team; without it the red line is the city
  * alone and the place is a dash.
  */
@@ -31,7 +31,7 @@ export function TeamHeader({
 
   return (
     <Section>
-      <header data-slot="team-header" className={storyRule}>
+      <header data-slot="team-header" className={`@container ${storyRule}`}>
         <p className={storyKicker}>
           {/* A phone breaks the line between two of these, never inside one. */}
           {place.flatMap((part, index) => [
@@ -42,7 +42,7 @@ export function TeamHeader({
             " ",
           ])}
         </p>
-        <h1 className={`mt-3 ${storyHeadline}`}>
+        <h1 className={`mt-3 ${nameplate}`}>
           {/* The one place a team's mark is drawn on its page (agate.md, Decisions). */}
           <TeamMark teamId={team.id} size="headline" eager className="mr-[0.3em]" />
           {team.name}

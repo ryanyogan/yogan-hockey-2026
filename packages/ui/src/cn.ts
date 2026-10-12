@@ -19,6 +19,7 @@ export const cn = createCn({
         "title",
         "wordmark",
         "headline",
+        "nameplate",
         "deck",
         "prose",
         "stat",

@@ -22,6 +22,8 @@
 //   ledger cell on the player's page);
 // - there was nothing to measure.
 // Run on #183 it exits 0: no load shifts more than 0.006 at the swap or moves more than 16px.
+// (From #223 to #225 a team's page at 390 moved 35px: its headline wrapped in Newsreader and not
+// in the fallback. A club's name no longer wraps; `scripts/headline-lines.mjs` checks all 32.)
 // Before #183 Home at 390 shifted 0.054 and grew 104px, and the game page at 390 moved 66px.
 // That was this Linux machine's unsized Liberation faces: vinext's fallback, one regular cut
 // over `local("Arial")` and `local("Times New Roman")`, found no face here and never applied.

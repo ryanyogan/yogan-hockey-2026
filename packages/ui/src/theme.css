@@ -25,7 +25,8 @@
  * `text-score` 16px, a score; `text-title` a serif section title, 32px and 30px on a phone.
  * The serif sizes of a story (agate.md § Page anatomy), each with its line and, where the
  * prototype tightens it, its tracking: `text-headline` 34 to 40px with the window, a headline
- * (which also wants `[font-variation-settings:'opsz'_60]`); `text-deck` 18 to 19px, the sentence
+ * (which also wants `[font-variation-settings:'opsz'_60]`); `text-nameplate` a club's name as
+ * its page's headline, the same but for a narrow column; `text-deck` 18 to 19px, the sentence
  * under it; `text-prose` 17px, a line of prose or a pick; `text-stat` 72px and 52px on a phone,
  * the one big figure of a box; `text-figure` 36px, a count in a row of counts.
  * Capitals are tracked by what they are: `tracking-head` a column header and the nav,
@@ -216,6 +217,15 @@
   --text-headline: clamp(34px, 3vw, 40px);
   --text-headline--line-height: 1.02;
   --text-headline--letter-spacing: -0.015em;
+  /*
+   * A club's name as its page's headline, in an `@container` and never wrapped: the headline's
+   * size, or less where the column is too narrow for the longest name at it. "Columbus Blue
+   * Jackets" with its mark is 11.54em wide in Newsreader, so 8.45cqw leaves it 2.5% of the
+   * column, and every name is one line in any face (#225, `scripts/headline-lines.mjs`).
+   */
+  --text-nameplate: min(clamp(34px, 3vw, 40px), 8.45cqw);
+  --text-nameplate--line-height: 1.02;
+  --text-nameplate--letter-spacing: -0.015em;
   --text-deck: clamp(18px, 1.4vw, 19px);
   --text-deck--line-height: 1.4;
   --text-prose: 17px;

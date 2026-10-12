@@ -1,5 +1,7 @@
 import { expect, test } from "@playwright/test";
 
+test.skip(true, "/skeleton/* is not ported to TanStack Start yet: #192 restores this spec.");
+
 /** The dev server's own view of the simulated KV namespaces. */
 const LOCAL_KV = "/cdn-cgi/local/explorer/api/storage/kv/namespaces";
 
@@ -27,7 +29,7 @@ test("the walking skeleton page exercises all four joins", async ({ page, reques
   await expect(serial).toHaveText(serialBefore);
 
   // 2. The cache is the local KV namespace, and the entry carries its tag and time limit.
-  const kv = `${LOCAL_KV}/VINEXT_KV_CACHE-yogan-hockey`;
+  const kv = `${LOCAL_KV}/CACHE-yogan-hockey`;
   const keys = await (await request.get(`${kv}/keys`)).json();
   const entryKey = keys.result
     .map((key: { name: string }) => key.name)

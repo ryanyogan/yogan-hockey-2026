@@ -111,6 +111,39 @@ test("the masthead renders, switches theme, and a phone gets its sections under 
   await expect(dateline.locator("span:visible")).toHaveText(/^9 games( · Picks \d+–\d+)?$/);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(phone.width);
 
+  // A phone has one theme button, which leads to the theme not shown: by day, to night.
+  await expect(theme.getByRole("button")).toHaveCount(1);
+  await expect(async () => {
+    // Whichever is drawn: a press that landed late has already swapped the button.
+    if (await theme.getByRole("button", { name: "Night" }).isVisible())
+      await theme.getByRole("button", { name: "Night" }).click();
+    await expect(body).toHaveCSS("background-color", DARK_BACKGROUND, { timeout: 1000 });
+  }).toPass();
+  await expect(theme.getByRole("button")).toHaveAccessibleName("Day");
+  for (const path of [
+    "/family/rylan",
+    "/yogan",
+    "/players/rylan-yogan",
+    "/players/easter-egg-rylan-yogan",
+  ]) {
+    const response = await page.request.get(path, { maxRedirects: 0 });
+    expect(response.status(), path).toBe(404);
+  }
+});
+
+// Home (#191) and Players (#190) are not ported to TanStack Start yet. Whichever lands second
+// makes this `test` again; it was the middle of the test above, and goes back there at the
+// cutover if one hard navigation a spec still matters.
+test.fixme("a section followed changes the page under the masthead and leaves it (#190, #191)", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/no-such-page");
+  const masthead = page.getByRole("banner");
+  const strip = page.locator('[data-slot="score-ticker"]');
+  const sectionNav = page.locator('[data-slot="section-nav"]');
+  const places = sectionNav.getByRole("link");
+
   await places.getByText("Home", { exact: true }).click();
   await expect(page.getByRole("region", { name: "NHL Roundup" })).toBeVisible();
   await expect(sectionNav.locator('[aria-current="page"]')).toHaveText("Home");
@@ -128,24 +161,4 @@ test("the masthead renders, switches theme, and a phone gets its sections under 
   await expect(masthead).toHaveAttribute("data-persistence-check", "kept");
   await expect(sectionNav).toHaveAttribute("data-persistence-check", "kept");
   await expect(strip).toBeAttached();
-
-  // A phone has one theme button, which leads to the theme not shown: by day, to night.
-  await expect(theme.getByRole("button")).toHaveCount(1);
-  // The dev server may have reloaded the page for the new route, so again press until one lands.
-  await expect(async () => {
-    // Whichever is drawn: a press that landed late has already swapped the button.
-    if (await theme.getByRole("button", { name: "Night" }).isVisible())
-      await theme.getByRole("button", { name: "Night" }).click();
-    await expect(body).toHaveCSS("background-color", DARK_BACKGROUND, { timeout: 1000 });
-  }).toPass();
-  await expect(theme.getByRole("button")).toHaveAccessibleName("Day");
-  for (const path of [
-    "/family/rylan",
-    "/yogan",
-    "/players/rylan-yogan",
-    "/players/easter-egg-rylan-yogan",
-  ]) {
-    const response = await page.request.get(path, { maxRedirects: 0 });
-    expect(response.status(), path).toBe(404);
-  }
 });

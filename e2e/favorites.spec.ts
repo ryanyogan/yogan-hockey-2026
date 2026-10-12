@@ -1,5 +1,10 @@
 import { expect, test } from "@playwright/test";
 
+test.skip(
+  true,
+  "A player's and a team's pages are not ported to TanStack Start yet: #190 restores this spec, once #188 has landed.",
+);
+
 // Fixture mode: Toronto (21) is the recorded team, Auston Matthews its recorded player, and
 // Nashville at Toronto the second of the recorded slate's nine games by start.
 

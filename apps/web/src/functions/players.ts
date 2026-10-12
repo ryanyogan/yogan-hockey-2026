@@ -1,8 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import type { PlayerProfile } from "@yogan-hockey/schemas";
 import { z } from "zod";
-import { type FavoritePlayers, loadFavoritePlayers } from "../../lib/favorite-players";
-import { readFavoriteIds } from "../../lib/favorites";
 import { pageNotFound } from "../../lib/page-not-found";
 import { PlayersPageSchema } from "../../lib/player-search";
 import {
@@ -55,13 +53,3 @@ export const readPlayer = createServerFn({ method: "GET" })
       };
     }),
   );
-
-/**
- * Resolving favorites, one of the two calls made outside a loader (ADR 0009): the browser holds
- * its favorite players as ids, and this turns them into the rows a list shows (name, team, a
- * season line). An id that is nobody's is left out. Like the search it answers whatever ESPN
- * does, and it reads its argument as a stored list is read, since anyone can call it.
- */
-export const resolveFavoritePlayers = createServerFn({ method: "GET" })
-  .validator((ids: unknown) => readFavoriteIds(ids))
-  .handler(({ data: ids }): Promise<FavoritePlayers> => loadFavoritePlayers(ids));

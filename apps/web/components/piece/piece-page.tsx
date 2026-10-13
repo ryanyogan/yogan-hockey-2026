@@ -20,6 +20,16 @@ import { storyOnTv, storyRule } from "../story/type";
  * The kicker and the headline are a story's (`components/story/type.ts`) but for their figures,
  * which are tabular here as on every page but Home (`scripts/agate-routes.mjs` checks).
  */
+/** Each paragraph with a key of its own: nothing stops a piece saying the same one twice. */
+function keyed(paragraphs: string[]): [key: string, paragraph: string][] {
+  const seen = new Map<string, number>();
+  return paragraphs.map((paragraph) => {
+    const times = seen.get(paragraph) ?? 0;
+    seen.set(paragraph, times + 1);
+    return [`${times} ${paragraph}`, paragraph];
+  });
+}
+
 export function PiecePage({ piece }: { piece: Piece }) {
   return (
     <>
@@ -38,8 +48,8 @@ export function PiecePage({ piece }: { piece: Piece }) {
           <LocalTime at={piece.writtenAt} show="time" />
         </p>
         <div data-slot="piece-body" className="mt-1 flex max-w-[680px] flex-col gap-[14px]">
-          {pieceParagraphs(piece.body).map((paragraph) => (
-            <p key={paragraph} className="font-serif text-deck leading-[1.5]">
+          {keyed(pieceParagraphs(piece.body)).map(([key, paragraph]) => (
+            <p key={key} className="font-serif text-deck leading-[1.5]">
               {unbroken(paragraph)}
             </p>
           ))}

@@ -17,6 +17,13 @@ test("Home has the day's pieces in the page as it is sent, and a piece opens on 
   await expect(preview.locator('[data-slot="piece-kicker"]')).toHaveText("Preview · Tue Oct 6");
   await expect(preview.locator('[data-slot="piece-byline"]')).toContainText("Written by a model");
 
+  // The pick Home shows for Nashville at Toronto, which the piece's page is read against below.
+  await expect(
+    page
+      .locator('[data-slot="story"]', { hasText: "Predators at Maple Leafs" })
+      .locator('[data-slot="story-pick"]'),
+  ).toHaveText("Our pick: Toronto, 58%.");
+
   await preview.getByRole("link").click();
   await expect(page).toHaveURL("/pieces/2026-10-06-preview");
   await expect(page).toHaveTitle(
@@ -30,7 +37,8 @@ test("Home has the day's pieces in the page as it is sent, and a piece opens on 
   await expect(page.locator('[data-slot="piece-how"]')).toContainText(
     "A model (@cf/openai/gpt-oss-120b) wrote this",
   );
-  // The pick the piece names is the one the site shows for the game.
+  // The sample names the pick Home showed for the game. That a model's piece cannot name another
+  // is the Writer's check (`agents/writing/check.test.ts`), not this page's.
   await expect(page.locator('[data-slot="piece-body"]')).toContainText(
     "Toronto is the pick over Nashville at 58 percent",
   );

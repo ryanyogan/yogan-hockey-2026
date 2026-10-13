@@ -68,9 +68,11 @@ export const howWritten = (model: string): string =>
  *
  * The Writer replaces each kind once a day, so a piece is a day old at most when all is well. The
  * six hours over that are the longest the night's recap waits for a late final. Past them the
- * Writer has missed a run, and the piece is about a night that is over: a preview written at
- * 15:00 UTC is gone by 21:00 the next day, before that evening's first face-off, so Home never
- * says "tonight" of last night's games. Its own page stays, with its date on it.
+ * Writer has missed a run and the piece is about a night that is over: a preview written at
+ * 15:00 UTC is gone by 21:00 the next day (5 p.m. Eastern in summer), before that evening's
+ * games though not before an afternoon's. Until then, and every morning until the Writer's
+ * 15:00 run, the preview on Home is the day before's, which is why its kicker is its date and
+ * never "tonight". A piece's own page stays, with its date on it.
  *
  * `now` null is no clock at all: fixture mode, where the recorded slate is one day's for ever.
  */

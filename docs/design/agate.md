@@ -111,7 +111,7 @@ A live story swaps its heavy top rule to `--live`.
 - The order does not change through the day: preview, recap, standings; a kind Home has no place for comes after, newest first.
 - One piece alone has the whole row; its headline and deck stop at 680px. Two share it.
 - A score or a record in a piece ("5-3", "2-0-0") never breaks across lines, as no record does.
-- **A piece leaves Home 30 hours after it was written.** The Writer replaces each kind daily, and the night's recap can wait six hours for a late final; past that the Writer has missed a run, and a preview is gone before the next evening's first face-off. Its own page stays.
+- **A piece leaves Home 30 hours after it was written.** The Writer replaces each kind daily, and the night's recap can wait six hours for a late final; past that the Writer has missed a run, and a preview is gone by 5 p.m. Eastern the next day, before that evening's games (not before an afternoon's). Each morning until the Writer's run the preview shown is the day before's, which its kicker's date says. Its own page stays.
 - **With no pieces the section is not drawn**: no label, no rule, no gap (`?pieces=0` on the prototype and on `/skeleton/dashboard`; `?pieces=1` or `2` on the prototype draws so many). That is before the Writer has published one, after 30 hours of its failing, or D1 not answering.
 
 **Headlines from ESPN: the news** (#217).

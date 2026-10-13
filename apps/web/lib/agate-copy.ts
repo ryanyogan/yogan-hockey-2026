@@ -333,8 +333,9 @@ export function datelineDate(date: string | null): string | null {
 /** The masthead's dateline, both ways it is written. */
 export type Dateline = {
   /**
-   * The desktop's parts, in order: the long date, "Tonight: 9 games · 4 live · 2 to come · 3
-   * final", "Picks this season: 29 right, 14 wrong". A part with nothing to say is not there.
+   * The desktop's parts, in order: "Tonight: 9 games · 4 live · 2 to come · 3 final" and "Picks
+   * this season: 29 right, 14 wrong". The picks are not there until one is decided. The date is
+   * not one of them: it is on the sections' bar (`datelineDate`).
    */
   wide: string[];
   /** The phone's one line: "9 games · 4 live · 3 final · Picks 29–14". */
@@ -352,8 +353,7 @@ export function dateline(
   slate: { date: string | null; games: readonly ScoreboardGame[] },
   record: SeasonRecord | null,
 ): Dateline {
-  const date = datelineDate(slate.date);
-  if (date == null) return { wide: [], narrow: "" };
+  if (slate.date == null) return { wide: [], narrow: "" };
   const counts = slateCounts([...slate.games]);
   const part = (count: number, word: string) => (count > 0 ? `${count} ${word}` : null);
   const total = slate.games.length;
@@ -364,7 +364,6 @@ export function dateline(
   const present = (parts: (string | null)[]) => parts.filter((each) => each != null);
   return {
     wide: present([
-      date,
       `Tonight: ${present([games, live, part(counts.upcoming, "to come"), final, part(counts.postponed, "postponed")]).join(SEPARATOR)}`,
       decided && `Picks this season: ${decided.right} right, ${decided.wrong} wrong`,
     ]),

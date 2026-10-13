@@ -6,38 +6,38 @@
   font-weight: 100 599;
   font-family: "Newsreader Fallback: Times New Roman";
   src: local('Times New Roman'), local('TimesNewRomanPSMT'), local('Liberation Serif');
-  ascent-override: 73.81%;
-  descent-override: 26.6118%;
+  ascent-override: 73.773%;
+  descent-override: 26.5984%;
   line-gap-override: 0%;
-  size-adjust: 99.58%;
+  size-adjust: 99.63%;
 }
 /* From letter frequencies alone: size-adjust 106.6763%. */
 @font-face {
   font-weight: 600 900;
   font-family: "Newsreader Fallback: Times New Roman";
   src: local('Times New Roman Bold'), local('TimesNewRomanPS-BoldMT'), local('Liberation Serif Bold');
-  ascent-override: 68.8073%;
-  descent-override: 24.8081%;
+  ascent-override: 68.3848%;
+  descent-override: 24.6557%;
   line-gap-override: 0%;
-  size-adjust: 106.82%;
+  size-adjust: 107.48%;
 }
 /* From letter frequencies alone: size-adjust 89.0852%. */
 @font-face {
   font-weight: 100 599;
   font-family: "Newsreader Fallback: Noto Serif";
   src: local('Noto Serif Regular'), local('NotoSerif-Regular'), local('Noto Serif');
-  ascent-override: 83.9233%;
-  descent-override: 30.258%;
-  size-adjust: 87.58%;
+  ascent-override: 86.0958%;
+  descent-override: 31.0413%;
+  size-adjust: 85.37%;
 }
 /* From letter frequencies alone: size-adjust 90.1367%. */
 @font-face {
   font-weight: 600 900;
   font-family: "Newsreader Fallback: Noto Serif";
   src: local('Noto Serif Bold'), local('NotoSerif-Bold'), local('Noto Serif'), local('NotoSerif-Regular');
-  ascent-override: 78.2331%;
-  descent-override: 28.2065%;
-  size-adjust: 93.95%;
+  ascent-override: 79.8046%;
+  descent-override: 28.7731%;
+  size-adjust: 92.1%;
 }
 /* From letter frequencies alone: size-adjust 91.2964%. */
 @font-face {

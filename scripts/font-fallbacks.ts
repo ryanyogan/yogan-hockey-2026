@@ -10,7 +10,8 @@
 // site's own text in a browser it is right to within 1% for half of these pairs and 3 to 6% out
 // for the rest, which is a headline's second line. So each `size-adjust` here is the measured
 // one (`node scripts/font-fallback-measure.mjs`, the long lines' ratio), with capsize's beside it,
-// and capsize works the three overrides out from it.
+// and capsize works the three overrides out from it. The serif's four were retaken in #235, when
+// the script stopped reading a club's name with its abbreviation on the end.
 //
 // Each fallback has two cuts, since a bold is wider than its regular by a different amount in
 // every face: a regular for weights under 600 and a bold from 600 up. The serif's bold is sized
@@ -56,18 +57,18 @@ const VOICES: readonly Voice[] = [
     bold: newsreaderBold,
     fallbacks: [
       {
-        regular: { metrics: timesNewRoman, sizeAdjust: 99.58, alsoLocal: ["Liberation Serif"] },
+        regular: { metrics: timesNewRoman, sizeAdjust: 99.63, alsoLocal: ["Liberation Serif"] },
         bold: {
           metrics: timesNewRomanBold,
-          sizeAdjust: 106.82,
+          sizeAdjust: 107.48,
           alsoLocal: ["Liberation Serif Bold"],
         },
       },
       {
-        regular: { metrics: notoSerif, sizeAdjust: 87.58, alsoLocal: ["Noto Serif"] },
+        regular: { metrics: notoSerif, sizeAdjust: 85.37, alsoLocal: ["Noto Serif"] },
         bold: {
           metrics: notoSerifBold,
-          sizeAdjust: 93.95,
+          sizeAdjust: 92.1,
           alsoLocal: ["Noto Serif", "NotoSerif-Regular"],
         },
       },

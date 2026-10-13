@@ -26,7 +26,10 @@ export class EspnParseError extends Error {
   }
 }
 
-/** ESPN did not answer, or answered with an error status. */
+/**
+ * ESPN did not answer, or answered with an error status, or answered that it has no such thing
+ * (`EspnNotFoundError`, below). `notFound` tells the last from the rest.
+ */
 export class EspnFetchError extends Error {
   override readonly name = "EspnFetchError";
   readonly endpoint: string;
@@ -56,6 +59,8 @@ export class EspnFetchError extends Error {
 export class EspnNotFoundError extends EspnFetchError {
   constructor(endpoint: string, reason: string) {
     super(endpoint, 200, reason);
+    // It was fetched: what the parent's sentence says of it would be untrue.
+    this.message = `ESPN ${endpoint}: ${reason}`;
   }
 
   override get notFound(): boolean {

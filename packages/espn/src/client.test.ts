@@ -244,20 +244,26 @@ describe("against ESPN", () => {
 
   test("every request is given ten seconds, after which there is no answer", async () => {
     const timeout = vi.spyOn(AbortSignal, "timeout");
+    const signals: unknown[] = [];
     // What `fetch` does when its signal's time is up.
     fetchMock.mockImplementation(async (_url, init) => {
-      expect(init?.signal).toBe(timeout.mock.results.at(-1)?.value);
+      signals.push(init?.signal);
       throw new DOMException("The operation was aborted due to timeout", "TimeoutError");
     });
 
-    await expect(getPlayer("4024123")).rejects.toMatchObject({
-      name: "EspnFetchError",
-      endpoint: "athletes/4024123",
-      status: null,
-      notFound: false,
-    });
-    expect(timeout).toHaveBeenCalledExactlyOnceWith(10_000);
-    timeout.mockRestore();
+    try {
+      await expect(getPlayer("4024123")).rejects.toMatchObject({
+        name: "EspnFetchError",
+        endpoint: "athletes/4024123",
+        status: null,
+        notFound: false,
+      });
+      expect(timeout).toHaveBeenCalledExactlyOnceWith(10_000);
+      expect(signals).toEqual([timeout.mock.results[0]?.value]);
+      expect(signals[0]).toBeInstanceOf(AbortSignal);
+    } finally {
+      timeout.mockRestore();
+    }
   });
 
   test("no answer at all is a fetch error naming the endpoint", async () => {

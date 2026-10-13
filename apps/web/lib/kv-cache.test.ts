@@ -42,5 +42,6 @@ test("a read that fails is the caller's to hear, and what keeps it going does no
   await expect(cached("kv-cache-test:fails", 60, () => Promise.reject(failure))).rejects.toBe(
     failure,
   );
+  expect(kept.length).toBeGreaterThan(0);
   await expect(Promise.all(kept)).resolves.toBeDefined();
 });

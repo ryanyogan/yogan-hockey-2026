@@ -5,7 +5,7 @@ import { titled } from "../head";
 
 /**
  * `/`: Home, the roundup of tonight's games with their picks and the season's record from D1,
- * over the standings and the picks (`components/dashboard/dashboard.tsx`).
+ * over ESPN's headlines, the standings and the picks (`components/dashboard/dashboard.tsx`).
  *
  * Today's games are the root route's read and then the socket's; this route reads the rest.
  */
@@ -17,6 +17,6 @@ export const Route = createFileRoute("/")({
 });
 
 function HomePage() {
-  const { picks, record, standings } = Route.useLoaderData();
-  return <Dashboard picks={picks} record={record} standings={standings} />;
+  const { picks, record, standings, news } = Route.useLoaderData();
+  return <Dashboard picks={picks} record={record} standings={standings} news={news} />;
 }

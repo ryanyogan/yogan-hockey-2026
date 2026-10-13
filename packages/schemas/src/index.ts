@@ -4,6 +4,7 @@ export * from "./final-game.ts";
 export * from "./game.ts";
 export * from "./game-stream.ts";
 export * from "./game-summary.ts";
+export * from "./news.ts";
 export * from "./piece.ts";
 export * from "./play.ts";
 export * from "./player.ts";

@@ -7,6 +7,7 @@ import { type Reading, ReadingSchema } from "@yogan-hockey/schemas";
 
 export {
   getGameSummary,
+  getNews,
   getPlayer,
   getPlayerCareer,
   getPlayerGameLog,
@@ -19,6 +20,7 @@ export {
 } from "./client.ts";
 export { EspnFetchError, EspnParseError } from "./errors.ts";
 // The translations on their own, for checking a response fetched some other way.
+export { translateNews } from "./news.ts";
 export {
   translatePlayer,
   translatePlayerCareer,

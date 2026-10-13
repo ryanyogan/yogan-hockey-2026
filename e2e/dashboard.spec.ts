@@ -55,6 +55,15 @@ test("Home writes the slate up as leads and briefs, and follows the Scoreboard w
   await expect(toronto.locator('[data-slot="story-pick"]')).toHaveText("Our pick: Toronto, 58%.");
   await expect(toronto.locator('[data-slot="pick-outcome"]')).toHaveCount(0);
   await expect(toronto.locator('[data-slot="on-tv"]')).toHaveText("On TV ESPN+, Scripps Sports");
+  // ESPN's headlines (the recorded news), each a link out to ESPN, and in the page as it was sent.
+  const news = page.getByRole("region", { name: "Headlines from ESPN" });
+  await expect(news.getByRole("listitem")).toHaveCount(6);
+  await expect(news.getByRole("link").first()).toHaveAttribute(
+    "href",
+    "https://www.espn.com/nhl/recap?gameId=401892485",
+  );
+  const sent = await (await page.request.get("/")).text();
+  expect(sent.match(/data-slot="news-item"/g)).toHaveLength(6);
   const games = page.locator('[data-slot="story"] h3 a, [data-slot="brief"] > a');
   const order = () => games.evaluateAll((links) => links.map((link) => link.getAttribute("href")));
   const initialOrder = await order();

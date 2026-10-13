@@ -40,17 +40,21 @@ const kv: Cache = {
   delete: (key) => env.CACHE.delete(key),
 };
 
-/** What `read` answers, kept under `key` and fresh for `seconds`. */
+/**
+ * What `read` answers, kept under `key` and fresh for `seconds`. `staleFor` is how long past that
+ * it may still be answered, in seconds, for what is worse old than missing.
+ */
 export function cached<Value>(
   key: string,
   seconds: number,
   read: () => Promise<Value>,
+  staleFor: number = STALE_FOR,
 ): Promise<Value> {
   return cachified<Value>({
     key,
     cache: kv,
     ttl: seconds * SECOND,
-    staleWhileRevalidate: STALE_FOR * SECOND,
+    staleWhileRevalidate: staleFor * SECOND,
     getFreshValue: read,
     // The read behind a stale answer outlives the request or the Agent's call that asked.
     waitUntil,

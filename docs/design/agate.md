@@ -102,6 +102,13 @@ A live story swaps its heavy top rule to `--live`.
   - Line two, right, is the pick: "MTL 52%" plus a mark when final, or "No pick".
 - Briefs are separated by dotted rules. This keeps a 16-game night scannable.
 
+**Headlines from ESPN: the news** (#217).
+- Under the briefs, in the briefs' form: a red label over a plain rule, then ESPN's NHL headlines in an `auto-fill, minmax(min(340px, 100%), 1fr)` list, rows parted by dotted rules. Six at most, in ESPN's order, which is three columns of two at a desk (the briefs have four: a headline is a sentence, not a score), two of three on a tablet and one column on a phone. The band's gap above it (44px, 32 on a phone).
+- A row is the headline in the serif (Newsreader 700, 18px on 1.25, tracked -0.005em: it reads) over the day and time ESPN published it in agate (13px, `--aside`: "Mon Oct 12 · 5:18 PM", in the visitor's zone as every time on the site is). A headline with no time has no second line.
+- The whole row is one link to the article on ESPN, in the same tab as the footer's credit is; its headline is underlined under the pointer. A row with its time is 60px tall or more, and no row is under 44px (a one-line headline with no time would be 42), so a thumb has it.
+- **With no news the section is not drawn**: no label, no rule, no gap, and the lower band follows the briefs. That is ESPN's news not answering or having changed shape for more than six hours (until then the last list read is shown), never having been read, or being empty (`?news=0` on the prototype and on `/skeleton/dashboard`).
+- **Where the written pieces will go** (#217, a later slice; nothing is drawn for them now): directly above this list, in a band of their own under the briefs, as two or three stories in the leads' grid (the heavy rule, a kicker saying a model wrote it and when, a serif headline that links to the piece's page, a deck). The headlines then read as the agate under those stories, as the briefs do under the leads.
+
 **Lower band** (heavy rule above). Desktop: Standings (`flex: 999 1 560px`) beside an aside (`flex: 1 1 300px`).
 - **Standings:** a serif title and a "Full standings" link. East and West agate tables sit side by side, each under a red label with an ink underline. Columns are Team (agate name), GP (in `--aside`), W, L, OT and **PTS** (bold).
 - **The Picks:** a 1px ink box with a red label, the big serif record, and "Right on 67% of games this season. Two of three tonight." The second sentence only counts picked finals and spells out numbers up to ten.
@@ -118,6 +125,7 @@ A live story swaps its heavy top rule to `--live`.
 | Three-part dateline, the date first | One line: "3 games · 3 final · Picks 29–14", with one icon button at its right end that switches theme (moon by day, sun by night; named "Day" or "Night"). The line is 44px for the button, over a hairline |
 | Story grid | Stories stacked; headline 34px |
 | Briefs in 4 columns | One column |
+| Headlines from ESPN in 3 columns | One column, each row a link at least 44px tall (60px with its time) |
 | Standings beside the aside | Order: **Picks box** (row layout) → **Standings**; "Tonight at a glance" is hidden because the dateline carries it |
 | East and West side by side | An Eastern/Western segmented control (`role="group"`, `aria-pressed`, 44px) shows one table at a time |
 | `--gutter` 24px | 16px |
@@ -160,6 +168,7 @@ Calls made while building:
   - *The date is the dateline's first part at a desk, as before, and a line under the wordmark on a phone*, where the dateline has room for the counts and the record but not for a date as well (with it the line wraps on most nights). It is the long date now, not "Sun, Oct 11".
   - *Picks (#218) is a sixth section in the same row*, after Players. Nothing was added for it; the phone's sections went from 6px to 3px either side, and from .1em of tracking to .06em, so that six fit a 390px row.
 - **Home.** The standings' team names are plain text on a phone (40px rows, as drawn) and links from `md` up. Home has no "pick pending" and no "all scores" link. Favorites are not drawn anywhere: the prototype's Favorites block and the site's hearts were removed in #223, until the site has Accounts (#132, #133). The Picks box is not drawn before any pick is decided. Day `--positive` is `#166534`, a step darker than the tuned ledger's green, for AA on the row under the pointer.
+- **ESPN's headlines on Home (#217).** Between the briefs and the lower band, not in the aside: six headlines in a 300px column would run twice the height of the standings beside them. A list under a label, like the briefs, not a band with a serif title: the lower band's heavy rule and "Standings" follow at once, and two titled bands in a row made the news as loud as the games. Videos ("Media" in ESPN's list: highlights and clips) are left out, since a headline list is for reading; recaps, previews, stories and news are all kept, in ESPN's order. The list is ESPN's own and is not narrowed to the league: a college coach's hiring and a fantasy column were in it on the day it was recorded, and they are listed as ESPN lists them. No description, byline or picture is drawn. While ESPN's news cannot be read the last list is shown for six hours and then the section goes. The label names ESPN, so there is no separate credit or "more" link.
 - **The game page.** No club colours on the rink: goals are red, and saves, shots and hits differ by weight and fill, with a key. The score appears in the story header and over the rink.
 - **The NHL routes.** Scores is an agate ledger, not briefs. Teams is a CSS-column list. Wins are bold and losses grey. A standings row's link is named by the agate name.
 - **The dateline's record of the picks** is read with the page and again whenever the Scoreboard reports a final or a new pick, and not otherwise. (While whole pages were cached it could be about ten minutes old; they no longer are: ADR 0009.)
@@ -170,7 +179,7 @@ Calls made while building:
 ## Accessibility
 
 - All text roles pass AA in both themes, on the page and on the row under the pointer (table above; held by `packages/ui/src/theme.test.ts`). Rules are decorative.
-- Tap targets are at least 44px on a phone, on every route (`node scripts/tap-targets.mjs`): nav items, the theme control, the conference control, rows that are links and "more" links.
+- Tap targets are at least 44px on a phone, on every route (`node scripts/tap-targets.mjs`): nav items, the theme control, the conference control, rows that are links (a headline from ESPN among them) and "more" links.
 - The theme and conference controls are real `<button>`s with `aria-pressed` inside a labelled `role="group"`.
 - Tables are real `<table>`s. The line score has a caption naming the game and uses `<th scope="row">` for team names.
 - Every page has exactly one `h1`: the wordmark on Home, the page's title everywhere else. Two cases are known not to: Home's own error page (`apps/web/components/shell/error-page.tsx` drawn at `/`) has the wordmark and its title, and the scaffolding routes `/skeleton/dashboard` and `/skeleton/picks` have none.

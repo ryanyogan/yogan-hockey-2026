@@ -4,6 +4,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { createDb, latestSkeletonBumps, type SkeletonBump } from "@yogan-hockey/db";
 import {
   type MadeSlatePick,
+  type News,
   type Pulse,
   PulseSchema,
   type Reading,
@@ -16,6 +17,7 @@ import { z } from "zod";
 import { AGATE_SLATES } from "../../lib/agate-slates";
 import { topOfConferences } from "../../lib/dashboard";
 import { cachedStandings } from "../../lib/espn";
+import { readHomeNews } from "../../lib/home-news";
 import { seedSamplePicks } from "../../lib/sample-picks";
 import { EMPTY_SLATE, QUIET_SLATE, SAMPLE_SLATE } from "../../lib/sample-slate";
 import { cachedSkeletonReading, SKELETON_AGENT_NAME } from "../../lib/skeleton";
@@ -93,6 +95,8 @@ export const seedPicks = createServerFn({ method: "POST" })
 export const SampleDashboardSchema = z.object({
   slate: z.string().optional().catch(undefined),
   picks: z.boolean().catch(false),
+  /** False draws the page as it is when ESPN's news could not be read. */
+  news: z.boolean().catch(true),
 });
 
 /** What `/skeleton/dashboard` draws: a slate that is not today's, with what Home is handed. */
@@ -102,6 +106,8 @@ export type SampleDashboardRead = {
   record: SeasonRecord | null;
   /** The real ones, as Home reads them: null when ESPN's could not be read. */
   standings: StandingsTable[] | null;
+  /** The real ones too, or null when there are none to list or the address asked for none. */
+  news: News | null;
 };
 
 /**
@@ -117,7 +123,10 @@ const SAMPLE_PICKS: Record<string, MadeSlatePick> = Object.fromEntries(
 function sampleDashboard({
   slate,
   picks,
-}: z.infer<typeof SampleDashboardSchema>): Omit<SampleDashboardRead, "standings"> {
+}: Pick<z.infer<typeof SampleDashboardSchema>, "slate" | "picks">): Omit<
+  SampleDashboardRead,
+  "standings" | "news"
+> {
   const agate = slate == null ? undefined : AGATE_SLATES[slate];
   if (agate) return agate;
   const scoreboard = slate === "empty" ? EMPTY_SLATE : SAMPLE_SLATE;
@@ -134,17 +143,21 @@ function sampleDashboard({
  * - `empty`: a day with no games.
  * - `tonight` and `busy`: the Agate prototype's two slates with their picks and records, which
  *   `scripts/agate-home-compare.mjs` measures against the prototype.
+ * - `news` false: no headlines, as when ESPN's news cannot be read.
  */
 export const readSampleDashboard = createServerFn({ method: "GET" })
   .validator(SampleDashboardSchema)
   .handler(({ data }) =>
-    pageRead<SampleDashboardRead>(async () => ({
-      ...sampleDashboard(data),
-      // An extra, as on Home: when they cannot be read the block says so and the rest is drawn.
-      standings: await cachedStandings()
-        .then(topOfConferences)
-        .catch(() => null),
-    })),
+    pageRead<SampleDashboardRead>(async () => {
+      // Extras, as on Home: neither read fails the page.
+      const [standings, news] = await Promise.all([
+        cachedStandings()
+          .then(topOfConferences)
+          .catch(() => null),
+        data.news ? readHomeNews() : null,
+      ]);
+      return { ...sampleDashboard(data), standings, news };
+    }),
   );
 
 /** Which slate `/skeleton/live` draws. Anything but `empty` and `quiet` is the mixed one. */

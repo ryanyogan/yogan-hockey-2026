@@ -1,6 +1,6 @@
 // PROTOTYPE (Agate). Draws Home from data.js with the sentences of copy.js.
 // Address options: ?slate=tonight|busy  &theme=light|dark  &chrome=0 (hide the switcher)
-// &picks=1 (the sections with Picks among them)
+// &picks=1 (the sections with Picks among them)  &news=0 (a day ESPN's news could not be read)
 
 import {
   agateName,
@@ -15,7 +15,7 @@ import {
   spelled,
   tonightPicks,
 } from "./copy.js";
-import { SLATES, STANDINGS } from "./data.js";
+import { NEWS, SLATES, STANDINGS } from "./data.js";
 
 const params = new URLSearchParams(location.search);
 const slateKey = params.get("slate") === "busy" ? "busy" : "tonight";
@@ -137,6 +137,27 @@ function briefs(list) {
   </section>`;
 }
 
+// ESPN's headlines (#217), each the whole of a link to ESPN. With none to list (`?news=0`) the
+// section is not drawn at all, and the lower band follows the briefs as it did.
+function news(list) {
+  if (list.length === 0) return "";
+  const rows = list
+    .map(
+      (n) => `<li class="news-item">
+      <a href="${esc(n.url)}">
+        <span class="news__headline">${esc(n.headline)}</span>
+        <span class="news__when">${esc(n.when)}</span>
+      </a>
+    </li>`,
+    )
+    .join("");
+  return `
+  <section class="news" aria-labelledby="news-h">
+    <h2 class="label" id="news-h">Headlines from ESPN</h2>
+    <ul class="news-list">${rows}</ul>
+  </section>`;
+}
+
 function confTable(key, title) {
   const rows = STANDINGS[key]
     .map((t) => {
@@ -214,6 +235,7 @@ function render() {
         <div class="stories">${leads.map(story).join("")}</div>
       </section>
       ${briefs(rest)}
+      ${news(params.get("news") === "0" ? [] : NEWS)}
       ${lower()}
     </main>
     <footer class="footer"><p>Scores and stats from <a href="#">ESPN</a>. Yogan Hockey is a family project, not affiliated with ESPN or the NHL.</p></footer>

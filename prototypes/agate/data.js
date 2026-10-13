@@ -195,3 +195,41 @@ export const STANDINGS = {
     row("COL", 3, 2, 0, 6),
   ],
 };
+
+/*
+ * NEWS is ESPN's NHL headlines as its news endpoint listed them on the evening of Mon Oct 12
+ * 2026 (`packages/espn/fixtures/news.json`, the first six that are not videos), with the day and
+ * time each was published as a visitor in the East reads them. `url` is the article on ESPN.
+ */
+export const NEWS = [
+  {
+    headline: "Noah Ostlund scores go-ahead goal in third period in Sabres' 5-3 win over Panthers",
+    when: "Mon Oct 12 · 5:18 PM",
+    url: "https://www.espn.com/nhl/recap?gameId=401892485",
+  },
+  {
+    headline: "Where to watch 2026 NHL Frozen Frenzy",
+    when: "Mon Oct 12 · 5:03 PM",
+    url: "https://www.espn.com/nhl/story/_/id/50168025/watch-2026-nhl-frozen-frenzy",
+  },
+  {
+    headline: "Arizona State in talks with Avalanche's Dave Hakstol to coach hockey team",
+    when: "Mon Oct 12 · 5:04 PM",
+    url: "https://www.espn.com/college-sports/blog/college_sports/story/_/id/50168628/arizona-state-talks-dave-hakstol-coach-hockey-team",
+  },
+  {
+    headline: "Sabres' Dahlin out Tuesday vs. Canadiens due to upper-body injury",
+    when: "Mon Oct 12 · 5:17 PM",
+    url: "https://www.espn.com/nhl/story/_/id/50168195/sabres-dahlin-leaves-game-vs-panthers-upper-body-injury",
+  },
+  {
+    headline: "Blackhawks captain Connor Bedard likely to make season debut Tuesday",
+    when: "Mon Oct 12 · 3:57 PM",
+    url: "https://www.espn.com/nhl/story/_/id/50168099/blackhawks-captain-connor-bedard-likely-make-season-debut-tuesday",
+  },
+  {
+    headline: "Fantasy hockey weekly pickups: Goalie options to replace Igor Shesterkin",
+    when: "Mon Oct 12 · 2:54 PM",
+    url: "https://www.espn.com/fantasy/hockey/story/_/id/50166671/fantasy-hockey-picks-forwards-defense-goalies-streamers",
+  },
+];

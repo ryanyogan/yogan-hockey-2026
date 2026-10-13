@@ -1,4 +1,4 @@
-import { PLAYER_SEARCH_LIMIT } from "@yogan-hockey/schemas";
+import { NEWS_LIMIT, PLAYER_SEARCH_LIMIT } from "@yogan-hockey/schemas";
 
 /** One ESPN request: where it goes, what errors call it, and which recorded response stands in for it. */
 export type Endpoint = {
@@ -19,6 +19,9 @@ const STANDINGS = "https://site.api.espn.com/apis/v2/sports/hockey/nhl/standings
 const ATHLETES = "https://site.api.espn.com/apis/common/v3/sports/hockey/nhl/athletes";
 const ATHLETES_WEB = "https://site.web.api.espn.com/apis/common/v3/sports/hockey/nhl/athletes";
 const SEARCH = "https://site.api.espn.com/apis/common/v3/search";
+
+// Twice what Home lists: videos are left out, and so is an article that cannot be read.
+const NEWS_ASKED_FOR = NEWS_LIMIT * 2;
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 const ESPN_ID = /^\d+$/;
@@ -113,5 +116,9 @@ export const endpoints = {
       limit: String(PLAYER_SEARCH_LIMIT),
     });
     return { name: "search", url: `${SEARCH}?${params}`, fixture: `search-${slug(query)}` };
+  },
+  /** The league's news as ESPN's editors order it: headlines, stories, recaps, previews, videos. */
+  news(): Endpoint {
+    return { name: "news", url: `${SITE}/news?limit=${NEWS_ASKED_FOR}`, fixture: "news" };
   },
 };

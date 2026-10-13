@@ -1,5 +1,6 @@
 import {
   getGameSummary,
+  getNews,
   getPlayer,
   getPlayerCareer,
   getPlayerGameLog,
@@ -10,6 +11,7 @@ import {
   searchPlayers,
 } from "@yogan-hockey/espn";
 import type {
+  News,
   PlayerCareer,
   PlayerGameLog,
   PlayerProfile,
@@ -31,6 +33,8 @@ import { cached, forget } from "./kv-cache";
  * The scoreboard is not here: live scores come from the Scoreboard Agent, never from this cache.
  * Nor is the game summary: the Game Agent and the Replay read it as it is now. Only its pregame
  * facts, for a scheduled game's page, are cached.
+ *
+ * The news is not in the spec's table (#217). Nothing forgets it: no result of a game changes it.
  */
 
 const MINUTE = 60;
@@ -38,6 +42,7 @@ const HOUR = 60 * MINUTE;
 
 const STANDINGS_KEY = "espn-standings";
 const TEAM_LIST_KEY = "espn-teams";
+const NEWS_KEY = "espn-news";
 const teamKey = (teamId: string) => `espn-team:${teamId}`;
 const teamScheduleKey = (teamId: string) => `espn-team-schedule:${teamId}`;
 const playerKey = (playerId: string) => `espn-player:${playerId}`;
@@ -120,4 +125,15 @@ export function cachedPlayerGameLog(playerId: string): Promise<PlayerGameLog> {
 export function cachedPlayerSearch(query: string): Promise<PlayerSearchResult[]> {
   const wanted = query.trim().toLowerCase();
   return cached(playerSearchKey(wanted), 10 * MINUTE, () => searchPlayers(wanted));
+}
+
+/**
+ * The News, for Home. Fresh for fifteen minutes: ESPN's editors change the list a few times an
+ * hour at most, and it is read with every Home that is opened. Answered for six hours past that
+ * and no longer, where every other read is answered for thirty days: a standings table a week old
+ * is still the standings, and news a week old is not news. So while ESPN's news cannot be read
+ * Home lists what it last had for six hours, and then leaves the section out.
+ */
+export function cachedNews(): Promise<News> {
+  return cached(NEWS_KEY, 15 * MINUTE, getNews, 6 * HOUR);
 }

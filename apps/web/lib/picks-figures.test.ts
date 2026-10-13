@@ -258,7 +258,7 @@ describe("the miss a column is written about (#234)", () => {
     const worst = pick(MON, "home", "lost", 70);
 
     // Tuesday's column was about Monday's game. Nothing has lost since.
-    const last = { date: TUE, gameId: worst.gameId };
+    const last = { writtenFor: TUE, gameId: worst.gameId };
     expect(missSince([worst, pick(TUE, "home", "won", 66)], WED, last)).toBeNull();
   });
 
@@ -273,7 +273,7 @@ describe("the miss a column is written about (#234)", () => {
       pick(TUE, "home", "won", 72),
     ];
 
-    const miss = missSince(picks, WED, { date: TUE, gameId: worst.gameId });
+    const miss = missSince(picks, WED, { writtenFor: TUE, gameId: worst.gameId });
 
     expect(miss).toMatchObject({ date: TUE, winProbability: 61 });
     // The week's worst call is still Monday's, on the page.
@@ -283,7 +283,7 @@ describe("the miss a column is written about (#234)", () => {
   it("is never the last column's game, even one played on the day that column was written", () => {
     const matinee = pick(TUE, "home", "lost", 70);
 
-    expect(missSince([matinee], WED, { date: TUE, gameId: matinee.gameId })).toBeNull();
+    expect(missSince([matinee], WED, { writtenFor: TUE, gameId: matinee.gameId })).toBeNull();
   });
 
   it("is a miss of the week the figures are of: Sunday's on Monday morning, and none from a week gone by", () => {
@@ -291,11 +291,11 @@ describe("the miss a column is written about (#234)", () => {
     const picks = [pick(TUE, "home", "lost", 70), sunday];
 
     expect(
-      missSince(picks, NEXT_MON, { date: SUN, gameId: picks[0]?.gameId ?? null }),
+      missSince(picks, NEXT_MON, { writtenFor: SUN, gameId: picks[0]?.gameId ?? null }),
     ).toMatchObject({ gameId: sunday.gameId });
     // A week later with one game played since, and that one right: last week's misses are not this week's.
     const since = [...picks, pick(NEXT_MON, "home", "won")];
-    expect(missSince(since, "2026-10-13", { date: MON, gameId: null })).toBeNull();
+    expect(missSince(since, "2026-10-13", { writtenFor: MON, gameId: null })).toBeNull();
   });
 
   it("is nothing before a pick has lost", () => {

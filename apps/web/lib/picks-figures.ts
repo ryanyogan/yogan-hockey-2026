@@ -177,16 +177,18 @@ const decidedCalls = (picks: readonly SeasonPick[]): Decided[] =>
     );
 
 /**
- * What the last column on a miss was written about (#234): the slate's date on the morning it
- * was written, and its game, or null where the piece does not say which game it was.
+ * The last column on a miss (#234): the slate's date on the morning it was written for, and the
+ * game it was about, or null where the piece does not say which game that was.
  */
-export type LastMiss = { date: string; gameId: string | null };
+export type LastMiss = { writtenFor: string; gameId: string | null };
 
 /**
  * The miss a column is written about (#234): the firmest pick that lost in the week the page
  * shows, among the games decided since the last such column, and never that column's own game.
  * A column is written before its day's games, so a game listed under the column's date or a
- * later one was decided after it. With no column yet (`last` null) it is the week's worst call;
+ * later one was decided after it; the game's own id is held against it as well, so that the
+ * first line of #234 does not rest on when a morning runs. A final that reaches D1 only after
+ * the next morning's column is listed under a day before that column's and gets none. With no column yet (`last` null) it is the week's worst call;
  * with nothing lost since the last one it is null, and no column is written.
  *
  * The week's worst call on the page (`week.worst`) does not move for any of this.
@@ -200,7 +202,9 @@ export function missSince(
     (call) => call.outcome === "wrong",
   );
   if (last == null) return firmest(misses);
-  return firmest(misses.filter((call) => call.date >= last.date && call.gameId !== last.gameId));
+  return firmest(
+    misses.filter((call) => call.date >= last.writtenFor && call.gameId !== last.gameId),
+  );
 }
 
 /**

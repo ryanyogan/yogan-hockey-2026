@@ -90,6 +90,24 @@ describe("the Picks page's columns", () => {
     expect(columnPieces([miss], null)).toHaveLength(1);
   });
 
+  it("are the two written on a morning with no new miss, once yesterday's miss has had its 30 hours (#234)", () => {
+    const nextTonight = piece("picks-tonight", "2026-10-13T15:19:00Z");
+    const nextRun = piece("picks-run", "2026-10-13T15:21:00Z");
+    const current = [nextRun, nextTonight, miss];
+
+    // Tuesday afternoon: Monday's column on the miss is still up, between the other two.
+    expect(kinds(columnPieces(current, new Date("2026-10-13T18:00:00Z")))).toEqual([
+      "picks-tonight",
+      "picks-miss",
+      "picks-run",
+    ]);
+    // Tuesday night: it has gone, and the page has the two.
+    expect(kinds(columnPieces(current, new Date("2026-10-13T22:00:00Z")))).toEqual([
+      "picks-tonight",
+      "picks-run",
+    ]);
+  });
+
   it("have a line of their own above the headline", () => {
     expect(pieceKicker({ kind: "picks-tonight", date: "2026-10-12" })).toBe(
       "Tonight's game · Mon Oct 12",

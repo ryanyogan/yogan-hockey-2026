@@ -134,7 +134,15 @@ test("the last piece of a kind is its newest published one, with the facts it wa
 
   const last = await getLastPiece(db, "last-of");
 
-  expect(last).toMatchObject({ slug: "2026-10-11-last-of", status: "published", facts: FACTS });
+  expect(last).toMatchObject({ slug: "2026-10-11-last-of", date: "2026-10-11", facts: FACTS });
+});
+
+test("the last piece of a kind is still read when its facts no longer fit, with no facts", async () => {
+  await env.DB.exec(
+    "insert into pieces (slug, kind, date, status, headline, body, written_at, model, written_by, facts) values ('2026-10-12-odd-facts', 'odd-facts', '2026-10-12', 'published', 'h', 'b', '2026-10-12T15:00:00.000Z', 'm', 'model', '{}')",
+  );
+
+  expect(await getLastPiece(db, "odd-facts")).toMatchObject({ date: "2026-10-12", facts: null });
 });
 
 test("a date and a kind have one published piece: a second is refused and the first stands", async () => {

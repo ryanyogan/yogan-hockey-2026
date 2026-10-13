@@ -227,6 +227,16 @@ function picksFacts(
 }
 
 /**
+ * What a published column on a miss says of itself to the next morning (#234): the date it was
+ * written for, and its game from the facts it was written from, where `picksFacts` put it. A
+ * piece with no facts to read (a sample, a row from before #234) is known by its date alone.
+ */
+export const lastMissOf = (piece: { date: string; facts: WritingFacts | null }): LastMiss => ({
+  writtenFor: piece.date,
+  gameId: piece.facts?.picks?.miss?.game ?? null,
+});
+
+/**
  * The facts a piece is written from and checked against (#217). Built field by field, so nothing
  * else ESPN sends can reach the model: injuries, betting lines and broadcast names least of all.
  */

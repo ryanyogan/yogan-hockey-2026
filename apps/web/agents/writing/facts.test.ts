@@ -209,7 +209,7 @@ test("with the season's picks, the facts hold the Picks page's figures in words 
 });
 
 test("the miss a column is told is one decided since the last such column, or none (#234)", () => {
-  const written = { date: "2026-10-06", gameId: first.id };
+  const written = { writtenFor: "2026-10-06", gameId: first.id };
   const sameMorning = writingFacts({ ...sources, seasonPicks: season, lastMiss: written });
   // Tuesday's column was about Monday's game; Tuesday night another pick lost, less firmly.
   const later = [...season.slice(0, 2), seasonPick(third, "loser", 54, "2026-10-06")];

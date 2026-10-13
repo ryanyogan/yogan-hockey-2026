@@ -3,6 +3,8 @@ import {
   PieceSchema,
   type StoredPiece,
   StoredPieceSchema,
+  type WritingFacts,
+  WritingFactsSchema,
 } from "@yogan-hockey/schemas";
 import { and, desc, eq, inArray, sql } from "drizzle-orm";
 import type { Db } from "./client.ts";
@@ -69,17 +71,22 @@ export async function getPieceBySlug(db: Db, slug: string): Promise<Piece | null
 /**
  * The newest published piece of a kind with the facts it was written from, or null when the kind
  * has never been published: what a kind last said, for a kind that must not say it twice (#234).
+ * Facts that no longer fit `WritingFactsSchema` are null and the piece is still returned: a row
+ * nobody can read back would otherwise be the kind's last word for good.
  */
-export async function getLastPiece(db: Db, kind: string): Promise<StoredPiece | null> {
+export async function getLastPiece(
+  db: Db,
+  kind: string,
+): Promise<(Piece & { facts: WritingFacts | null }) | null> {
   const [row] = await db
-    .select()
+    .select({ ...PIECE_COLUMNS, facts: pieces.facts })
     .from(pieces)
     .where(and(isPublished, eq(pieces.kind, kind)))
     .orderBy(desc(pieces.writtenAt), desc(pieces.id))
     .limit(1);
   if (!row) return null;
-  const { id: _id, ...piece } = row;
-  return StoredPieceSchema.parse(piece);
+  const { facts, ...piece } = row;
+  return { ...PieceSchema.parse(piece), facts: WritingFactsSchema.safeParse(facts).data ?? null };
 }
 
 /** Every try at a slug that the check refused, oldest first: for reading a failure afterwards. */

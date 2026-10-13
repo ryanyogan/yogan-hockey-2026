@@ -1,5 +1,6 @@
 import {
   type FactCall,
+  type FactPicks,
   type PieceDraft,
   PieceDraftSchema,
   pieceDraftJsonSchema,
@@ -114,6 +115,15 @@ function columnFacts(all: WritingFacts): WritingFacts {
   return { ...all, teams: [], finals: [], finalsDay: null, slate: [], people: undefined };
 }
 
+/**
+ * The picks' figures with only one of the calls kept, or none: each column is told its own game
+ * and no other column's, and a call added to the figures is left out of every kind that does not ask for it.
+ */
+function picksWith(picks: FactPicks, keep?: "best" | "worst" | "miss"): FactPicks {
+  const calls = { best: null, worst: null, miss: null };
+  return { ...picks, ...calls, ...(keep ? { [keep]: picks[keep] ?? null } : {}) };
+}
+
 /** A call as the check and the model read a finished game. */
 const callFinals = (calls: (FactCall | null)[]): FactCall[] => calls.filter((call) => call != null);
 
@@ -131,7 +141,7 @@ export const PICKS_TONIGHT: PieceKind = {
   facts: (all) => {
     const slate = all.slate.filter(({ pick }) => pick !== null);
     if (slate.length === 0) return null;
-    const picks = all.picks && { ...all.picks, best: null, worst: null, miss: null };
+    const picks = all.picks && picksWith(all.picks);
     return { ...columnFacts(all), slate, teams: teamsOf(all, slate), picks };
   },
 };
@@ -150,7 +160,7 @@ export const PICKS_MISS: PieceKind = {
     return {
       ...columnFacts(all),
       teams: teamsOf(all, [miss]),
-      picks: { ...all.picks, best: null, worst: null },
+      picks: picksWith(all.picks, "miss"),
     };
   },
 };
@@ -169,7 +179,7 @@ export const PICKS_RUN: PieceKind = {
     return {
       ...columnFacts(all),
       teams: teamsOf(all, callFinals([picks.best])),
-      picks: { ...picks, worst: null, miss: null },
+      picks: picksWith(picks, "best"),
     };
   },
 };

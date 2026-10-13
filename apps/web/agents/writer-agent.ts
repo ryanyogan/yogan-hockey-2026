@@ -1,6 +1,7 @@
 import { exports } from "cloudflare:workers";
 import {
   createDb,
+  type Db,
   getLastPiece,
   getPieceBySlug,
   getPredictions,
@@ -16,7 +17,13 @@ import { SCOREBOARD_CONNECTION } from "../lib/scoreboard-connection";
 import { AI_GATEWAY_ID } from "./prediction";
 import { withTimeout } from "./with-timeout";
 import { checkPiece } from "./writing/check";
-import { dayBefore, easternDate, type FactSources, writingFacts } from "./writing/facts";
+import {
+  dayBefore,
+  easternDate,
+  type FactSources,
+  lastMissOf,
+  writingFacts,
+} from "./writing/facts";
 import {
   EDITIONS,
   type Edition,
@@ -363,19 +370,17 @@ export class WriterAgent extends Agent<Env> {
  * game, which its own stored facts hold. Null before the first. A column refused by the check is
  * not one, so a miss that never got its column is still the next morning's to write.
  *
- * Where it cannot be read, the answer is as if one had been written this morning: no game has
- * been decided since, so no column on a miss is written, and every other piece still is.
+ * Where D1 does not answer, the answer is as if one had been written this morning: no game has
+ * been decided since, so no column on a miss is written, and every other piece still is. A row
+ * whose facts no longer fit is not that: it is read by its date, and the column goes on.
  */
-async function lastMissWritten(
-  db: ReturnType<typeof createDb>,
-  today: string,
-): Promise<LastMiss | null> {
+async function lastMissWritten(db: Db, today: string): Promise<LastMiss | null> {
   try {
     const last = await getLastPiece(db, PICKS_MISS.kind);
-    return last && { date: last.date, gameId: last.facts.picks?.miss?.game ?? null };
+    return last && lastMissOf(last);
   } catch (error) {
     console.error("Writer: the last column on a miss could not be read", error);
-    return { date: today, gameId: null };
+    return { writtenFor: today, gameId: null };
   }
 }
 

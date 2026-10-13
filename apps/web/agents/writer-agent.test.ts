@@ -477,8 +477,9 @@ describe("the Picks page's columns", () => {
     expect(miss.picks.run).toEqual({ outcome: "right", length: 2 });
   });
 
+  const DAY = 24 * 60 * 60 * 1000;
+
   test("the column on the miss is written once a game: none the next morning, and the morning after it is about the pick that lost since (#234)", async () => {
-    const DAY = 24 * 60 * 60 * 1000;
     const fourth = finals[3] as Game;
     let today = TODAY;
     let season = seasonPicks;
@@ -518,7 +519,6 @@ describe("the Picks page's columns", () => {
   });
 
   test("a miss whose column the check refused at every try is still the next morning's to write (#234)", async () => {
-    const DAY = 24 * 60 * 60 * 1000;
     let today = TODAY;
     const read = () => sources({ date: today, seasonPicks, predictions });
     answer = (call) => answering(pieceOf(call).endsWith("-picks-miss") ? UNSOUND : SOUND);
@@ -533,24 +533,19 @@ describe("the Picks page's columns", () => {
     expect(await getPieceBySlug(db, "2031-01-16-picks-miss")).not.toBeNull();
   });
 
-  test("when what the column on the miss last said cannot be read, it is not written and the others are (#234)", async () => {
-    // A row written around the schema: its facts are not facts.
+  test("a last column whose facts cannot be read back is known by its date, and does not silence the column (#234)", async () => {
+    // A row written around the schema, for the Sunday: its facts are not facts.
     await env.DB.exec(
       "insert into pieces (slug, kind, date, status, headline, body, written_at, model, written_by, facts) values ('2031-01-12-picks-miss', 'picks-miss', '2031-01-12', 'published', 'h', 'b', '2031-01-12T15:00:00.000Z', 'm', 'model', '{}')",
     );
 
-    await morning("miss-unread");
+    await morning("miss-odd-facts");
 
-    expect(calls.map(pieceOf)).toEqual([
-      `${TODAY}-preview`,
-      `${TODAY}-league`,
-      `${TODAY}-picks-tonight`,
-      `${TODAY}-picks-run`,
-    ]);
-    expect(logged().join("\n")).toContain("Writer: the last column on a miss could not be read");
+    // Monday's miss was decided after Sunday's column.
+    expect(calls.map(pieceOf)).toContain(`${TODAY}-picks-miss`);
   });
 
-  test("a column with nothing to say is not written: no pick tonight, no miss this week, no run", async () => {
+  test("a column with nothing to say is not written: no pick tonight, no miss yet, no run", async () => {
     const quiet = () => sources({ seasonPicks: [seasonPick(second, "winner", 58, "2031-01-13")] });
 
     await morning("quiet", quiet);

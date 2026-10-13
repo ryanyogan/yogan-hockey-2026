@@ -233,3 +233,46 @@ export const NEWS = [
     url: "https://www.espn.com/fantasy/hockey/story/_/id/50166671/fantasy-hockey-picks-forwards-defense-goalies-streamers",
   },
 ];
+
+/*
+ * PIECES is the written pieces (#217) as fixture mode has them (`apps/web/lib/sample-pieces.ts`,
+ * word for word), in Home's order: the preview and the standings note of the slate fixture mode
+ * has recorded (Tue Oct 6), and a recap of the three finals above, dated the night before it.
+ * `when` is the time each was
+ * written as a visitor in the East reads it. No model wrote these: they are samples in the voice.
+ */
+export const PIECES = [
+  {
+    kind: "preview",
+    date: "2026-10-06",
+    when: "Tue Oct 6 · 11:16 AM",
+    headline: "Nine games tonight, and Buffalo is the firmest pick on the board",
+    paragraphs: [
+      "Nine games are on tonight's slate, five of them starting at 7 p.m. Eastern. The Senators, 2-0-0, visit a Red Wings team still looking for a first win at 0-2-0.",
+      "The site's firmest pick is Buffalo, at 64 percent, at home against a Wild team that has won both of its games. Los Angeles is next at 62 percent against Florida, and New Jersey is at 61 percent against Utah.",
+      "The closest call is in Montreal, where the Canadiens are the pick over Carolina at 52 percent. Toronto is the pick over Nashville at 58 percent, and Seattle is the pick over Vegas at 59 percent in the late game.",
+    ],
+  },
+  {
+    kind: "recap",
+    date: "2026-10-05",
+    when: "Tue Oct 6 · 1:06 AM",
+    headline: "Kraken win 5-3 in Washington, and the Rangers and Hurricanes win by more",
+    paragraphs: [
+      "The Kraken won 5-3 in Washington on Monday. The Capitals were the site's pick at 63 percent, and that pick was wrong.",
+      "The Rangers beat the Canucks 6-2 at Madison Square Garden. The site had New York at 62 percent, and that pick was right.",
+      "The Hurricanes won 4-1 in Philadelphia. Carolina was the pick at 78 percent, which made it two right out of three on the night.",
+    ],
+  },
+  {
+    kind: "league",
+    date: "2026-10-06",
+    when: "Tue Oct 6 · 11:17 AM",
+    headline: "Rangers lead the East as Edmonton and Winnipeg share the top of the West",
+    paragraphs: [
+      "The Rangers have the most points in the East, 6, from three wins in four games. Ottawa has played twice and won twice.",
+      "In the West, Edmonton and Winnipeg have 5 points each at 2-0-1. Colorado, Minnesota and Anaheim have each won their first two games.",
+      "It is early. No team in either top eight has played more than four games, and tonight's nine will move most of these places.",
+    ],
+  },
+];

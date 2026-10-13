@@ -14,6 +14,7 @@ import { Route as ManifestDotwebmanifestRouteImport } from './routes/manifest[.]
 import { Route as PicksRouteImport } from './routes/picks'
 import { Route as NhlIndexRouteImport } from './routes/nhl/index'
 import { Route as NhlLiveRouteImport } from './routes/nhl/live'
+import { Route as PiecesSlugRouteImport } from './routes/pieces/$slug'
 import { Route as PlayersIndexRouteImport } from './routes/players/index'
 import { Route as PlayersIdRouteRouteImport } from './routes/players/$id/route'
 import { Route as SkeletonIndexRouteImport } from './routes/skeleton/index'
@@ -54,6 +55,11 @@ const NhlIndexRoute = NhlIndexRouteImport.update({
 const NhlLiveRoute = NhlLiveRouteImport.update({
   id: '/nhl/live',
   path: '/nhl/live',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PiecesSlugRoute = PiecesSlugRouteImport.update({
+  id: '/pieces/$slug',
+  path: '/pieces/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PlayersIndexRoute = PlayersIndexRouteImport.update({
@@ -143,6 +149,7 @@ export interface FileRoutesByFullPath {
   '/picks': typeof PicksRoute
   '/players/$id': typeof PlayersIdRouteRouteWithChildren
   '/nhl/live': typeof NhlLiveRoute
+  '/pieces/$slug': typeof PiecesSlugRoute
   '/skeleton/dashboard': typeof SkeletonDashboardRoute
   '/skeleton/live': typeof SkeletonLiveRoute
   '/skeleton/picks': typeof SkeletonPicksRoute
@@ -165,6 +172,7 @@ export interface FileRoutesByTo {
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
   '/picks': typeof PicksRoute
   '/nhl/live': typeof NhlLiveRoute
+  '/pieces/$slug': typeof PiecesSlugRoute
   '/skeleton/dashboard': typeof SkeletonDashboardRoute
   '/skeleton/live': typeof SkeletonLiveRoute
   '/skeleton/picks': typeof SkeletonPicksRoute
@@ -187,6 +195,7 @@ export interface FileRoutesById {
   '/picks': typeof PicksRoute
   '/players/$id': typeof PlayersIdRouteRouteWithChildren
   '/nhl/live': typeof NhlLiveRoute
+  '/pieces/$slug': typeof PiecesSlugRoute
   '/skeleton/dashboard': typeof SkeletonDashboardRoute
   '/skeleton/live': typeof SkeletonLiveRoute
   '/skeleton/picks': typeof SkeletonPicksRoute
@@ -212,6 +221,7 @@ export interface FileRouteTypes {
     | '/picks'
     | '/players/$id'
     | '/nhl/live'
+    | '/pieces/$slug'
     | '/skeleton/dashboard'
     | '/skeleton/live'
     | '/skeleton/picks'
@@ -234,6 +244,7 @@ export interface FileRouteTypes {
     | '/manifest.webmanifest'
     | '/picks'
     | '/nhl/live'
+    | '/pieces/$slug'
     | '/skeleton/dashboard'
     | '/skeleton/live'
     | '/skeleton/picks'
@@ -255,6 +266,7 @@ export interface FileRouteTypes {
     | '/picks'
     | '/players/$id'
     | '/nhl/live'
+    | '/pieces/$slug'
     | '/skeleton/dashboard'
     | '/skeleton/live'
     | '/skeleton/picks'
@@ -279,6 +291,7 @@ export interface RootRouteChildren {
   PicksRoute: typeof PicksRoute
   PlayersIdRouteRoute: typeof PlayersIdRouteRouteWithChildren
   NhlLiveRoute: typeof NhlLiveRoute
+  PiecesSlugRoute: typeof PiecesSlugRoute
   SkeletonDashboardRoute: typeof SkeletonDashboardRoute
   SkeletonLiveRoute: typeof SkeletonLiveRoute
   SkeletonPicksRoute: typeof SkeletonPicksRoute
@@ -324,6 +337,13 @@ declare module '@tanstack/react-router' {
       path: '/nhl/live'
       fullPath: '/nhl/live'
       preLoaderRoute: typeof NhlLiveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pieces/$slug': {
+      id: '/pieces/$slug'
+      path: '/pieces/$slug'
+      fullPath: '/pieces/$slug'
+      preLoaderRoute: typeof PiecesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/players/': {
@@ -493,6 +513,7 @@ const rootRouteChildren: RootRouteChildren = {
   PicksRoute: PicksRoute,
   PlayersIdRouteRoute: PlayersIdRouteRouteWithChildren,
   NhlLiveRoute: NhlLiveRoute,
+  PiecesSlugRoute: PiecesSlugRoute,
   SkeletonDashboardRoute: SkeletonDashboardRoute,
   SkeletonLiveRoute: SkeletonLiveRoute,
   SkeletonPicksRoute: SkeletonPicksRoute,

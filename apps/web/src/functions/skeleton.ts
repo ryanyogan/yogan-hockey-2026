@@ -5,6 +5,7 @@ import { createDb, latestSkeletonBumps, type SkeletonBump } from "@yogan-hockey/
 import {
   type MadeSlatePick,
   type News,
+  type Piece,
   type Pulse,
   PulseSchema,
   type Reading,
@@ -18,7 +19,9 @@ import { AGATE_SLATES } from "../../lib/agate-slates";
 import { topOfConferences } from "../../lib/dashboard";
 import { cachedStandings } from "../../lib/espn";
 import { readHomeNews } from "../../lib/home-news";
+import { homePieces } from "../../lib/piece-copy";
 import { seedSamplePicks } from "../../lib/sample-picks";
+import { SAMPLE_PIECES, seedSamplePieces } from "../../lib/sample-pieces";
 import { EMPTY_SLATE, QUIET_SLATE, SAMPLE_SLATE } from "../../lib/sample-slate";
 import { cachedSkeletonReading, SKELETON_AGENT_NAME } from "../../lib/skeleton";
 import { pageRead } from "./page-read";
@@ -80,14 +83,16 @@ export const readSamplePicksPage = createServerFn({ method: "GET" }).handler(() 
 export const SeedPicksSchema = z.object({ final: z.enum(["right", "wrong"]).catch("right") });
 
 /**
- * Writes the sample picks of `/skeleton/picks` to D1, then sends the page to `?seeded=`, which
- * says the rows are in. Fixture mode only.
+ * Writes the sample picks of `/skeleton/picks` to D1, and the sample pieces with them (no model
+ * writes locally, as none picks), then sends the page to `?seeded=`, which says the rows are in.
+ * Fixture mode only.
  */
 export const seedPicks = createServerFn({ method: "POST" })
   .validator(SeedPicksSchema)
   .handler(async ({ data }): Promise<never> => {
     if (process.env.ESPN_FIXTURES !== "1") throw new Error("Sample picks are for fixture mode");
     await seedSamplePicks(data.final);
+    await seedSamplePieces();
     throw redirect({ href: `/skeleton/picks?seeded=${data.final}` });
   });
 
@@ -97,6 +102,8 @@ export const SampleDashboardSchema = z.object({
   picks: z.boolean().catch(false),
   /** False draws the page as it is when ESPN's news could not be read. */
   news: z.boolean().catch(true),
+  /** False draws the page as it is when no piece has been published. */
+  pieces: z.boolean().catch(true),
 });
 
 /** What `/skeleton/dashboard` draws: a slate that is not today's, with what Home is handed. */
@@ -108,6 +115,8 @@ export type SampleDashboardRead = {
   standings: StandingsTable[] | null;
   /** The real ones too, or null when there are none to list or the address asked for none. */
   news: News | null;
+  /** The sample pieces, in Home's order, or null when the address asked for none. */
+  pieces: Piece[] | null;
 };
 
 /**
@@ -125,7 +134,7 @@ function sampleDashboard({
   picks,
 }: Pick<z.infer<typeof SampleDashboardSchema>, "slate" | "picks">): Omit<
   SampleDashboardRead,
-  "standings" | "news"
+  "standings" | "news" | "pieces"
 > {
   const agate = slate == null ? undefined : AGATE_SLATES[slate];
   if (agate) return agate;
@@ -144,6 +153,8 @@ function sampleDashboard({
  * - `tonight` and `busy`: the Agate prototype's two slates with their picks and records, which
  *   `scripts/agate-home-compare.mjs` measures against the prototype.
  * - `news` false: no headlines, as when ESPN's news cannot be read.
+ * - `pieces` false: no written pieces, as before the Writer has published one. Otherwise they are
+ *   the samples themselves, not D1's rows, so the page is the same whether or not they are seeded.
  */
 export const readSampleDashboard = createServerFn({ method: "GET" })
   .validator(SampleDashboardSchema)
@@ -156,7 +167,8 @@ export const readSampleDashboard = createServerFn({ method: "GET" })
           .catch(() => null),
         data.news ? readHomeNews() : null,
       ]);
-      return { ...sampleDashboard(data), standings, news };
+      const pieces = data.pieces ? homePieces(SAMPLE_PIECES, null) : null;
+      return { ...sampleDashboard(data), standings, news, pieces };
     }),
   );
 

@@ -644,6 +644,18 @@ The Worker `yogan-hockey` has been live on `hockey.yogan.dev` since 2026-10-06, 
 - **Not yet run against the real model.** This machine had no cf login when the slice was built (`cf auth whoami`: not logged in), so the prompt has been read by no model and the check by no real piece. The first real pieces are production's; read the rejected rows before judging the prompt.
 - **`runInDurableObject` to call a method that returns a `Map`**: over RPC the stub types such a return as `never`.
 
+## The pieces on Home and their page (#217, slice C)
+
+- **Where it is.** Home's section is `components/dashboard/pieces.tsx`, read by `readHomePieces` (`lib/home-pieces.ts`) inside Home's one server function; the page is `/pieces/$slug` (`src/routes/pieces/$slug.tsx`, `src/functions/piece.ts`, `components/piece/piece-page.tsx`). Every sentence the site prints around a piece, Home's order and the 30-hour limit are `lib/piece-copy.ts`, mirrored in `prototypes/agate/copy.js`.
+- **The address is `/pieces/<slug>`**, the glossary's word (a Story is a game). The slug carries the kind, so #218's columns have pages here with no new route.
+- **Home shows a piece for 30 hours after it was written** (`homePieces`), in a fixed order, three at most. The page of a piece never expires. Fixture mode has no clock (`now` null), since its samples are of one recorded day.
+- **Fixture mode's pieces are `lib/sample-pieces.ts`**, written by the button that seeds the sample picks (`/skeleton/picks`, so Playwright's setup and every measuring script has them). Seeding empties the `pieces` table first: a sample left under another date would stand as the newest of its kind. `/skeleton/dashboard` is handed the samples themselves, not D1's rows, so `agate-home-compare.mjs` does not depend on seeding. The prototype's `PIECES` are the same words: change both.
+- **The samples are dated by the recorded slate (Oct 6), not by the recorded news (Oct 12).** Re-recording the scoreboard fixture means re-dating them, the prototype's, `PIECE` in `look-routes.mjs`, the path in `font-load.mjs` and `e2e/piece.spec.ts`.
+- **A page that is not Home has tabular figures**, and `agate-routes.mjs` fails one that does not. The story's type classes (`components/story/type.ts`) say `normal-nums` for Home, so the piece page writes the kicker's and headline's classes out without it.
+- **`unbroken`** puts word joiners round the hyphens of a score or record in a piece. It also joins a date written `2026-10-12`, which is harmless; a test that looks for such a string in the HTML will not find it.
+- **Nothing reads an open Home again when a piece is published.** The Writer does not move the Scoreboard's `invalidatedAt` (slice B), so the piece is there at the next load. Not changed here: the Writer was out of scope.
+- **The first real pieces had not been written when this was built**, so the section and the page have only ever drawn the samples. The likeliest surprises are a headline longer than the samples' (four lines at a phone's width) and a first paragraph that fills all five lines of the deck.
+
 ## Testing an Agent in the Workers pool
 
 `apps/web/agents/scoreboard-agent.test.ts` is the worked example.

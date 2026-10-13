@@ -1,4 +1,7 @@
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
+import { HomeNews } from "../components/dashboard/news";
 import { cachedNews } from "./espn";
 import { readHomeNews } from "./home-news";
 import { forget } from "./kv-cache";
@@ -99,6 +102,19 @@ test("when ESPN's news changed shape, there is no news", async () => {
   );
 });
 
+test("while ESPN cannot be read the last news is listed for six hours, and then none is", async () => {
+  vi.useFakeTimers({ toFake: ["Date"] });
+  fetchMock.mockImplementation(async () => down());
+  espnAnswers(news(1));
+  await readHomeNews();
+
+  vi.setSystemTime(Date.now() + 6 * 60 * MINUTE);
+  expect((await readHomeNews())?.map((item) => item.id)).toEqual(["1"]);
+
+  vi.setSystemTime(Date.now() + 16 * MINUTE);
+  expect(await readHomeNews()).toBeNull();
+});
+
 test("a failed read is not kept: the next one asks ESPN again", async () => {
   espnAnswers(down, news(3));
 
@@ -121,4 +137,31 @@ test("in fixture mode the news is the recorded one", async () => {
   expect(recorded).toHaveLength(6);
   expect(recorded?.[0]?.url).toBe("https://www.espn.com/nhl/recap?gameId=401892485");
   expect(fetchMock).not.toHaveBeenCalled();
+});
+
+const drawn = (news: Parameters<typeof HomeNews>[0]["news"]) =>
+  renderToStaticMarkup(createElement(HomeNews, { news }));
+
+test("with no news the section is not drawn at all", () => {
+  expect(drawn(null)).toBe("");
+  expect(drawn([])).toBe("");
+});
+
+test("each News item is one link to ESPN, with the time it was published where ESPN said", () => {
+  const html = drawn([
+    {
+      id: "1",
+      headline: "Headline 1",
+      url: "https://www.espn.com/nhl/1",
+      published: "2026-10-12T21:17:00Z",
+    },
+    { id: "2", headline: "Headline 2", url: "https://www.espn.com/nhl/2", published: null },
+  ]);
+
+  expect(html).toContain("Headlines from ESPN");
+  expect(html.match(/<a href="https:\/\/www\.espn\.com\/nhl\/[12]"/g)).toHaveLength(2);
+  // The server's time is Eastern, and says so.
+  expect(html).toContain("Mon Oct 12</time> · <time");
+  expect(html).toContain("5:17 PM ET</time>");
+  expect(html.match(/data-slot="news-when"/g)).toHaveLength(1);
 });

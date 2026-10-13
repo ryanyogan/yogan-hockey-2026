@@ -46,35 +46,47 @@ test("matches the snapshot", async () => {
 });
 
 test("an article the site cannot read is left out and the rest are kept", () => {
-  const news = translateNews({
-    articles: [
-      article(1),
-      article(2, { headline: undefined }),
-      article(3, { links: { mobile: { href: "https://m.espn.com/nhl/story?storyId=3" } } }),
-      article(4, { links: "none" }),
-      "not an article",
-      null,
-      article(5, { headline: "   " }),
-      article(6),
-    ],
-  });
+  const unreadable = [
+    article(2, { headline: undefined }),
+    article(3, { links: { mobile: { href: "https://m.espn.com/nhl/story?storyId=3" } } }),
+    article(4, { links: "none" }),
+    "not an article",
+    null,
+    article(5, { headline: "   " }),
+  ];
+  for (const odd of unreadable) {
+    const news = translateNews({ articles: [article(1), odd, article(6)] });
 
-  expect(news.map((item) => item.id)).toEqual(["1", "6"]);
+    expect(news.map((item) => item.id)).toEqual(["1", "6"]);
+  }
 });
 
 test("a link that does not lead to ESPN's own site is not kept", () => {
-  const leadsTo = (href: string) => article(Number(href.length), { links: { web: { href } } });
-  const news = translateNews({
-    articles: [
-      leadsTo("https://www.espn.com.example.org/nhl/story"),
-      leadsTo("javascript:alert(1)"),
-      leadsTo("//www.espn.com/nhl/story/_/id/1"),
-      leadsTo("ftp://www.espn.com/nhl/story/_/id/22"),
-      leadsTo("http://espn.com/nhl/story/_/id/333"),
-    ],
-  });
+  const elsewhere = [
+    "https://www.espn.com.example.org/nhl/story",
+    "javascript:alert(1)",
+    "//www.espn.com/nhl/story/_/id/1",
+    "ftp://www.espn.com/nhl/story/_/id/22",
+  ];
+  for (const href of elsewhere) {
+    const news = translateNews({
+      articles: [
+        article(1, { links: { web: { href } } }),
+        article(2, { links: { web: { href: "http://espn.com/nhl/story/_/id/333" } } }),
+      ],
+    });
 
-  expect(news.map((item) => item.url)).toEqual(["https://espn.com/nhl/story/_/id/333"]);
+    expect(news.map((item) => item.url)).toEqual(["https://espn.com/nhl/story/_/id/333"]);
+  }
+});
+
+test("more articles unread than read is a change of shape, not a few odd articles", () => {
+  const odd = (id: number) => article(id, { links: {} });
+
+  expect(translateNews({ articles: [article(1), odd(2), article(3), odd(4)] })).toHaveLength(2);
+  expect(() => translateNews({ articles: [article(1), odd(2), odd(3)] })).toThrow(
+    /ESPN news did not parse: articles\.1\.links\.web/,
+  );
 });
 
 test("fields ESPN may stop sending, or send another way, do not cost an article", () => {
@@ -132,6 +144,16 @@ test("videos are left out, and no more than the limit are kept", () => {
 test("no news is no news, not a failure", () => {
   expect(translateNews({ articles: [] })).toEqual([]);
   expect(translateNews({ articles: [article(1, { type: "Media" })] })).toEqual([]);
+});
+
+test("videos that can be read do not hide that nothing else can", () => {
+  const articles = [
+    article(1, { type: "Media" }),
+    article(2, { headline: undefined }),
+    article(3, { headline: undefined }),
+  ];
+
+  expect(() => translateNews({ articles })).toThrow(/articles\.1\.headline/);
 });
 
 test("a response with no list of articles is a parse error naming the endpoint", () => {

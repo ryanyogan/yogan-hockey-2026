@@ -128,9 +128,12 @@ export function cachedPlayerSearch(query: string): Promise<PlayerSearchResult[]>
 }
 
 /**
- * The league's headlines from ESPN, for Home. Fifteen minutes: ESPN's editors change the list a
- * few times an hour at most, and it is read with every Home that is opened.
+ * The News, for Home. Fresh for fifteen minutes: ESPN's editors change the list a few times an
+ * hour at most, and it is read with every Home that is opened. Answered for six hours past that
+ * and no longer, where every other read is answered for thirty days: a standings table a week old
+ * is still the standings, and news a week old is not news. So while ESPN's news cannot be read
+ * Home lists what it last had for six hours, and then leaves the section out.
  */
 export function cachedNews(): Promise<News> {
-  return cached(NEWS_KEY, 15 * MINUTE, getNews);
+  return cached(NEWS_KEY, 15 * MINUTE, getNews, 6 * HOUR);
 }

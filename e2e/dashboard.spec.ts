@@ -62,9 +62,6 @@ test("Home writes the slate up as leads and briefs, and follows the Scoreboard w
     "href",
     "https://www.espn.com/nhl/recap?gameId=401892485",
   );
-  for (const link of await news.getByRole("link").all()) {
-    await expect(link).toHaveAttribute("href", /^https:\/\/www\.espn\.com\//);
-  }
   const sent = await (await page.request.get("/")).text();
   expect(sent.match(/data-slot="news-item"/g)).toHaveLength(6);
   const games = page.locator('[data-slot="story"] h3 a, [data-slot="brief"] > a');

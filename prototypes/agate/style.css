@@ -499,7 +499,10 @@ button {
   border-bottom: 1px dotted var(--border);
 }
 .news-item a {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: var(--tap);
   padding: 10px 0 9px;
   text-decoration: none;
 }

@@ -19,10 +19,10 @@ const instantWithOffset = z.iso.datetime({ offset: true });
 
 /** When ESPN published an article as a UTC instant, or null when it did not say in a way read here. */
 function publishedAt(published: unknown): string | null {
-  if (instant.safeParse(published).success) return published as string;
-  return instantWithOffset.safeParse(published).success
-    ? new Date(published as string).toISOString()
-    : null;
+  const utc = instant.safeParse(published);
+  if (utc.success) return utc.data;
+  const elsewhere = instantWithOffset.safeParse(published);
+  return elsewhere.success ? new Date(elsewhere.data).toISOString() : null;
 }
 
 /**
@@ -47,13 +47,14 @@ const EspnNews = z.object({ articles: z.array(z.unknown()) });
 const EspnNewsStrict = z.object({ articles: z.array(EspnArticle) });
 
 /**
- * Translates ESPN's news response into the headlines Home lists: ESPN's order, videos left out,
- * no article twice, `NEWS_LIMIT` at most.
+ * Translates ESPN's news response into the News Home lists: ESPN's order, videos left out, no
+ * article twice, `NEWS_LIMIT` at most.
  *
  * An article that cannot be read is left out and the rest are kept: the list is ESPN's editors'
- * mix of kinds of article, and one of a new kind should not cost Home the others. When ESPN sent
- * articles and not one can be read, the shape has changed, and that is an `EspnParseError` naming
- * the first field that is wrong.
+ * mix of kinds of article, and one of a new kind should not cost Home the others. When more than
+ * half cannot be read, or some cannot and nothing is left to list, the shape has changed, and
+ * that is an `EspnParseError` naming the first field that is wrong. A response whose every
+ * article was read, all of them videos or none at all, is no news.
  */
 export function translateNews(json: unknown): News {
   return translateResponse(endpoints.news(), json, EspnNews, NewsSchema, ({ articles }) => {
@@ -61,17 +62,17 @@ export function translateNews(json: unknown): News {
       const parsed = EspnArticle.safeParse(article);
       return parsed.success ? [parsed.data] : [];
     });
+    const byId = new Map(
+      read.filter(({ type }) => type !== VIDEO).map((article) => [article.id, article]),
+    );
     // Throws a ZodError whose paths are counted from the top of ESPN's response.
-    if (articles.length > 0 && read.length === 0) EspnNewsStrict.parse(json);
-    const listed = new Set<string>();
-    return read
-      .filter(({ id, type }) => type !== VIDEO && !listed.has(id) && listed.add(id))
-      .slice(0, NEWS_LIMIT)
-      .map(({ id, headline, published, links }) => ({
-        id,
-        headline,
-        url: links.web,
-        published: publishedAt(published),
-      }));
+    const unread = articles.length - read.length;
+    if (unread > read.length || (unread > 0 && byId.size === 0)) EspnNewsStrict.parse(json);
+    return [...byId.values()].slice(0, NEWS_LIMIT).map(({ id, headline, published, links }) => ({
+      id,
+      headline,
+      url: links.web,
+      published: publishedAt(published),
+    }));
   });
 }

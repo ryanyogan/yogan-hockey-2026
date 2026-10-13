@@ -58,7 +58,8 @@ const READS: {
   playerGameLog: { translate: translatePlayerGameLog, samples: [[SKATER_ID], [GOALIE_ID]] },
   // Ten players, the most a search returns.
   playerSearch: { translate: translatePlayerSearch, samples: [["mar"]] },
-  // Twelve articles of whatever kinds ESPN's editors have up; the check fails when none can be read.
+  // Twelve articles of whatever kinds ESPN's editors have up. One that cannot be read passes;
+  // the check fails when some cannot and nothing is left to list.
   news: { translate: translateNews, samples: [[]] },
 };
 

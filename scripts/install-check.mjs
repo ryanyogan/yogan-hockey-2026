@@ -1,6 +1,6 @@
 // Checks that the site can be installed to a home screen, as far as a desktop Chromium can say,
 // and shoots the Agate masthead as an installed site would draw it on a phone with a notch and a
-// home bar: upright (the section nav stuck under the status bar) and on its side.
+// home bar: upright (the sections' bar stuck under the status bar) and on its side.
 // Usage: TMPDIR=~/.cache/install-check node scripts/install-check.mjs [baseURL] [outDir]
 // (a short TMPDIR: the full Chromium puts a socket there and dies on a worktree's long path).
 // Writes <outDir>/report.json and the shots, and exits 1 when a check fails.

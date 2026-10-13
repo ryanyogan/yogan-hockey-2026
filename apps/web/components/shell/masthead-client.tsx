@@ -11,7 +11,7 @@ import { wordmark } from "./wordmark";
 
 /*
  * The parts of the masthead that the browser must draw: the sections (the path), the dateline and
- * the phone's date (the Scoreboard), the theme, and whether the page has a score strip (the path).
+ * the date (the Scoreboard), the theme, and whether the page has a score strip (the path).
  * They are one file so that they are one script: each is a few hundred bytes, and a file of its
  * own costs about as much again on every page.
  */

@@ -32,7 +32,9 @@ test("the masthead opens with the sections' bar, above the wordmark at any width
     const [bar, name, line] = await Promise.all(
       [sectionNav, wordmark, dateline].map((part) => part.boundingBox()),
     );
-    // The bar is the first thing on the page, and every section in it is above the wordmark.
+    // With the page at its top, the bar is the first thing on it, and every section in it is
+    // above the wordmark.
+    expect(await page.evaluate(() => scrollY)).toBe(0);
     expect(bar?.y).toBe(0);
     for (const place of await sections.getByRole("link").all())
       expect((await place.boundingBox())?.y).toBeLessThan(name?.y ?? 0);

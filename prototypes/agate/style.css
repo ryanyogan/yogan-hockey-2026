@@ -157,6 +157,7 @@ button {
 }
 .section-row__date {
   margin: 0;
+  white-space: nowrap;
   font: 500 13px / 1 var(--font-agate);
   letter-spacing: 0.06em;
   text-transform: uppercase;

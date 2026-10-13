@@ -42,7 +42,7 @@ export function Masthead({ record }: { record: SeasonRecord | null }) {
         <div className="border-rule border-b md:grid md:grid-cols-[1fr_auto] md:items-center lg:grid-cols-[1fr_auto_1fr]">
           <p
             data-slot="section-date"
-            className="hidden font-medium text-[13px] uppercase leading-none tracking-[0.06em] lg:block"
+            className="hidden whitespace-nowrap font-medium text-[13px] uppercase leading-none tracking-[0.06em] lg:block"
           >
             <MastheadDate />
           </p>

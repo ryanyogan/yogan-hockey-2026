@@ -295,6 +295,8 @@ Scores, Standings, Teams and the team page, which the prototype does not draw. `
 
 ## The masthead leads with the wordmark (#216)
 
+The order and the row described here were replaced on Oct 12 2026 ("The sections' bar is above the wordmark", at the top): the sections are in a bar above the wordmark. What it says of one nav, the wordmark's `h1` and stickiness still holds.
+
 The utility bar above the wordmark is gone. The order at every width is the wordmark, the sections' row (`[data-slot="section-nav"]`, sticky at every width now), the dateline. The notes under "Agate 3" below are history where they speak of the utility bar, the short date or sections written twice.
 
 - **The sections are written once; the theme control is written twice.** `ThemeControl` takes the classes that say at which widths it is drawn: `hidden md:flex` at the end of the sections' row, `flex md:hidden` at the end of the dateline. A test or script asks for the one drawn: `page.getByRole("group", { name: "Theme" })` finds one, and `document.querySelector('[role="group"][aria-label="Theme"]')` finds the desk's first, drawn or not.

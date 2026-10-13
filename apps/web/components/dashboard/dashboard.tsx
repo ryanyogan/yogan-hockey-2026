@@ -156,7 +156,7 @@ export function Dashboard({
       <div data-slot="below-the-fold" className="grid pt-7 md:grid-cols-12 md:gap-x-8">
         <div className="flex min-w-0 flex-col gap-7 md:col-span-7">
           <HomeNews news={news} />
-          <div data-slot="picks-and-tonight" className="grid gap-7 md:grid-cols-2 md:gap-8">
+          <div data-slot="picks-and-tonight" className="grid gap-7 lg:grid-cols-2 lg:gap-8">
             <PicksBox picks={picks} record={record} />
             <Glance />
           </div>

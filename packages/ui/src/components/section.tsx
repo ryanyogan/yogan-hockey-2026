@@ -8,8 +8,7 @@ function Section({ className, ...props }: ComponentProps<"section">) {
 
 /**
  * The red label (`.label` in the prototype): the one red's 12px bold capitals. A `SectionHeader`
- * is this over a rule; a heading that is the whole of its line, or one of another level, takes
- * the classes: `sectionLabel`, and `sectionRule` for the plain ink rule under it.
+ * is this over a plain ink rule.
  */
 const sectionLabel = "font-strong text-kicker text-tag uppercase tracking-label";
 const sectionRule = "border-rule border-b pb-1.5";
@@ -114,4 +113,4 @@ function PageHeader({
   );
 }
 
-export { PageHeader, Section, SectionHeader, sectionLabel, sectionRule };
+export { PageHeader, Section, SectionHeader };

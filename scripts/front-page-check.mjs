@@ -1,10 +1,12 @@
 // Measures Home against the front page's handoff (#240, `docs/design/front-page`), in a real
 // browser, and exits 1 when a line of its "Acceptance" is not met:
 //
-//   - the roundup's columns are one height at a desk, whatever each holds;
+//   - the roundup's columns are one height at a desk, whatever each holds, and the pick and TV
+//     line of each sit on its floor;
 //   - every rule on the page is one of three kinds: 1px of `--rule`, 1px of `--hairline`, or the
 //     3px double rule, which only the masthead and the footer draw;
-//   - nothing on Home is filled, rounded or shadowed (the live dot is the one mark that is);
+//   - nothing on Home is filled, rounded or shadowed (the live dot is the one mark that is).
+//     Borders only: a rule drawn by a pseudo-element, an outline or an `hr` would not be seen;
 //   - by night the text is `#ece9e1` on `#1b1b19`, and the quiet text is 4.5:1 on it or better;
 //   - on a phone nothing overflows, and every grid is one column.
 //
@@ -82,8 +84,10 @@ function audit() {
   }
   const columns = [...document.querySelectorAll('[data-slot="roundup-columns"] > *')].map(
     (column) => {
-      const { top, left, height } = column.getBoundingClientRect();
-      return { top, left, height };
+      const { top, left, height, bottom } = column.getBoundingClientRect();
+      const foot = column.querySelector('[data-slot="story-foot"]')?.getBoundingClientRect().bottom;
+      const floor = bottom - Number.parseFloat(getComputedStyle(column).paddingBottom);
+      return { top, left, height, offFloor: foot == null ? 0 : Math.abs(floor - foot) };
     },
   );
   const grids = [...document.querySelectorAll('[data-slot="home"] *')]
@@ -148,6 +152,11 @@ for (const [name, path] of PAGES) {
   if (heights.length === 0) fail("no roundup columns");
   if (new Set(heights).size > 1) fail(`columns of unequal height: ${heights.join(", ")}`);
   if (heights.some((height) => height < 300)) fail(`a column under 300px: ${heights.join(", ")}`);
+  if (desk.columns.some((column) => column.offFloor > 0.5)) {
+    fail("a pick or TV line off its column's floor");
+  }
+  const tablet = await measure(path, 768, "light");
+  if (tablet.scrollWidth !== 768) fail(`768px scrolls sideways to ${tablet.scrollWidth}`);
   for (const each of desk.odd) fail(`a rule of no kind: ${each}`);
   for (const each of desk.filled) fail(`filled, rounded or shadowed: ${each}`);
   const double = desk.rules.filter((rule) => rule.startsWith("3px double"));

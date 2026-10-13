@@ -5,8 +5,12 @@ import { useScoreboard } from "../scoreboard/scoreboard-provider";
 import { label } from "./front";
 import type { Picks } from "./roundup";
 
-/** A block under the headlines: an ink rule over it, its label, and what it has to say. */
-const block = "flex flex-col gap-[6px] border-rule border-t pt-3 md:min-h-[150px]";
+/**
+ * A block under the headlines: an ink rule over it, its label, and what it has to say. The two are
+ * side by side from `lg`: at a tablet's width half the headlines' column is too narrow for the
+ * record at 64px.
+ */
+const block = "flex flex-col gap-[6px] border-rule border-t pt-3 lg:min-h-[150px]";
 
 /**
  * The Picks: the season's record in big serif figures and a line under it, "Right on 67% of

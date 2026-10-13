@@ -28,7 +28,7 @@
 
 /*
  * Whatever the browser scrolls into view (a focused link, a `#` target) stops short of the
- * sections' bar, which itself stops below the status bar.
+ * sections' line, which itself stops below the status bar.
  */
 html {
   scroll-padding-top: calc(var(--section-nav) + var(--safe-top));

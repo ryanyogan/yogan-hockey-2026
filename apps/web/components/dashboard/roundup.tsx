@@ -134,7 +134,7 @@ function Story({
       className={`gap-3 md:min-h-[300px] ${className}`}
     >
       <p data-slot="kicker" className={label}>
-        <span className="font-label text-kicker">
+        <span className={`font-label ${live ? "text-live" : "text-kicker"}`}>
           {live && (
             // "Live" is in the words beside it.
             <span aria-hidden="true" data-slot="live-dot" className={liveDot} />

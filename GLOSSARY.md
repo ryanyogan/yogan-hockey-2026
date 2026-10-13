@@ -57,7 +57,7 @@ The Elixir app in `ryanyogan/yogan_hockey`, whose seven routes define the minimu
 _Avoid_: Old site, legacy app
 
 **Dateline**:
-The line under the wordmark on every page: tonight's games counted by state, and the season's picks record. One short line on a phone. The date is not on it: it is on the sections' bar above the wordmark, or under the wordmark where the bar has no room.
+The line under the wordmark on every page: tonight's games counted by state, and the season's picks record. One short line on a phone. The date is not on it: it opens the strip above the wordmark, which also holds the season's picks at a desk and the Day and Night buttons.
 _Avoid_: Status bar, summary line, header counts
 
 **Lead**:
@@ -81,7 +81,7 @@ A game in one serif line: the winner first once it is final ("Kraken 5, Capitals
 _Avoid_: Title, heading
 
 **News item**:
-One of ESPN's NHL headlines as Home lists it under "Headlines from ESPN": the headline's words, when ESPN published it, and the page of ESPN's it leads to. The list is the News.
+One of ESPN's NHL headlines as Home lists it under "Headlines": the headline's words, when ESPN published it, and the page of ESPN's it leads to. The list is the News.
 _Avoid_: Headline (that is a game's), article, story, post
 
 **Deck**:

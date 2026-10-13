@@ -5,8 +5,8 @@ import { ScoreTickerSlot } from "./score-ticker-slot";
 import { SiteFooter } from "./site-footer";
 
 /**
- * The frame around every page: one column, at most 1320px wide with a gutter either side (24px,
- * 16 on a phone), holding the masthead, the score strip on the pages that have one, the page and
+ * The frame around every page: one column, its text at most 1200px wide with a gutter either side
+ * (32px, 16 on a phone: #240's measure), holding the masthead, the score strip on the pages that have one, the page and
  * the footer. There is no sidebar and no bar fixed to an edge of the screen.
  *
  * The column's own padding is the gutter and the room the notch and the home bar take, so a page
@@ -16,7 +16,7 @@ export function Shell({ record, children }: { record: SeasonRecord | null; child
   return (
     <div
       data-slot="page"
-      className="mx-auto flex min-h-screen max-w-[1320px] flex-col pt-(--safe-top) pr-[calc(1rem+var(--safe-right))] pb-[calc(3rem+var(--safe-bottom))] pl-[calc(1rem+var(--safe-left))] md:pr-[calc(1.5rem+var(--safe-right))] md:pl-[calc(1.5rem+var(--safe-left))]"
+      className="mx-auto flex min-h-screen max-w-[1264px] flex-col pt-(--safe-top) pr-[calc(1rem+var(--safe-right))] pb-[calc(3rem+var(--safe-bottom))] pl-[calc(1rem+var(--safe-left))] md:pr-[calc(2rem+var(--safe-right))] md:pl-[calc(2rem+var(--safe-left))]"
     >
       <a href="#content" className="skip-link">
         Skip to content

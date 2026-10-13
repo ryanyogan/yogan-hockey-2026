@@ -1,22 +1,26 @@
 // Takes the site's kept pictures of Home and of a written piece: `docs/design/agate/news` and
-// `docs/design/agate/pieces`, each the whole page.
+// `docs/design/agate/pieces`, each the whole page (or `news` and `pieces` under an out-dir).
 //
-//   node scripts/agate-home-shots.mjs <site>
+//   node scripts/agate-home-shots.mjs <site> [out-dir]
 //
-// <site> is a dev server in fixture mode. The sample picks and pieces are seeded first.
+// <site> is a dev server in fixture mode. The sample picks and pieces are seeded first. Home is
+// specified by `docs/design/front-page` (#240), which `scripts/front-page-check.mjs` measures.
 
 import { mkdirSync } from "node:fs";
+import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "@playwright/test";
 import { seedPicks } from "./look-routes.mjs";
 
-const [site] = process.argv.slice(2);
+const [site, outDir] = process.argv.slice(2);
 if (!site) {
-  console.error("usage: node scripts/agate-home-shots.mjs <site>");
+  console.error("usage: node scripts/agate-home-shots.mjs <site> [out-dir]");
   process.exit(2);
 }
 const out = (folder) => {
-  const path = fileURLToPath(new URL(`../docs/design/agate/${folder}/`, import.meta.url));
+  const path = outDir
+    ? `${resolve(outDir, folder)}/`
+    : fileURLToPath(new URL(`../docs/design/agate/${folder}/`, import.meta.url));
   mkdirSync(path, { recursive: true });
   return path;
 };

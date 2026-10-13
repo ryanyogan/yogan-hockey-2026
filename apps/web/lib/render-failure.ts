@@ -48,12 +48,12 @@ const LAST_RESORT_PAGE = `<!doctype html>
 <title>Not answering · Yogan Hockey</title>
 <style>
 :root { color-scheme: light dark; --background: #fafaf8; --foreground: #111111; }
-@media (prefers-color-scheme: dark) { :root { --background: #121212; --foreground: #eceae4; } }
+@media (prefers-color-scheme: dark) { :root { --background: #1b1b19; --foreground: #ece9e1; } }
 body { margin: 0 auto; max-width: 1320px; padding: 0 16px 48px; background: var(--background);
   color: var(--foreground); font: 17px/1.4 Georgia, "Times New Roman", serif; }
 a { color: inherit; font-weight: bold; }
 .wordmark { display: block; margin: 18px 0 12px; text-align: center; white-space: nowrap;
-  font-size: min(54px, 13.85vw); line-height: 0.95; letter-spacing: -0.025em;
+  font-size: min(54px, 13.5vw); line-height: 0.92; letter-spacing: -0.02em;
   text-decoration: none; }
 .rule { margin-bottom: 16px; border-top: 3px solid; padding-top: 2px; }
 .rule::after { content: ""; display: block; border-top: 1px solid; }

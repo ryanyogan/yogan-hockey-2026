@@ -1,6 +1,6 @@
 {
-  "base": "http://localhost:5323",
-  "checkedAt": "2026-10-11T21:50:32.053Z",
+  "base": "http://localhost:5440",
+  "checkedAt": "2026-10-13T13:10:14.137Z",
   "chromium": "153.0.8010.12",
   "simulatedInsets": {
     "top": 47,
@@ -15,7 +15,7 @@
         "errorArguments": []
       }
     ],
-    "manifestUrl": "http://localhost:5323/manifest.webmanifest",
+    "manifestUrl": "http://localhost:5440/manifest.webmanifest",
     "manifestErrors": [],
     "installabilityErrors": [],
     "manifest": {
@@ -26,8 +26,8 @@
       "start_url": "/",
       "scope": "/",
       "display": "standalone",
-      "background_color": "#fbfaf7",
-      "theme_color": "#fbfaf7",
+      "background_color": "#fafaf8",
+      "theme_color": "#fafaf8",
       "icons": [
         {
           "src": "/icons/pwa-192x192.png",
@@ -59,9 +59,9 @@
       "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
       "application-name": "Yogan Hockey",
       "mobile-web-app-capable": "yes",
+      "apple-mobile-web-app-capable": "yes",
       "apple-mobile-web-app-title": "Hockey",
-      "apple-mobile-web-app-status-bar-style": "default",
-      "apple-mobile-web-app-capable": "yes"
+      "apple-mobile-web-app-status-bar-style": "default"
     },
     "files": [
       {
@@ -69,18 +69,14 @@
         "href": "/manifest.webmanifest",
         "status": 200,
         "contentType": "application/manifest+json",
-        "cacheControl": "public, max-age=0, must-revalidate",
-        "pageCache": null,
-        "bytes": 812
+        "bytes": 600
       },
       {
         "rel": "manifest",
         "href": "/manifest.webmanifest?tab=scoring",
         "status": 200,
         "contentType": "application/manifest+json",
-        "cacheControl": "public, max-age=0, must-revalidate",
-        "pageCache": null,
-        "bytes": 812
+        "bytes": 600
       },
       {
         "rel": "manifest icon any",
@@ -88,8 +84,7 @@
         "status": 200,
         "contentType": "image/png",
         "cacheControl": "no-cache",
-        "pageCache": null,
-        "bytes": 2184
+        "bytes": 2194
       },
       {
         "rel": "manifest icon maskable",
@@ -97,8 +92,7 @@
         "status": 200,
         "contentType": "image/png",
         "cacheControl": "no-cache",
-        "pageCache": null,
-        "bytes": 1866
+        "bytes": 1854
       },
       {
         "rel": "manifest icon any",
@@ -106,8 +100,7 @@
         "status": 200,
         "contentType": "image/png",
         "cacheControl": "no-cache",
-        "pageCache": null,
-        "bytes": 4304
+        "bytes": 4679
       },
       {
         "rel": "manifest icon maskable",
@@ -115,8 +108,7 @@
         "status": 200,
         "contentType": "image/png",
         "cacheControl": "no-cache",
-        "pageCache": null,
-        "bytes": 3963
+        "bytes": 3908
       },
       {
         "rel": "icon",
@@ -124,7 +116,6 @@
         "status": 200,
         "contentType": "image/x-icon",
         "cacheControl": "no-cache",
-        "pageCache": null,
         "bytes": 3774
       },
       {
@@ -133,8 +124,7 @@
         "status": 200,
         "contentType": "image/png",
         "cacheControl": "no-cache",
-        "pageCache": null,
-        "bytes": 1023
+        "bytes": 1039
       },
       {
         "rel": "apple-touch-icon",
@@ -142,8 +132,7 @@
         "status": 200,
         "contentType": "image/png",
         "cacheControl": "no-cache",
-        "pageCache": null,
-        "bytes": 1998
+        "bytes": 2011
       },
       {
         "rel": "apple-touch-startup-image",
@@ -151,7 +140,6 @@
         "status": 200,
         "contentType": "image/png",
         "cacheControl": "no-cache",
-        "pageCache": null,
         "bytes": 7774
       },
       {
@@ -160,8 +148,7 @@
         "status": 200,
         "contentType": "image/png",
         "cacheControl": "no-cache",
-        "pageCache": null,
-        "bytes": 7207
+        "bytes": 7189
       },
       {
         "rel": "apple-touch-startup-image",
@@ -169,8 +156,7 @@
         "status": 200,
         "contentType": "image/png",
         "cacheControl": "no-cache",
-        "pageCache": null,
-        "bytes": 6853
+        "bytes": 6843
       },
       {
         "rel": "apple-touch-startup-image",
@@ -178,8 +164,7 @@
         "status": 200,
         "contentType": "image/png",
         "cacheControl": "no-cache",
-        "pageCache": null,
-        "bytes": 6251
+        "bytes": 6355
       },
       {
         "rel": "apple-touch-startup-image",
@@ -187,8 +172,7 @@
         "status": 200,
         "contentType": "image/png",
         "cacheControl": "no-cache",
-        "pageCache": null,
-        "bytes": 7243
+        "bytes": 7244
       },
       {
         "rel": "apple-touch-startup-image",
@@ -196,8 +180,7 @@
         "status": 200,
         "contentType": "image/png",
         "cacheControl": "no-cache",
-        "pageCache": null,
-        "bytes": 6703
+        "bytes": 6647
       },
       {
         "rel": "apple-touch-startup-image",
@@ -205,8 +188,7 @@
         "status": 200,
         "contentType": "image/png",
         "cacheControl": "no-cache",
-        "pageCache": null,
-        "bytes": 7533
+        "bytes": 7518
       },
       {
         "rel": "apple-touch-startup-image",
@@ -214,8 +196,7 @@
         "status": 200,
         "contentType": "image/png",
         "cacheControl": "no-cache",
-        "pageCache": null,
-        "bytes": 6885
+        "bytes": 6882
       },
       {
         "rel": "apple-touch-startup-image",
@@ -223,8 +204,7 @@
         "status": 200,
         "contentType": "image/png",
         "cacheControl": "no-cache",
-        "pageCache": null,
-        "bytes": 6711
+        "bytes": 6684
       },
       {
         "rel": "apple-touch-startup-image",
@@ -232,8 +212,7 @@
         "status": 200,
         "contentType": "image/png",
         "cacheControl": "no-cache",
-        "pageCache": null,
-        "bytes": 6141
+        "bytes": 6121
       },
       {
         "rel": "apple-touch-startup-image",
@@ -241,8 +220,7 @@
         "status": 200,
         "contentType": "image/png",
         "cacheControl": "no-cache",
-        "pageCache": null,
-        "bytes": 6648
+        "bytes": 6597
       },
       {
         "rel": "apple-touch-startup-image",
@@ -250,8 +228,7 @@
         "status": 200,
         "contentType": "image/png",
         "cacheControl": "no-cache",
-        "pageCache": null,
-        "bytes": 6023
+        "bytes": 6047
       },
       {
         "rel": "apple-touch-startup-image",
@@ -259,8 +236,7 @@
         "status": 200,
         "contentType": "image/png",
         "cacheControl": "no-cache",
-        "pageCache": null,
-        "bytes": 7463
+        "bytes": 7413
       },
       {
         "rel": "apple-touch-startup-image",
@@ -268,8 +244,7 @@
         "status": 200,
         "contentType": "image/png",
         "cacheControl": "no-cache",
-        "pageCache": null,
-        "bytes": 6783
+        "bytes": 6812
       },
       {
         "rel": "apple-touch-startup-image",
@@ -277,8 +252,7 @@
         "status": 200,
         "contentType": "image/png",
         "cacheControl": "no-cache",
-        "pageCache": null,
-        "bytes": 6322
+        "bytes": 6273
       },
       {
         "rel": "apple-touch-startup-image",
@@ -286,8 +260,7 @@
         "status": 200,
         "contentType": "image/png",
         "cacheControl": "no-cache",
-        "pageCache": null,
-        "bytes": 5736
+        "bytes": 5786
       },
       {
         "rel": "apple-touch-startup-image",
@@ -295,8 +268,7 @@
         "status": 200,
         "contentType": "image/png",
         "cacheControl": "no-cache",
-        "pageCache": null,
-        "bytes": 7137
+        "bytes": 7107
       },
       {
         "rel": "apple-touch-startup-image",
@@ -304,8 +276,7 @@
         "status": 200,
         "contentType": "image/png",
         "cacheControl": "no-cache",
-        "pageCache": null,
-        "bytes": 6515
+        "bytes": 6547
       },
       {
         "rel": "apple-touch-startup-image",
@@ -313,8 +284,7 @@
         "status": 200,
         "contentType": "image/png",
         "cacheControl": "no-cache",
-        "pageCache": null,
-        "bytes": 4363
+        "bytes": 4350
       },
       {
         "rel": "apple-touch-startup-image",
@@ -322,8 +292,7 @@
         "status": 200,
         "contentType": "image/png",
         "cacheControl": "no-cache",
-        "pageCache": null,
-        "bytes": 3996
+        "bytes": 4008
       },
       {
         "rel": "apple-touch-startup-image",
@@ -331,8 +300,7 @@
         "status": 200,
         "contentType": "image/png",
         "cacheControl": "no-cache",
-        "pageCache": null,
-        "bytes": 6559
+        "bytes": 6529
       },
       {
         "rel": "apple-touch-startup-image",
@@ -340,8 +308,7 @@
         "status": 200,
         "contentType": "image/png",
         "cacheControl": "no-cache",
-        "pageCache": null,
-        "bytes": 5977
+        "bytes": 6000
       },
       {
         "rel": "apple-touch-startup-image",
@@ -349,8 +316,7 @@
         "status": 200,
         "contentType": "image/png",
         "cacheControl": "no-cache",
-        "pageCache": null,
-        "bytes": 3693
+        "bytes": 3642
       },
       {
         "rel": "apple-touch-startup-image",
@@ -358,8 +324,7 @@
         "status": 200,
         "contentType": "image/png",
         "cacheControl": "no-cache",
-        "pageCache": null,
-        "bytes": 3385
+        "bytes": 3404
       }
     ]
   },
@@ -368,266 +333,558 @@
       "operatingSystem": "dark",
       "top": {
         "osPrefersDark": true,
-        "insetTop": "47px",
-        "headerBox": {
-          "x": 0,
-          "y": 0,
-          "width": 390,
-          "height": 91,
-          "top": 0,
-          "right": 390,
-          "bottom": 91,
-          "left": 0
-        },
-        "headerContent": [
+        "stripContent": [
           {
-            "top": 58.5,
-            "bottom": 77.5
+            "top": 66.6,
+            "bottom": 83.6,
+            "left": 16,
+            "right": 155.7
           },
           {
-            "top": 57.5,
-            "bottom": 79.5
+            "top": 67.5,
+            "bottom": 84.5,
+            "left": 263.7,
+            "right": 288.8
+          },
+          {
+            "top": 67.5,
+            "bottom": 84.5,
+            "left": 318.8,
+            "right": 361
           }
         ],
+        "themeButtons": ["Day", "Night"],
+        "wordmark": {
+          "top": 119,
+          "bottom": 172,
+          "left": 21.8,
+          "right": 368.2
+        },
+        "sectionNavShown": true,
+        "sectionNavBox": {
+          "x": 16,
+          "y": 220.28125,
+          "width": 358,
+          "height": 45,
+          "top": 220.28125,
+          "right": 374,
+          "bottom": 265.28125,
+          "left": 16
+        },
+        "sectionNavPlaces": [
+          {
+            "top": 233.8,
+            "bottom": 250.8,
+            "left": 19.7,
+            "right": 57.8
+          },
+          {
+            "top": 233.8,
+            "bottom": 250.8,
+            "left": 65.1,
+            "right": 117.8
+          },
+          {
+            "top": 233.8,
+            "bottom": 250.8,
+            "left": 125.1,
+            "right": 204.1
+          },
+          {
+            "top": 233.8,
+            "bottom": 250.8,
+            "left": 211.4,
+            "right": 256.3
+          },
+          {
+            "top": 233.8,
+            "bottom": 250.8,
+            "left": 263.7,
+            "right": 321.1
+          },
+          {
+            "top": 233.8,
+            "bottom": 250.8,
+            "left": 328.4,
+            "right": 370.3
+          }
+        ],
+        "aboveNav": "true",
         "footerContent": {
-          "top": 1803,
-          "bottom": 1851
+          "top": 4318.5,
+          "bottom": 4383,
+          "left": 16,
+          "right": 374
         },
-        "tabBarBox": {
-          "x": 0,
-          "y": 754,
+        "viewport": {
           "width": 390,
-          "height": 90,
-          "top": 754,
-          "right": 390,
-          "bottom": 844,
-          "left": 0
+          "height": 844
         },
-        "tabBarContent": [
+        "sideways": false,
+        "themeColor": ["#fafaf8", "#fafaf8"]
+      },
+      "stuck": {
+        "osPrefersDark": true,
+        "stripContent": [
           {
-            "top": 775,
-            "bottom": 791
+            "top": -533.4,
+            "bottom": -516.4,
+            "left": 16,
+            "right": 155.7
           },
           {
-            "top": 775,
-            "bottom": 791
+            "top": -532.5,
+            "bottom": -515.5,
+            "left": 263.7,
+            "right": 288.8
           },
           {
-            "top": 775,
-            "bottom": 791
-          },
-          {
-            "top": 775,
-            "bottom": 791
-          },
-          {
-            "top": 775,
-            "bottom": 791
+            "top": -532.5,
+            "bottom": -515.5,
+            "left": 318.8,
+            "right": 361
           }
         ],
-        "stripBottom": 147,
-        "viewportHeight": 844,
+        "themeButtons": ["Day", "Night"],
+        "wordmark": {
+          "top": -481,
+          "bottom": -428,
+          "left": 21.8,
+          "right": 368.2
+        },
+        "sectionNavShown": true,
+        "sectionNavBox": {
+          "x": 16,
+          "y": 47,
+          "width": 358,
+          "height": 45,
+          "top": 47,
+          "right": 374,
+          "bottom": 92,
+          "left": 16
+        },
+        "sectionNavPlaces": [
+          {
+            "top": 60.5,
+            "bottom": 77.5,
+            "left": 19.7,
+            "right": 57.8
+          },
+          {
+            "top": 60.5,
+            "bottom": 77.5,
+            "left": 65.1,
+            "right": 117.8
+          },
+          {
+            "top": 60.5,
+            "bottom": 77.5,
+            "left": 125.1,
+            "right": 204.1
+          },
+          {
+            "top": 60.5,
+            "bottom": 77.5,
+            "left": 211.4,
+            "right": 256.3
+          },
+          {
+            "top": 60.5,
+            "bottom": 77.5,
+            "left": 263.7,
+            "right": 321.1
+          },
+          {
+            "top": 60.5,
+            "bottom": 77.5,
+            "left": 328.4,
+            "right": 370.3
+          }
+        ],
+        "aboveNav": "true",
+        "footerContent": {
+          "top": 3718.5,
+          "bottom": 3783,
+          "left": 16,
+          "right": 374
+        },
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
         "sideways": false,
-        "themeColor": ["#fbfaf7", "#fbfaf7"],
-        "background": "rgb(251, 250, 247)"
+        "themeColor": ["#fafaf8", "#fafaf8"]
       },
       "bottom": {
         "osPrefersDark": true,
-        "insetTop": "47px",
-        "headerBox": {
-          "x": 0,
-          "y": 0,
-          "width": 390,
-          "height": 91,
-          "top": 0,
-          "right": 390,
-          "bottom": 91,
-          "left": 0
-        },
-        "headerContent": [
+        "stripContent": [
           {
-            "top": 58.5,
-            "bottom": 77.5
+            "top": -3554.4,
+            "bottom": -3537.4,
+            "left": 16,
+            "right": 155.7
           },
           {
-            "top": 57.5,
-            "bottom": 79.5
+            "top": -3553.5,
+            "bottom": -3536.5,
+            "left": 263.7,
+            "right": 288.8
+          },
+          {
+            "top": -3553.5,
+            "bottom": -3536.5,
+            "left": 318.8,
+            "right": 361
           }
         ],
+        "themeButtons": ["Day", "Night"],
+        "wordmark": {
+          "top": -3502,
+          "bottom": -3449,
+          "left": 21.8,
+          "right": 368.2
+        },
+        "sectionNavShown": true,
+        "sectionNavBox": {
+          "x": 16,
+          "y": 47,
+          "width": 358,
+          "height": 45,
+          "top": 47,
+          "right": 374,
+          "bottom": 92,
+          "left": 16
+        },
+        "sectionNavPlaces": [
+          {
+            "top": 60.5,
+            "bottom": 77.5,
+            "left": 19.7,
+            "right": 57.8
+          },
+          {
+            "top": 60.5,
+            "bottom": 77.5,
+            "left": 65.1,
+            "right": 117.8
+          },
+          {
+            "top": 60.5,
+            "bottom": 77.5,
+            "left": 125.1,
+            "right": 204.1
+          },
+          {
+            "top": 60.5,
+            "bottom": 77.5,
+            "left": 211.4,
+            "right": 256.3
+          },
+          {
+            "top": 60.5,
+            "bottom": 77.5,
+            "left": 263.7,
+            "right": 321.1
+          },
+          {
+            "top": 60.5,
+            "bottom": 77.5,
+            "left": 328.4,
+            "right": 370.3
+          }
+        ],
+        "aboveNav": "true",
         "footerContent": {
-          "top": 694,
-          "bottom": 742
+          "top": 697.5,
+          "bottom": 762,
+          "left": 16,
+          "right": 374
         },
-        "tabBarBox": {
-          "x": 0,
-          "y": 754,
+        "viewport": {
           "width": 390,
-          "height": 90,
-          "top": 754,
-          "right": 390,
-          "bottom": 844,
-          "left": 0
+          "height": 844
         },
-        "tabBarContent": [
-          {
-            "top": 775,
-            "bottom": 791
-          },
-          {
-            "top": 775,
-            "bottom": 791
-          },
-          {
-            "top": 775,
-            "bottom": 791
-          },
-          {
-            "top": 775,
-            "bottom": 791
-          },
-          {
-            "top": 775,
-            "bottom": 791
-          }
-        ],
-        "stripBottom": -962,
-        "viewportHeight": 844,
         "sideways": false,
-        "themeColor": ["#fbfaf7", "#fbfaf7"],
-        "background": "rgb(251, 250, 247)"
+        "themeColor": ["#fafaf8", "#fafaf8"]
       }
     },
     "dark": {
       "operatingSystem": "light",
       "top": {
         "osPrefersDark": false,
-        "insetTop": "47px",
-        "headerBox": {
-          "x": 0,
-          "y": 0,
-          "width": 390,
-          "height": 91,
-          "top": 0,
-          "right": 390,
-          "bottom": 91,
-          "left": 0
-        },
-        "headerContent": [
+        "stripContent": [
           {
-            "top": 58.5,
-            "bottom": 77.5
+            "top": 66.6,
+            "bottom": 83.6,
+            "left": 16,
+            "right": 155.7
           },
           {
-            "top": 57.5,
-            "bottom": 79.5
+            "top": 67.5,
+            "bottom": 84.5,
+            "left": 263.7,
+            "right": 288.8
+          },
+          {
+            "top": 67.5,
+            "bottom": 84.5,
+            "left": 318.8,
+            "right": 361
           }
         ],
+        "themeButtons": ["Day", "Night"],
+        "wordmark": {
+          "top": 119,
+          "bottom": 172,
+          "left": 21.8,
+          "right": 368.2
+        },
+        "sectionNavShown": true,
+        "sectionNavBox": {
+          "x": 16,
+          "y": 220.28125,
+          "width": 358,
+          "height": 45,
+          "top": 220.28125,
+          "right": 374,
+          "bottom": 265.28125,
+          "left": 16
+        },
+        "sectionNavPlaces": [
+          {
+            "top": 233.8,
+            "bottom": 250.8,
+            "left": 19.7,
+            "right": 57.8
+          },
+          {
+            "top": 233.8,
+            "bottom": 250.8,
+            "left": 65.1,
+            "right": 117.8
+          },
+          {
+            "top": 233.8,
+            "bottom": 250.8,
+            "left": 125.1,
+            "right": 204.1
+          },
+          {
+            "top": 233.8,
+            "bottom": 250.8,
+            "left": 211.4,
+            "right": 256.3
+          },
+          {
+            "top": 233.8,
+            "bottom": 250.8,
+            "left": 263.7,
+            "right": 321.1
+          },
+          {
+            "top": 233.8,
+            "bottom": 250.8,
+            "left": 328.4,
+            "right": 370.3
+          }
+        ],
+        "aboveNav": "true",
         "footerContent": {
-          "top": 1803,
-          "bottom": 1851
+          "top": 4318.5,
+          "bottom": 4383,
+          "left": 16,
+          "right": 374
         },
-        "tabBarBox": {
-          "x": 0,
-          "y": 754,
+        "viewport": {
           "width": 390,
-          "height": 90,
-          "top": 754,
-          "right": 390,
-          "bottom": 844,
-          "left": 0
+          "height": 844
         },
-        "tabBarContent": [
+        "sideways": false,
+        "themeColor": ["#1b1b19", "#1b1b19"]
+      },
+      "stuck": {
+        "osPrefersDark": false,
+        "stripContent": [
           {
-            "top": 775,
-            "bottom": 791
+            "top": -533.4,
+            "bottom": -516.4,
+            "left": 16,
+            "right": 155.7
           },
           {
-            "top": 775,
-            "bottom": 791
+            "top": -532.5,
+            "bottom": -515.5,
+            "left": 263.7,
+            "right": 288.8
           },
           {
-            "top": 775,
-            "bottom": 791
-          },
-          {
-            "top": 775,
-            "bottom": 791
-          },
-          {
-            "top": 775,
-            "bottom": 791
+            "top": -532.5,
+            "bottom": -515.5,
+            "left": 318.8,
+            "right": 361
           }
         ],
-        "stripBottom": 147,
-        "viewportHeight": 844,
+        "themeButtons": ["Day", "Night"],
+        "wordmark": {
+          "top": -481,
+          "bottom": -428,
+          "left": 21.8,
+          "right": 368.2
+        },
+        "sectionNavShown": true,
+        "sectionNavBox": {
+          "x": 16,
+          "y": 47,
+          "width": 358,
+          "height": 45,
+          "top": 47,
+          "right": 374,
+          "bottom": 92,
+          "left": 16
+        },
+        "sectionNavPlaces": [
+          {
+            "top": 60.5,
+            "bottom": 77.5,
+            "left": 19.7,
+            "right": 57.8
+          },
+          {
+            "top": 60.5,
+            "bottom": 77.5,
+            "left": 65.1,
+            "right": 117.8
+          },
+          {
+            "top": 60.5,
+            "bottom": 77.5,
+            "left": 125.1,
+            "right": 204.1
+          },
+          {
+            "top": 60.5,
+            "bottom": 77.5,
+            "left": 211.4,
+            "right": 256.3
+          },
+          {
+            "top": 60.5,
+            "bottom": 77.5,
+            "left": 263.7,
+            "right": 321.1
+          },
+          {
+            "top": 60.5,
+            "bottom": 77.5,
+            "left": 328.4,
+            "right": 370.3
+          }
+        ],
+        "aboveNav": "true",
+        "footerContent": {
+          "top": 3718.5,
+          "bottom": 3783,
+          "left": 16,
+          "right": 374
+        },
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
         "sideways": false,
-        "themeColor": ["#0f172a", "#0f172a"],
-        "background": "rgb(15, 23, 42)"
+        "themeColor": ["#1b1b19", "#1b1b19"]
       },
       "bottom": {
         "osPrefersDark": false,
-        "insetTop": "47px",
-        "headerBox": {
-          "x": 0,
-          "y": 0,
-          "width": 390,
-          "height": 91,
-          "top": 0,
-          "right": 390,
-          "bottom": 91,
-          "left": 0
-        },
-        "headerContent": [
+        "stripContent": [
           {
-            "top": 58.5,
-            "bottom": 77.5
+            "top": -3554.4,
+            "bottom": -3537.4,
+            "left": 16,
+            "right": 155.7
           },
           {
-            "top": 57.5,
-            "bottom": 79.5
+            "top": -3553.5,
+            "bottom": -3536.5,
+            "left": 263.7,
+            "right": 288.8
+          },
+          {
+            "top": -3553.5,
+            "bottom": -3536.5,
+            "left": 318.8,
+            "right": 361
           }
         ],
+        "themeButtons": ["Day", "Night"],
+        "wordmark": {
+          "top": -3502,
+          "bottom": -3449,
+          "left": 21.8,
+          "right": 368.2
+        },
+        "sectionNavShown": true,
+        "sectionNavBox": {
+          "x": 16,
+          "y": 47,
+          "width": 358,
+          "height": 45,
+          "top": 47,
+          "right": 374,
+          "bottom": 92,
+          "left": 16
+        },
+        "sectionNavPlaces": [
+          {
+            "top": 60.5,
+            "bottom": 77.5,
+            "left": 19.7,
+            "right": 57.8
+          },
+          {
+            "top": 60.5,
+            "bottom": 77.5,
+            "left": 65.1,
+            "right": 117.8
+          },
+          {
+            "top": 60.5,
+            "bottom": 77.5,
+            "left": 125.1,
+            "right": 204.1
+          },
+          {
+            "top": 60.5,
+            "bottom": 77.5,
+            "left": 211.4,
+            "right": 256.3
+          },
+          {
+            "top": 60.5,
+            "bottom": 77.5,
+            "left": 263.7,
+            "right": 321.1
+          },
+          {
+            "top": 60.5,
+            "bottom": 77.5,
+            "left": 328.4,
+            "right": 370.3
+          }
+        ],
+        "aboveNav": "true",
         "footerContent": {
-          "top": 694,
-          "bottom": 742
+          "top": 697.5,
+          "bottom": 762,
+          "left": 16,
+          "right": 374
         },
-        "tabBarBox": {
-          "x": 0,
-          "y": 754,
+        "viewport": {
           "width": 390,
-          "height": 90,
-          "top": 754,
-          "right": 390,
-          "bottom": 844,
-          "left": 0
+          "height": 844
         },
-        "tabBarContent": [
-          {
-            "top": 775,
-            "bottom": 791
-          },
-          {
-            "top": 775,
-            "bottom": 791
-          },
-          {
-            "top": 775,
-            "bottom": 791
-          },
-          {
-            "top": 775,
-            "bottom": 791
-          },
-          {
-            "top": 775,
-            "bottom": 791
-          }
-        ],
-        "stripBottom": -962,
-        "viewportHeight": 844,
         "sideways": false,
-        "themeColor": ["#0f172a", "#0f172a"],
-        "background": "rgb(15, 23, 42)"
+        "themeColor": ["#1b1b19", "#1b1b19"]
       }
     }
   },
@@ -638,11 +895,190 @@
       "bottom": 21,
       "left": 47
     },
-    "sidebarShown": true,
-    "sidebarLeft": 63,
-    "sidebarBottom": 348,
-    "columnRight": 797,
-    "sidewaysScroll": false
+    "top": {
+      "osPrefersDark": false,
+      "stripContent": [
+        {
+          "top": 19.6,
+          "bottom": 36.6,
+          "left": 79,
+          "right": 259
+        },
+        {
+          "top": 20.5,
+          "bottom": 37.5,
+          "left": 654.7,
+          "right": 679.8
+        },
+        {
+          "top": 20.5,
+          "bottom": 37.5,
+          "left": 709.8,
+          "right": 752
+        }
+      ],
+      "themeButtons": ["Day", "Night"],
+      "wordmark": {
+        "top": 79,
+        "bottom": 155,
+        "left": 169.1,
+        "right": 674.9
+      },
+      "sectionNavShown": true,
+      "sectionNavBox": {
+        "x": 79,
+        "y": 206.71875,
+        "width": 686,
+        "height": 41.296875,
+        "top": 206.71875,
+        "right": 765,
+        "bottom": 248.015625,
+        "left": 79
+      },
+      "sectionNavPlaces": [
+        {
+          "top": 217.7,
+          "bottom": 235.7,
+          "left": 137.7,
+          "right": 181.5
+        },
+        {
+          "top": 217.7,
+          "bottom": 235.7,
+          "left": 221.5,
+          "right": 283.3
+        },
+        {
+          "top": 217.7,
+          "bottom": 235.7,
+          "left": 323.3,
+          "right": 415.9
+        },
+        {
+          "top": 217.7,
+          "bottom": 235.7,
+          "left": 455.9,
+          "right": 508.8
+        },
+        {
+          "top": 217.7,
+          "bottom": 235.7,
+          "left": 548.8,
+          "right": 617.5
+        },
+        {
+          "top": 217.7,
+          "bottom": 235.7,
+          "left": 657.5,
+          "right": 706.3
+        }
+      ],
+      "aboveNav": null,
+      "footerContent": {
+        "top": 2277,
+        "bottom": 2322.7,
+        "left": 79,
+        "right": 595
+      },
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "sideways": false,
+      "themeColor": ["#fafaf8", "#fafaf8"]
+    },
+    "bottom": {
+      "osPrefersDark": false,
+      "stripContent": [
+        {
+          "top": -1982.4,
+          "bottom": -1965.4,
+          "left": 79,
+          "right": 259
+        },
+        {
+          "top": -1981.5,
+          "bottom": -1964.5,
+          "left": 654.7,
+          "right": 679.8
+        },
+        {
+          "top": -1981.5,
+          "bottom": -1964.5,
+          "left": 709.8,
+          "right": 752
+        }
+      ],
+      "themeButtons": ["Day", "Night"],
+      "wordmark": {
+        "top": -1923,
+        "bottom": -1847,
+        "left": 169.1,
+        "right": 674.9
+      },
+      "sectionNavShown": true,
+      "sectionNavBox": {
+        "x": 79,
+        "y": 0,
+        "width": 686,
+        "height": 41.296875,
+        "top": 0,
+        "right": 765,
+        "bottom": 41.296875,
+        "left": 79
+      },
+      "sectionNavPlaces": [
+        {
+          "top": 11,
+          "bottom": 29,
+          "left": 137.7,
+          "right": 181.5
+        },
+        {
+          "top": 11,
+          "bottom": 29,
+          "left": 221.5,
+          "right": 283.3
+        },
+        {
+          "top": 11,
+          "bottom": 29,
+          "left": 323.3,
+          "right": 415.9
+        },
+        {
+          "top": 11,
+          "bottom": 29,
+          "left": 455.9,
+          "right": 508.8
+        },
+        {
+          "top": 11,
+          "bottom": 29,
+          "left": 548.8,
+          "right": 617.5
+        },
+        {
+          "top": 11,
+          "bottom": 29,
+          "left": 657.5,
+          "right": 706.3
+        }
+      ],
+      "aboveNav": null,
+      "footerContent": {
+        "top": 275,
+        "bottom": 320.7,
+        "left": 79,
+        "right": 595
+      },
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "sideways": false,
+      "themeColor": ["#fafaf8", "#fafaf8"]
+    }
   },
   "smallSideways": {
     "simulatedInsets": {
@@ -652,90 +1088,188 @@
       "left": 47
     },
     "top": {
-      "tabBarShown": true,
-      "tabBarBox": {
-        "x": 0,
-        "y": 298,
-        "width": 667,
-        "height": 77,
-        "top": 298,
-        "right": 667,
-        "bottom": 375,
-        "left": 0
-      },
-      "tabBarContent": [
+      "osPrefersDark": false,
+      "stripContent": [
         {
-          "left": 90.296875,
-          "right": 118.296875,
-          "bottom": 335
+          "top": 19.6,
+          "bottom": 36.6,
+          "left": 63,
+          "right": 202.7
         },
         {
-          "left": 198.390625,
-          "right": 240.390625,
-          "bottom": 335
+          "top": 20.5,
+          "bottom": 37.5,
+          "left": 493.7,
+          "right": 518.8
         },
         {
-          "left": 302.484375,
-          "right": 365.484375,
-          "bottom": 335
-        },
-        {
-          "left": 431.09375,
-          "right": 466.09375,
-          "bottom": 335
-        },
-        {
-          "left": 538.6875,
-          "right": 587.6875,
-          "bottom": 335
+          "top": 20.5,
+          "bottom": 37.5,
+          "left": 548.8,
+          "right": 591
         }
       ],
-      "stripBottom": 100,
-      "footerBottom": 1766,
-      "sidewaysScroll": false
+      "themeButtons": ["Day", "Night"],
+      "wordmark": {
+        "top": 72,
+        "bottom": 126,
+        "left": 152.5,
+        "right": 514.5
+      },
+      "sectionNavShown": true,
+      "sectionNavBox": {
+        "x": 63,
+        "y": 174.515625,
+        "width": 541,
+        "height": 45,
+        "top": 174.515625,
+        "right": 604,
+        "bottom": 219.515625,
+        "left": 63
+      },
+      "sectionNavPlaces": [
+        {
+          "top": 188,
+          "bottom": 205,
+          "left": 81.9,
+          "right": 120
+        },
+        {
+          "top": 188,
+          "bottom": 205,
+          "left": 157.8,
+          "right": 210.5
+        },
+        {
+          "top": 188,
+          "bottom": 205,
+          "left": 248.3,
+          "right": 327.4
+        },
+        {
+          "top": 188,
+          "bottom": 205,
+          "left": 365.2,
+          "right": 410.1
+        },
+        {
+          "top": 188,
+          "bottom": 205,
+          "left": 447.9,
+          "right": 505.4
+        },
+        {
+          "top": 188,
+          "bottom": 205,
+          "left": 543.2,
+          "right": 585.1
+        }
+      ],
+      "aboveNav": null,
+      "footerContent": {
+        "top": 3916.6,
+        "bottom": 3962.3,
+        "left": 63,
+        "right": 579
+      },
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "sideways": false,
+      "themeColor": ["#fafaf8", "#fafaf8"]
     },
     "bottom": {
-      "tabBarShown": true,
-      "tabBarBox": {
-        "x": 0,
-        "y": 298,
-        "width": 667,
-        "height": 77,
-        "top": 298,
-        "right": 667,
-        "bottom": 375,
-        "left": 0
-      },
-      "tabBarContent": [
+      "osPrefersDark": false,
+      "stripContent": [
         {
-          "left": 90.296875,
-          "right": 118.296875,
-          "bottom": 335
+          "top": -3636.4,
+          "bottom": -3619.4,
+          "left": 63,
+          "right": 202.7
         },
         {
-          "left": 198.390625,
-          "right": 240.390625,
-          "bottom": 335
+          "top": -3635.5,
+          "bottom": -3618.5,
+          "left": 493.7,
+          "right": 518.8
         },
         {
-          "left": 302.484375,
-          "right": 365.484375,
-          "bottom": 335
-        },
-        {
-          "left": 431.09375,
-          "right": 466.09375,
-          "bottom": 335
-        },
-        {
-          "left": 538.6875,
-          "right": 587.6875,
-          "bottom": 335
+          "top": -3635.5,
+          "bottom": -3618.5,
+          "left": 548.8,
+          "right": 591
         }
       ],
-      "stripBottom": -1380,
-      "footerBottom": 286,
-      "sidewaysScroll": false
+      "themeButtons": ["Day", "Night"],
+      "wordmark": {
+        "top": -3584,
+        "bottom": -3530,
+        "left": 152.5,
+        "right": 514.5
+      },
+      "sectionNavShown": true,
+      "sectionNavBox": {
+        "x": 63,
+        "y": 0,
+        "width": 541,
+        "height": 45,
+        "top": 0,
+        "right": 604,
+        "bottom": 45,
+        "left": 63
+      },
+      "sectionNavPlaces": [
+        {
+          "top": 13.5,
+          "bottom": 30.5,
+          "left": 81.9,
+          "right": 120
+        },
+        {
+          "top": 13.5,
+          "bottom": 30.5,
+          "left": 157.8,
+          "right": 210.5
+        },
+        {
+          "top": 13.5,
+          "bottom": 30.5,
+          "left": 248.3,
+          "right": 327.4
+        },
+        {
+          "top": 13.5,
+          "bottom": 30.5,
+          "left": 365.2,
+          "right": 410.1
+        },
+        {
+          "top": 13.5,
+          "bottom": 30.5,
+          "left": 447.9,
+          "right": 505.4
+        },
+        {
+          "top": 13.5,
+          "bottom": 30.5,
+          "left": 543.2,
+          "right": 585.1
+        }
+      ],
+      "aboveNav": null,
+      "footerContent": {
+        "top": 260.6,
+        "bottom": 306.3,
+        "left": 63,
+        "right": 579
+      },
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "sideways": false,
+      "themeColor": ["#fafaf8", "#fafaf8"]
     }
   },
   "failures": []

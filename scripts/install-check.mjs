@@ -1,6 +1,6 @@
 // Checks that the site can be installed to a home screen, as far as a desktop Chromium can say,
-// and shoots the Agate masthead as an installed site would draw it on a phone with a notch and a
-// home bar: upright (the sections' bar stuck under the status bar) and on its side.
+// and shoots the masthead (#240) as an installed site would draw it on a phone with a notch and a
+// home bar: upright (the sections stuck under the status bar) and on its side.
 // Usage: TMPDIR=~/.cache/install-check node scripts/install-check.mjs [baseURL] [outDir]
 // (a short TMPDIR: the full Chromium puts a socket there and dies on a worktree's long path).
 // Writes <outDir>/report.json and the shots, and exits 1 when a check fails.
@@ -26,11 +26,11 @@ const [base = "http://localhost:5173", out = "node_modules/.tmp/install-check"] 
 const INSETS = { top: 47, right: 0, bottom: 34, left: 0 };
 const PHONE = { width: 390, height: 844 };
 // The same phone on its side: the notch at one end, and wide enough for the desk's masthead
-// (the theme's control at the end of the sections' bar).
+// (the season's picks in the middle of the dateline strip).
 const SIDEWAYS = { width: 844, height: 390 };
 const SIDEWAYS_INSETS = { top: 0, right: 47, bottom: 21, left: 47 };
 // A small phone on its side is still narrower than `md`: it keeps the phone's masthead (the
-// theme's one button at the end of the dateline).
+// picks under the wordmark, the sections sharing the row).
 const SMALL_SIDEWAYS = { width: 667, height: 375 };
 
 await mkdir(out, { recursive: true });
@@ -131,17 +131,13 @@ async function installability() {
 const HATCH =
   "z-index:9999;pointer-events:none;background:repeating-linear-gradient(45deg,rgba(220,38,38,.28) 0 6px,transparent 6px 12px);outline:1px dashed rgba(220,38,38,.8)";
 
-/** Runs in the page: where the masthead, the section nav and the footer are. */
+/** Runs in the page: where the dateline strip, the wordmark, the sections and the footer are. */
 const measure = () => {
   const text = (node) => {
-    // The words or the control itself, not the padded box around it.
-    // A button is its picture: its word is there for a screen reader only, off to one side.
-    const picture = node.querySelector("svg");
-    const drawn = picture?.getClientRects().length ? picture : node;
+    // The words themselves, not the padded box around them.
     const range = document.createRange();
-    range.selectNodeContents(drawn);
-    const { top, bottom, left, right } =
-      drawn === node ? range.getBoundingClientRect() : drawn.getBoundingClientRect();
+    range.selectNodeContents(node);
+    const { top, bottom, left, right } = range.getBoundingClientRect();
     return Object.fromEntries(
       Object.entries({ top, bottom, left, right }).map(([k, v]) => [k, Math.round(v * 10) / 10]),
     );
@@ -150,14 +146,18 @@ const measure = () => {
   const nav = document.querySelector('[data-slot="section-nav"]');
   return {
     osPrefersDark: matchMedia("(prefers-color-scheme: dark)").matches,
-    // The wordmark first, then the theme's control wherever this width draws it.
-    mastheadContent: [
+    // The dateline strip, top to bottom the first thing drawn: the date, then Day and Night.
+    stripContent: [
       ...document.querySelectorAll(
-        '[data-slot="masthead"] a, [role="group"][aria-label="Theme"] button',
+        '[data-slot="masthead-date"], [data-slot="dateline-strip"] [role="group"][aria-label="Theme"] button',
       ),
     ]
       .filter(shown)
       .map(text),
+    themeButtons: [...document.querySelectorAll('[role="group"][aria-label="Theme"] button')]
+      .filter(shown)
+      .map((button) => button.textContent),
+    wordmark: text(document.querySelector('[data-slot="wordmark"] a')),
     sectionNavShown: shown(nav),
     sectionNavBox: nav.getBoundingClientRect().toJSON(),
     sectionNavPlaces: [...nav.querySelectorAll("a")].filter(shown).map(text),
@@ -211,9 +211,14 @@ async function standalone(theme) {
   await page.screenshot({ path: `${out}/standalone-${theme}-390-top.png` });
   check(`${theme}: the operating system prefers ${os}`, top.osPrefersDark === (os === "dark"), top);
   check(
-    `${theme}: the masthead's wordmark and theme button clear the status bar`,
-    top.mastheadContent.length >= 2 && top.mastheadContent.every((item) => item.top >= INSETS.top),
-    top.mastheadContent,
+    `${theme}: the theme is two buttons, Day and Night`,
+    top.themeButtons.join() === "Day,Night",
+    top.themeButtons,
+  );
+  check(
+    `${theme}: the dateline strip's date and theme buttons clear the status bar`,
+    top.stripContent.length === 3 && top.stripContent.every((item) => item.top >= INSETS.top),
+    top.stripContent,
   );
   check(`${theme}: the page does not scroll sideways`, !top.sideways, top);
   check(
@@ -232,8 +237,8 @@ async function standalone(theme) {
     stuck.sectionNavBox,
   );
   check(
-    `${theme}: the stuck nav's five places clear the status bar`,
-    stuck.sectionNavPlaces.length === 5 &&
+    `${theme}: the stuck nav's six places clear the status bar`,
+    stuck.sectionNavPlaces.length === 6 &&
       stuck.sectionNavPlaces.every((item) => item.top >= INSETS.top),
     stuck.sectionNavPlaces,
   );
@@ -257,7 +262,7 @@ async function standalone(theme) {
 
 /**
  * The phone on its side, the notch at one end: wide enough for the desk's masthead at 844, and
- * still the phone's at 667. The sections' bar is above the wordmark at both.
+ * still the phone's at 667. The strip is above the wordmark and the sections under it at both.
  */
 async function sideways(viewport) {
   const name = `sideways ${viewport.width}`;
@@ -285,14 +290,17 @@ async function sideways(viewport) {
   const { left, right, bottom } = SIDEWAYS_INSETS;
   const top = await page.evaluate(measure);
   check(
-    `${name}: the sections' bar is above the wordmark`,
-    top.sectionNavShown && top.sectionNavBox.bottom <= top.mastheadContent[0]?.top + 0.5,
+    `${name}: the dateline strip is above the wordmark and the sections are under it`,
+    top.stripContent.length === 3 &&
+      top.stripContent.every((item) => item.bottom <= top.wordmark.top + 0.5) &&
+      top.sectionNavShown &&
+      top.sectionNavBox.top >= top.wordmark.bottom - 0.5,
     top,
   );
-  const pressed = [...top.mastheadContent, ...top.sectionNavPlaces];
+  const pressed = [...top.stripContent, top.wordmark, ...top.sectionNavPlaces];
   check(
     `${name}: the masthead and its sections clear the notch and the far end`,
-    pressed.length >= 3 &&
+    pressed.length === 10 &&
       pressed.every((item) => item.left >= left && item.right <= viewport.width - right),
     pressed,
   );

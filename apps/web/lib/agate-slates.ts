@@ -7,7 +7,7 @@ import type {
 
 /*
  * The two slates the Agate prototype draws (`prototypes/agate/data.js`), as the Scoreboard would
- * carry them, with their picks and season records: what `scripts/agate-home-compare.mjs` puts on
+ * carry them, with their picks and season records: what `scripts/front-page-check.mjs` measures on
  * `/skeleton/dashboard` so Home can be measured against the prototype word for word.
  */
 

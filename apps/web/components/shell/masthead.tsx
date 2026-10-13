@@ -1,70 +1,78 @@
 import type { SeasonRecord } from "@yogan-hockey/schemas";
-import { Dateline, MastheadDate, SectionLinks, ThemeControl, Wordmark } from "./masthead-client";
+import {
+  DatelinePicks,
+  MastheadDate,
+  SectionLinks,
+  ThemeControl,
+  Tonight,
+  Wordmark,
+} from "./masthead-client";
+
+/** A line of the masthead's small capitals: 13px, in the grey of a label. */
+const SMALL_CAPS = "text-[13px] text-muted-foreground uppercase leading-[1.45]";
 
 /**
- * The top of every page, as a newspaper's (`docs/design/agate.md`): the sections' bar first, then
- * the wordmark, then the dateline on the double rule.
+ * The top of every page, a broadsheet's (#240, `docs/design/front-page`): the dateline strip,
+ * then the wordmark over tonight's line, then the sections. Each part ends on a rule: the strip
+ * and the sections on a plain one, the wordmark's block on the 3px double rule that only it and
+ * the footer have.
  *
- * The bar hangs from a heavy rule over a plain one and stays at the top of the screen as the page
- * scrolls, so it has to be a child of the page's column, not of the `<header>`: a sticky box
- * travels no further than the box that holds it. So this returns the column's parts.
+ * The strip is the date, the season's picks and Day/Night. A phone has no room for the picks
+ * there, so they end the line under the wordmark instead (the copy's `narrow`).
  *
- * The arrangement is the same at every width, and the sections are written once. What differs is
- * what the bar has room for beside them. From `lg` up it is one line in three parts: the date,
- * the sections in the middle, Day/Night at the right end. From `md` the sections start it and
- * Day/Night ends it. On a phone the sections fill it. Where the bar has no room for the date, the
- * date is a line under the wordmark; on a phone the theme's one button ends the dateline. So the
- * date and the control are each written twice and drawn once: one is `display: none` at any width.
+ * The sections stay at the top of the screen as the page scrolls, so they have to be a child of
+ * the page's column, not of the `<header>`: a sticky box travels no further than the box that
+ * holds it. So this returns the column's parts.
  *
  * The wordmark is Home's `h1`, where no page title is drawn, and a paragraph everywhere else,
  * where the page has its own.
  *
  * `record` is the season's picks, read by the root route's loader with the Scoreboard, so the
- * dateline is whole in the first HTML.
+ * masthead is whole in the first HTML.
  */
 export function Masthead({ record }: { record: SeasonRecord | null }) {
   return (
     <>
       {/*
-        In a site opened from the home screen the page can reach under the status bar: the bar
-        stops below it (`--safe-top`), and this covers what scrolls past above the bar. No height
-        in a browser tab.
+        In a site opened from the home screen the page can reach under the status bar: the
+        sections stop below it (`--safe-top`), and this covers what scrolls past above them. No
+        height in a browser tab.
       */}
       <div aria-hidden="true" className="fixed inset-x-0 top-0 z-30 h-(--safe-top) bg-background" />
-      {/*
-        The rules are the wrappers' and the phone's sections scroll inside them, since a box that
-        scrolls sideways cuts off anything drawn above it.
-      */}
       <div
-        data-slot="section-nav"
-        className="sticky top-(--safe-top) z-30 border-rule border-t-[3px] bg-background"
+        data-slot="dateline-strip"
+        className={`flex items-center justify-between gap-x-6 border-rule border-b pt-[14px] pb-[10px] tracking-[0.08em] md:grid md:grid-cols-[1fr_auto_1fr] ${SMALL_CAPS}`}
       >
-        <div className="border-rule border-b md:grid md:grid-cols-[1fr_auto] md:items-center lg:grid-cols-[1fr_auto_1fr]">
-          <p
-            data-slot="section-date"
-            className="hidden whitespace-nowrap font-medium text-[13px] uppercase leading-none tracking-[0.06em] lg:block"
-          >
-            <MastheadDate />
-          </p>
-          <nav
-            aria-label="Site"
-            className="flex overflow-x-auto whitespace-nowrap [scrollbar-width:none] md:justify-self-start md:overflow-x-visible"
-          >
-            <SectionLinks />
-          </nav>
-          <ThemeControl className="hidden md:flex md:justify-self-end" />
-        </div>
-      </div>
-      <header data-slot="masthead" className="text-center">
-        <Wordmark />
-        <p
-          data-slot="masthead-date"
-          className="mt-2.5 font-semibold text-[12px] text-label uppercase leading-none tracking-[0.12em] md:mt-3 lg:hidden"
-        >
+        <p data-slot="masthead-date" className="whitespace-nowrap">
           <MastheadDate />
         </p>
+        <DatelinePicks record={record} />
+        <ThemeControl />
+      </div>
+      <header
+        data-slot="masthead"
+        className="border-rule border-b-[3px] border-double pt-5 pb-[14px] text-center md:pt-7 md:pb-[18px]"
+      >
+        <Wordmark />
+        <p data-slot="dateline" className={`mt-[14px] tracking-[0.12em] ${SMALL_CAPS}`}>
+          <Tonight record={record} />
+        </p>
       </header>
-      <Dateline record={record} />
+      <div
+        data-slot="section-nav"
+        className="sticky top-(--safe-top) z-30 border-rule border-b bg-background"
+      >
+        {/*
+          Six places fit a 360px phone. On a narrower one the line scrolls inside itself, as it
+          did before #240, so the page never scrolls sideways (6px at 320).
+        */}
+        <nav
+          aria-label="Site"
+          className="flex whitespace-nowrap max-md:overflow-x-auto max-md:[scrollbar-width:none] md:flex-wrap md:justify-center md:gap-x-10 md:py-[10px]"
+        >
+          <SectionLinks />
+        </nav>
+      </div>
     </>
   );
 }

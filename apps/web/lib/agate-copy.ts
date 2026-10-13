@@ -200,6 +200,25 @@ export function gamePickOutcome(
 }
 
 /**
+ * A pick as the front page's stories write it (#240): the sentence, and the verdict that follows
+ * it after a dash once the game is final, "Our pick: Florida, 62% — Wrong". A decided pick's
+ * sentence ends at its chance, since the verdict ends the line. Null with no pick to show.
+ */
+export function pickLine(
+  prediction: Prediction,
+  game: ScoreboardGame,
+): { sentence: string; outcome: "right" | "wrong" | null } | null {
+  const sentence = pickSentence(prediction, game);
+  if (sentence == null) return null;
+  const outcome = gamePickOutcome(prediction, game);
+  return { sentence: outcome == null ? sentence : sentence.replace(/\.$/, ""), outcome };
+}
+
+/** The networks showing a game, parted as the masthead's lines are. Null for a game nobody shows. */
+export const onTv = (broadcasts: readonly string[] | undefined): string | null =>
+  broadcasts?.join(SEPARATOR) || null;
+
+/**
  * What the roundup says with no game to lead with. Without a date the Scoreboard has not
  * answered, which is not a day off.
  */
@@ -295,6 +314,24 @@ export function tonightPicksSentence({ right, decided }: PickTally): string | nu
   return `${spelled(right)} of ${spelled(decided, false)} tonight.`;
 }
 
+/**
+ * The line beside "NHL Roundup" on the front page (#240): where the night stands. Games in
+ * progress are the news while there are any; then "All three final", "Nine to come", or both
+ * counts on a night between the two. A postponed game is not counted, and a night with nothing
+ * to count says nothing.
+ */
+export function roundupKicker(games: readonly ScoreboardGame[]): string | null {
+  const { live, upcoming, final } = slateCounts([...games]);
+  if (live > 0) return `${spelled(live)} live`;
+  if (upcoming === 0) {
+    if (final === 0) return null;
+    if (final === 1) return "Final";
+    return final === 2 ? "Both final" : `All ${spelled(final, false)} final`;
+  }
+  const toCome = `${spelled(upcoming, final === 0)} to come`;
+  return final === 0 ? toCome : `${spelled(final)} final, ${toCome}`;
+}
+
 /** A season with a pick decided, or null. */
 const decidedRecord = (record: SeasonRecord | null) =>
   record == null || record.right + record.wrong === 0 ? null : record;
@@ -330,43 +367,69 @@ export function datelineDate(date: string | null): string | null {
   return date == null ? null : slateDate(date);
 }
 
-/** The masthead's dateline, both ways it is written. */
+/** ", 2026": the slate's year, which ends the date where the strip has room for it. */
+export function datelineYear(date: string | null): string | null {
+  return date == null ? null : `, ${date.slice(0, 4)}`;
+}
+
+/** The season's record of the picks as the dateline strip prints it. */
+export type DatelinePicks = {
+  /** "Picks this season". */
+  label: string;
+  /** "29 right": the part set in ink. */
+  right: string;
+  /** "14 wrong". */
+  wrong: string;
+};
+
+/** The masthead's lines about tonight and the picks (#240). */
 export type Dateline = {
   /**
-   * The desktop's parts, in order: "Tonight: 9 games · 4 live · 2 to come · 3 final" and "Picks
-   * this season: 29 right, 14 wrong". The picks are not there until one is decided. The date is
-   * not one of them: it is on the sections' bar (`datelineDate`).
+   * The line under the wordmark at a desk: "Tonight: 9 games · 4 live · 2 to come · 3 final".
+   * Null before the Scoreboard's first poll. The date is not in it (`datelineDate`).
    */
-  wide: string[];
-  /** The phone's one line: "9 games · 4 live · 3 final · Picks 29–14". */
+  tonight: string | null;
+  /** The middle of the strip above the wordmark. Null until a pick is decided. */
+  picks: DatelinePicks | null;
+  /** The phone's one line under the wordmark: "9 games · 4 live · 3 final · Picks 29–14". */
   narrow: string;
 };
 
-const SEPARATOR = " · ";
+/** What joins the parts of a line of the masthead. */
+export const SEPARATOR = " · ";
+
+/** The credit that ends the line under the wordmark at a desk. */
+export const CREDIT = "Scores and stats from ESPN";
+
+/** The mark at the end of the footer. */
+export const COLOPHON = "Yogan Hockey · 2026";
 
 /**
- * The dateline under the wordmark, from the slate and the season's record. A count of zero is
- * dropped. The phone has no room for the games to come or the postponed ones. Before any pick is
- * decided the picks are left out, and before the Scoreboard's first poll there is no dateline.
+ * The masthead's lines, from the slate and the season's record. A count of zero is dropped. The
+ * phone has no room for the games to come or the postponed ones. Before any pick is decided the
+ * picks are left out, and before the Scoreboard's first poll nothing is said of tonight.
  */
 export function dateline(
   slate: { date: string | null; games: readonly ScoreboardGame[] },
   record: SeasonRecord | null,
 ): Dateline {
-  if (slate.date == null) return { wide: [], narrow: "" };
+  const decided = decidedRecord(record);
+  const picks = decided && {
+    label: "Picks this season",
+    right: `${decided.right} right`,
+    wrong: `${decided.wrong} wrong`,
+  };
+  if (slate.date == null) return { tonight: null, picks, narrow: "" };
   const counts = slateCounts([...slate.games]);
   const part = (count: number, word: string) => (count > 0 ? `${count} ${word}` : null);
   const total = slate.games.length;
   const games = total === 0 ? "no games" : `${total} game${total === 1 ? "" : "s"}`;
   const live = part(counts.live, "live");
   const final = part(counts.final, "final");
-  const decided = decidedRecord(record);
   const present = (parts: (string | null)[]) => parts.filter((each) => each != null);
   return {
-    wide: present([
-      `Tonight: ${present([games, live, part(counts.upcoming, "to come"), final, part(counts.postponed, "postponed")]).join(SEPARATOR)}`,
-      decided && `Picks this season: ${decided.right} right, ${decided.wrong} wrong`,
-    ]),
+    tonight: `Tonight: ${present([games, live, part(counts.upcoming, "to come"), final, part(counts.postponed, "postponed")]).join(SEPARATOR)}`,
+    picks,
     narrow: present([
       capitalized(games),
       live,

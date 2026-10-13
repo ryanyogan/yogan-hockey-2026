@@ -243,7 +243,7 @@ export function PicksPage({ page }: { page: PicksPageRead }) {
       {page.columns != null && page.columns.length > 0 && (
         <Section data-slot="picks-columns" aria-label={COLUMNS_LABEL}>
           <SectionHeader title={COLUMNS_LABEL} className="mb-4 border-b-0 pb-0" />
-          <PieceGrid pieces={page.columns} figures="page" />
+          <PieceGrid pieces={page.columns} look="agate" />
         </Section>
       )}
     </>

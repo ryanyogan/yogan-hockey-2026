@@ -8,6 +8,7 @@ import {
 } from "@yogan-hockey/schemas";
 import { z } from "zod";
 import { endpoints } from "./endpoints.ts";
+import { EspnNotFoundError } from "./errors.ts";
 import { EspnEvent, gameFrom } from "./espn-game.ts";
 import { espnHeadshot } from "./espn-headshot.ts";
 import { espnStats, recordStats, statValue, teamRecordFrom } from "./espn-stats.ts";
@@ -111,8 +112,25 @@ const EspnTeamDetail = z.object({
   }),
 });
 
-/** Translates a team detail response: the team, its record, stats, roster and next game. */
+/**
+ * ESPN's two answers for a team id no team has, both with a 200: `{}` (999, and every id it has
+ * never used), and for id 0 a placeholder, an inactive team with no name. Anything else that does
+ * not parse is a response the site cannot read, which is a different failure.
+ */
+function isNoTeam(json: unknown): boolean {
+  if (typeof json !== "object" || json === null || Array.isArray(json)) return false;
+  if (Object.keys(json).length === 0) return true;
+  const team: unknown = "team" in json ? json.team : null;
+  if (typeof team !== "object" || team === null) return false;
+  return "isActive" in team && team.isActive === false && !("displayName" in team);
+}
+
+/**
+ * Translates a team detail response: the team, its record, stats, roster and next game. A team
+ * ESPN does not know is an `EspnNotFoundError`.
+ */
 export function translateTeam(json: unknown, teamId: string): TeamDetail {
+  if (isNoTeam(json)) throw new EspnNotFoundError(endpoints.team(teamId).name, "no such team");
   return translateResponse(
     endpoints.team(teamId),
     json,

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { endpoints } from "./endpoints.ts";
-import { EspnParseError } from "./errors.ts";
+import { EspnFetchError, EspnParseError } from "./errors.ts";
 import { loadFixture } from "./fixtures.ts";
 import { translateTeam, translateTeamSchedule, translateTeams } from "./team.ts";
 
@@ -276,5 +276,35 @@ describe("a team's schedule", () => {
 
     expect(parse).toThrow(EspnParseError);
     expect(parse).toThrow(/ESPN teams\/21\/schedule did not parse/);
+  });
+});
+
+describe("a team ESPN does not know", () => {
+  test("is not found, which ESPN says with a 200 and an empty object", () => {
+    // What ESPN answers for teams/999, teams/38 and any other id no team has.
+    const read = () => translateTeam({}, "999");
+
+    expect(read).toThrow(EspnFetchError);
+    expect(read).toThrow(expect.objectContaining({ endpoint: "teams/999", notFound: true }));
+  });
+
+  test("is not found when ESPN sends its placeholder: an inactive team with no name", () => {
+    // What ESPN answers for teams/0, cut to the fields that say so.
+    const placeholder = {
+      team: { id: "0", uid: "s:70~l:90~t:0", isActive: false, franchise: { id: "0" }, links: [] },
+    };
+
+    expect(() => translateTeam(placeholder, "0")).toThrow(
+      expect.objectContaining({ endpoint: "teams/0", notFound: true }),
+    );
+  });
+
+  test("a team with a name in a shape the site cannot read is a parse error, not a missing team", () => {
+    const changed = { team: { id: "21", isActive: true, displayName: "Toronto Maple Leafs" } };
+
+    expect(() => translateTeam(changed, TORONTO)).toThrow(EspnParseError);
+    expect(() => translateTeam({ teams: [] }, TORONTO)).toThrow(EspnParseError);
+    expect(() => translateTeam(null, TORONTO)).toThrow(EspnParseError);
+    expect(() => translateTeam([], TORONTO)).toThrow(EspnParseError);
   });
 });

@@ -473,11 +473,79 @@ describe("the Picks page's columns", () => {
       expect("picksRecord" in JSON.parse(user.content).facts).toBe(column);
     }
     const miss = JSON.parse(calls[3]?.request.messages[1]?.content ?? "{}").facts;
-    expect(miss.picks.worst.pick).toMatchObject({ winProbability: 66, outcome: "wrong" });
+    expect(miss.picks.miss.pick).toMatchObject({ winProbability: 66, outcome: "wrong" });
     expect(miss.picks.run).toEqual({ outcome: "right", length: 2 });
   });
 
-  test("a column with nothing to say is not written: no pick tonight, no miss this week, no run", async () => {
+  const DAY = 24 * 60 * 60 * 1000;
+
+  test("the column on the miss is written once a game: none the next morning, and the morning after it is about the pick that lost since (#234)", async () => {
+    const fourth = finals[3] as Game;
+    let today = TODAY;
+    let season = seasonPicks;
+    const read = () => sources({ date: today, seasonPicks: season, predictions });
+    const missesWritten = () => calls.map(pieceOf).filter((slug) => slug.endsWith("-picks-miss"));
+    const morningOf = async (stub: Stub, date: string, at: number) => {
+      today = date;
+      await runAt(stub, at);
+      await runAt(stub, at + PICKS_WAIT_SECONDS * 1000, 24);
+    };
+
+    // Wednesday: the week's one miss is Monday's, at 66%.
+    const stub = await morning("miss-once", read);
+    expect(missesWritten()).toEqual([`${TODAY}-picks-miss`]);
+
+    // Thursday: nothing has lost since, and Monday's game is not written about again.
+    await morningOf(stub, "2031-01-16", MORNING + DAY);
+    expect(missesWritten()).toEqual([`${TODAY}-picks-miss`]);
+    expect(calls.map(pieceOf)).toContain("2031-01-16-picks-run");
+
+    // Friday: a pick lost on Thursday night at 54%, less firmly than Monday's, and it is the column's.
+    season = [...seasonPicks, seasonPick(fourth, "loser", 54, "2031-01-16")];
+    await morningOf(stub, "2031-01-17", MORNING + 2 * DAY);
+    expect(missesWritten()).toEqual([`${TODAY}-picks-miss`, "2031-01-17-picks-miss"]);
+    const told = JSON.parse(
+      calls.findLast((call) => pieceOf(call) === "2031-01-17-picks-miss")?.request.messages[1]
+        ?.content ?? "{}",
+    ).facts;
+    expect(told.picks.miss).toMatchObject({
+      game: fourth.id,
+      pick: { winProbability: 54, outcome: "wrong" },
+    });
+
+    // Saturday: Thursday's game has had its column too.
+    await morningOf(stub, "2031-01-18", MORNING + 3 * DAY);
+    expect(missesWritten()).toHaveLength(2);
+  });
+
+  test("a miss whose column the check refused at every try is still the next morning's to write (#234)", async () => {
+    let today = TODAY;
+    const read = () => sources({ date: today, seasonPicks, predictions });
+    answer = (call) => answering(pieceOf(call).endsWith("-picks-miss") ? UNSOUND : SOUND);
+    const stub = await morning("miss-refused", read);
+    expect(await getPieceBySlug(db, `${TODAY}-picks-miss`)).toBeNull();
+
+    answer = () => answering(SOUND);
+    today = "2031-01-16";
+    await runAt(stub, MORNING + DAY);
+    await runAt(stub, MORNING + DAY + PICKS_WAIT_SECONDS * 1000, 24);
+
+    expect(await getPieceBySlug(db, "2031-01-16-picks-miss")).not.toBeNull();
+  });
+
+  test("a last column whose facts cannot be read back is known by its date, and does not silence the column (#234)", async () => {
+    // A row written around the schema, for the Sunday: its facts are not facts.
+    await env.DB.exec(
+      "insert into pieces (slug, kind, date, status, headline, body, written_at, model, written_by, facts) values ('2031-01-12-picks-miss', 'picks-miss', '2031-01-12', 'published', 'h', 'b', '2031-01-12T15:00:00.000Z', 'm', 'model', '{}')",
+    );
+
+    await morning("miss-odd-facts");
+
+    // Monday's miss was decided after Sunday's column.
+    expect(calls.map(pieceOf)).toContain(`${TODAY}-picks-miss`);
+  });
+
+  test("a column with nothing to say is not written: no pick tonight, no miss yet, no run", async () => {
     const quiet = () => sources({ seasonPicks: [seasonPick(second, "winner", 58, "2031-01-13")] });
 
     await morning("quiet", quiet);

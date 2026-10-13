@@ -135,18 +135,28 @@ function firmest(calls: readonly Decided[]): Call | null {
   return call;
 }
 
-function weekFigures(calls: readonly Decided[], today: string): WeekFigures | null {
+/**
+ * The week the page shows and its decided picks: the week of the latest game played by today,
+ * which is this one or the last that had a result. Null before any pick is decided.
+ */
+function shownWeek(calls: readonly Decided[], today: string) {
   const thisWeek = weekOf(today);
-  // The week of the latest game played by today: this one, or the last that had a result.
   const latest = calls.findLast((call) => call.date <= thisWeek.end);
   if (latest == null) return null;
   const { start, end } = weekOf(latest.date);
   const inWeek = calls.filter((call) => call.date >= start && call.date <= end);
+  return { start, end, current: start === thisWeek.start, inWeek };
+}
+
+function weekFigures(calls: readonly Decided[], today: string): WeekFigures | null {
+  const week = shownWeek(calls, today);
+  if (week == null) return null;
+  const { start, end, current, inWeek } = week;
   const dates = [...new Set(inWeek.map((call) => call.date))].sort();
   return {
     start,
     end,
-    current: start === thisWeek.start,
+    current,
     tally: tally(inWeek),
     days: dates.map((date) => ({ date, ...tally(inWeek.filter((call) => call.date === date)) })),
     best: firmest(inWeek.filter((call) => call.outcome === "right")),
@@ -154,12 +164,9 @@ function weekFigures(calls: readonly Decided[], today: string): WeekFigures | nu
   };
 }
 
-/**
- * The page's figures, from a season's picks and the slate's date. The picks may come in any
- * order: a run and a week follow the games' own start times.
- */
-export function picksFigures(picks: readonly SeasonPick[], today: string): PicksFigures {
-  const calls = picks
+/** The decided picks of a season in the order their games were played, whatever order they came in. */
+const decidedCalls = (picks: readonly SeasonPick[]): Decided[] =>
+  picks
     .map(decided)
     .filter((call) => call != null)
     .sort(
@@ -168,6 +175,44 @@ export function picksFigures(picks: readonly SeasonPick[], today: string): Picks
         a.startTime.localeCompare(b.startTime) ||
         a.gameId.localeCompare(b.gameId),
     );
+
+/**
+ * The last column on a miss (#234): the slate's date on the morning it was written for, and the
+ * game it was about, or null where the piece does not say which game that was.
+ */
+export type LastMiss = { writtenFor: string; gameId: string | null };
+
+/**
+ * The miss a column is written about (#234): the firmest pick that lost in the week the page
+ * shows, among the games decided since the last such column, and never that column's own game.
+ * A column is written before its day's games, so a game listed under the column's date or a
+ * later one was decided after it; the game's own id is held against it as well, so that the
+ * first line of #234 does not rest on when a morning runs. A final that reaches D1 only after
+ * the next morning's column is listed under a day before that column's and gets none. With no column yet (`last` null) it is the week's worst call;
+ * with nothing lost since the last one it is null, and no column is written.
+ *
+ * The week's worst call on the page (`week.worst`) does not move for any of this.
+ */
+export function missSince(
+  picks: readonly SeasonPick[],
+  today: string,
+  last: LastMiss | null,
+): Call | null {
+  const misses = (shownWeek(decidedCalls(picks), today)?.inWeek ?? []).filter(
+    (call) => call.outcome === "wrong",
+  );
+  if (last == null) return firmest(misses);
+  return firmest(
+    misses.filter((call) => call.date >= last.writtenFor && call.gameId !== last.gameId),
+  );
+}
+
+/**
+ * The page's figures, from a season's picks and the slate's date. The picks may come in any
+ * order: a run and a week follow the games' own start times.
+ */
+export function picksFigures(picks: readonly SeasonPick[], today: string): PicksFigures {
+  const calls = decidedCalls(picks);
 
   const last = calls.at(-1);
   const sinceTurn = calls.findLastIndex((call) => call.outcome !== last?.outcome);

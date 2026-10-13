@@ -6,7 +6,13 @@ export {
   replaceGamePlays,
   saveFinalGame,
 } from "./games.ts";
-export { getCurrentPieces, getPieceBySlug, getRejectedPieces, savePiece } from "./pieces.ts";
+export {
+  getCurrentPieces,
+  getLastPiece,
+  getPieceBySlug,
+  getRejectedPieces,
+  savePiece,
+} from "./pieces.ts";
 export {
   getPrediction,
   getPredictions,

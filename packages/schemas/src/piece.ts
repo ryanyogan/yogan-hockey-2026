@@ -128,6 +128,13 @@ export const FactPicksSchema = z.object({
   /** The week's firmest pick that came in, and its firmest that lost. */
   best: FactCallSchema.nullable(),
   worst: FactCallSchema.nullable(),
+  /**
+   * The miss the column on one is written about (#234): the firmest pick to lose since the last
+   * such column, which is `worst` only when nothing firmer lost earlier in the week. Null when
+   * nothing has lost since. A published column's own facts keep it, and that is how the next
+   * morning knows which game has had its column.
+   */
+  miss: FactCallSchema.nullable().optional(),
 });
 export type FactPicks = z.infer<typeof FactPicksSchema>;
 

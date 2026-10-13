@@ -15,7 +15,7 @@ import {
   type WritingFacts,
 } from "@yogan-hockey/schemas";
 import { ordinal } from "../../lib/ordinal";
-import { type Call, picksFigures } from "../../lib/picks-figures";
+import { type Call, type LastMiss, missSince, picksFigures } from "../../lib/picks-figures";
 
 /** The NHL's day is Eastern time's, and so is every time a piece prints. */
 const NHL_TIME_ZONE = "America/New_York";
@@ -133,10 +133,11 @@ function columnFigures(
   seasonPicks: FactSources["seasonPicks"],
   date: string,
   teams: Map<string, FactTeam>,
+  lastMiss: FactSources["lastMiss"],
 ): Pick<WritingFacts, "picks" | "picksRecord"> {
   if (!seasonPicks) return {};
   try {
-    return picksFacts(seasonPicks, date, teams);
+    return picksFacts(seasonPicks, date, teams, lastMiss ?? null);
   } catch (error) {
     console.error("Writer: the picks' figures could not be worked out", error);
     return {};
@@ -160,6 +161,11 @@ export type FactSources = {
    * Left out or null, the facts hold no figures of the picks and no column is written.
    */
   seasonPicks?: readonly SeasonPick[] | null;
+  /**
+   * What the last published column on a miss was about (#234), so that the next is about a game
+   * decided since. Left out or null, none has been written and the week's worst call is the miss.
+   */
+  lastMiss?: LastMiss | null;
 };
 
 /**
@@ -193,12 +199,14 @@ function factCall(call: Call | null, won: boolean, teams: Map<string, FactTeam>)
 
 /**
  * The picks' figures as a column is told them: the ones the Picks page prints, from the one
- * module that works them out, so the page and a column beside it are of the same count.
+ * module that works them out, so the page and a column beside it are of the same count. The one
+ * figure the page does not print is `miss`, the game the column on a miss is written about.
  */
 function picksFacts(
   seasonPicks: readonly SeasonPick[],
   date: string,
   teams: Map<string, FactTeam>,
+  lastMiss: LastMiss | null,
 ): Pick<WritingFacts, "picks" | "picksRecord"> {
   const { season, week, run } = picksFigures(seasonPicks, date);
   return {
@@ -213,9 +221,20 @@ function picksFacts(
       run,
       best: factCall(week?.best ?? null, true, teams),
       worst: factCall(week?.worst ?? null, false, teams),
+      miss: factCall(missSince(seasonPicks, date, lastMiss), false, teams),
     },
   };
 }
+
+/**
+ * What a published column on a miss says of itself to the next morning (#234): the date it was
+ * written for, and its game from the facts it was written from, where `picksFacts` put it. A
+ * piece with no facts to read (a sample, a row from before #234) is known by its date alone.
+ */
+export const lastMissOf = (piece: { date: string; facts: WritingFacts | null }): LastMiss => ({
+  writtenFor: piece.date,
+  gameId: piece.facts?.picks?.miss?.game ?? null,
+});
 
 /**
  * The facts a piece is written from and checked against (#217). Built field by field, so nothing
@@ -267,6 +286,6 @@ export function writingFacts(sources: FactSources): WritingFacts {
       venue: game.venue,
       pick: factPick(game, predictions.get(game.id)),
     })),
-    ...columnFigures(sources.seasonPicks, date, teams),
+    ...columnFigures(sources.seasonPicks, date, teams, sources.lastMiss),
   };
 }

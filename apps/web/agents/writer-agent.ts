@@ -1,6 +1,8 @@
 import { exports } from "cloudflare:workers";
 import {
   createDb,
+  type Db,
+  getLastPiece,
   getPieceBySlug,
   getPredictions,
   getSeasonPicks,
@@ -10,14 +12,22 @@ import { getGameSummary, getScoreboard, getStandings } from "@yogan-hockey/espn"
 import { type Game, pieceSlug, type StoredPiece, type WritingFacts } from "@yogan-hockey/schemas";
 import { Agent, getAgentByName } from "agents";
 import { seasonOfSlate } from "../lib/picks";
+import type { LastMiss } from "../lib/picks-figures";
 import { SCOREBOARD_CONNECTION } from "../lib/scoreboard-connection";
 import { AI_GATEWAY_ID } from "./prediction";
 import { withTimeout } from "./with-timeout";
 import { checkPiece } from "./writing/check";
-import { dayBefore, easternDate, type FactSources, writingFacts } from "./writing/facts";
+import {
+  dayBefore,
+  easternDate,
+  type FactSources,
+  lastMissOf,
+  writingFacts,
+} from "./writing/facts";
 import {
   EDITIONS,
   type Edition,
+  PICKS_MISS,
   type PieceKind,
   readDraft,
   WRITING_DAILY_MODEL_CALLS,
@@ -153,8 +163,10 @@ export class WriterAgent extends Agent<Env> {
         await this.schedule(NIGHT_LOOK_SECONDS, "writeEdition", again);
         return;
       }
-      const facts = writingFacts(sources);
       const db = createDb(this.env.DB);
+      // What the column on a miss last said is the Writer's own memory, read with the facts.
+      const lastMiss = sources.seasonPicks ? await lastMissWritten(db, date) : null;
+      const facts = writingFacts({ ...sources, lastMiss });
       // A piece left waiting from another day is not written now as if it were today's.
       for (const [key, job] of this.#jobs()) if (job.date !== date) this.ctx.storage.kv.delete(key);
       for (const kind of EDITIONS[edition] as readonly PieceKind[]) {
@@ -350,6 +362,25 @@ export class WriterAgent extends Agent<Env> {
   #countModelCall(): void {
     const calls: ModelCalls = { date: today(), count: this.#modelCallsToday() + 1 };
     this.ctx.storage.kv.put(MODEL_CALLS_KEY, calls);
+  }
+}
+
+/**
+ * What the last published column on a miss was about (#234): the date it was written for and its
+ * game, which its own stored facts hold. Null before the first. A column refused by the check is
+ * not one, so a miss that never got its column is still the next morning's to write.
+ *
+ * Where D1 does not answer, the answer is as if one had been written this morning: no game has
+ * been decided since, so no column on a miss is written, and every other piece still is. A row
+ * whose facts no longer fit is not that: it is read by its date, and the column goes on.
+ */
+async function lastMissWritten(db: Db, today: string): Promise<LastMiss | null> {
+  try {
+    const last = await getLastPiece(db, PICKS_MISS.kind);
+    return last && lastMissOf(last);
+  } catch (error) {
+    console.error("Writer: the last column on a miss could not be read", error);
+    return { writtenFor: today, gameId: null };
   }
 }
 

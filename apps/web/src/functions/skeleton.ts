@@ -129,14 +129,25 @@ const SAMPLE_PICKS: Record<string, MadeSlatePick> = Object.fromEntries(
     .map((game) => [game.id, { status: "made", pickTeamId: game.home.id, winProbability: 58 }]),
 );
 
-function sampleDashboard({
+/**
+ * The slate kept under a name from the address, or none. Not `slates[name]`: every object answers
+ * to `constructor`, `toString` and `__proto__`, which are not slates (#199).
+ */
+function slateNamed<Slate>(
+  slates: Record<string, Slate>,
+  name: string | undefined,
+): Slate | undefined {
+  return name != null && Object.hasOwn(slates, name) ? slates[name] : undefined;
+}
+
+export function sampleDashboard({
   slate,
   picks,
 }: Pick<z.infer<typeof SampleDashboardSchema>, "slate" | "picks">): Omit<
   SampleDashboardRead,
   "standings" | "news" | "pieces"
 > {
-  const agate = slate == null ? undefined : AGATE_SLATES[slate];
+  const agate = slateNamed(AGATE_SLATES, slate);
   if (agate) return agate;
   const scoreboard = slate === "empty" ? EMPTY_SLATE : SAMPLE_SLATE;
   return picks
@@ -177,12 +188,14 @@ export const SampleLiveSchema = z.object({ slate: z.string().optional().catch(un
 
 const LIVE_SLATES: Record<string, ScoreboardState> = { empty: EMPTY_SLATE, quiet: QUIET_SLATE };
 
+export function sampleLive(slate: string | undefined): ScoreboardState {
+  return slateNamed(LIVE_SLATES, slate) ?? SAMPLE_SLATE;
+}
+
 /**
  * `/skeleton/live`'s one read: an invented slate with a game in every state, `empty` a day with
  * no games, or `quiet` one with two.
  */
 export const readSampleLive = createServerFn({ method: "GET" })
   .validator(SampleLiveSchema)
-  .handler(({ data }) =>
-    pageRead<ScoreboardState>(async () => LIVE_SLATES[data.slate ?? ""] ?? SAMPLE_SLATE),
-  );
+  .handler(({ data }) => pageRead<ScoreboardState>(async () => sampleLive(data.slate)));

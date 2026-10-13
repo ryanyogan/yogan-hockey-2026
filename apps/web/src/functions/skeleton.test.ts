@@ -34,7 +34,9 @@ describe("what the sample pages' server functions accept", () => {
     expect(SampleLiveSchema.parse({ slate: "quiet" })).toEqual({ slate: "quiet" });
     expect(SampleLiveSchema.parse({ slate: ["quiet"] })).toEqual({});
   });
+});
 
+describe("the slate a sample page draws", () => {
   it("draws the slate the sample live page is asked for by name", () => {
     expect(sampleLive("empty")).toBe(EMPTY_SLATE);
     expect(sampleLive("quiet")).toBe(QUIET_SLATE);

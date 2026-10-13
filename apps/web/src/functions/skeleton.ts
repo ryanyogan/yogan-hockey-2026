@@ -133,7 +133,10 @@ const SAMPLE_PICKS: Record<string, MadeSlatePick> = Object.fromEntries(
  * The slate kept under a name from the address, or none. Not `slates[name]`: every object answers
  * to `constructor`, `toString` and `__proto__`, which are not slates (#199).
  */
-function named<Slate>(slates: Record<string, Slate>, name: string | undefined): Slate | undefined {
+function slateNamed<Slate>(
+  slates: Record<string, Slate>,
+  name: string | undefined,
+): Slate | undefined {
   return name != null && Object.hasOwn(slates, name) ? slates[name] : undefined;
 }
 
@@ -144,7 +147,7 @@ export function sampleDashboard({
   SampleDashboardRead,
   "standings" | "news" | "pieces"
 > {
-  const agate = named(AGATE_SLATES, slate);
+  const agate = slateNamed(AGATE_SLATES, slate);
   if (agate) return agate;
   const scoreboard = slate === "empty" ? EMPTY_SLATE : SAMPLE_SLATE;
   return picks
@@ -186,7 +189,7 @@ export const SampleLiveSchema = z.object({ slate: z.string().optional().catch(un
 const LIVE_SLATES: Record<string, ScoreboardState> = { empty: EMPTY_SLATE, quiet: QUIET_SLATE };
 
 export function sampleLive(slate: string | undefined): ScoreboardState {
-  return named(LIVE_SLATES, slate) ?? SAMPLE_SLATE;
+  return slateNamed(LIVE_SLATES, slate) ?? SAMPLE_SLATE;
 }
 
 /**

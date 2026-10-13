@@ -1,5 +1,5 @@
 import { env } from "cloudflare:workers";
-import { EspnFetchError } from "@yogan-hockey/espn";
+import { EspnFetchError, EspnParseError } from "@yogan-hockey/espn";
 import { afterEach, beforeAll, beforeEach, expect, test, vi } from "vitest";
 import { findTeam } from "./find-team";
 
@@ -29,6 +29,11 @@ test("a team ESPN does not know is no team, which ESPN says with a 400", async (
   expect(fetchMock).toHaveBeenCalledOnce();
 });
 
+test("a team ESPN does not know is no team, which ESPN says with a 200 and an empty object", async () => {
+  fetchMock.mockImplementation(async () => new Response("{}", { status: 200 }));
+  expect(await findTeam("987653")).toBeNull();
+});
+
 test("an id that could not be a team's is no team, and ESPN is not asked", async () => {
   expect(await findTeam("leafs")).toBeNull();
   expect(await findTeam("21;drop")).toBeNull();
@@ -38,4 +43,11 @@ test("an id that could not be a team's is no team, and ESPN is not asked", async
 test("ESPN being down is an error, not a missing team", async () => {
   fetchMock.mockResolvedValue(new Response("", { status: 503 }));
   await expect(findTeam("987652")).rejects.toBeInstanceOf(EspnFetchError);
+});
+
+test("ESPN answering a team in a shape the site cannot read is an error, not a missing team", async () => {
+  fetchMock.mockImplementation(
+    async () => new Response(JSON.stringify({ team: { id: "987654", displayName: "A Team" } })),
+  );
+  await expect(findTeam("987654")).rejects.toBeInstanceOf(EspnParseError);
 });

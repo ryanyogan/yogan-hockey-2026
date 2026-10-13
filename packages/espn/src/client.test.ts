@@ -219,6 +219,18 @@ describe("against ESPN", () => {
     });
   });
 
+  test("a team ESPN answers with an empty object is a fetch error that says not found", async () => {
+    // ESPN answers the team itself with a 200 and `{}`; the 400 is its schedule's.
+    fetchMock.mockImplementation(async () => new Response("{}", { status: 200 }));
+
+    await expect(getTeam("999")).rejects.toMatchObject({
+      name: "EspnFetchError",
+      endpoint: "teams/999",
+      status: 200,
+      notFound: true,
+    });
+  });
+
   test("a server error is a fetch error that does not say not found", async () => {
     fetchMock.mockResolvedValue(new Response("", { status: 503 }));
 
@@ -228,6 +240,30 @@ describe("against ESPN", () => {
       status: 503,
       notFound: false,
     });
+  });
+
+  test("every request is given ten seconds, after which there is no answer", async () => {
+    const timeout = vi.spyOn(AbortSignal, "timeout");
+    const signals: unknown[] = [];
+    // What `fetch` does when its signal's time is up.
+    fetchMock.mockImplementation(async (_url, init) => {
+      signals.push(init?.signal);
+      throw new DOMException("The operation was aborted due to timeout", "TimeoutError");
+    });
+
+    try {
+      await expect(getPlayer("4024123")).rejects.toMatchObject({
+        name: "EspnFetchError",
+        endpoint: "athletes/4024123",
+        status: null,
+        notFound: false,
+      });
+      expect(timeout).toHaveBeenCalledExactlyOnceWith(10_000);
+      expect(signals).toEqual([timeout.mock.results[0]?.value]);
+      expect(signals[0]).toBeInstanceOf(AbortSignal);
+    } finally {
+      timeout.mockRestore();
+    }
   });
 
   test("no answer at all is a fetch error naming the endpoint", async () => {

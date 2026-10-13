@@ -16,6 +16,7 @@ import {
   BEST_CALL,
   bandLabel,
   COLUMNS_LABEL,
+  callGameId,
   callSentence,
   FIGURES_UNREAD,
   noFigures,
@@ -74,7 +75,11 @@ function Split({
       <h3 id={id} className="mb-1 font-strong text-label text-tag uppercase tracking-head">
         {title}
       </h3>
-      <Ledger aria-labelledby={id}>
+      {/* Below 390px the cells are 4px apart, not 8: "Home team picked" and four figures then fit a 360px phone. */}
+      <Ledger
+        aria-labelledby={id}
+        className="max-[24.375rem]:[&_td]:px-1 max-[24.375rem]:[&_th]:px-1"
+      >
         <LedgerHead>
           <LedgerColumn>{of}</LedgerColumn>
           <LedgerColumn numeric className={figure}>
@@ -110,21 +115,29 @@ function Split({
   );
 }
 
-/** The week's best or worst call: a red line saying which, and the call as a sentence that links to its game. */
+/**
+ * The week's best or worst call: a red line saying which, and the call as a sentence that links
+ * to its game where the game has a page (`callGameId`).
+ */
 function CallLine({ name, call }: { name: string; call: Call | null }) {
   if (call == null) return null;
+  const gameId = callGameId(call);
   return (
     <div data-slot="picks-call" className="min-w-0">
       <dt className="font-label text-kicker text-tag uppercase leading-[1.35] tracking-kicker">
         {name}
       </dt>
       <dd className="mt-1 max-w-[680px] font-serif text-prose">
-        <Link
-          href={gameHref({ id: call.gameId })}
-          className="tap-target block hover:underline max-md:min-h-11"
-        >
-          {callSentence(call)}
-        </Link>
+        {gameId == null ? (
+          callSentence(call)
+        ) : (
+          <Link
+            href={gameHref({ id: gameId })}
+            className="tap-target block hover:underline max-md:min-h-11"
+          >
+            {callSentence(call)}
+          </Link>
+        )}
       </dd>
     </div>
   );

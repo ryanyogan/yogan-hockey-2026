@@ -70,6 +70,14 @@ export function callSentence(call: Call): string {
   return `The ${call.picked.name}, picked at ${chance(call.winProbability)} ${where}, ${how} on ${weekday(call.date)}.`;
 }
 
+/**
+ * The game a call's sentence links to, or null where the game has no page: a game's page is at
+ * ESPN's event id, which is all digits, and fixture mode's sample finals (`sample-picks.ts`) are
+ * games ESPN never had.
+ */
+export const callGameId = ({ gameId }: Pick<Call, "gameId">): string | null =>
+  /^\d+$/.test(gameId) ? gameId : null;
+
 export const BEST_CALL = "Best call";
 export const WORST_CALL = "Worst call";
 

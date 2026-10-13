@@ -5,7 +5,8 @@
 //
 // <prototype> is `PORT=<n> pnpm prototype:agate`; [site] is a dev server in fixture mode. It
 // prints the width of each section's cell, and exits 1 when a page scrolls sideways or, on a
-// phone, the sections do (the prototype's `?picks=1` is where six are measured: #218).
+// phone, the sections do. Both draw six sections (Picks is the sixth: #218), a size down below
+// 390px, so the phone is shot at 360 and 375 as well as 390.
 
 import { mkdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -70,14 +71,16 @@ for (const width of [390, 1440])
     scroll: 700,
     height: 200,
   });
-for (const width of [360, 390, 768, 1440])
-  await proto(`after-with-picks-${width}-light`, "theme=light&picks=1", width, { height: 200 });
+for (const width of [375, 768])
+  await proto(`after-${width}-light`, "theme=light", width, { height: 200 });
 
 if (site) {
   const here = (name, path, width, options) =>
     shot(name, site + path, width, { nav: 'nav[aria-label="Site"]', ...options });
   for (const theme of ["light", "dark"])
     for (const width of [390, 1440]) await here(`site-${width}-${theme}`, "/", width, { theme });
+  for (const width of [360, 375, 768, 1024])
+    await here(`site-${width}-light`, "/", width, { height: 200 });
   await here("site-hover-1440-light", "/nhl?tab=standings", 1440, {
     hover: 'nav[aria-label="Site"] a:nth-child(4)',
     height: 120,

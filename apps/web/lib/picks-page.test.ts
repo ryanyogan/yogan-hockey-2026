@@ -1,8 +1,10 @@
 import { applyD1Migrations } from "cloudflare:test";
 import { env } from "cloudflare:workers";
+import { translateStandings } from "@yogan-hockey/espn";
 import { beforeAll, describe, expect, it, vi } from "vitest";
+import recordedStandings from "../../../packages/espn/fixtures/standings.json";
 import { readPicksPage } from "./picks-page";
-import { seedSamplePicks } from "./sample-picks";
+import { DECIDED, seedSamplePicks } from "./sample-picks";
 import { seedSamplePieces } from "./sample-pieces";
 
 // Fixture mode: the Scoreboard's slate is the recorded one, Tuesday 6 October 2026, whose week
@@ -63,4 +65,16 @@ describe("the Picks page's read", () => {
       "picks-run",
     ]);
   }, 30_000);
+});
+
+describe("the sample picks", () => {
+  it("name each club by ESPN's own id, abbreviation and name", () => {
+    const clubs = new Map(
+      translateStandings(recordedStandings).rows.map(({ team }) => [team.id, team]),
+    );
+
+    for (const { id, abbreviation, name } of DECIDED.flatMap(({ home, away }) => [home, away])) {
+      expect(clubs.get(id)).toMatchObject({ abbreviation, name });
+    }
+  });
 });

@@ -25,5 +25,17 @@ for (const slate of ["tonight", "busy"]) {
     }
   }
 }
+// The Picks page (#218), on the slate the site's fixture mode has.
+for (const theme of ["light", "dark"]) {
+  for (const [width, height] of Object.entries(WIDTHS)) {
+    const page = await browser.newPage({ viewport: { width: Number(width), height } });
+    await page.goto(`${origin}/?page=picks&slate=busy&theme=${theme}&chrome=0`, {
+      waitUntil: "networkidle",
+    });
+    await page.evaluate(() => document.fonts.ready);
+    await page.screenshot({ path: `${out}proto-picks-${width}-${theme}.png`, fullPage: true });
+    await page.close();
+  }
+}
 await browser.close();
 console.log(`Wrote ${out}`);

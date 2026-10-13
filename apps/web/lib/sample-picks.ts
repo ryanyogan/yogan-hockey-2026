@@ -21,9 +21,11 @@ const FINAL_GAME = { gameId: "401803652", winnerId: "9", loserId: "2" };
  * right and 2 wrong, and the Picks page's figures (#218). Two were played on the Saturday before
  * the recorded slate's week and three on its Monday, which are the three finals the sample recap
  * is about (`sample-pieces.ts`): the same clubs, scores and chances. `days` is how long before
- * the slate's date the game was played; each started at 7 p.m. Eastern or half past.
+ * the slate's date the game was played; each started at 7 p.m. Eastern or half past. The ids are
+ * ESPN's own for each club (a test holds them against the recorded standings). The games' ids are
+ * not ESPN's, so the Picks page's best and worst call do not link to a game here.
  */
-const DECIDED = [
+export const DECIDED = [
   {
     days: 3,
     at: "23:00",

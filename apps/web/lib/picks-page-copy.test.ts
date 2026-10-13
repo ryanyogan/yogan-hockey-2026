@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { Call } from "./picks-figures";
 import {
   bandLabel,
+  callGameId,
   callSentence,
   noFigures,
   record,
@@ -73,4 +74,9 @@ describe("the Picks page's words", () => {
     expect(noFigures(1)).toContain("One pick is waiting on its game.");
     expect(noFigures(9)).toContain("9 picks are waiting on their games.");
   });
+});
+
+it("a call links to its game where the game is ESPN's, and to nothing where it is a sample's", () => {
+  expect(callGameId({ gameId: "401892449" })).toBe("401892449");
+  expect(callGameId({ gameId: "sample-pick-4" })).toBeNull();
 });

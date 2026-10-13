@@ -32,10 +32,13 @@ const DIVIDER =
  * one red and so is its segment; the one under the pointer has an ink segment.
  *
  * On a phone the cells share the bar's width, each as wide as its word and an even part of what
- * is left and never under 44px, at 13px and .06em with 3px either side: five fit a 360px phone,
- * and six a 390px one.
+ * is left and never under 44px, at 13px and .06em with 3px either side, which fits the six on a
+ * 390px phone. Below 390px they go a size down, 12px at .04em with 2px either side, and the six
+ * fit a 360px one (at 13px they are 350px, 7px more than a 375px phone's bar). That width is
+ * written `24.375rem`, in the unit of `max-md`: Tailwind orders two `max-` rules only when their
+ * units are the same, and in px this one lost to `max-md`.
  */
-const SECTION = `${CELL} px-[18px] text-[14px] tracking-[0.14em] md:not-first:before:absolute md:not-first:before:top-[calc(50%-5px)] md:not-first:before:left-0 md:not-first:before:h-[13px] md:not-first:before:border-border md:not-first:before:border-l hover:[&:not([aria-current])]:border-rule aria-[current=page]:border-kicker aria-[current=page]:text-kicker max-md:min-w-11 max-md:flex-[1_0_auto] max-md:justify-center max-md:px-[3px] max-md:text-[13px] max-md:tracking-[0.06em]`;
+const SECTION = `${CELL} px-[18px] text-[14px] tracking-[0.14em] md:not-first:before:absolute md:not-first:before:top-[calc(50%-5px)] md:not-first:before:left-0 md:not-first:before:h-[13px] md:not-first:before:border-border md:not-first:before:border-l hover:[&:not([aria-current])]:border-rule aria-[current=page]:border-kicker aria-[current=page]:text-kicker max-md:min-w-11 max-md:flex-[1_0_auto] max-md:justify-center max-md:px-[3px] max-md:text-[13px] max-md:tracking-[0.06em] max-[24.375rem]:px-[2px] max-[24.375rem]:text-[12px] max-[24.375rem]:tracking-[0.04em]`;
 
 function Sections({ current }: { current: NavItem | undefined }) {
   return NAV_ITEMS.map((item) => (
@@ -65,7 +68,7 @@ export function Wordmark() {
 }
 
 /**
- * The site's five sections as links, the current one marked. It knows the address: the path
+ * The site's six sections as links, the current one marked. It knows the address: the path
  * settles the section everywhere but on `/nhl`, where the `tab` in the query does.
  */
 export function SectionLinks() {

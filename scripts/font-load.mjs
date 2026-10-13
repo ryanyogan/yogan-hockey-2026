@@ -58,8 +58,35 @@ const WIDTHS = { 390: 844, 1440: 900 };
 const HOLD_MS = 2000;
 const SWAP_CLS = 0.05;
 const SWAP_PX = 32;
-/** The pick line's italic: not preloaded, by design (`apps/web/src/head.ts`). */
-const lazy = (url) => /italic/i.test(url);
+/**
+ * The files of the page's italic faces, as its own `@font-face` rules name them. The pick line's
+ * italic is not preloaded, by design (`apps/web/src/head.ts`), and its file's hashed name does
+ * not say what it is: the rule's `font-style` does.
+ */
+const italicFiles = () => {
+  const files = [];
+  const read = (rules) => {
+    for (const rule of rules) {
+      if (rule.cssRules) read(rule.cssRules);
+      if (rule.constructor.name !== "CSSFontFaceRule") continue;
+      if (!/italic|oblique/.test(rule.style.getPropertyValue("font-style"))) continue;
+      const base = rule.parentStyleSheet?.href ?? document.baseURI;
+      for (const [, , file] of rule.style
+        .getPropertyValue("src")
+        .matchAll(/url\((["']?)([^"')]+)\1\)/g)) {
+        files.push(new URL(file, base).href);
+      }
+    }
+  };
+  for (const sheet of document.styleSheets) {
+    try {
+      read(sheet.cssRules);
+    } catch {
+      // Another origin's sheet cannot be read, and has none of the site's faces.
+    }
+  }
+  return files;
+};
 
 /**
  * Where the first ledger row's cells and the page's own blocks are, and the size of the page:
@@ -155,6 +182,8 @@ for (const path of PATHS) {
                 cell.map((value, part) => Math.abs(value - (before.cells[at]?.[part] ?? value))),
               ),
             );
+      const italic = await page.evaluate(italicFiles);
+      const lazy = (url) => italic.includes(url);
       const failed = [];
       if (held && head.atSwap > SWAP_CLS) failed.push(`${head.atSwap} of layout shift at the swap`);
 

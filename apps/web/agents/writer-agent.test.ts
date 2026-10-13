@@ -466,7 +466,8 @@ describe("the Picks page's columns", () => {
     expect(calls.map(pieceOf)).toEqual([`${TODAY}-preview`, `${TODAY}-league`, ...COLUMNS]);
     expect((await readColumns(new Date(Date.now())))?.map(({ slug }) => slug)).toEqual(COLUMNS);
     for (const call of calls) {
-      const [system, user] = call.request.messages as [{ content: string }, { content: string }];
+      const [system, user] = call.request.messages;
+      if (!system || !user) throw new Error("A request has two messages");
       const column = pieceOf(call).includes("-picks-");
       expect(system.content.includes("columnist")).toBe(column);
       expect("picksRecord" in JSON.parse(user.content).facts).toBe(column);

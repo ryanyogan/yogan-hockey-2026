@@ -62,9 +62,13 @@ export function Masthead({ record }: { record: SeasonRecord | null }) {
         data-slot="section-nav"
         className="sticky top-(--safe-top) z-30 border-rule border-b bg-background"
       >
+        {/*
+          Six places fit a 360px phone. On a narrower one the line scrolls inside itself, as it
+          did before #240, so the page never scrolls sideways (6px at 320).
+        */}
         <nav
           aria-label="Site"
-          className="flex whitespace-nowrap md:flex-wrap md:justify-center md:gap-x-10 md:py-[10px]"
+          className="flex whitespace-nowrap max-md:overflow-x-auto max-md:[scrollbar-width:none] md:flex-wrap md:justify-center md:gap-x-10 md:py-[10px]"
         >
           <SectionLinks />
         </nav>

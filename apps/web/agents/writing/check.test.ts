@@ -60,6 +60,16 @@ describe("every team and player named is in the facts", () => {
     passes("Beniers scored twice. Seattle's lead held. Nobody scored after that for the Capitals.");
   });
 
+  test("a sentence may open with a participle or an adverb, which is no name", () => {
+    passes(
+      "Trailing by 1, the Capitals pulled even. Tied late, the Kraken found a winner. Twice they led.",
+    );
+    // Not when it stands with a second capital: that is a name.
+    expect(refused("Trailing Edmonton, the Kraken pulled even.")).toEqual([
+      'names "Edmonton", which is not in the facts',
+    ]);
+  });
+
   test("a headline in title case is refused: its capitals read as names", () => {
     const reasons = checkPiece(
       { headline: "Kraken Hold Off Capitals", paragraphs: GOOD_PIECE.paragraphs },

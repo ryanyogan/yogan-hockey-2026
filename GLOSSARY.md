@@ -40,6 +40,10 @@ _Avoid_: Highlight, major event
 The site's pick for an NHL game, made once before it starts: the team expected to win, a win probability, and a short reasoning. It never changes after it is made. Shown on the site as "the pick".
 _Avoid_: Forecast, odds, tip, Claude's pick
 
+**Piece**:
+A short article the site prints that a model wrote from facts the site holds: a recap of the night's finals, a preview of tonight's games with the picks, a note on the standings. It is checked against those facts before it is published, and always says a model wrote it.
+_Avoid_: Article, post, story (a Story is a game), AI article
+
 **Parity Reference**:
 The Elixir app in `ryanyogan/yogan_hockey`, whose seven routes define the minimum functionality the rebuild must match.
 _Avoid_: Old site, legacy app

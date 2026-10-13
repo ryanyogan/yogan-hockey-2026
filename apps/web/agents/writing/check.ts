@@ -71,6 +71,14 @@ const OPENERS = new Set(
     .map(bare),
 );
 
+/**
+ * A sentence also opens with a participle or an adverb often enough ("Trailing by one", "Tied
+ * after two", "Twice the Kraken led") that no list holds them all. A surname can end the same way
+ * (a Fleming, a Reed), so this lets such a name through when it opens a sentence and stands
+ * alone: the prompt's rule that a player is first named in full is the guard there.
+ */
+const ORDINARY_OPENER = /^\p{Lu}\p{Ll}+(?:ing|ed|ly)$|^Twice$|^Thrice$/u;
+
 /** A game of the facts as the pick rules need it. */
 type PickedGame = { teams: [string, string]; pick: string | null; outcome?: "right" | "wrong" };
 
@@ -168,7 +176,8 @@ function checkNames(sentence: string, index: Index, reasons: Set<string>): void 
     if (!known) {
       previous = null;
       if (ALWAYS.has(word)) continue;
-      if (position === 0 && OPENERS.has(word.toLowerCase())) continue;
+      if (position === 0 && (OPENERS.has(word.toLowerCase()) || ORDINARY_OPENER.test(word)))
+        continue;
       // "Kraken-Canucks": each half is a name of its own.
       const parts = word.split("-");
       if (parts.length > 1) {

@@ -21,6 +21,7 @@ export default defineConfig(async () => ({
           GameAgent: { className: "GameAgent", useSQLite: true },
           ScoreboardAgent: { className: "ScoreboardAgent", useSQLite: true },
           SkeletonAgent: { className: "SkeletonAgent", useSQLite: true },
+          WriterAgent: { className: "WriterAgent", useSQLite: true },
         },
         d1Databases: ["DB"],
         kvNamespaces: ["CACHE"],

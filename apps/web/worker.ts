@@ -1,6 +1,7 @@
 import site from "@tanstack/react-start/server-entry";
 import { routeAgentRequest } from "agents";
 
+import { wakeWriterOnce } from "./agents/wake-writer";
 import { spaceEndedAddress, trailingSlashLocation } from "./lib/canonical-address";
 import { legacyPageLocation } from "./lib/legacy-page-redirect";
 import { answerWithRenderStatus } from "./lib/render-failure";
@@ -8,7 +9,9 @@ import { answerWithRenderStatus } from "./lib/render-failure";
 export * from "./agents";
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
+    // The Writer runs on its own schedules, which it sets when it is first started (#217).
+    wakeWriterOnce(ctx);
     if (new URL(request.url).pathname.startsWith("/agents/")) {
       const response = await routeAgentRequest(request, env);
       return response ?? new Response("No such agent", { status: 404 });

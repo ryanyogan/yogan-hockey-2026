@@ -11,11 +11,16 @@ vi.mock("agents", async (actual) => ({
   routeAgentRequest: vi.fn(async () => null),
 }));
 
+// Waking the Writer is the Agents' business (`agents/wake-writer.test.ts`); here it is only seen.
+const wakeWriterOnce = vi.hoisted(() => vi.fn());
+vi.mock("../agents/wake-writer", () => ({ wakeWriterOnce }));
+
 const { default: worker } = await import("../worker");
 
 type Asked = Parameters<typeof worker.fetch>[0];
+const CTX = { waitUntil() {}, passThroughOnException() {} } as unknown as ExecutionContext;
 const ask = (path: string, method = "GET") =>
-  worker.fetch(new Request(`https://hockey.test${path}`, { method }) as Asked, {} as Env);
+  worker.fetch(new Request(`https://hockey.test${path}`, { method }) as Asked, {} as Env, CTX);
 /** The address the site was asked for, or null when the entry answered by itself. */
 const askedOfSite = () => site.fetch.mock.calls.at(-1)?.[0].url ?? null;
 
@@ -59,4 +64,11 @@ test("the site is asked for an address as it came, but for one ending in a space
   }
   await ask("/nhl/teams/%20");
   expect(askedOfSite()).toBe("https://hockey.test/nhl/teams/%20/");
+});
+
+test("every request offers to wake the Writer, and waits for nothing", async () => {
+  await ask("/nhl");
+  await ask("/agents/scoreboard-agent/main");
+
+  expect(wakeWriterOnce.mock.calls).toEqual([[CTX], [CTX]]);
 });

@@ -26,7 +26,10 @@ export class EspnParseError extends Error {
   }
 }
 
-/** ESPN did not answer, or answered with an error status. */
+/**
+ * ESPN did not answer, or answered with an error status, or answered that it has no such thing
+ * (`EspnNotFoundError`, below). `notFound` tells the last from the rest.
+ */
 export class EspnFetchError extends Error {
   override readonly name = "EspnFetchError";
   readonly endpoint: string;
@@ -39,8 +42,28 @@ export class EspnFetchError extends Error {
     this.status = status;
   }
 
-  /** ESPN has no such team (or other thing asked for by id). It says so with a 400, not a 404. */
+  /**
+   * ESPN has no such team, player or game. It says so with a 404, with a 400 (a team's schedule,
+   * an id too long to be an athlete's), or with a 200 that has nothing in it (`EspnNotFoundError`).
+   */
   get notFound(): boolean {
     return this.status === 400 || this.status === 404;
+  }
+}
+
+/**
+ * ESPN answered 200, and what it sent says it has no such thing: `{}` for a team id no team has.
+ * A fetch error like its 404 for an unknown player, so one test (`notFound`) covers every way
+ * ESPN says it, and a response the site cannot read stays an `EspnParseError`.
+ */
+export class EspnNotFoundError extends EspnFetchError {
+  constructor(endpoint: string, reason: string) {
+    super(endpoint, 200, reason);
+    // It was fetched: what the parent's sentence says of it would be untrue.
+    this.message = `ESPN ${endpoint}: ${reason}`;
+  }
+
+  override get notFound(): boolean {
+    return true;
   }
 }

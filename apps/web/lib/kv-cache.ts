@@ -43,6 +43,14 @@ const kv: Cache = {
 /**
  * What `read` answers, kept under `key` and fresh for `seconds`. `staleFor` is how long past that
  * it may still be answered, in seconds, for what is worse old than missing.
+ *
+ * The read is finished whether or not its caller waits for it. cachified keeps a read in progress
+ * in this isolate's memory and hands it to whoever asks for the same key meanwhile. A page that
+ * answers before one of its reads has (another read failed first, say) ends its request, and the
+ * runtime drops the request's unfinished work: that read then never settles, never leaves
+ * cachified's memory, and every later request for the key in the isolate waits on it for good
+ * (#238: `/players/<an unknown id>` gave no answer for 40 seconds and more). `waitUntil` keeps
+ * the request alive until the read has settled, which ESPN's ten-second limit bounds.
  */
 export function cached<Value>(
   key: string,
@@ -50,7 +58,7 @@ export function cached<Value>(
   read: () => Promise<Value>,
   staleFor: number = STALE_FOR,
 ): Promise<Value> {
-  return cachified<Value>({
+  const answer = cachified<Value>({
     key,
     cache: kv,
     ttl: seconds * SECOND,
@@ -59,6 +67,9 @@ export function cached<Value>(
     // The read behind a stale answer outlives the request or the Agent's call that asked.
     waitUntil,
   });
+  // A failure is the caller's to hear, not this.
+  waitUntil(answer.catch(() => {}));
+  return answer;
 }
 
 /** Deletes keys, so the next read of each is a fresh one. Resolves once they are gone. */

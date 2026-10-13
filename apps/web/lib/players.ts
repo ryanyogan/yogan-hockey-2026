@@ -44,18 +44,35 @@ export type Player = {
 /** ESPN's athlete ids are digits. Anything else is not asked for, and not cached. */
 const ESPN_ID = /^\d{1,12}$/;
 
-/** A player by the `:id` of his page. Null when there is no such player. */
+/**
+ * A player by the `:id` of his page. Null when there is no such player, which his profile alone
+ * says: ESPN's stats sometimes answer 500 for an id it does not know, where the profile answers
+ * 404 every time. So a missing profile is a missing player whatever the other two reads did, and
+ * with the profile read, a failure of either of them is ESPN failing for a player who exists.
+ *
+ * The profile's answer is the page's as soon as it is in: a missing player is not kept waiting
+ * for his stats, which can take ESPN's ten seconds to fail. The other two reads are asked for at
+ * the same moment and are not answered before the profile is, so a failure of theirs that arrives
+ * first is never mistaken for his. A read the page does not wait for is still finished: `cached`
+ * in `lib/kv-cache.ts` hands each to `waitUntil`, and says what leaving one behind used to cost.
+ */
 export async function loadPlayer(playerId: string): Promise<Player | null> {
   if (!ESPN_ID.test(playerId)) return null;
+  const profileRead = cachedPlayer(playerId);
+  // Settled, so that neither rejects unheard when the profile has answered for the page.
+  const otherReads = Promise.allSettled([
+    cachedPlayerCareer(playerId),
+    cachedPlayerGameLog(playerId),
+  ]);
+  let profile: Player["profile"];
   try {
-    const [profile, career, gameLog] = await Promise.all([
-      cachedPlayer(playerId),
-      cachedPlayerCareer(playerId),
-      cachedPlayerGameLog(playerId),
-    ]);
-    return { profile, career, gameLog };
+    profile = await profileRead;
   } catch (error) {
     if (error instanceof EspnFetchError && error.notFound) return null;
     throw error;
   }
+  const [career, gameLog] = await otherReads;
+  if (career.status === "rejected") throw career.reason;
+  if (gameLog.status === "rejected") throw gameLog.reason;
+  return { profile, career: career.value, gameLog: gameLog.value };
 }

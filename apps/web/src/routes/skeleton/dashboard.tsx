@@ -7,8 +7,9 @@ import { titled } from "../../head";
 /*
  * Scaffolding: Home drawn from a slate that is not today's, because no recorded ESPN slate has a
  * game in progress. The standings and the news are the real ones, and the masthead
- * above still shows the real slate. `?slate=` and `?picks=1` choose the sample, and `?news=0`
- * draws the page as it is when ESPN's news cannot be read (`readSampleDashboard`).
+ * above still shows the real slate. `?slate=` and `?picks=1` choose the sample, `?news=0`
+ * draws the page as it is when ESPN's news cannot be read, and `?pieces=0` as it is when no piece
+ * has been published (`readSampleDashboard`).
  */
 export const Route = createFileRoute("/skeleton/dashboard")({
   loaderDeps: ({ search }: { search: Record<string, unknown> }) => ({
@@ -16,6 +17,7 @@ export const Route = createFileRoute("/skeleton/dashboard")({
     // Anything given for `picks` is yes, as it was when the address was read as text.
     picks: "picks" in search && search.picks !== "",
     news: search.news !== 0 && search.news !== "0",
+    pieces: search.pieces !== 0 && search.pieces !== "0",
   }),
   loader: ({ deps }) => readSampleDashboard({ data: deps }),
   head: ({ match }) => titled(match, "Sample dashboard"),
@@ -23,10 +25,10 @@ export const Route = createFileRoute("/skeleton/dashboard")({
 });
 
 function SampleDashboardPage() {
-  const { scoreboard, picks, record, standings, news } = Route.useLoaderData();
+  const { scoreboard, picks, record, standings, pieces, news } = Route.useLoaderData();
   return (
     <StaticScoreboard scoreboard={scoreboard}>
-      <Dashboard picks={picks} record={record} standings={standings} news={news} />
+      <Dashboard picks={picks} record={record} standings={standings} pieces={pieces} news={news} />
     </StaticScoreboard>
   );
 }

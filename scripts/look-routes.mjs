@@ -4,6 +4,8 @@
 
 export const TEAM = "21";
 export const PLAYER = "4024123";
+/** The sample preview (`apps/web/lib/sample-pieces.ts`), seeded with the sample picks. */
+export const PIECE = "2026-10-06-preview";
 const FINAL_GAME = "401803652";
 const SCHEDULED_GAME = "401892449";
 
@@ -22,6 +24,7 @@ export const ROUTES = [
   { name: "game-scoring", path: `/nhl/games/${FINAL_GAME}/scoring`, place: "Scores" },
   { name: "game-pick", path: `/nhl/games/${FINAL_GAME}/pick`, place: "Scores" },
   { name: "game-scheduled", path: `/nhl/games/${SCHEDULED_GAME}`, place: "Scores" },
+  { name: "piece", path: `/pieces/${PIECE}` },
   { name: "not-found", path: "/no-such-page", status: 404 },
   // An id that is no team's: its own page, with a link back to the teams.
   { name: "team-not-found", path: "/nhl/teams/leafs", status: 404, place: "Teams" },
@@ -32,7 +35,10 @@ export const ROUTES = [
   { name: "sample-live", path: "/skeleton/live" },
 ];
 
-/** The sample picks, so a slate's rows and a game's pick tab have something to show. */
+/**
+ * The sample picks, so a slate's rows and a game's pick tab have something to show, and the
+ * sample pieces, which the same button writes, so Home has its pieces and a piece has its page.
+ */
 export async function seedPicks(browser, baseURL) {
   const page = await browser.newPage();
   await page.goto(`${baseURL}/skeleton/picks`, { waitUntil: "networkidle" });

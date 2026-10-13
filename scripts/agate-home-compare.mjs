@@ -13,7 +13,8 @@
 // its type, its rules, paddings and margins, its grid, and its box (the place measured from the
 // top of `<main>`, since the mastheads above are not the same slate). The standings' clubs differ
 // (the site's are the recorded fixtures), which their fixed columns do not show. The headlines
-// are the same on both: the prototype's are the recorded news, which fixture mode answers.
+// are the same on both: the prototype's are the recorded news, which fixture mode answers. So
+// are the written pieces: both draw the samples of `apps/web/lib/sample-pieces.ts`.
 //
 // Home is built of the `packages/ui` primitives, which draw three things another way than the
 // prototype's CSS does, to the same picture; the script reads each as what is drawn:
@@ -66,6 +67,15 @@ const PARTS = [
   ["brief pick", ".brief__pick", '[data-slot="brief-pick"]'],
   ["brief mark", ".brief .mark", '[data-slot="brief"] [data-slot="pick-outcome"]'],
   ["brief no pick", ".brief__pick .dim", '[data-slot="brief-pick"] > span:not([data-slot])'],
+  ["pieces", ".pieces", '[data-slot="pieces"]'],
+  ["pieces label", ".pieces > .label", "#pieces-heading"],
+  ["piece list", ".piece-list", '[data-slot="pieces"] > div'],
+  ["piece", ".piece", '[data-slot="piece"]'],
+  ["piece kicker", ".piece__kicker", '[data-slot="piece-kicker"]'],
+  ["piece headline", ".piece__headline", '[data-slot="piece-headline"]'],
+  ["piece headline link", ".piece__headline a", '[data-slot="piece-headline"] a'],
+  ["piece deck", ".piece__deck", '[data-slot="piece-deck"]'],
+  ["piece byline", ".piece__byline", '[data-slot="piece-byline"]'],
   ["news", ".news", '[data-slot="news"]'],
   ["news label", ".news > .label", "#news-heading"],
   ["news list", ".news-list", '[data-slot="news"] ul'],

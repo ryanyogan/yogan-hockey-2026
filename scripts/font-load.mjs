@@ -43,7 +43,15 @@ import { writeFile } from "node:fs/promises";
 import { chromium } from "@playwright/test";
 
 const [baseURL = "http://localhost:5173", out] = process.argv.slice(2);
-const PATHS = ["/", "/nhl", "/nhl/teams/21", "/players/4024123", "/nhl/games/401803652"];
+const PATHS = [
+  "/",
+  "/nhl",
+  "/nhl/teams/21",
+  "/players/4024123",
+  "/nhl/games/401803652",
+  // A written piece: there once the sample picks and pieces are seeded (`/skeleton/picks`).
+  "/pieces/2026-10-06-preview",
+];
 const WIDTHS = { 390: 844, 1440: 900 };
 const HOLD_MS = 2000;
 const SWAP_CLS = 0.05;

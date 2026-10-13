@@ -16,7 +16,7 @@
 // no strip of tabs that scrolls.
 import { mkdir } from "node:fs/promises";
 import { chromium } from "@playwright/test";
-import { seedPicks, TEAM } from "./look-routes.mjs";
+import { PIECE, seedPicks, TEAM } from "./look-routes.mjs";
 
 const [baseURL = "http://localhost:5173", scratchDir = "node_modules/.tmp/agate-routes", only] =
   process.argv.slice(2);
@@ -38,6 +38,8 @@ const KEPT = new Set([
   "team-roster-1440-light",
   "team-stats-390-dark",
   "team-not-found-390-light",
+  "piece-390-light",
+  "piece-1440-dark",
 ]);
 const MAX_HEIGHT = Number(process.env.MAX_HEIGHT ?? 1500);
 const WIDTHS = [390, 1440];
@@ -58,6 +60,8 @@ const ROUTES = [
   { name: "team-roster", path: `/nhl/teams/${TEAM}/roster` },
   { name: "team-stats", path: `/nhl/teams/${TEAM}/stats` },
   { name: "team-not-found", path: "/nhl/teams/leafs", status: 404 },
+  // A written piece (#217): the sample preview, which `seedPicks` writes with the picks.
+  { name: "piece", path: `/pieces/${PIECE}` },
 ].filter((route) => only == null || route.name.startsWith(only));
 
 /** Runs in the page: everything under `<main>` that is outside the system. */

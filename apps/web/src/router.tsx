@@ -1,6 +1,7 @@
 import { createRouter } from "@tanstack/react-router";
 import { ErrorPage } from "../components/shell/error-page";
 import { NotFoundPage } from "../components/shell/not-found-page";
+import { restoreScrollAfterHydration } from "../lib/scroll-on-hydration";
 import { parseSearchText, stringifySearchText } from "../lib/search-text";
 import { quietSkippedTransitions } from "../lib/skipped-transition";
 import { routeTree } from "./routeTree.gen";
@@ -33,16 +34,19 @@ export const ADDRESS_RULES = { caseSensitive: true, trailingSlash: "preserve" } 
  * - No route has a pending component, so the page left stays until the next is ready.
  * - A navigation is a view transition where the browser has them (`globals.css` stills it for a
  *   visitor who asked for less motion).
+ * - The scroll is the router's to put back (Back returns to where a page was left, a new page
+ *   opens at its top), except at hydration, when it is the reader's (`lib/scroll-on-hydration.ts`).
  * - A query string is text, read and written as the address spells it (`lib/search-text.ts`).
  *   The router's own way is JSON, under which `?q=99` is a number and is written back in quotes.
  */
 export function getRouter() {
+  const inBrowser = typeof document !== "undefined";
   // In the browser: a navigation overtaken by the next is not an error of the page's.
-  if (typeof document !== "undefined") quietSkippedTransitions(document);
+  if (inBrowser) quietSkippedTransitions(document);
   return createRouter({
     routeTree,
     ...ADDRESS_RULES,
-    scrollRestoration: true,
+    scrollRestoration: restoreScrollAfterHydration(inBrowser),
     defaultStaleTime: FRESH_FOR,
     defaultPreloadStaleTime: FRESH_FOR,
     defaultPreload: "intent",

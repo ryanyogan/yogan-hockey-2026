@@ -30,7 +30,7 @@ jobs:
   check:
     name: Live ESPN check
     runs-on: ubuntu-24.04
-    # The check alone can take eleven minutes when ESPN hangs: up to eighteen endpoints, three
+    # The check alone can take eleven minutes when ESPN hangs: up to nineteen endpoints, three
     # tries each of up to ten seconds, six seconds of waits between them. The report step has to
     # come after that, so the limit is well past it.
     timeout-minutes: 20

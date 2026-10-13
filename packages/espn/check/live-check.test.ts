@@ -82,6 +82,7 @@ describe("the daily live check", () => {
       "ok athletes/4024123/gamelog",
       "ok athletes/3067313/gamelog",
       "ok search",
+      "ok news",
       `ok ${FIRST_SCHEDULED.name}`,
       `ok ${IDLE_TEAM.name}`,
     ]);
@@ -120,6 +121,32 @@ describe("the daily live check", () => {
     ]);
   });
 
+  test("news whose articles have all changed shape is a parse failure, and one odd article is not", async () => {
+    const { recorded } = await recordedEspn();
+    const news = endpoints.news().url;
+    const oneOdd = await recordedEspn({
+      [news]: changed(recorded.get(news), (response) => {
+        delete response.articles[0].links;
+      }),
+    });
+    const allChanged = await recordedEspn({
+      [news]: changed(recorded.get(news), (response) => {
+        for (const article of response.articles) article.links = { web: null };
+      }),
+    });
+
+    expect((await check(oneOdd.fetcher)).ok).toBe(true);
+    const summary = await check(allChanged.fetcher);
+
+    expect(summary.results.filter((result) => result.outcome !== "ok")).toEqual([
+      expect.objectContaining({
+        endpoint: "news",
+        outcome: "parse-failure",
+        issues: [expect.stringMatching(/^articles\[\]\.links\.web: .*\(12 places, first at /)],
+      }),
+    ]);
+  });
+
   test("reports every failure, not only the first, and still checks the rest", async () => {
     const { recorded } = await recordedEspn();
     const { fetcher } = await recordedEspn({
@@ -136,7 +163,7 @@ describe("the daily live check", () => {
       "search",
     ]);
     // The second team is chosen from the team list, which failed.
-    expect(summary.results).toHaveLength(15);
+    expect(summary.results).toHaveLength(16);
     // A page that is not JSON is ESPN being down, not ESPN changing shape, and is tried again.
     expect(summary.results.find((r) => r.endpoint === "search")).toMatchObject({
       outcome: "fetch-failure",
@@ -287,7 +314,7 @@ describe("the daily live check", () => {
     expect(summary.results.filter((r) => r.outcome !== "ok").map((r) => r.endpoint)).toEqual([
       "scoreboard",
     ]);
-    expect(summary.results).toHaveLength(14);
+    expect(summary.results).toHaveLength(15);
     expect(summary.notChecked).toEqual([
       "the summaries of games on today's slate, and a second team: today's scoreboard failed",
     ]);
@@ -376,7 +403,7 @@ describe("the check's report", () => {
 
     expect(report).toContain("ok    scoreboard\n");
     expect(report).toContain("not checked: the summary of a live game: none on today's slate");
-    expect(report.trimEnd().split("\n").at(-1)).toBe("ESPN check passed: 16 endpoints.");
+    expect(report.trimEnd().split("\n").at(-1)).toBe("ESPN check passed: 17 endpoints.");
   });
 
   test("says which endpoint failed, how, and where in the response", async () => {
@@ -395,7 +422,7 @@ describe("the check's report", () => {
     expect(report).toContain("FETCH standings\n");
     expect(report).toContain("ESPN standings could not be fetched: HTTP 503 (3 tries)");
     expect(report.trimEnd().split("\n").at(-1)).toBe(
-      "ESPN check FAILED: 1 parse failure (ESPN changed shape), 1 fetch failure (ESPN or the network was down), of 15 endpoints.",
+      "ESPN check FAILED: 1 parse failure (ESPN changed shape), 1 fetch failure (ESPN or the network was down), of 16 endpoints.",
     );
   });
 });

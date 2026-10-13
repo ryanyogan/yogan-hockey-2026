@@ -9,6 +9,7 @@
  */
 import type { Game } from "@yogan-hockey/schemas";
 import { type Endpoint, endpoints } from "../src/endpoints.ts";
+import { translateNews } from "../src/news.ts";
 import {
   translatePlayer,
   translatePlayerCareer,
@@ -57,6 +58,8 @@ const READS: {
   playerGameLog: { translate: translatePlayerGameLog, samples: [[SKATER_ID], [GOALIE_ID]] },
   // Ten players, the most a search returns.
   playerSearch: { translate: translatePlayerSearch, samples: [["mar"]] },
+  // Twelve articles of whatever kinds ESPN's editors have up; the check fails when none can be read.
+  news: { translate: translateNews, samples: [[]] },
 };
 
 /** The request one read makes for these arguments, with its translation. */

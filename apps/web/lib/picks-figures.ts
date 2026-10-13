@@ -115,7 +115,10 @@ function tally(calls: readonly Decided[]): Tally {
 
 /** The band a chance is in: the last whose lower edge it reaches, and the first under them all. */
 const bandOf = (chance: number): number =>
-  Math.max(0, BANDS.findLastIndex((band) => Math.floor(chance) >= band.from));
+  Math.max(
+    0,
+    BANDS.findLastIndex((band) => Math.floor(chance) >= band.from),
+  );
 
 /** The firmest of some calls: the highest chance, then the wider margin, then the later game. */
 function firmest(calls: readonly Decided[]): Call | null {

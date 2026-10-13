@@ -86,14 +86,16 @@ export const howWritten = (model: string): string =>
  *
  * `now` null is no clock at all: fixture mode, where the recorded slate is one day's for ever.
  */
-function shownPieces(pieces: readonly Piece[], now: Date | null, kinds: readonly string[]): Piece[] {
+function shownPieces(
+  pieces: readonly Piece[],
+  now: Date | null,
+  kinds: readonly string[],
+): Piece[] {
   const oldest = now == null ? Number.NEGATIVE_INFINITY : now.getTime() - HOME_PIECE_HOURS * 3600e3;
   return pieces
     .filter((piece) => kinds.includes(piece.kind) && Date.parse(piece.writtenAt) >= oldest)
     .map((piece, index) => ({ piece, index }))
-    .sort(
-      (a, b) => kinds.indexOf(a.piece.kind) - kinds.indexOf(b.piece.kind) || a.index - b.index,
-    )
+    .sort((a, b) => kinds.indexOf(a.piece.kind) - kinds.indexOf(b.piece.kind) || a.index - b.index)
     .slice(0, MAX_HOME_PIECES)
     .map(({ piece }) => piece);
 }

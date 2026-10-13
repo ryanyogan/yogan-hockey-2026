@@ -45,7 +45,9 @@ function Stat({ figure, name }: { figure: string; name: string }) {
   return (
     <div data-slot="picks-stat" className="flex flex-col-reverse gap-1">
       <dt className="font-strong text-head text-label uppercase tracking-head">{name}</dt>
-      <dd className="whitespace-nowrap font-serif font-strong text-stat lining-nums">{figure}</dd>
+      <dd className="whitespace-nowrap font-serif font-strong text-stat tabular-nums lining-nums">
+        {figure}
+      </dd>
     </div>
   );
 }
@@ -117,7 +119,10 @@ function CallLine({ name, call }: { name: string; call: Call | null }) {
         {name}
       </dt>
       <dd className="mt-1 max-w-[680px] font-serif text-prose">
-        <Link href={gameHref({ id: call.gameId })} className="tap-target hover:underline">
+        <Link
+          href={gameHref({ id: call.gameId })}
+          className="tap-target block hover:underline max-md:min-h-11"
+        >
           {callSentence(call)}
         </Link>
       </dd>

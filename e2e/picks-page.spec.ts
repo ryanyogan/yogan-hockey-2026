@@ -41,5 +41,11 @@ test("the Picks page is in the masthead, and has its figures, tonight's picks an
   ]);
   await columns.getByRole("link").first().click();
   await expect(page).toHaveURL("/pieces/2026-10-06-picks-tonight");
-  await expect(page.locator('[data-slot="piece-byline"]')).toContainText("Written by a model");
+  // A column's page is a piece's, and the masthead still says Picks there.
+  await expect(page.locator('[data-slot="piece-page"] [data-slot="piece-byline"]')).toContainText(
+    "Written by a model",
+  );
+  await expect(
+    page.getByRole("navigation", { name: "Site" }).locator('[aria-current="page"]'),
+  ).toHaveText("Picks");
 });

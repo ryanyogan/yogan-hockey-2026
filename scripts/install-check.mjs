@@ -1,6 +1,6 @@
 // Checks that the site can be installed to a home screen, as far as a desktop Chromium can say,
 // and shoots the Agate masthead as an installed site would draw it on a phone with a notch and a
-// home bar: upright (the section nav stuck under the status bar) and on its side.
+// home bar: upright (the sections' bar stuck under the status bar) and on its side.
 // Usage: TMPDIR=~/.cache/install-check node scripts/install-check.mjs [baseURL] [outDir]
 // (a short TMPDIR: the full Chromium puts a socket there and dies on a worktree's long path).
 // Writes <outDir>/report.json and the shots, and exits 1 when a check fails.
@@ -26,7 +26,7 @@ const [base = "http://localhost:5173", out = "node_modules/.tmp/install-check"] 
 const INSETS = { top: 47, right: 0, bottom: 34, left: 0 };
 const PHONE = { width: 390, height: 844 };
 // The same phone on its side: the notch at one end, and wide enough for the desk's masthead
-// (the theme's control at the end of the sections' row).
+// (the theme's control at the end of the sections' bar).
 const SIDEWAYS = { width: 844, height: 390 };
 const SIDEWAYS_INSETS = { top: 0, right: 47, bottom: 21, left: 47 };
 // A small phone on its side is still narrower than `md`: it keeps the phone's masthead (the
@@ -257,7 +257,7 @@ async function standalone(theme) {
 
 /**
  * The phone on its side, the notch at one end: wide enough for the desk's masthead at 844, and
- * still the phone's at 667. The sections are under the wordmark at both.
+ * still the phone's at 667. The sections' bar is above the wordmark at both.
  */
 async function sideways(viewport) {
   const name = `sideways ${viewport.width}`;
@@ -285,8 +285,8 @@ async function sideways(viewport) {
   const { left, right, bottom } = SIDEWAYS_INSETS;
   const top = await page.evaluate(measure);
   check(
-    `${name}: the sections are under the wordmark`,
-    top.sectionNavShown && top.sectionNavBox.top >= top.mastheadContent[0]?.bottom - 0.5,
+    `${name}: the sections' bar is above the wordmark`,
+    top.sectionNavShown && top.sectionNavBox.bottom <= top.mastheadContent[0]?.top + 0.5,
     top,
   );
   const pressed = [...top.mastheadContent, ...top.sectionNavPlaces];

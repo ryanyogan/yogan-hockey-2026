@@ -49,7 +49,7 @@ The Elixir app in `ryanyogan/yogan_hockey`, whose seven routes define the minimu
 _Avoid_: Old site, legacy app
 
 **Dateline**:
-The line under the wordmark on every page: the date, tonight's games counted by state, and the season's picks record. One short line on a phone.
+The line under the wordmark on every page: tonight's games counted by state, and the season's picks record. One short line on a phone. The date is not on it: it is on the sections' bar above the wordmark, or under the wordmark where the bar has no room.
 _Avoid_: Status bar, summary line, header counts
 
 **Lead**:

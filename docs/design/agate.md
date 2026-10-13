@@ -63,8 +63,8 @@ All numbers are `tabular-nums`. Records never break across lines: wrap them in w
 
 | Rule | CSS | Where |
 |---|---|---|
-| Heavy | `3px solid var(--rule)` | top of every story, top of the lower band, top of the masthead's double rule (over the sections) |
-| Plain | `1px solid var(--rule)` | second line of the double rule, under the sections, under the dateline at a desk, line-score frame, conference title underline, picks box |
+| Heavy | `3px solid var(--rule)` | top of every story, top of the lower band, top of the sections' bar, top of the masthead's double rule (over the dateline) |
+| Plain | `1px solid var(--rule)` | second line of the double rule, under the sections' bar, under the dateline at a desk, line-score frame, conference title underline, picks box |
 | Hairline | `1px solid var(--rule-head)` | under column heads, under the phone's dateline |
 | Dotted | `1px dotted var(--border)` | between agate rows (standings, line score, briefs) |
 
@@ -72,12 +72,16 @@ A live story swaps its heavy top rule to `--live`.
 
 ## Page anatomy (Home)
 
-**Masthead** (changed in #216: the wordmark leads, as a newspaper's nameplate and ryanyogan.com's)
-- The **wordmark** is the first thing on the page at every width, centred, with nothing above it. It is Home's `h1` and a paragraph on every other page.
-- Under it, the **sections** (Home, Scores, Standings, Teams, Players; the current one in `--kicker`) in one row between the double rule (3px, a 2px gap, 1px) and a plain rule. The row is `position: sticky` at every width: it stays at the top of the screen as the page scrolls, below the status bar of an installed site (`--safe-top`), and is 51px with its rules (`--section-nav`, which is also the page's `scroll-padding-top`). At a desk the sections are centred in the row and the **Day/Night control** is at its right end: two cells as tall as the row, the theme shown filled in.
-- Under the sections, the **dateline** over a plain rule: the long date, "Tonight: N games · X live · Y to come · Z final" (zero counts dropped), and "Picks this season: R right, W wrong". The record is in the page's first HTML and is read again when a game goes final or a pick is made.
-- The sections are written once. The theme control is written twice and drawn once (the end of the sections' row at a desk, the end of the dateline on a phone), so one is `display: none` at any width. The `<header>` (the banner) holds the wordmark and the phone's date; the sections' row and the dateline are its siblings in the page's column, as a sticky row must be.
-- A sixth section fits: Picks (#218) makes the desk's sections about 430px of the 720 the `md` breakpoint has, and on a 390px phone six are 350px of the row's 358 (`?picks=1` on the prototype draws it). At 360px six scroll sideways by 22px; five fit.
+**Masthead** (the sections' bar is above the wordmark again, restyled, since Oct 12 2026; #216 had put the sections under it)
+- The **sections' bar** is the first thing on the page at every width: a heavy rule, a 44px line, a plain rule (48px, `--section-nav`, which is also the page's `scroll-padding-top`). It is `position: sticky`: it stays at the top of the screen as the page scrolls, below the status bar of an installed site (`--safe-top`).
+- At a desk (from `lg`, 1024px) the bar is one line in three parts: the **date** at the left (13px medium capitals, the dateline's type), the **sections** in the middle, and **Day/Night** at the right end.
+- A **section** (Home, Scores, Standings, Teams, Players) is a cell of the bar: 14px semibold capitals tracked at .14em, 18px either side, a 13px hairline in `--border` between it and the next. What marks a cell is a 3px segment of rule along its foot, on the bar's own rule: `--kicker` for the current section, whose word is in `--kicker` too, and ink for the one under the pointer. The segment is always there and clear until wanted, so marking a cell moves nothing. Keyboard focus is the site's outline, drawn inside the cell.
+- **Day/Night** are two more cells (12px, tracked at .14em): the theme shown is in ink over an ink segment, the other in `--label` until the pointer is on it.
+- From `md` to `lg` the bar has no room for the date: the sections start it, Day/Night ends it, and the date is a line under the wordmark, as on a phone.
+- Under the bar the **wordmark**, centred. It is Home's `h1` and a paragraph on every other page.
+- Under the wordmark the **dateline**, between the double rule (3px, a 2px gap, 1px) and a plain rule: "Tonight: N games · X live · Y to come · Z final" (zero counts dropped) at the left and "Picks this season: R right, W wrong" at the right. The record is in the page's first HTML and is read again when a game goes final or a pick is made.
+- The sections are written once. The date and the theme control are each written twice and drawn once (the date on the bar or under the wordmark; the control at the end of the bar or, on a phone, of the dateline), so one of each is `display: none` at any width. The `<header>` (the banner) holds the wordmark and the date under it; the bar and the dateline are its siblings in the page's column, as a sticky bar must be.
+- A sixth section fits: with Picks (#218) the desk's sections are about 580px, which with Day/Night is 700 of the 720 the `md` breakpoint has. On a 390px phone six fit as they are (the narrowest cell 46px). On a 360px one they need a size down, 12px tracked at .04em with 2px either side, below 375px: the narrowest cell is then 44px and nothing scrolls sideways. `?picks=1` on the prototype draws all of it; the site has neither the link nor that rule until the page exists. At exactly 1024px six sections leave the date about 195px a side, which the longest date ("Wednesday, September 30", about 205px, estimated) does not fit on one line: when the link is added, measure it, and move the date's breakpoint up if so.
 
 **NHL Roundup: leads.**
 - Up to three games are drawn as full stories in a `repeat(auto-fit, minmax(300px, 1fr))` grid. Each story, top to bottom:
@@ -132,9 +136,9 @@ A live story swaps its heavy top rule to `--live`.
 
 | Desktop | Phone |
 |---|---|
+| The bar in three parts: the date, the sections, Day/Night | The bar holds the sections alone: the cells share its width (each its word and an even part of what is left, never under 44px), 13px tracked at .06em with 3px either side, no hairlines between; the current one's segment is as wide as its cell |
 | Wordmark, then the double rule | The long date in a line under the wordmark (12px capitals in `--label`), then the double rule |
-| Sections centred in their row, tracked at .1em, Day/Night text buttons at its right end | Sections spread across the row, 3px either side of each and tracked at .06em, which scrolls sideways before it wraps; each item 44px tall |
-| Three-part dateline, the date first | One line: "3 games · 3 final · Picks 29–14", with one icon button at its right end that switches theme (moon by day, sun by night; named "Day" or "Night"). The line is 44px for the button, over a hairline |
+| Two-part dateline | One line: "3 games · 3 final · Picks 29–14", with one icon button at its right end that switches theme (moon by day, sun by night; named "Day" or "Night"). The line is 44px for the button, over a hairline |
 | Story grid | Stories stacked; headline 34px |
 | Briefs in 4 columns | One column |
 | Written pieces in 3 columns | Stacked, 28px apart, the headline still 26px; its link reaches a thumb's 44px |
@@ -165,7 +169,7 @@ The prototype draws Home only. Every other route is built from the same tokens, 
 
 The answers to the six questions the design left open, and the calls made while building (#168 to #174). All shipped as written here.
 
-1. **No bottom tab bar on a phone.** The section nav sits under the wordmark and sticks to the top of the screen, at a desk as on a phone (#216).
+1. **No bottom tab bar on a phone.** The sections' bar is the first thing on the page and sticks to the top of the screen, at a desk as on a phone.
 2. **A slim score strip on every page but Home**, where the roundup and the briefs are the scores.
 3. **No team marks on Home, in the standings or in any row.** Marks are drawn only in a team's headline, a game page's line score, and the score strip. The assets are still generated.
 4. **The theme control says Day and Night**; next-themes' values stay `light` and `dark`.
@@ -174,13 +178,16 @@ The answers to the six questions the design left open, and the calls made while 
 
 Calls made while building:
 
-- **The masthead leads with the wordmark (#216).** Until then a utility bar sat above it (the sections and Day/Night at a desk; the short date and a theme button on a phone). What was decided, and why:
-  - *Taken from ryanyogan.com:* the name first and centred with nothing above it; a single line under the name (there a tagline, here the phone's date); the sections in their own row between two rules, a lighter one above and the content below; and no control competing with the name.
-  - *The sections sit below the double rule*, between it and a plain rule, and the dateline comes after them. That is the phone's order since #170, so every width now has one arrangement and the sections are written once (they were written twice, one hidden). The double rule stays directly under the nameplate, where a newspaper has it.
-  - *The row is sticky at a desk as on a phone.* A standings table or a game's plays run several screens; the row costs 51px of a desk's height; and one behaviour at every width is one thing to test. It does not move anything: it is in the page's flow until it sticks.
-  - *Day/Night is at the right end of the sections' row at a desk*, where there is room and it stays in reach when the row is stuck, *and at the right end of the dateline on a phone*, where the row is full. The dateline there is left-aligned and 44px tall for it (it was a centred 34px line).
-  - *The date is the dateline's first part at a desk, as before, and a line under the wordmark on a phone*, where the dateline has room for the counts and the record but not for a date as well (with it the line wraps on most nights). It is the long date now, not "Sun, Oct 11".
-  - *Picks (#218) is a sixth section in the same row*, after Players. Nothing was added for it; the phone's sections went from 6px to 3px either side, and from .1em of tracking to .06em, so that six fit a 390px row.
+- **The sections' bar is above the wordmark (Oct 12 2026).** #216 put the sections under the wordmark at every width; Ryan saw it live and said "lets go back to adding the header links above, just give them more style". The bar that had been there before #216 was plain small capitals at the left over a hairline, with two boxed buttons at the right. What was decided, and why:
+  - *A bar with rules of its own*, heavy above and plain below, the width of the column. It is the heavy rule a story hangs from, so the bar reads as part of the page's structure and not as text floating over it.
+  - *One line in three parts*: the date, the sections, Day/Night. The date balances the control at the other end, puts the sections in the middle over the wordmark, and is in view when the bar is stuck. It left the dateline, which now has two parts, one at each end.
+  - *Cells, hairlines and a segment of rule.* The sections are larger and wider-tracked than they were (14px at .14em, from 13px at .1em) with a hairline between them. The current section keeps the one red and gains a 3px red segment on the bar's rule; the pointer gets the same segment in ink. No fills, boxes or pills.
+  - *Day/Night speak the same language*: two cells, the theme shown in ink over an ink segment. The filled block they were would have been the heaviest thing on the bar.
+  - *The bar is the sticky thing at every width*, as the sections' row was in #216. Being first on the page it never moves: it is 48px, 3px shorter than that row.
+  - *On a phone too the sections are above the wordmark.* Five fit a 360px phone in cells of at least 44px, so there was no reason for the phone to differ. The cells share the bar's width, which makes the smallest ("Home") 50px at 360 where its word alone is 42. The date stays a line under the wordmark and the theme's button at the end of the dateline, since the bar is full.
+  - *From `md` to `lg` the date gives way*: six sections, the date and Day/Night are about 830px of a 720px column, so there the bar is the sections and Day/Night, and the date is under the wordmark.
+  - *Picks (#218) is a sixth cell*, after Players. No link was added. Six fit at a desk and on a 390px phone unchanged; a 360px phone needs the size down described above, which the prototype has (`.sections--six`) and the site will take with the link.
+  - *Kept from #216*: the sections written once, one `nav[aria-label="Site"]`, the wordmark as Home's `h1`, the long date on a phone, `scroll-padding-top` at every width.
 - **Home.** The standings' team names are plain text on a phone (40px rows, as drawn) and links from `md` up. Home has no "pick pending" and no "all scores" link. Favorites are not drawn anywhere: the prototype's Favorites block and the site's hearts were removed in #223, until the site has Accounts (#132, #133). The Picks box is not drawn before any pick is decided. Day `--positive` is `#166534`, a step darker than the tuned ledger's green, for AA on the row under the pointer.
 - **ESPN's headlines on Home (#217).** Between the briefs and the lower band, not in the aside: six headlines in a 300px column would run twice the height of the standings beside them. A list under a label, like the briefs, not a band with a serif title: the lower band's heavy rule and "Standings" follow at once, and two titled bands in a row made the news as loud as the games. Videos ("Media" in ESPN's list: highlights and clips) are left out, since a headline list is for reading; recaps, previews, stories and news are all kept, in ESPN's order. The list is ESPN's own and is not narrowed to the league: a college coach's hiring and a fantasy column were in it on the day it was recorded, and they are listed as ESPN lists them. No description, byline or picture is drawn. While ESPN's news cannot be read the last list is shown for six hours and then the section goes. The label names ESPN, so there is no separate credit or "more" link.
 - **The game page.** No club colours on the rink: goals are red, and saves, shots and hits differ by weight and fill, with a key. The score appears in the story header and over the rink.

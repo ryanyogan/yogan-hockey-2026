@@ -139,7 +139,7 @@ const measureShell = async () => {
       .filter((link) => link.getAttribute("aria-current") === "page")
       .map((link) => link.textContent),
     barTop: bar.getBoundingClientRect().top,
-    // Whether the wordmark above the nav has scrolled off the screen.
+    // Whether the wordmark under the bar has scrolled off the screen.
     mastheadGone:
       document.querySelector('[data-slot="masthead"]').getBoundingClientRect().bottom <= 0,
     menuButtons: [...document.querySelectorAll("button")].filter((button) =>

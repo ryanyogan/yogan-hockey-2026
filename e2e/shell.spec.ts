@@ -4,7 +4,7 @@ const DARK_BACKGROUND = "rgb(18, 18, 18)";
 const LIGHT_BACKGROUND = "rgb(250, 250, 248)";
 const SECTIONS = ["Home", "Scores", "Standings", "Teams", "Players", "Picks"];
 
-test("the masthead leads with the wordmark, has the sections under it at any width, and switches theme", async ({
+test("the masthead opens with the sections' bar, above the wordmark at any width, and switches theme", async ({
   page,
 }) => {
   // The operating system asks for dark, and the visitor has not chosen yet.
@@ -17,11 +17,11 @@ test("the masthead leads with the wordmark, has the sections under it at any wid
   // The document a search engine is sent asks not to be indexed, in one tag (#215).
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex");
 
-  // Desktop: the wordmark is the first thing on the page and leads home.
+  // Desktop: the wordmark leads home.
   const masthead = page.getByRole("banner");
   const wordmark = masthead.getByRole("link", { name: "Yogan Hockey" });
   await expect(wordmark).toHaveAttribute("href", "/");
-  // The sections are written once, in a row of their own under the wordmark.
+  // The sections are written once, in a bar of their own above the wordmark.
   const sections = page.getByRole("navigation", { name: "Site" });
   await expect(page.locator('nav[aria-label="Site"]')).toHaveCount(1);
   await expect(sections).toBeVisible();
@@ -29,25 +29,23 @@ test("the masthead leads with the wordmark, has the sections under it at any wid
   const sectionNav = page.locator('[data-slot="section-nav"]');
   const dateline = page.locator('[data-slot="dateline"]');
   const inOrder = async () => {
-    const [name, row, line] = await Promise.all(
-      [wordmark, sectionNav, dateline].map((part) => part.boundingBox()),
+    const [bar, name, line] = await Promise.all(
+      [sectionNav, wordmark, dateline].map((part) => part.boundingBox()),
     );
-    // Nothing a visitor can press is above the wordmark.
-    const above = await page.evaluate(
-      (top) =>
-        [...document.querySelectorAll("a, button")].filter((node) => {
-          const box = node.getBoundingClientRect();
-          return box.height > 0 && box.bottom <= top && !node.matches(".skip-link");
-        }).length,
-      name?.y ?? 0,
-    );
-    expect(above).toBe(0);
-    expect(row?.y).toBeGreaterThanOrEqual((name?.y ?? 0) + (name?.height ?? 0));
-    expect(line?.y).toBeGreaterThanOrEqual((row?.y ?? 0) + (row?.height ?? 0));
+    // With the page at its top, the bar is the first thing on it, and every section in it is
+    // above the wordmark.
+    expect(await page.evaluate(() => scrollY)).toBe(0);
+    expect(bar?.y).toBe(0);
+    for (const place of await sections.getByRole("link").all())
+      expect((await place.boundingBox())?.y).toBeLessThan(name?.y ?? 0);
+    expect(name?.y).toBeGreaterThanOrEqual((bar?.y ?? 0) + (bar?.height ?? 0));
+    expect(line?.y).toBeGreaterThanOrEqual((name?.y ?? 0) + (name?.height ?? 0));
   };
   await inOrder();
+  // The bar is one line in three parts at a desk: the date, the sections, Day/Night.
+  await expect(sectionNav.locator('[data-slot="section-date"]')).toHaveText("Tuesday, October 6");
+  await expect(masthead.locator('[data-slot="masthead-date"]')).toBeHidden();
   // Today's slate at a glance, from the page's one Scoreboard socket, on the dateline.
-  await expect(dateline).toContainText("Tuesday, October 6");
   await expect(dateline).toContainText("Tonight: 9 games · 9 to come");
   await expect(page.getByRole("contentinfo")).toContainText("ESPN");
   // Any page but Home has the score strip under the dateline.
@@ -73,7 +71,7 @@ test("the masthead leads with the wordmark, has the sections under it at any wid
     "content",
     "#121212",
   );
-  // The control is written for both layouts and drawn for one: here, at the end of the row.
+  // The control is written for both layouts and drawn for one: here, at the end of the bar.
   const theme = page.getByRole("group", { name: "Theme" });
   await expect(theme).toHaveCount(1);
   await expect(sectionNav.getByRole("group", { name: "Theme" })).toBeVisible();
@@ -113,7 +111,8 @@ test("the masthead leads with the wordmark, has the sections under it at any wid
     expect(icon.headers()["content-type"], src).toMatch(/^image\//);
   }
 
-  // Phone: the same order, with the date under the wordmark. There is no menu.
+  // Phone: the same order, the bar holding the sections alone and the date under the wordmark.
+  // There is no menu.
   const phone = { width: 390, height: 844 };
   await page.setViewportSize(phone);
   await expect(page.getByRole("button", { name: /menu/i })).toHaveCount(0);
@@ -176,9 +175,17 @@ test("a section followed changes the page under the masthead and leaves it", asy
   await places.getByText("Home", { exact: true }).click();
   await expect(page.getByRole("region", { name: "NHL Roundup" })).toBeVisible();
   await expect(sectionNav.locator('[aria-current="page"]')).toHaveText("Home");
+  // The current section is in the one red, over a segment of rule in it; the others have none.
+  const KICKER = "rgb(200, 16, 46)";
+  await expect(places.getByText("Home", { exact: true })).toHaveCSS("color", KICKER);
+  await expect(places.getByText("Home", { exact: true })).toHaveCSS("border-bottom-color", KICKER);
+  await expect(places.getByText("Scores", { exact: true })).toHaveCSS(
+    "border-bottom-color",
+    "rgba(0, 0, 0, 0)",
+  );
   // Home's page is the scores: it has no strip.
   await expect(strip).toHaveCount(0);
-  // Scrolled to the end, the sections are still at the top of the screen.
+  // Scrolled to the end, the bar is still at the top of the screen.
   await stuck();
   // The masthead is the root route's: a section followed changes the page under it and leaves it.
   await masthead.evaluate((node) => node.setAttribute("data-persistence-check", "kept"));

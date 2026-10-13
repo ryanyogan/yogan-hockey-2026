@@ -607,14 +607,12 @@ describe("the dateline", () => {
     expect(datelineDate(null)).toBeNull();
   });
 
-  test("the desktop's three parts, with zero counts dropped", () => {
+  test("the desktop's two parts, with zero counts dropped", () => {
     expect(dateline(TONIGHT, record).wide).toEqual([
-      "Sunday, October 11",
       "Tonight: 3 games · 3 final",
       "Picks this season: 29 right, 14 wrong",
     ]);
     expect(dateline({ date: "2026-10-06", games: BUSY }, { right: 3, wrong: 2 }).wide).toEqual([
-      "Tuesday, October 6",
       "Tonight: 9 games · 4 live · 2 to come · 3 final",
       "Picks this season: 3 right, 2 wrong",
     ]);
@@ -629,15 +627,11 @@ describe("the dateline", () => {
 
   test("one game is a game, and a day off says so", () => {
     expect(dateline({ date: "2026-10-11", games: [SEA] }, record)).toEqual({
-      wide: [
-        "Sunday, October 11",
-        "Tonight: 1 game · 1 to come",
-        "Picks this season: 29 right, 14 wrong",
-      ],
+      wide: ["Tonight: 1 game · 1 to come", "Picks this season: 29 right, 14 wrong"],
       narrow: "1 game · Picks 29–14",
     });
     expect(dateline({ date: "2026-10-11", games: [] }, record)).toEqual({
-      wide: ["Sunday, October 11", "Tonight: no games", "Picks this season: 29 right, 14 wrong"],
+      wide: ["Tonight: no games", "Picks this season: 29 right, 14 wrong"],
       narrow: "No games · Picks 29–14",
     });
   });
@@ -645,17 +639,17 @@ describe("the dateline", () => {
   test("a postponed game is counted on the desktop", () => {
     const off = { ...LA, status: "postponed" as const };
 
-    expect(dateline({ date: "2026-10-11", games: [WSH, off] }, null).wide[1]).toBe(
+    expect(dateline({ date: "2026-10-11", games: [WSH, off] }, null).wide[0]).toBe(
       "Tonight: 2 games · 1 final · 1 postponed",
     );
   });
 
   test("before any pick is decided, and before the first poll, the parts not known are dropped", () => {
     expect(dateline(TONIGHT, null)).toEqual({
-      wide: ["Sunday, October 11", "Tonight: 3 games · 3 final"],
+      wide: ["Tonight: 3 games · 3 final"],
       narrow: "3 games · 3 final",
     });
-    expect(dateline(TONIGHT, { right: 0, wrong: 0 }).wide).toHaveLength(2);
+    expect(dateline(TONIGHT, { right: 0, wrong: 0 }).wide).toHaveLength(1);
     expect(dateline({ date: null, games: [] }, null)).toEqual({ wide: [], narrow: "" });
   });
 });

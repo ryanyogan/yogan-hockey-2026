@@ -12,7 +12,11 @@
 // group's ratio is its real width over its local width, taken over the lines long enough to wrap
 // (150px), since a short label only moves sideways. `packages/ui/src/font-fallbacks.css` carries
 // these numbers beside the ones `@capsizecss/metrics` gives from letter frequencies
-// (`scripts/font-fallbacks.ts`).
+// (`scripts/font-fallbacks.ts`). The serif's regular cut takes the "serif deck" line and its bold
+// cut the "serif headline" line.
+//
+// Seed the sample picks first (`/skeleton/picks`): the deck's style is the first serif paragraph's,
+// and a seeded Home has another one first, so an unseeded build prints other numbers.
 //
 // A local face that this machine does not have is "absent": only a face that is there can be
 // measured. Liberation Serif, Liberation Sans and Nimbus Sans Narrow are letter for letter as wide
@@ -162,11 +166,13 @@ const measure = async ({ local, sources, headlines }) => {
 const browser = await chromium.launch({ args: ["--font-render-hinting=none"] });
 const teams = await browser.newPage();
 await teams.goto(`${baseURL}/nhl?tab=teams`, { waitUntil: "networkidle" });
+// A team's link, which is its name. Its row also holds its abbreviation, in the agate face and
+// at the row's other end: the row's text is "Anaheim DucksANA", which no page draws (#235).
 const names = await teams.evaluate(() =>
-  [...document.querySelectorAll("main li")].map((team) => team.textContent.trim()),
+  [...document.querySelectorAll("main li a")].map((team) => team.textContent.trim()),
 );
 await teams.close();
-if (names.length < 30) throw new Error(`The Teams tab listed ${names.length} teams.`);
+if (names.length !== 32) throw new Error(`The Teams tab listed ${names.length} teams.`);
 const headlines = names.map((name, at) => `${name} at ${names[(at + 7) % names.length]}`);
 const totals = {};
 for (const path of PATHS) {

@@ -114,15 +114,18 @@ const EspnTeamDetail = z.object({
 
 /**
  * ESPN's two answers for a team id no team has, both with a 200: `{}` (999, and every id it has
- * never used), and for id 0 a placeholder, an inactive team with no name. Anything else that does
- * not parse is a response the site cannot read, which is a different failure.
+ * never used), and for id 0 a placeholder: a team whose id is "0", inactive, with no name of any
+ * kind. All three are asked of it, so an inactive team ESPN does know (36, the Hartford Whalers)
+ * sent without its `displayName` is not taken for it. Anything else that does not parse is a
+ * response the site cannot read, which is a different failure.
  */
 function isNoTeam(json: unknown): boolean {
   if (typeof json !== "object" || json === null || Array.isArray(json)) return false;
   if (Object.keys(json).length === 0) return true;
   const team: unknown = "team" in json ? json.team : null;
   if (typeof team !== "object" || team === null) return false;
-  return "isActive" in team && team.isActive === false && !("displayName" in team);
+  const named = "displayName" in team || "name" in team;
+  return "id" in team && team.id === "0" && "isActive" in team && team.isActive === false && !named;
 }
 
 /**

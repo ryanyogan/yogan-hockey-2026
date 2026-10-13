@@ -303,6 +303,15 @@ describe("a team ESPN does not know", () => {
     const changed = { team: { id: "21", isActive: true, displayName: "Toronto Maple Leafs" } };
 
     expect(() => translateTeam(changed, TORONTO)).toThrow(EspnParseError);
+    // Near the placeholder, and each names or numbers a team: one ESPN knows that does not play.
+    const whalers = { team: { id: "36", isActive: false, name: "Hartford Whalers" } };
+    expect(() => translateTeam(whalers, "36")).toThrow(EspnParseError);
+    expect(() => translateTeam({ team: { id: "36", isActive: false } }, "36")).toThrow(
+      EspnParseError,
+    );
+    expect(() =>
+      translateTeam({ team: { id: "0", isActive: false, name: "Nobody" } }, "0"),
+    ).toThrow(EspnParseError);
     expect(() => translateTeam({ teams: [] }, TORONTO)).toThrow(EspnParseError);
     expect(() => translateTeam(null, TORONTO)).toThrow(EspnParseError);
     expect(() => translateTeam([], TORONTO)).toThrow(EspnParseError);

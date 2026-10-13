@@ -1,6 +1,21 @@
 import { env } from "cloudflare:workers";
 import { afterEach, beforeAll, beforeEach, expect, test, vi } from "vitest";
 import matthewsRecorded from "../../../packages/espn/fixtures/athlete-4024123.json";
+
+const kept = vi.hoisted(() => [] as Promise<unknown>[]);
+
+// The real `waitUntil`, and a note of what it was given: the reads a page did not wait for.
+vi.mock("cloudflare:workers", async (original) => {
+  const workers = await original<typeof import("cloudflare:workers")>();
+  return {
+    ...workers,
+    waitUntil: (promise: Promise<unknown>) => {
+      kept.push(promise);
+      workers.waitUntil(promise);
+    },
+  };
+});
+
 import { findPlayers, loadPlayer } from "./players";
 
 const MATTHEWS = "4024123";
@@ -17,6 +32,7 @@ afterEach(() => {
   vi.unstubAllEnvs();
   vi.unstubAllGlobals();
   fetchMock.mockReset();
+  kept.length = 0;
 });
 
 /** From here ESPN is asked, and answers every request with this status. */
@@ -132,6 +148,34 @@ test("the profile says whether a player exists even when it is the last read to 
 
   answerProfile(new Response("{}", { status: 404 }));
   expect(await player).toBeNull();
+});
+
+test("a player ESPN does not know is no player at once, with his stats still to answer", async () => {
+  let answerCareer: (response: Response) => void = () => {};
+  const career = new Promise<Response>((resolve) => {
+    answerCareer = resolve;
+  });
+  espnAnswersPlayer({ profile: status(404), career: () => career, gameLog: status(404) });
+
+  const answer = await Promise.race([
+    loadPlayer("999999908"),
+    new Promise((resolve) => setTimeout(resolve, 500, "waiting")),
+  ]);
+  expect(answer).toBeNull();
+
+  // The stats' read was not left to be dropped with the request: `cached` gave it to `waitUntil`,
+  // which holds the request open until ESPN has answered it.
+  const settled = vi.fn();
+  void Promise.all(kept).then(settled);
+  await new Promise((resolve) => setTimeout(resolve, 20));
+  expect(settled).not.toHaveBeenCalled();
+
+  answerCareer(new Response("{}", { status: 500 }));
+  await vi.waitFor(() => expect(settled).toHaveBeenCalledOnce());
+  // And nobody who asks for him next waits on it: his stats are read afresh.
+  const asked = fetchMock.mock.calls.length;
+  expect(await loadPlayer("999999908")).toBeNull();
+  expect(fetchMock.mock.calls.length).toBeGreaterThan(asked);
 });
 
 test("a player ESPN knows whose stats cannot be read is an error, not a missing player", async () => {

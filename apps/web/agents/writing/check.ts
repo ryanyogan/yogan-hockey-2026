@@ -88,7 +88,7 @@ const ORDINARY_OPENER = /^\p{Lu}\p{Ll}+(?:ing|ed|ly)$|^Twice$|^Thrice$/u;
 
 /** The week's calls a column is given (#218): finished games like the finals, known only by their scores. */
 const callsOf = (facts: WritingFacts) =>
-  [facts.picks?.best, facts.picks?.worst].filter((call) => call != null);
+  [facts.picks?.best, facts.picks?.worst, facts.picks?.miss].filter((call) => call != null);
 
 /** Every finished game the facts hold: the finals, and the calls with no goals to them. */
 const resultsOf = (facts: WritingFacts) => [

@@ -1,6 +1,6 @@
 import type { SeasonPick } from "@yogan-hockey/schemas";
 import { describe, expect, it } from "vitest";
-import { BANDS, picksFigures, weekOf } from "./picks-figures";
+import { BANDS, missSince, picksFigures, weekOf } from "./picks-figures";
 
 const TOR = { id: "21", abbreviation: "TOR", name: "Toronto Maple Leafs" };
 const NSH = { id: "27", abbreviation: "NSH", name: "Nashville Predators" };
@@ -243,5 +243,63 @@ describe("the week", () => {
       worst: { winProbability: 58 },
     });
     expect(picksFigures([pick(MON, "home", "won")], WED).week).toMatchObject({ worst: null });
+  });
+});
+
+describe("the miss a column is written about (#234)", () => {
+  it("is the week's worst call when no column on a miss has been written yet", () => {
+    const picks = [pick(MON, "home", "lost", 62), pick(TUE, "home", "lost", 70)];
+
+    expect(missSince(picks, WED, null)).toEqual(picksFigures(picks, WED).week?.worst);
+    expect(missSince(picks, WED, null)).toMatchObject({ date: TUE, winProbability: 70 });
+  });
+
+  it("is not the game the last column was about, however firm that pick was", () => {
+    const worst = pick(MON, "home", "lost", 70);
+
+    // Tuesday's column was about Monday's game. Nothing has lost since.
+    const last = { date: TUE, gameId: worst.gameId };
+    expect(missSince([worst, pick(TUE, "home", "won", 66)], WED, last)).toBeNull();
+  });
+
+  it("is the firmest pick to lose since the last column, though a firmer one lost before it", () => {
+    const worst = pick(MON, "home", "lost", 70);
+    const passedOver = pick(MON, "road", "lost", 68);
+    const picks = [
+      worst,
+      passedOver,
+      pick(TUE, "home", "lost", 55),
+      pick(TUE, "road", "lost", 61),
+      pick(TUE, "home", "won", 72),
+    ];
+
+    const miss = missSince(picks, WED, { date: TUE, gameId: worst.gameId });
+
+    expect(miss).toMatchObject({ date: TUE, winProbability: 61 });
+    // The week's worst call is still Monday's, on the page.
+    expect(picksFigures(picks, WED).week?.worst?.gameId).toBe(worst.gameId);
+  });
+
+  it("is never the last column's game, even one played on the day that column was written", () => {
+    const matinee = pick(TUE, "home", "lost", 70);
+
+    expect(missSince([matinee], WED, { date: TUE, gameId: matinee.gameId })).toBeNull();
+  });
+
+  it("is a miss of the week the figures are of: Sunday's on Monday morning, and none from a week gone by", () => {
+    const sunday = pick(SUN, "home", "lost", 64);
+    const picks = [pick(TUE, "home", "lost", 70), sunday];
+
+    expect(
+      missSince(picks, NEXT_MON, { date: SUN, gameId: picks[0]?.gameId ?? null }),
+    ).toMatchObject({ gameId: sunday.gameId });
+    // A week later with one game played since, and that one right: last week's misses are not this week's.
+    const since = [...picks, pick(NEXT_MON, "home", "won")];
+    expect(missSince(since, "2026-10-13", { date: MON, gameId: null })).toBeNull();
+  });
+
+  it("is nothing before a pick has lost", () => {
+    expect(missSince([], WED, null)).toBeNull();
+    expect(missSince([pick(MON, "home", "won"), undecided("tonight")], WED, null)).toBeNull();
   });
 });

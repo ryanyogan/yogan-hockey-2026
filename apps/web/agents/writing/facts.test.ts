@@ -204,6 +204,31 @@ test("with the season's picks, the facts hold the Picks page's figures in words 
     pick: { team: loser.abbreviation, winProbability: 66, outcome: "wrong" },
   });
   expect(picks?.best).toMatchObject({ game: third.id, pick: { outcome: "right" } });
+  // No column on a miss has been written yet, so the miss to write about is the week's worst call.
+  expect(picks?.miss).toEqual(picks?.worst);
+});
+
+test("the miss a column is told is one decided since the last such column, or none (#234)", () => {
+  const written = { date: "2026-10-06", gameId: first.id };
+  const sameMorning = writingFacts({ ...sources, seasonPicks: season, lastMiss: written });
+  // Tuesday's column was about Monday's game; Tuesday night another pick lost, less firmly.
+  const later = [...season.slice(0, 2), seasonPick(third, "loser", 54, "2026-10-06")];
+  const nextMorning = writingFacts({
+    ...sources,
+    date: "2026-10-07",
+    seasonPicks: later,
+    lastMiss: written,
+  });
+
+  expect(sameMorning.picks?.miss).toBeNull();
+  // The page's worst call is still the week's, whatever the column has said.
+  expect(sameMorning.picks?.worst).toMatchObject({ game: first.id });
+  expect(nextMorning.picks?.miss).toMatchObject({
+    game: third.id,
+    day: "Tuesday, October 6",
+    pick: { winProbability: 54, outcome: "wrong" },
+  });
+  expect(nextMorning.picks?.worst).toMatchObject({ game: first.id });
 });
 
 test("without the season's picks the facts hold no figures of them", () => {
@@ -215,7 +240,7 @@ test("before any pick is decided there is a record of none, and no week, run or 
   const { picksRecord, picks } = writingFacts({ ...sources, seasonPicks: season.slice(3) });
 
   expect(picksRecord).toEqual({ right: 0, wrong: 0 });
-  expect(picks).toEqual({ week: null, run: null, best: null, worst: null });
+  expect(picks).toEqual({ week: null, run: null, best: null, worst: null, miss: null });
 });
 
 test("a call between clubs the facts cannot name is left out, and the counts stay", () => {
@@ -227,7 +252,7 @@ test("a call between clubs the facts cannot name is left out, and the counts sta
   });
 
   expect(picksRecord).toEqual({ right: 2, wrong: 1 });
-  expect(picks).toMatchObject({ best: null, worst: null });
+  expect(picks).toMatchObject({ best: null, worst: null, miss: null });
 });
 
 test("picks that cannot be counted leave the figures out and the rest of the facts standing", () => {

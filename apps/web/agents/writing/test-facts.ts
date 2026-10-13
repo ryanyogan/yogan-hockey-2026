@@ -70,6 +70,7 @@ export function testFacts(): WritingFacts {
  * The same world as the Picks page's columns are told it: the season's picks are 12 right and 9
  * wrong, the week 7-3 over three days, the last 4 picks right. The week's best call is Seattle
  * at 58% (5-3 at Washington) and its worst Buffalo at 55% (a 4-3 loss to Dallas), both on Sunday.
+ * No column has been written about that miss yet, so it is the one to write about.
  */
 export function testPicksFacts(): WritingFacts {
   const facts = testFacts();
@@ -95,6 +96,7 @@ export function testPicksFacts(): WritingFacts {
       run: { outcome: "right", length: 4 },
       best: won,
       worst: lost,
+      miss: lost,
     },
   };
 }

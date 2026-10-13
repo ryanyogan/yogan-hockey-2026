@@ -65,21 +65,33 @@ test("on a night with no pick there is no column on tonight's game", () => {
   expect(PICKS_TONIGHT.facts({ ...picksFacts, slate: [] })).toBeNull();
 });
 
-test("the column on the miss is given the week's worst call and its two teams, and no other game", () => {
+test("the column on the miss is given the miss to write about and its two teams, and no other game", () => {
   const given = PICKS_MISS.facts(picksFacts);
 
-  expect(given?.picks?.worst).toMatchObject({ away: "DAL", home: "BUF", winner: "DAL" });
+  expect(given?.picks?.miss).toMatchObject({ away: "DAL", home: "BUF", winner: "DAL" });
   expect(given?.picks?.best).toBeNull();
+  expect(given?.picks?.worst).toBeNull();
   expect(given?.teams.map(({ team }) => team)).toEqual(["DAL", "BUF"]);
   expect(given?.slate).toEqual([]);
   expect(given?.finals).toEqual([]);
 });
 
-test("a week with no miss has no column on one, and nor do facts with no picks' figures", () => {
+test("with no miss since the last column on one there is no column, though the week has a worst call (#234)", () => {
   const { picks } = picksFacts;
 
-  expect(PICKS_MISS.facts({ ...picksFacts, picks: picks && { ...picks, worst: null } })).toBeNull();
+  expect(PICKS_MISS.facts({ ...picksFacts, picks: picks && { ...picks, miss: null } })).toBeNull();
   expect(PICKS_MISS.facts(facts)).toBeNull();
+});
+
+test("the column on the miss is not told to call it the week's worst, which it may not be (#234)", () => {
+  expect(PICKS_MISS.brief).toContain("`picks.miss`");
+  expect(PICKS_MISS.brief).not.toMatch(/week's worst call, which is/);
+  expect(PICKS_MISS.brief).toMatch(/do not call it the week's worst/i);
+});
+
+test("the other columns are not told the miss, which is its own column's", () => {
+  expect(PICKS_TONIGHT.facts(picksFacts)?.picks?.miss).toBeNull();
+  expect(PICKS_RUN.facts(picksFacts)?.picks?.miss).toBeNull();
 });
 
 test("the column on the record is given the run, the week and the best call", () => {
@@ -120,8 +132,8 @@ test("a column is asked for in a columnist's voice, under the same rules as a pi
 const MISS_COLUMN = {
   headline: "Buffalo at 55 percent, and the Stars had other ideas",
   paragraphs: [
-    "Our pick on Sunday was Buffalo at 55 percent. The Stars won 4-3. That is the worst call of the week, and it is ours.",
-    "The picks went 7-3 from Monday, October 5 to Sunday, October 11, so there is not much else to apologize for. This was the one we were surest of that lost.",
+    "Our pick on Sunday was Buffalo at 55 percent. The Stars won 4-3. That one is ours.",
+    "The picks went 7-3 from Monday, October 5 to Sunday, October 11, so there is not much else to apologize for.",
     "The season stands at 12-9. One miss does not change that much, and we will not pretend it was close to being right.",
   ],
 };

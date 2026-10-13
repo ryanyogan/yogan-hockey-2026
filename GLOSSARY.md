@@ -45,7 +45,7 @@ A short article the site prints that a model wrote from facts the site holds: a 
 _Avoid_: Article, post, story (a Story is a game), AI article
 
 **Column**:
-A Piece about the site's own Predictions, printed on the Picks page and not on Home: the game tonight's picks have most riding on, the week's worst call, the record and its run. It is written, checked and marked as any Piece is, in a columnist's voice.
+A Piece about the site's own Predictions, printed on the Picks page and not on Home: the game tonight's picks have most riding on, the firmest pick to lose since the column on a miss was last written (no game is its subject twice, and a morning with no new miss has no such column), the record and its run. It is written, checked and marked as any Piece is, in a columnist's voice.
 _Avoid_: Write-up, blog, opinion piece
 
 **Call**:

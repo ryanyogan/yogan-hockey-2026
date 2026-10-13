@@ -66,6 +66,22 @@ export async function getPieceBySlug(db: Db, slug: string): Promise<Piece | null
   return row ? PieceSchema.parse(row) : null;
 }
 
+/**
+ * The newest published piece of a kind with the facts it was written from, or null when the kind
+ * has never been published: what a kind last said, for a kind that must not say it twice (#234).
+ */
+export async function getLastPiece(db: Db, kind: string): Promise<StoredPiece | null> {
+  const [row] = await db
+    .select()
+    .from(pieces)
+    .where(and(isPublished, eq(pieces.kind, kind)))
+    .orderBy(desc(pieces.writtenAt), desc(pieces.id))
+    .limit(1);
+  if (!row) return null;
+  const { id: _id, ...piece } = row;
+  return StoredPieceSchema.parse(piece);
+}
+
 /** Every try at a slug that the check refused, oldest first: for reading a failure afterwards. */
 export async function getRejectedPieces(db: Db, slug: string): Promise<StoredPiece[]> {
   const rows = await db

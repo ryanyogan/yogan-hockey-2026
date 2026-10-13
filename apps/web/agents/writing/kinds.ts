@@ -131,23 +131,26 @@ export const PICKS_TONIGHT: PieceKind = {
   facts: (all) => {
     const slate = all.slate.filter(({ pick }) => pick !== null);
     if (slate.length === 0) return null;
-    const picks = all.picks && { ...all.picks, best: null, worst: null };
+    const picks = all.picks && { ...all.picks, best: null, worst: null, miss: null };
     return { ...columnFacts(all), slate, teams: teamsOf(all, slate), picks };
   },
 };
 
-/** The call that looked foolish: the week's firmest pick that lost. Not written in a week with no miss. */
+/**
+ * The call that looked foolish: the firmest pick that lost since this column was last written,
+ * so that no game is its subject twice (#234). Not written on a morning with no new miss.
+ */
 export const PICKS_MISS: PieceKind = {
   kind: "picks-miss",
-  brief: `A column on the week's worst call, which is \`picks.worst\`: the pick the site was surest of that lost. Say who was picked and at what percentage, who won instead and by what score, and on which day. Then say how the miss sits in the week: ${PICKS_FIGURES} Own the miss; do not explain it away, and do not guess at why the game went as it did, since you know only its score. You do not know who scored or whether it went to overtime.`,
+  brief: `A column on one call that went wrong, which is \`picks.miss\`: of the picks decided since this column last ran, the one the site was surest of that lost. Say who was picked and at what percentage, who won instead and by what score, and on which day. Then say how the miss sits in the week: ${PICKS_FIGURES} Own the miss; do not explain it away, and do not guess at why the game went as it did, since you know only its score. You do not know who scored or whether it went to overtime. Do not call it the week's worst call or rank it against other misses: you are told of no other.`,
   voice: COLUMN_VOICE,
   facts: (all) => {
-    const worst = all.picks?.worst;
-    if (!all.picks || !worst) return null;
+    const miss = all.picks?.miss;
+    if (!all.picks || !miss) return null;
     return {
       ...columnFacts(all),
-      teams: teamsOf(all, [worst]),
-      picks: { ...all.picks, best: null },
+      teams: teamsOf(all, [miss]),
+      picks: { ...all.picks, best: null, worst: null },
     };
   },
 };
@@ -166,7 +169,7 @@ export const PICKS_RUN: PieceKind = {
     return {
       ...columnFacts(all),
       teams: teamsOf(all, callFinals([picks.best])),
-      picks: { ...picks, worst: null },
+      picks: { ...picks, worst: null, miss: null },
     };
   },
 };

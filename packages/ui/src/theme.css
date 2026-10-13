@@ -16,8 +16,10 @@
  * the pointer:
  *   `text-note` a serif deck or a line of prose; `text-label` a column header or a count;
  *   `text-aside` an aside (a team's record, a rank, the footer). Label and aside are one grey.
- * Rules are three colours: `border-border` between agate rows (dotted), `border-rule-head` the
- * hairline under a column header, `border-rule` the ink of a heavy or plain rule.
+ * Rules are two kinds, both 1px solid: `border-rule` (the ink) for structure, `border-hairline`
+ * (`--border`) between rows and columns. A 3px double `border-rule` is the masthead's and the
+ * footer's alone. `border-rule-head` is the older, fainter hairline under a column header on the
+ * routes the front page (#240) has not redrawn.
  *
  * The agate sizes, each with its line (agate.md § Type): `text-head` 11px, a column header;
  * `text-tag` 12px, a label, a kicker, a mark or a button; `text-small` 13px, the nav, meta and
@@ -75,8 +77,13 @@
   --border: #c9c6bf;
   /* The hairline under a column header. */
   --rule-head: #d5d3ce;
-  /* The ink of a heavy or a plain rule. */
-  --rule: #111111;
+  /*
+   * The two rules of the front page (#240), named so the hierarchy is explicit. `--rule` is
+   * structure: a section's rule, a table header's, the masthead's and the footer's (those two
+   * alone have a 3px double one). `--hairline` divides rows and columns. Both are 1px and solid.
+   */
+  --rule: var(--foreground);
+  --hairline: var(--border);
   /* A control's edge and its focus ring have to be seen, which a hairline need not be. */
   --input: #5c5a55;
   --ring: #5c5a55;
@@ -101,7 +108,7 @@
   --fs-title: 32px;
   --fs-stat: 72px;
   /* The masthead's wordmark: it grows with the window, and on a phone fills the column. */
-  --fs-wordmark: clamp(54px, 9vw, 120px);
+  --fs-wordmark: clamp(54px, 9vw, 112px);
   --lh-wordmark: 0.92;
   /* An agate row is its line and this above and below: 32.75px with its rule. */
   --row-pad: 5px;
@@ -116,41 +123,41 @@
     --fs-row: 16px;
     --fs-title: 30px;
     --fs-stat: 52px;
-    --fs-wordmark: min(54px, 13.85vw);
-    --lh-wordmark: 0.95;
+    --fs-wordmark: min(54px, 13.5vw);
     --row-pad: 8px;
   }
 }
 
 .dark {
   color-scheme: dark;
-  --background: #121212;
-  --foreground: #eceae4;
-  --popover: #121212;
-  --popover-foreground: #eceae4;
-  --primary: #eceae4;
-  --primary-foreground: #121212;
-  --secondary: #1f1f1e;
-  --secondary-foreground: #eceae4;
-  --muted: #1f1f1e;
-  --muted-foreground: #a3a09a;
-  --accent: #1f1f1e;
-  --accent-foreground: #eceae4;
-  --destructive: #f87171;
+  --background: #1b1b19;
+  --foreground: #ece9e1;
+  --popover: #1b1b19;
+  --popover-foreground: #ece9e1;
+  --primary: #ece9e1;
+  --primary-foreground: #1b1b19;
+  --secondary: #262522;
+  --secondary-foreground: #ece9e1;
+  --muted: #262522;
+  --muted-foreground: #b3afa6;
+  --accent: #262522;
+  --accent-foreground: #ece9e1;
+  --destructive: #ff7b7b;
   --note: #d6d3cc;
-  --label: #a3a09a;
-  --aside: #a3a09a;
+  --label: #b3afa6;
+  --aside: #b3afa6;
   --kicker: #ff5a5f;
-  --border: #4a4843;
-  --rule-head: #34332f;
-  --rule: #eceae4;
-  --input: #a3a09a;
-  --ring: #a3a09a;
+  --border: #504c45;
+  --rule-head: #3b3934;
+  --rule: var(--foreground);
+  --hairline: var(--border);
+  --input: #b3afa6;
+  --ring: #b3afa6;
   /* Said again so that it is this theme's red wherever `.dark` is put, not only on <html>. */
   --live: var(--kicker);
-  --highlight: #1f1f1e;
-  --positive: #4ade80;
-  --negative: #f87171;
+  --highlight: #262522;
+  --positive: #5ad48a;
+  --negative: #ff7b7b;
 }
 
 @theme inline {
@@ -189,6 +196,7 @@
   --color-border: var(--border);
   --color-rule-head: var(--rule-head);
   --color-rule: var(--rule);
+  --color-hairline: var(--hairline);
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-live: var(--live);
@@ -212,7 +220,7 @@
   --text-score--line-height: var(--lh);
   --text-wordmark: var(--fs-wordmark);
   --text-wordmark--line-height: var(--lh-wordmark);
-  --text-wordmark--letter-spacing: -0.025em;
+  --text-wordmark--letter-spacing: -0.02em;
   /* The serif sizes of a story and of a box of figures. */
   --text-headline: clamp(34px, 3vw, 40px);
   --text-headline--line-height: 1.02;

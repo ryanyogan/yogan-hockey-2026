@@ -79,16 +79,43 @@ describe("the theme's text roles", () => {
         negative: [5.4, 4.9],
       },
       night: {
-        foreground: [15.5, 13.7],
-        note: [12.5, 11],
-        label: [7.1, 6.3],
-        aside: [7.1, 6.3],
-        kicker: [6.1, 5.4],
-        live: [6.1, 5.4],
-        positive: [10.7, 9.4],
-        negative: [6.7, 5.9],
+        foreground: [14.2, 12.6],
+        note: [11.5, 10.2],
+        label: [7.8, 7],
+        aside: [7.8, 7],
+        kicker: [5.6, 5],
+        live: [5.6, 5],
+        positive: [9.2, 8.1],
+        negative: [6.8, 6.1],
       },
     });
+  });
+
+  // The front page's handoff (#240): the lifted night, and the two rules named for what they are.
+  it("has the lifted night's ground, ink and greys", () => {
+    expect(THEMES.night).toMatchObject({
+      background: "#1b1b19",
+      foreground: "#ece9e1",
+      "primary-foreground": "#1b1b19",
+      muted: "#262522",
+      border: "#504c45",
+      "muted-foreground": "#b3afa6",
+      positive: "#5ad48a",
+      negative: "#ff7b7b",
+    });
+    expect(contrast(hex(THEMES.night, "muted-foreground"), hex(THEMES.night, "background"))).toBe(
+      7.8,
+    );
+  });
+
+  it("names its two rules: the ink for structure, the border for rows and columns", () => {
+    for (const theme of Object.values(THEMES)) {
+      expect(theme.rule).toBe("var(--foreground)");
+      expect(theme.hairline).toBe("var(--border)");
+    }
+    // By night a divider is a lighter colour than it was (#4a4843), on a ground lifted further:
+    // against its page it measures 2.0, where the old one measured 2.1 on #121212.
+    expect(contrast(hex(THEMES.night, "hairline"), hex(THEMES.night, "background"))).toBe(2);
   });
 
   it("has no tint for a live row: nothing is drawn on one", () => {

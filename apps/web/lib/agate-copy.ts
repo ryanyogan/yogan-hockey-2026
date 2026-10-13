@@ -330,43 +330,69 @@ export function datelineDate(date: string | null): string | null {
   return date == null ? null : slateDate(date);
 }
 
-/** The masthead's dateline, both ways it is written. */
+/** ", 2026": the slate's year, which ends the date where the strip has room for it. */
+export function datelineYear(date: string | null): string | null {
+  return date == null ? null : `, ${date.slice(0, 4)}`;
+}
+
+/** The season's record of the picks as the dateline strip prints it. */
+export type DatelinePicks = {
+  /** "Picks this season". */
+  label: string;
+  /** "29 right": the part set in ink. */
+  right: string;
+  /** "14 wrong". */
+  wrong: string;
+};
+
+/** The masthead's lines about tonight and the picks (#240). */
 export type Dateline = {
   /**
-   * The desktop's parts, in order: "Tonight: 9 games · 4 live · 2 to come · 3 final" and "Picks
-   * this season: 29 right, 14 wrong". The picks are not there until one is decided. The date is
-   * not one of them: it is on the sections' bar (`datelineDate`).
+   * The line under the wordmark at a desk: "Tonight: 9 games · 4 live · 2 to come · 3 final".
+   * Null before the Scoreboard's first poll. The date is not in it (`datelineDate`).
    */
-  wide: string[];
-  /** The phone's one line: "9 games · 4 live · 3 final · Picks 29–14". */
+  tonight: string | null;
+  /** The middle of the strip above the wordmark. Null until a pick is decided. */
+  picks: DatelinePicks | null;
+  /** The phone's one line under the wordmark: "9 games · 4 live · 3 final · Picks 29–14". */
   narrow: string;
 };
 
-const SEPARATOR = " · ";
+/** What joins the parts of a line of the masthead. */
+export const SEPARATOR = " · ";
+
+/** The credit that ends the line under the wordmark at a desk. */
+export const CREDIT = "Scores and stats from ESPN";
+
+/** The mark at the end of the footer. */
+export const COLOPHON = "Yogan Hockey · 2026";
 
 /**
- * The dateline under the wordmark, from the slate and the season's record. A count of zero is
- * dropped. The phone has no room for the games to come or the postponed ones. Before any pick is
- * decided the picks are left out, and before the Scoreboard's first poll there is no dateline.
+ * The masthead's lines, from the slate and the season's record. A count of zero is dropped. The
+ * phone has no room for the games to come or the postponed ones. Before any pick is decided the
+ * picks are left out, and before the Scoreboard's first poll nothing is said of tonight.
  */
 export function dateline(
   slate: { date: string | null; games: readonly ScoreboardGame[] },
   record: SeasonRecord | null,
 ): Dateline {
-  if (slate.date == null) return { wide: [], narrow: "" };
+  const decided = decidedRecord(record);
+  const picks = decided && {
+    label: "Picks this season",
+    right: `${decided.right} right`,
+    wrong: `${decided.wrong} wrong`,
+  };
+  if (slate.date == null) return { tonight: null, picks, narrow: "" };
   const counts = slateCounts([...slate.games]);
   const part = (count: number, word: string) => (count > 0 ? `${count} ${word}` : null);
   const total = slate.games.length;
   const games = total === 0 ? "no games" : `${total} game${total === 1 ? "" : "s"}`;
   const live = part(counts.live, "live");
   const final = part(counts.final, "final");
-  const decided = decidedRecord(record);
   const present = (parts: (string | null)[]) => parts.filter((each) => each != null);
   return {
-    wide: present([
-      `Tonight: ${present([games, live, part(counts.upcoming, "to come"), final, part(counts.postponed, "postponed")]).join(SEPARATOR)}`,
-      decided && `Picks this season: ${decided.right} right, ${decided.wrong} wrong`,
-    ]),
+    tonight: `Tonight: ${present([games, live, part(counts.upcoming, "to come"), final, part(counts.postponed, "postponed")]).join(SEPARATOR)}`,
+    picks,
     narrow: present([
       capitalized(games),
       live,

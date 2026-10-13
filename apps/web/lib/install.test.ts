@@ -62,11 +62,11 @@ describe("the drawn icons and splash images", () => {
 // holds them against what the stylesheet draws.
 describe("the colour of the browser's own bars", () => {
   it("follows the operating system until the theme shown is known", () => {
-    expect(shownThemeColors(undefined)).toEqual({ light: "#fafaf8", dark: "#121212" });
+    expect(shownThemeColors(undefined)).toEqual({ light: "#fafaf8", dark: "#1b1b19" });
   });
 
   it("is the shown theme's whatever the operating system prefers", () => {
-    expect(shownThemeColors("dark")).toEqual({ light: "#121212", dark: "#121212" });
+    expect(shownThemeColors("dark")).toEqual({ light: "#1b1b19", dark: "#1b1b19" });
     expect(shownThemeColors("light")).toEqual({ light: "#fafaf8", dark: "#fafaf8" });
   });
 });

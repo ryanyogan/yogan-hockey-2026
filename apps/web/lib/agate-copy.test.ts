@@ -6,6 +6,7 @@ import {
   briefPick,
   dateline,
   datelineDate,
+  datelineYear,
   deck,
   gamePickOutcome,
   headline,
@@ -607,15 +608,21 @@ describe("the dateline", () => {
     expect(datelineDate(null)).toBeNull();
   });
 
-  test("the desktop's two parts, with zero counts dropped", () => {
-    expect(dateline(TONIGHT, record).wide).toEqual([
-      "Tonight: 3 games · 3 final",
-      "Picks this season: 29 right, 14 wrong",
-    ]);
-    expect(dateline({ date: "2026-10-06", games: BUSY }, { right: 3, wrong: 2 }).wide).toEqual([
-      "Tonight: 9 games · 4 live · 2 to come · 3 final",
-      "Picks this season: 3 right, 2 wrong",
-    ]);
+  test("the year follows the date where there is room for it", () => {
+    expect(datelineYear("2026-10-11")).toBe(", 2026");
+    expect(datelineYear(null)).toBeNull();
+  });
+
+  test("tonight's line, with zero counts dropped, and the picks in three parts", () => {
+    expect(dateline(TONIGHT, record).tonight).toBe("Tonight: 3 games · 3 final");
+    expect(dateline(TONIGHT, record).picks).toEqual({
+      label: "Picks this season",
+      right: "29 right",
+      wrong: "14 wrong",
+    });
+    const busy = dateline({ date: "2026-10-06", games: BUSY }, { right: 3, wrong: 2 });
+    expect(busy.tonight).toBe("Tonight: 9 games · 4 live · 2 to come · 3 final");
+    expect(busy.picks).toEqual({ label: "Picks this season", right: "3 right", wrong: "2 wrong" });
   });
 
   test("the phone's one line leaves out the games to come", () => {
@@ -627,11 +634,13 @@ describe("the dateline", () => {
 
   test("one game is a game, and a day off says so", () => {
     expect(dateline({ date: "2026-10-11", games: [SEA] }, record)).toEqual({
-      wide: ["Tonight: 1 game · 1 to come", "Picks this season: 29 right, 14 wrong"],
+      tonight: "Tonight: 1 game · 1 to come",
+      picks: { label: "Picks this season", right: "29 right", wrong: "14 wrong" },
       narrow: "1 game · Picks 29–14",
     });
     expect(dateline({ date: "2026-10-11", games: [] }, record)).toEqual({
-      wide: ["Tonight: no games", "Picks this season: 29 right, 14 wrong"],
+      tonight: "Tonight: no games",
+      picks: { label: "Picks this season", right: "29 right", wrong: "14 wrong" },
       narrow: "No games · Picks 29–14",
     });
   });
@@ -639,18 +648,25 @@ describe("the dateline", () => {
   test("a postponed game is counted on the desktop", () => {
     const off = { ...LA, status: "postponed" as const };
 
-    expect(dateline({ date: "2026-10-11", games: [WSH, off] }, null).wide[0]).toBe(
+    expect(dateline({ date: "2026-10-11", games: [WSH, off] }, null).tonight).toBe(
       "Tonight: 2 games · 1 final · 1 postponed",
     );
   });
 
   test("before any pick is decided, and before the first poll, the parts not known are dropped", () => {
     expect(dateline(TONIGHT, null)).toEqual({
-      wide: ["Tonight: 3 games · 3 final"],
+      tonight: "Tonight: 3 games · 3 final",
+      picks: null,
       narrow: "3 games · 3 final",
     });
-    expect(dateline(TONIGHT, { right: 0, wrong: 0 }).wide).toHaveLength(1);
-    expect(dateline({ date: null, games: [] }, null)).toEqual({ wide: [], narrow: "" });
+    expect(dateline(TONIGHT, { right: 0, wrong: 0 }).picks).toBeNull();
+    expect(dateline({ date: null, games: [] }, null)).toEqual({
+      tonight: null,
+      picks: null,
+      narrow: "",
+    });
+    // The season's record does not wait for the Scoreboard.
+    expect(dateline({ date: null, games: [] }, record).picks?.right).toBe("29 right");
   });
 });
 

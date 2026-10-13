@@ -1,10 +1,10 @@
 import { expect, shellHydrated, test } from "./test";
 
-const DARK_BACKGROUND = "rgb(18, 18, 18)";
+const DARK_BACKGROUND = "rgb(27, 27, 25)";
 const LIGHT_BACKGROUND = "rgb(250, 250, 248)";
 const SECTIONS = ["Home", "Scores", "Standings", "Teams", "Players", "Picks"];
 
-test("the masthead opens with the sections' bar, above the wordmark at any width, and switches theme", async ({
+test("the masthead is the dateline strip, the wordmark and the sections at any width, and switches theme", async ({
   page,
 }) => {
   // The operating system asks for dark, and the visitor has not chosen yet.
@@ -21,36 +21,35 @@ test("the masthead opens with the sections' bar, above the wordmark at any width
   const masthead = page.getByRole("banner");
   const wordmark = masthead.getByRole("link", { name: "Yogan Hockey" });
   await expect(wordmark).toHaveAttribute("href", "/");
-  // The sections are written once, in a bar of their own above the wordmark.
+  // The sections are written once, in a row of their own under the wordmark.
   const sections = page.getByRole("navigation", { name: "Site" });
   await expect(page.locator('nav[aria-label="Site"]')).toHaveCount(1);
   await expect(sections).toBeVisible();
   await expect(sections.getByRole("link")).toHaveText(SECTIONS);
   const sectionNav = page.locator('[data-slot="section-nav"]');
   const dateline = page.locator('[data-slot="dateline"]');
+  const strip = page.locator('[data-slot="dateline-strip"]');
   const inOrder = async () => {
-    const [bar, name, line] = await Promise.all(
-      [sectionNav, wordmark, dateline].map((part) => part.boundingBox()),
+    const [top, name, line, row] = await Promise.all(
+      [strip, wordmark, dateline, sectionNav].map((part) => part.boundingBox()),
     );
-    // With the page at its top, the bar is the first thing on it, and every section in it is
-    // above the wordmark.
+    // With the page at its top, the strip is the first thing on it; then the wordmark, tonight's
+    // line and the sections, each under the one before.
     expect(await page.evaluate(() => scrollY)).toBe(0);
-    expect(bar?.y).toBe(0);
-    for (const place of await sections.getByRole("link").all())
-      expect((await place.boundingBox())?.y).toBeLessThan(name?.y ?? 0);
-    expect(name?.y).toBeGreaterThanOrEqual((bar?.y ?? 0) + (bar?.height ?? 0));
+    expect(top?.y).toBe(0);
+    expect(name?.y).toBeGreaterThanOrEqual((top?.y ?? 0) + (top?.height ?? 0));
     expect(line?.y).toBeGreaterThanOrEqual((name?.y ?? 0) + (name?.height ?? 0));
+    expect(row?.y).toBeGreaterThanOrEqual((line?.y ?? 0) + (line?.height ?? 0));
   };
   await inOrder();
-  // The bar is one line in three parts at a desk: the date, the sections, Day/Night.
-  await expect(sectionNav.locator('[data-slot="section-date"]')).toHaveText("Tuesday, October 6");
-  await expect(masthead.locator('[data-slot="masthead-date"]')).toBeHidden();
+  // The strip opens with the date, whole at a desk.
+  await expect(strip.locator('[data-slot="masthead-date"]')).toHaveText("Tuesday, October 6, 2026");
   // Today's slate at a glance, from the page's one Scoreboard socket, on the dateline.
   await expect(dateline).toContainText("Tonight: 9 games · 9 to come");
   await expect(page.getByRole("contentinfo")).toContainText("ESPN");
   // Any page but Home has the score strip under the dateline.
-  const strip = page.locator('[data-slot="score-ticker"]');
-  await expect(strip.getByRole("navigation", { name: "Scores" })).toBeVisible();
+  const scores = page.locator('[data-slot="score-ticker"]');
+  await expect(scores.getByRole("navigation", { name: "Scores" })).toBeVisible();
   // There is no sidebar and no tab bar.
   await expect(page.getByRole("complementary")).toHaveCount(0);
   await expect(page.locator('[data-slot="tab-bar"]')).toHaveCount(0);
@@ -69,12 +68,12 @@ test("the masthead opens with the sections' bar, above the wordmark at any width
   await expect(barColors).toHaveCount(2);
   await expect(page.locator('meta[name="theme-color"][media*="dark"]')).toHaveAttribute(
     "content",
-    "#121212",
+    "#1b1b19",
   );
-  // The control is written for both layouts and drawn for one: here, at the end of the bar.
+  // The control is written once, at the end of the strip.
   const theme = page.getByRole("group", { name: "Theme" });
   await expect(theme).toHaveCount(1);
-  await expect(sectionNav.getByRole("group", { name: "Theme" })).toBeVisible();
+  await expect(strip.getByRole("group", { name: "Theme" })).toBeVisible();
   // A press before the page has hydrated does nothing, so press until one lands.
   await expect(async () => {
     await theme.getByRole("button", { name: "Day" }).click();
@@ -111,12 +110,12 @@ test("the masthead opens with the sections' bar, above the wordmark at any width
     expect(icon.headers()["content-type"], src).toMatch(/^image\//);
   }
 
-  // Phone: the same order, the bar holding the sections alone and the date under the wordmark.
-  // There is no menu.
+  // Phone: the same order, the strip's date without its year. There is no menu.
   const phone = { width: 390, height: 844 };
   await page.setViewportSize(phone);
   await expect(page.getByRole("button", { name: /menu/i })).toHaveCount(0);
-  await expect(masthead).toContainText("Tuesday, October 6");
+  await expect(strip.locator('[data-slot="masthead-date"] > :visible')).toHaveCount(0);
+  await expect(strip).toContainText("Tuesday, October 6");
   await inOrder();
   const places = sectionNav.getByRole("link");
   await expect(places).toHaveText(SECTIONS);
@@ -127,22 +126,21 @@ test("the masthead opens with the sections' bar, above the wordmark at any width
     expect(box?.height).toBeGreaterThanOrEqual(44);
     expect(box?.width).toBeGreaterThanOrEqual(44);
   }
-  // The dateline is one line, and nothing scrolls sideways.
-  await expect(dateline.locator("p span:visible")).toHaveText(/^9 games( · Picks \d+–\d+)?$/);
+  // Tonight's line is one line, and nothing scrolls sideways.
+  await expect(dateline.locator("span:visible")).toHaveText(/^9 games( · Picks \d+–\d+)?$/);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(phone.width);
 
-  // A phone has one theme button, at the end of the dateline, which leads to the theme not
-  // shown: by day, to night.
+  // A phone has the same two buttons, each a thumb's reach: the theme shown is the one pressed.
   await expect(theme).toHaveCount(1);
-  await expect(dateline.getByRole("group", { name: "Theme" })).toBeVisible();
-  await expect(theme.getByRole("button")).toHaveCount(1);
+  await expect(theme.getByRole("button")).toHaveText(["Day", "Night"]);
   await expect(async () => {
-    // Whichever is drawn: a press that landed late has already swapped the button.
-    if (await theme.getByRole("button", { name: "Night" }).isVisible())
-      await theme.getByRole("button", { name: "Night" }).click();
+    await theme.getByRole("button", { name: "Night" }).click();
     await expect(body).toHaveCSS("background-color", DARK_BACKGROUND, { timeout: 1000 });
   }).toPass();
-  await expect(theme.getByRole("button")).toHaveAccessibleName("Day");
+  await expect(theme.getByRole("button", { name: "Night" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
   for (const path of [
     "/family/rylan",
     "/yogan",
@@ -175,14 +173,10 @@ test("a section followed changes the page under the masthead and leaves it", asy
   await places.getByText("Home", { exact: true }).click();
   await expect(page.getByRole("region", { name: "NHL Roundup" })).toBeVisible();
   await expect(sectionNav.locator('[aria-current="page"]')).toHaveText("Home");
-  // The current section is in the one red, over a segment of rule in it; the others have none.
+  // The current section is in the one red, and no section has a rule or a fill of its own.
   const KICKER = "rgb(200, 16, 46)";
   await expect(places.getByText("Home", { exact: true })).toHaveCSS("color", KICKER);
-  await expect(places.getByText("Home", { exact: true })).toHaveCSS("border-bottom-color", KICKER);
-  await expect(places.getByText("Scores", { exact: true })).toHaveCSS(
-    "border-bottom-color",
-    "rgba(0, 0, 0, 0)",
-  );
+  await expect(places.getByText("Home", { exact: true })).toHaveCSS("border-bottom-width", "0px");
   // Home's page is the scores: it has no strip.
   await expect(strip).toHaveCount(0);
   // Scrolled to the end, the bar is still at the top of the screen.

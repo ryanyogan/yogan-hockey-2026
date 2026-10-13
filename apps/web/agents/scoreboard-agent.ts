@@ -35,6 +35,7 @@ import {
   slateTransitions,
 } from "./slate";
 import { ViewerPolledAgent } from "./viewer-polled-agent";
+import { withTimeout } from "./with-timeout";
 
 /** How long after a final the standings and both teams are invalidated a second time. */
 const SECOND_INVALIDATION_SECONDS = 5 * 60;
@@ -50,8 +51,6 @@ const CATCH_UP_DATE_ATTEMPTS = 3;
 const PREGAME_ATTEMPTS = 3;
 /** How long a game waits before its pre-game facts are asked of ESPN again. */
 const PREGAME_RETRY_SECONDS = 60;
-/** How long one model call may take. A call that hangs would hold up every other timer. */
-const MODEL_CALL_TIMEOUT_MS = 90 * 1000;
 
 /** Storage key prefix of a final whose work is not finished, followed by the game's id. */
 const PENDING_FINAL_PREFIX = "pending-final:";
@@ -516,18 +515,5 @@ export class ScoreboardAgent extends ViewerPolledAgent<ScoreboardState> {
    */
   #tellPages(): void {
     this.setState({ ...this.state, invalidatedAt: new Date().toISOString() });
-  }
-}
-
-/** A model call's answer, or a rejection when it takes longer than a call may. */
-async function withTimeout<T>(call: Promise<T>): Promise<T> {
-  let timer: ReturnType<typeof setTimeout> | undefined;
-  const timeout = new Promise<never>((_resolve, reject) => {
-    timer = setTimeout(() => reject(new Error("The model call timed out")), MODEL_CALL_TIMEOUT_MS);
-  });
-  try {
-    return await Promise.race([call, timeout]);
-  } finally {
-    clearTimeout(timer);
   }
 }

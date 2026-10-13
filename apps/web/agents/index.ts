@@ -2,3 +2,4 @@
 export { GameAgent } from "./game-agent";
 export { ScoreboardAgent } from "./scoreboard-agent";
 export { SkeletonAgent } from "./skeleton-agent";
+export { WriterAgent } from "./writer-agent";

@@ -162,15 +162,33 @@ export const spelled = (n, capital = true) => {
 /** The label over Home's pieces. */
 export const PIECES_LABEL = "Notes on the league";
 
-const KIND_WORDS = { preview: "Preview", recap: "Recap", league: "Standings" };
+/** What a kind is called above its headline. A kind with no word here is "The league". */
+const KIND_WORDS = {
+  preview: "Preview",
+  recap: "Recap",
+  league: "Standings",
+  "picks-tonight": "Tonight's game",
+  "picks-miss": "The miss",
+  "picks-run": "The record",
+};
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-/** The red line over a piece: what it is and the day it is about, "Preview · Mon Oct 12". */
-export function pieceKicker(piece) {
-  const day = new Date(`${piece.date}T00:00:00Z`);
-  return `${KIND_WORDS[piece.kind] ?? "The league"} · ${DAYS[day.getUTCDay()]} ${MONTHS[day.getUTCMonth()]} ${day.getUTCDate()}`;
+/** A day (`YYYY-MM-DD`) in agate: "Mon Oct 12". */
+export function slateDay(date) {
+  const day = new Date(`${date}T00:00:00Z`);
+  return `${DAYS[day.getUTCDay()]} ${MONTHS[day.getUTCMonth()]} ${day.getUTCDate()}`;
 }
+
+/** The red line over a piece: what it is and the day it is about, "Preview · Mon Oct 12". */
+export const pieceKicker = (piece) =>
+  `${KIND_WORDS[piece.kind] ?? "The league"} · ${slateDay(piece.date)}`;
+
+/**
+ * The Picks page's columns (#218) in its order: the game to watch tonight, the call that looked
+ * foolish, and the record and its run. They are pieces like Home's, of kinds of their own.
+ */
+export const COLUMN_KINDS = ["picks-tonight", "picks-miss", "picks-run"];
 
 /** A piece's words as printed: a score or a record in them never breaks across lines. */
 export const unbroken = (text) => text.replace(/\d+(?:-\d+)+/g, rec);
@@ -181,3 +199,73 @@ export const WRITTEN_BY = "Written by a model";
 /** Under a piece on its own page, in small agate: who wrote it and what it was checked against. */
 export const howWritten = (model) =>
   `A model (${model}) wrote this from the standings, scores and picks this site holds, and no person edited it. Before it was published the site checked it against those figures: every team, player and score it names is among them, and every pick is the site's own.`;
+
+/* ---------- the Picks page (#218) ---------- */
+
+/*
+ * Every sentence and label the Picks page prints around its figures. The site's port is
+ * `apps/web/lib/picks-page-copy.ts`, function for function. A tally is `{ right, wrong }`.
+ */
+
+export const PICKS_TITLE = "Picks";
+
+/** Under the title: what a pick is, who makes it and how it is marked. */
+export const PICKS_LEDE =
+  "A model picks a winner for every game before it starts, for fun. Each pick is marked right or wrong against the final score, and none is ever changed.";
+
+export const TONIGHT_LABEL = "Tonight's picks";
+export const COLUMNS_LABEL = "From the picks desk";
+
+/** The label over the week's figures: this week, or the last one that had a result. */
+export const weekLabel = (week) =>
+  week.current ? "This week in figures" : "The latest week in figures";
+
+/** The week's days beside its label: "Mon Oct 5 to Sun Oct 11". */
+export const weekSpan = (week) => `${slateDay(week.start)} to ${slateDay(week.end)}`;
+
+/** Two figures either side of an en dash that never part across lines: word joiners round it. */
+const dashed = (first, second) => `${first}\u2060–\u2060${second}`;
+
+/** A record as the site prints one: right, an en dash, wrong. "29–14". */
+export const record = ({ right, wrong }) => dashed(right, wrong);
+
+/** How often a tally was right, "67%", or nothing for a tally of no picks. */
+export function share({ right, wrong }) {
+  const picks = right + wrong;
+  return picks === 0 ? "" : `${Math.round((right / picks) * 100)}%`;
+}
+
+/** The run as a big figure and the words under it: 3, "right in a row". */
+export const runWords = (run) => ({ figure: String(run.length), key: `${run.outcome} in a row` });
+
+/** A band of chances as a row's name: "50–54%", "65% and up". */
+export const bandLabel = ({ from, to }) => (to == null ? `${from}% and up` : `${from}–${to}%`);
+
+export const SIDE_LABELS = { home: "Home team picked", road: "Road team picked" };
+
+const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const weekday = (date) => WEEKDAYS[new Date(`${date}T00:00:00Z`).getUTCDay()];
+
+/**
+ * A call in one sentence, the winner's score first: "The Carolina Hurricanes, picked at 78% on
+ * the road, beat the Philadelphia Flyers 4–1 on Monday." The names are whole.
+ */
+export function callSentence(call) {
+  const { picked, opponent } = call.score;
+  const where = call.pickedHome ? "at home" : "on the road";
+  const how =
+    picked > opponent
+      ? `beat the ${call.opponent.name} ${dashed(picked, opponent)}`
+      : `lost ${dashed(opponent, picked)} to the ${call.opponent.name}`;
+  return `The ${call.picked.name}, picked at ${Math.round(call.winProbability)}% ${where}, ${how} on ${weekday(call.date)}.`;
+}
+
+export const BEST_CALL = "Best call";
+export const WORST_CALL = "Worst call";
+
+/** In place of the figures before any pick is decided. */
+export function noFigures(awaiting) {
+  const first = "No pick has been decided yet this season. The figures start with the first final.";
+  if (awaiting === 0) return first;
+  return `${first} ${awaiting === 1 ? "One pick is" : `${awaiting} picks are`} waiting on ${awaiting === 1 ? "its game" : "their games"}.`;
+}

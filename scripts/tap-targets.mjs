@@ -21,7 +21,7 @@ import { untilPageHydrated, watchHydration } from "./performance/hydration.ts";
 const [baseURL = "http://localhost:5173", out, only] = process.argv.slice(2);
 const MINIMUM = 44;
 const PHONE = { width: Number(process.env.WIDTH ?? 390), height: 844 };
-const PLACES = ["Home", "Scores", "Standings", "Teams", "Players"];
+const PLACES = ["Home", "Scores", "Standings", "Teams", "Players", "Picks"];
 /**
  * Controls that are left smaller than the minimum on purpose, by their `data-slot`, each with
  * the reason. They are measured and counted, and do not fail the run. There are none: a game's

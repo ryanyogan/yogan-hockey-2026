@@ -8,11 +8,13 @@ import {
   savePiece,
 } from "@yogan-hockey/db";
 import { translateScoreboard, translateStandings } from "@yogan-hockey/espn";
+import type { Game, StoredPrediction } from "@yogan-hockey/schemas";
 import { getAgentByName } from "agents";
 import { afterEach, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import recordedSlate from "../../../packages/espn/fixtures/scoreboard.json";
 import recordedFinals from "../../../packages/espn/fixtures/scoreboard-20261003.json";
 import recordedStandings from "../../../packages/espn/fixtures/standings.json";
+import { readColumns } from "../lib/home-pieces";
 import {
   type EditionSources,
   MORNING_CRON,
@@ -400,6 +402,139 @@ describe("a real night through the Agent and the check together", () => {
   });
 });
 
+describe("the Picks page's columns", () => {
+  /** A pick of a finished game as D1 holds it, on its winner or its loser. */
+  const seasonPick = (game: Game, on: "winner" | "loser", chance: number, date: string) => {
+    const side = ({ id, abbreviation, name, score }: Game["home"]) => ({
+      id,
+      abbreviation,
+      name,
+      score,
+    });
+    const winner = game.home.score > game.away.score ? game.home : game.away;
+    const loser = winner === game.home ? game.away : game.home;
+    return {
+      gameId: game.id,
+      pickTeamId: (on === "winner" ? winner : loser).id,
+      winProbability: chance,
+      final: {
+        date,
+        startTime: `${date}T23:00:00.000Z`,
+        home: side(game.home),
+        away: side(game.away),
+      },
+    };
+  };
+  const [first, second, third] = finals as [Game, Game, Game];
+  /** A week with a miss on the Monday and two right since. */
+  const seasonPicks = [
+    seasonPick(first, "loser", 66, "2031-01-13"),
+    seasonPick(second, "winner", 58, "2031-01-13"),
+    seasonPick(third, "winner", 61, "2031-01-14"),
+  ];
+  const [tonight] = scheduled as [Game];
+  const predictions = new Map<string, StoredPrediction>([
+    [
+      tonight.id,
+      {
+        gameId: tonight.id,
+        status: "made",
+        pickTeamId: tonight.home.id,
+        winProbability: 61,
+        reasoning: "The home side has the better record.",
+        keyFactors: [],
+        madeAt: "2031-01-15T15:05:00.000Z",
+        model: WRITING_MODEL,
+        inputs: {},
+      },
+    ],
+  ]);
+  const withPicks = () => sources({ seasonPicks, predictions });
+  const COLUMNS = [`${TODAY}-picks-tonight`, `${TODAY}-picks-miss`, `${TODAY}-picks-run`];
+  const pieceOf = ({ options }: ModelCall) =>
+    (options as { gateway: { metadata: { piece: string } } }).gateway.metadata.piece;
+  const morning = async (name: string, read = withPicks) => {
+    const stub = await writer(name, read);
+    await runAt(stub, MORNING);
+    await runAt(stub, MORNING + PICKS_WAIT_SECONDS * 1000, 24);
+    return stub;
+  };
+
+  test("the morning writes them after Home's pieces, each from its own facts in a columnist's voice", async () => {
+    await morning("columns");
+
+    expect(calls.map(pieceOf)).toEqual([`${TODAY}-preview`, `${TODAY}-league`, ...COLUMNS]);
+    expect((await readColumns(new Date(Date.now())))?.map(({ slug }) => slug)).toEqual(COLUMNS);
+    for (const call of calls) {
+      const [system, user] = call.request.messages;
+      if (!system || !user) throw new Error("A request has two messages");
+      const column = pieceOf(call).includes("-picks-");
+      expect(system.content.includes("columnist")).toBe(column);
+      expect("picksRecord" in JSON.parse(user.content).facts).toBe(column);
+    }
+    const miss = JSON.parse(calls[3]?.request.messages[1]?.content ?? "{}").facts;
+    expect(miss.picks.worst.pick).toMatchObject({ winProbability: 66, outcome: "wrong" });
+    expect(miss.picks.run).toEqual({ outcome: "right", length: 2 });
+  });
+
+  test("a column with nothing to say is not written: no pick tonight, no miss this week, no run", async () => {
+    const quiet = () => sources({ seasonPicks: [seasonPick(second, "winner", 58, "2031-01-13")] });
+
+    await morning("quiet", quiet);
+
+    expect(calls.map(pieceOf)).toEqual([`${TODAY}-preview`, `${TODAY}-league`]);
+    expect(await readColumns(new Date(Date.now()))).toBeNull();
+  });
+
+  test("before a pick is decided, and when the picks cannot be read, no column is written", async () => {
+    await morning("none-decided", () => sources({ seasonPicks: [] }));
+    await env.DB.exec("delete from pieces");
+    await morning("unread", () => sources({ seasonPicks: null }));
+
+    expect(calls.map(pieceOf)).toEqual([
+      `${TODAY}-preview`,
+      `${TODAY}-league`,
+      `${TODAY}-preview`,
+      `${TODAY}-league`,
+    ]);
+  });
+
+  test("columns the check refuses at every try are never read by the page, and Home's pieces are written first", async () => {
+    answer = (call) => answering(pieceOf(call).includes("-picks-") ? UNSOUND : SOUND);
+
+    await morning("refused");
+
+    expect(calls.map(pieceOf).slice(0, 2)).toEqual([`${TODAY}-preview`, `${TODAY}-league`]);
+    // Three tries each for the three columns, after one each for Home's two.
+    expect(calls).toHaveLength(2 + 3 * 3);
+    expect(await readColumns(new Date(Date.now()))).toBeNull();
+    for (const slug of COLUMNS) {
+      expect(await getPieceBySlug(db, slug)).toBeNull();
+      expect(await getRejectedPieces(db, slug)).toHaveLength(3);
+    }
+    expect((await getCurrentPieces(db)).map(({ kind }) => kind).sort()).toEqual([
+      "league",
+      "preview",
+    ]);
+  });
+
+  test("the night's recap is still written on a day when every piece of the morning took every try", async () => {
+    answer = () => answering(UNSOUND);
+    const stub = await morning("worst-day");
+    expect(calls).toHaveLength(5 * 3);
+
+    answer = () => answering(SOUND);
+    await runInDurableObject(stub, (instance: WriterAgent) => {
+      vi.mocked(instance.gatherSources).mockImplementation(async () => playedOut());
+      return instance.writeEdition({ edition: "night", date: TODAY, looks: 0 });
+    });
+    await runAt(stub, EVENING);
+
+    expect((await getCurrentPieces(db)).map(({ slug }) => slug)).toEqual([`${TODAY}-recap`]);
+    expect(calls.length).toBeLessThanOrEqual(WRITING_DAILY_MODEL_CALLS);
+  });
+});
+
 describe("a piece that fails", () => {
   /** Yesterday's recap, which is what a page shows until tonight's is good. */
   const lastGood = async () => {
@@ -515,7 +650,7 @@ describe("a piece that fails", () => {
     const stub = await writer("capped", playedOut, EVENING);
 
     // The same night's piece, asked for over and over.
-    for (let again = 0; again < 6; again++) {
+    for (let again = 0; again <= WRITING_DAILY_MODEL_CALLS / 3; again++) {
       await runInDurableObject(stub, (instance: WriterAgent) =>
         instance.writeEdition({ edition: "night", date: TODAY, looks: 0 }),
       );

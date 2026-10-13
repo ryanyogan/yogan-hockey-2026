@@ -1,6 +1,7 @@
 import type { Piece } from "@yogan-hockey/schemas";
 import { describe, expect, it } from "vitest";
 import {
+  columnPieces,
   homePieces,
   howWritten,
   pieceDeck,
@@ -54,24 +55,47 @@ describe("the pieces Home shows", () => {
     expect(homePieces([recap], new Date("2026-10-14T06:00:00Z"))).toEqual([]);
   });
 
-  it("are three at most, a kind Home has no place for after the ones it has, newest first", () => {
-    const column = piece("picks-column", "2026-10-12T16:00:00Z");
+  it("are Home's own kinds and no others: a column of the Picks page is not among them", () => {
+    const column = piece("picks-miss", "2026-10-12T16:00:00Z");
     const letter = piece("letter", "2026-10-12T15:30:00Z");
     const now = new Date("2026-10-12T18:00:00Z");
     expect(kinds(homePieces([column, letter, league, preview], now))).toEqual([
       "preview",
       "league",
-      "picks-column",
-    ]);
-    expect(kinds(homePieces([column, letter, preview, recap], now))).toEqual([
-      "preview",
-      "recap",
-      "picks-column",
     ]);
   });
 
   it("are all of them when there is no clock, as in fixture mode", () => {
     expect(homePieces(current, null)).toHaveLength(3);
+  });
+});
+
+describe("the Picks page's columns", () => {
+  const miss = piece("picks-miss", "2026-10-12T15:20:00Z");
+  const run = piece("picks-run", "2026-10-12T15:21:00Z");
+  const tonight = piece("picks-tonight", "2026-10-12T15:22:00Z");
+
+  it("are the column kinds in the page's order, and none of Home's", () => {
+    const now = new Date("2026-10-12T18:00:00Z");
+    const preview = piece("preview", "2026-10-12T15:16:00Z");
+    expect(kinds(columnPieces([run, miss, preview, tonight], now))).toEqual([
+      "picks-tonight",
+      "picks-miss",
+      "picks-run",
+    ]);
+  });
+
+  it("leave the page 30 hours after they were written, as Home's pieces do", () => {
+    expect(columnPieces([miss], new Date("2026-10-13T21:20:01Z"))).toEqual([]);
+    expect(columnPieces([miss], null)).toHaveLength(1);
+  });
+
+  it("have a line of their own above the headline", () => {
+    expect(pieceKicker({ kind: "picks-tonight", date: "2026-10-12" })).toBe(
+      "Tonight's game · Mon Oct 12",
+    );
+    expect(pieceKicker({ kind: "picks-miss", date: "2026-10-12" })).toBe("The miss · Mon Oct 12");
+    expect(pieceKicker({ kind: "picks-run", date: "2026-10-12" })).toBe("The record · Mon Oct 12");
   });
 });
 

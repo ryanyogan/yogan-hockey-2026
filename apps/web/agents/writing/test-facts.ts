@@ -1,4 +1,4 @@
-import type { WritingFacts } from "@yogan-hockey/schemas";
+import type { FactCall, WritingFacts } from "@yogan-hockey/schemas";
 
 /**
  * A small world for the writing tests: two finals from Sunday, two games on Monday, six clubs.
@@ -63,6 +63,39 @@ export function testFacts(): WritingFacts {
       },
       { game: "404", away: "DAL", home: "VAN", start: "10:30 p.m. ET", venue: null, pick: null },
     ],
+  };
+}
+
+/**
+ * The same world as the Picks page's columns are told it: the season's picks are 12 right and 9
+ * wrong, the week 7-3 over three days, the last 4 picks right. The week's best call is Seattle
+ * at 58% (5-3 at Washington) and its worst Buffalo at 55% (a 4-3 loss to Dallas), both on Sunday.
+ */
+export function testPicksFacts(): WritingFacts {
+  const facts = testFacts();
+  const [won, lost] = facts.finals.map(({ decidedIn: _decidedIn, goals: _goals, ...final }) => ({
+    ...final,
+    day: "Sunday, October 11",
+  })) as [FactCall, FactCall];
+  return {
+    ...facts,
+    picksRecord: { right: 12, wrong: 9 },
+    picks: {
+      week: {
+        from: "Monday, October 5",
+        to: "Sunday, October 11",
+        right: 7,
+        wrong: 3,
+        days: [
+          { day: "Thursday, October 8", right: 2, wrong: 1 },
+          { day: "Saturday, October 10", right: 3, wrong: 1 },
+          { day: "Sunday, October 11", right: 2, wrong: 1 },
+        ],
+      },
+      run: { outcome: "right", length: 4 },
+      best: won,
+      worst: lost,
+    },
   };
 }
 

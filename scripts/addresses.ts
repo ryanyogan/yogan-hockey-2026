@@ -82,6 +82,8 @@ export function addresses(): Address[] {
       method,
       path: "/picks",
       group: "/picks",
+      intended:
+        "The JSON route is gone on purpose: /picks is the Picks page, as any page answers a method (#218).",
     })),
     ...page("files", [
       "/manifest.webmanifest",

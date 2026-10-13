@@ -25,6 +25,7 @@ export const ROUTES = [
   { name: "game-pick", path: `/nhl/games/${FINAL_GAME}/pick`, place: "Scores" },
   { name: "game-scheduled", path: `/nhl/games/${SCHEDULED_GAME}`, place: "Scores" },
   { name: "piece", path: `/pieces/${PIECE}` },
+  { name: "picks", path: "/picks", waitFor: '[data-slot="picks-figures"]', place: "Picks" },
   { name: "not-found", path: "/no-such-page", status: 404 },
   // An id that is no team's: its own page, with a link back to the teams.
   { name: "team-not-found", path: "/nhl/teams/leafs", status: 404, place: "Teams" },

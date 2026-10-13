@@ -1,9 +1,10 @@
 import {
+  type SeasonPick,
   type SeasonRecord,
   type StoredPrediction,
   StoredPredictionSchema,
 } from "@yogan-hockey/schemas";
-import { and, eq, inArray, sql } from "drizzle-orm";
+import { and, asc, eq, gte, inArray, isNull, lt, or, sql } from "drizzle-orm";
 import type { Db } from "./client.ts";
 import { games, predictions } from "./schema.ts";
 
@@ -74,6 +75,62 @@ export async function getSeasonRecord(db: Db, season: number): Promise<SeasonRec
     .innerJoin(games, eq(games.id, predictions.gameId))
     .where(and(eq(predictions.status, "made"), eq(games.season, season)));
   return record ?? { right: 0, wrong: 0 };
+}
+
+/**
+ * Every pick made in one ESPN season year, each with its game's final score from D1 or null
+ * where there is none, in the order they were made. It is what the Picks page's figures are
+ * worked out from (`apps/web/lib/picks-figures.ts`), so a row is only what they read: no
+ * reasoning and no inputs. A failed attempt is not a pick and is left out.
+ *
+ * A pick with no final has no season of its own (a prediction row does not carry one), so it is
+ * this season's when it was made between one July and the next, where ESPN's season year turns.
+ */
+export async function getSeasonPicks(db: Db, season: number): Promise<SeasonPick[]> {
+  const rows = await db
+    .select({
+      gameId: predictions.gameId,
+      pickTeamId: predictions.pickTeamId,
+      winProbability: predictions.winProbability,
+      game: games,
+    })
+    .from(predictions)
+    .leftJoin(games, eq(games.id, predictions.gameId))
+    .where(
+      and(
+        eq(predictions.status, "made"),
+        or(
+          eq(games.season, season),
+          and(
+            isNull(games.id),
+            gte(predictions.madeAt, `${season - 1}-07-01`),
+            lt(predictions.madeAt, `${season}-07-01`),
+          ),
+        ),
+      ),
+    )
+    .orderBy(asc(predictions.madeAt), asc(predictions.gameId));
+  return rows.flatMap(({ gameId, pickTeamId, winProbability, game }) => {
+    // The table's check says a made row has both; a row that somehow has not is no pick.
+    if (pickTeamId == null || winProbability == null) return [];
+    const final = game && {
+      date: game.date,
+      startTime: game.startTime,
+      home: {
+        id: game.homeTeamId,
+        abbreviation: game.homeTeamAbbreviation,
+        name: game.homeTeamName,
+        score: game.homeScore,
+      },
+      away: {
+        id: game.awayTeamId,
+        abbreviation: game.awayTeamAbbreviation,
+        name: game.awayTeamName,
+        score: game.awayScore,
+      },
+    };
+    return [{ gameId, pickTeamId, winProbability, final }];
+  });
 }
 
 function toPredictionRow(prediction: StoredPrediction): PredictionRow {

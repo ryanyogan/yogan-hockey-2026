@@ -16,10 +16,19 @@ const KIND_WORDS: Record<string, string> = {
   preview: "Preview",
   recap: "Recap",
   league: "Standings",
+  "picks-tonight": "Tonight's game",
+  "picks-miss": "The miss",
+  "picks-run": "The record",
 };
 
-/** Home's order, which does not change through the day: tonight, last night, the table. */
-const HOME_ORDER = ["preview", "recap", "league"];
+/** Home's kinds in Home's order, which does not change through the day: tonight, last night, the table. */
+export const HOME_KINDS = ["preview", "recap", "league"] as const;
+
+/**
+ * The Picks page's columns (#218) in its order: the game to watch tonight, the call that looked
+ * foolish, and the record and its run. They are pieces like Home's, of kinds of their own.
+ */
+export const COLUMN_KINDS = ["picks-tonight", "picks-miss", "picks-run"] as const;
 
 /** A piece leaves Home this long after it was written (`homePieces` says why 30). */
 export const HOME_PIECE_HOURS = 30;
@@ -63,8 +72,9 @@ export const howWritten = (model: string): string =>
   `A model (${model}) wrote this from the standings, scores and picks this site holds, and no person edited it. Before it was published the site checked it against those figures: every team, player and score it names is among them, and every pick is the site's own.`;
 
 /**
- * The pieces Home shows of the current ones (`getCurrentPieces`: the newest published of each
- * kind): those written in the last 30 hours, three at most, in Home's order.
+ * The pieces a page shows of the current ones (`getCurrentPieces`: the newest published of each
+ * kind): those of the page's own kinds, written in the last 30 hours, three at most, in the
+ * page's order.
  *
  * The Writer replaces each kind once a day, so a piece is a day old at most when all is well. The
  * six hours over that are the longest the night's recap waits for a late final. Past them the
@@ -76,16 +86,24 @@ export const howWritten = (model: string): string =>
  *
  * `now` null is no clock at all: fixture mode, where the recorded slate is one day's for ever.
  */
-export function homePieces(pieces: readonly Piece[], now: Date | null): Piece[] {
+function shownPieces(
+  pieces: readonly Piece[],
+  now: Date | null,
+  kinds: readonly string[],
+): Piece[] {
   const oldest = now == null ? Number.NEGATIVE_INFINITY : now.getTime() - HOME_PIECE_HOURS * 3600e3;
-  const place = (piece: Piece) => {
-    const index = HOME_ORDER.indexOf(piece.kind);
-    return index === -1 ? HOME_ORDER.length : index;
-  };
   return pieces
-    .filter((piece) => Date.parse(piece.writtenAt) >= oldest)
+    .filter((piece) => kinds.includes(piece.kind) && Date.parse(piece.writtenAt) >= oldest)
     .map((piece, index) => ({ piece, index }))
-    .sort((a, b) => place(a.piece) - place(b.piece) || a.index - b.index)
+    .sort((a, b) => kinds.indexOf(a.piece.kind) - kinds.indexOf(b.piece.kind) || a.index - b.index)
     .slice(0, MAX_HOME_PIECES)
     .map(({ piece }) => piece);
 }
+
+/** Home's pieces: the preview, the recap and the standings note, and no column of the Picks page. */
+export const homePieces = (pieces: readonly Piece[], now: Date | null): Piece[] =>
+  shownPieces(pieces, now, HOME_KINDS);
+
+/** The Picks page's columns, by the same rule as Home's pieces. */
+export const columnPieces = (pieces: readonly Piece[], now: Date | null): Piece[] =>
+  shownPieces(pieces, now, COLUMN_KINDS);

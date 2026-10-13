@@ -10,6 +10,7 @@ export { getCurrentPieces, getPieceBySlug, getRejectedPieces, savePiece } from "
 export {
   getPrediction,
   getPredictions,
+  getSeasonPicks,
   getSeasonRecord,
   insertPredictionIfAbsent,
 } from "./predictions.ts";

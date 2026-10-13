@@ -63,10 +63,10 @@ describe("the addresses", () => {
     }
   });
 
-  it("means only the placeholder page and vinext's own transport to differ", () => {
-    expect(
-      all.filter((address) => address.intended != null).map((address) => address.path),
-    ).toEqual(["/skeleton/loading", "/nhl.rsc", "/nhl/teams/21.rsc?tab=roster"]);
+  it("means only the placeholder page, the Picks page and vinext's own transport to differ", () => {
+    expect([
+      ...new Set(all.filter((address) => address.intended != null).map((address) => address.path)),
+    ]).toEqual(["/skeleton/loading", "/picks", "/nhl.rsc", "/nhl/teams/21.rsc?tab=roster"]);
   });
 });
 

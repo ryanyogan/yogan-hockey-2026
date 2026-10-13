@@ -276,3 +276,106 @@ export const PIECES = [
     ],
   },
 ];
+
+/*
+ * PICKS is the Picks page's figures (#218) as the site's fixture mode has them: what
+ * `apps/web/lib/picks-figures.ts` makes of the five decided sample picks of
+ * `apps/web/lib/sample-picks.ts` with the recorded slate's date, Tue Oct 6 2026.
+ *
+ *   Sat Oct 3   Montreal 2 at Toronto 3, Toronto picked at 57%          right
+ *               Dallas 4 at Buffalo 2, Buffalo picked at 55%            wrong
+ *   Mon Oct 5   Seattle 5 at Washington 3, Washington picked at 63%     wrong
+ *               Vancouver 2 at N.Y. Rangers 6, the Rangers at 62%       right
+ *               Carolina 4 at Philadelphia 1, Carolina at 78%           right
+ *
+ * The week is Mon Oct 5 to Sun Oct 11, so Saturday's two are in the season and not the week. The
+ * run is the last two, in the order the games started. `awaiting` is the eight picks of the
+ * recorded slate, whose games have no final. The shape is `PicksFigures`.
+ */
+export const PICKS = {
+  season: { right: 3, wrong: 2 },
+  awaiting: 8,
+  run: { outcome: "right", length: 2 },
+  week: {
+    start: "2026-10-05",
+    end: "2026-10-11",
+    current: true,
+    tally: { right: 2, wrong: 1 },
+    days: [{ date: "2026-10-05", right: 2, wrong: 1 }],
+    best: {
+      date: "2026-10-05",
+      picked: { abbreviation: "CAR", name: "Carolina Hurricanes" },
+      opponent: { abbreviation: "PHI", name: "Philadelphia Flyers" },
+      pickedHome: false,
+      winProbability: 78,
+      score: { picked: 4, opponent: 1 },
+    },
+    worst: {
+      date: "2026-10-05",
+      picked: { abbreviation: "WSH", name: "Washington Capitals" },
+      opponent: { abbreviation: "SEA", name: "Seattle Kraken" },
+      pickedHome: true,
+      winProbability: 63,
+      score: { picked: 3, opponent: 5 },
+    },
+  },
+  bands: [
+    { from: 50, to: 54, right: 0, wrong: 0 },
+    { from: 55, to: 59, right: 1, wrong: 1 },
+    { from: 60, to: 64, right: 1, wrong: 1 },
+    { from: 65, to: null, right: 1, wrong: 0 },
+  ],
+  sides: { home: { right: 2, wrong: 2 }, road: { right: 1, wrong: 0 } },
+};
+
+/**
+ * The big figures in the middle of a season (`?season=mid`): a week, a run and a record as wide
+ * as they get, to see that the three still fit a phone.
+ */
+export const PICKS_MID = {
+  week: { right: 12, wrong: 9 },
+  run: { outcome: "right", length: 11 },
+  season: { right: 129, wrong: 114 },
+};
+
+/*
+ * COLUMNS is the Picks page's three columns as fixture mode has them (`SAMPLE_COLUMNS` in
+ * `apps/web/lib/sample-pieces.ts`, word for word), in the page's order (`COLUMN_KINDS`). `when`
+ * is the time each was written as a visitor in the East reads it. No model wrote these.
+ */
+export const COLUMNS = [
+  {
+    kind: "picks-tonight",
+    date: "2026-10-06",
+    when: "Tue Oct 6 · 11:18 AM",
+    headline:
+      "Buffalo at 64 percent is the firmest pick tonight, and Montreal is barely a pick at all",
+    paragraphs: [
+      "The game to watch tonight is in Buffalo. The Sabres are our pick at 64 percent, the firmest on a board of nine games, against a Wild team that has won both of its games.",
+      "That is the pick with the most to lose. Minnesota is 2-0-0, and a miss here would be the firmest wrong pick of the season, past Washington at 63 percent on Monday.",
+      "The other end of the board is in Montreal, where the Canadiens are the pick over Carolina at 52 percent. At 52 the pick is a lean and no more.",
+    ],
+  },
+  {
+    kind: "picks-miss",
+    date: "2026-10-06",
+    when: "Tue Oct 6 · 11:19 AM",
+    headline: "Washington at 63 percent is the pick this week would like back",
+    paragraphs: [
+      "Every week has one pick it would like back. This week's came on Monday in Washington, where the Capitals were our pick at 63 percent and the Kraken won 5-3.",
+      "It was the only wrong pick of Monday's three. The Rangers, at 62 percent, beat the Canucks 6-2, and the Hurricanes, at 78 percent, won 4-1 in Philadelphia.",
+      "A pick at 63 percent is not a promise, and nobody here took it for one. This one lost by two goals, and it goes in the wrong column with no excuse attached.",
+    ],
+  },
+  {
+    kind: "picks-run",
+    date: "2026-10-06",
+    when: "Tue Oct 6 · 11:20 AM",
+    headline: "Two right in a row, and a 3-2 record that one game could turn over",
+    paragraphs: [
+      "The picks are 3-2 on the season after going 2 for 3 on Monday. That is a winning record by the width of one game, which is the only width a record of five games has.",
+      "The last two came in: the Rangers at 62 percent and the Hurricanes at 78 percent. The home team has been the pick four times and won twice. The road team has been the pick once, and Carolina won.",
+      "None of it means much yet. Eight picks are on tonight's board, and by the morning the record will have more than doubled its games.",
+    ],
+  },
+];

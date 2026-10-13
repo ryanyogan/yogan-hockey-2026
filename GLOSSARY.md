@@ -44,6 +44,14 @@ _Avoid_: Forecast, odds, tip, Claude's pick
 A short article the site prints that a model wrote from facts the site holds: a recap of the night's finals, a preview of tonight's games with the picks, a note on the standings. It is checked against those facts before it is published, and always says a model wrote it.
 _Avoid_: Article, post, story (a Story is a game), AI article
 
+**Column**:
+A Piece about the site's own Predictions, printed on the Picks page and not on Home: the game tonight's picks have most riding on, the week's worst call, the record and its run. It is written, checked and marked as any Piece is, in a columnist's voice.
+_Avoid_: Write-up, blog, opinion piece
+
+**Call**:
+One decided Prediction as the Picks page speaks of it: who was picked, at what chance, and the final score. The week's best call is the firmest pick that came in, and its worst the firmest that lost.
+_Avoid_: Bet, tip
+
 **Parity Reference**:
 The Elixir app in `ryanyogan/yogan_hockey`, whose seven routes define the minimum functionality the rebuild must match.
 _Avoid_: Old site, legacy app

@@ -2,7 +2,7 @@ import { expect, shellHydrated, test } from "./test";
 
 const DARK_BACKGROUND = "rgb(18, 18, 18)";
 const LIGHT_BACKGROUND = "rgb(250, 250, 248)";
-const SECTIONS = ["Home", "Scores", "Standings", "Teams", "Players"];
+const SECTIONS = ["Home", "Scores", "Standings", "Teams", "Players", "Picks"];
 
 test("the masthead opens with the sections' bar, above the wordmark at any width, and switches theme", async ({
   page,

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { FinalGame } from "./final-game.ts";
 
 /** What every prediction row holds, whether or not the model produced a pick. */
 const storedPredictionBase = {
@@ -56,3 +57,12 @@ export const SeasonRecordSchema = z.object({
   wrong: z.number().int().nonnegative(),
 });
 export type SeasonRecord = z.infer<typeof SeasonRecordSchema>;
+
+/**
+ * A pick as the Picks page's figures read it: who was picked and at what chance, and the game's
+ * final score, or null where D1 holds none: a game still to be played or in progress, one that
+ * was postponed, and one that was never played.
+ */
+export type SeasonPick = Pick<MadePrediction, "gameId" | "pickTeamId" | "winProbability"> & {
+  final: (Pick<FinalGame, "startTime" | "home" | "away"> & { date: string }) | null;
+};

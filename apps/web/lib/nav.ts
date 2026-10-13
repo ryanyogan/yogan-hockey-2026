@@ -11,7 +11,10 @@ const under = (pathname: string, root: string) =>
 /** The one `tab` that changes which place a page belongs to: `/nhl` is Standings without it. */
 const TEAMS_TAB = "teams";
 
-/** The five sections of the masthead's nav, at any width. */
+/** A column of the Picks page at its own address: `/pieces/2026-10-12-picks-miss`. */
+const isColumn = (pathname: string) => /^\/pieces\/[^/]*-picks-[a-z-]+$/.test(pathname);
+
+/** The six sections of the masthead's nav, at any width. */
 export const NAV_ITEMS: readonly NavItem[] = [
   { label: "Home", href: "/", owns: (pathname) => pathname === "/" },
   {
@@ -31,6 +34,11 @@ export const NAV_ITEMS: readonly NavItem[] = [
       (pathname === "/nhl" && tab === TEAMS_TAB) || under(pathname, "/nhl/teams"),
   },
   { label: "Players", href: "/players", owns: (pathname) => under(pathname, "/players") },
+  {
+    label: "Picks",
+    href: "/picks",
+    owns: (pathname) => under(pathname, "/picks") || isColumn(pathname),
+  },
 ];
 
 export function currentNavItem(pathname: string, tab: string | null): NavItem | undefined {

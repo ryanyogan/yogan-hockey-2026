@@ -1,28 +1,49 @@
-// PROTOTYPE (Agate). Draws Home from data.js with the sentences of copy.js.
+// PROTOTYPE (Agate). Draws Home and the Picks page from data.js with the sentences of copy.js.
 // Address options: ?slate=tonight|busy  &theme=light|dark  &chrome=0 (hide the switcher)
-// &picks=1 (the sections with Picks among them)  &at=Standings (the current section)  &news=0 (a day ESPN's news could not be read)
-// &pieces=0 (a day with no written piece)  &pieces=1|2 (only so many of them)
+// &at=Standings (the current section)
+// Home: &news=0 (a day ESPN's news could not be read)  &pieces=0 (a day with no written piece)
+// &pieces=1|2 (only so many of them)
+// ?page=picks (the Picks page, #218): &figures=0 (before any pick is decided)
+// &season=mid (a week, a run and a record as wide as they get)  &columns=0 (no column published)
 
 import {
   agateName,
+  BEST_CALL,
+  bandLabel,
   briefGame,
+  COLUMN_KINDS,
+  COLUMNS_LABEL,
+  callSentence,
   counts,
   deck,
   headline,
   kicker,
   leadsAndBriefs,
+  noFigures,
+  PICKS_LEDE,
+  PICKS_TITLE,
   PIECES_LABEL,
   pickOutcome,
   pickSentence,
   pieceKicker,
+  record,
+  runWords,
+  SIDE_LABELS,
+  share,
+  slateDay,
   spelled,
+  TONIGHT_LABEL,
   tonightPicks,
   unbroken,
+  WORST_CALL,
   WRITTEN_BY,
+  weekLabel,
+  weekSpan,
 } from "./copy.js";
-import { NEWS, PIECES, SLATES, STANDINGS } from "./data.js";
+import { COLUMNS, NEWS, PICKS, PICKS_MID, PIECES, SLATES, STANDINGS } from "./data.js";
 
 const params = new URLSearchParams(location.search);
+const onPicks = params.get("page") === "picks";
 const slateKey = params.get("slate") === "busy" ? "busy" : "tonight";
 const slate = SLATES[slateKey];
 const state = { conf: "east" };
@@ -36,6 +57,16 @@ const esc = (s) =>
 const SUN = `<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>`;
 const MOON = `<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>`;
 
+// A page of the prototype's address, keeping the theme, the switcher and the slate.
+function pageHref(page) {
+  const p = new URLSearchParams();
+  if (page) p.set("page", page);
+  for (const key of ["slate", "theme", "chrome"]) {
+    if (params.has(key)) p.set(key, params.get(key));
+  }
+  return `?${p}`;
+}
+
 // The theme's two buttons. They are written twice and drawn once: at the right end of the
 // sections' bar at a desk, and at the end of the dateline on a phone, where the bar is full.
 function themeControl(place, dark) {
@@ -46,36 +77,42 @@ function themeControl(place, dark) {
 }
 
 // The sections' bar first, hung from a heavy rule and stuck to the top of the screen: the date,
-// the sections, Day/Night. Then the nameplate, and the dateline on the double rule. `?picks=1`
-// adds the section the Picks page (#218) will bring, to show the bar has room for it, and
-// `?at=Standings` marks another section as the current one.
+// the sections, Day/Night. Then the nameplate, and the dateline on the double rule. The sections
+// are six, Picks (#218) the last. Home and Picks lead to the two pages drawn here, with the theme,
+// the switcher and the slate as they are; `?at=Standings` marks another section as the current
+// one. The nameplate is Home's `h1` and a paragraph on the Picks page, whose title is its own.
 function masthead() {
   const c = counts(slate.games);
   const dark = document.documentElement.classList.contains("dark");
-  const places = ["Home", "Scores", "Standings", "Teams", "Players"];
-  if (params.get("picks") === "1") places.push("Picks");
-  const at = params.get("at") ?? "Home";
+  const places = ["Home", "Scores", "Standings", "Teams", "Players", "Picks"];
+  const at = params.get("at") ?? (onPicks ? "Picks" : "Home");
+  const drawn = { Home: pageHref(null), Picks: pageHref("picks") };
   const nav = places
-    .map((n) => `<a href="#"${n === at ? ' aria-current="page"' : ""}>${n}</a>`)
+    .map(
+      (n) => `<a href="${esc(drawn[n] ?? "#")}"${n === at ? ' aria-current="page"' : ""}>${n}</a>`,
+    )
     .join("");
+  const nameplate = onPicks ? "p" : "h1";
+  // The dateline's record is the season's: on the Picks page, the one its figures print.
+  const season = onPicks ? picksFigures().season : slate.record;
   return `
   <div class="section-row">
     <div class="section-row__inner">
       <p class="section-row__date">${esc(slate.date)}</p>
-      <nav class="sections${places.length > 5 ? " sections--six" : ""}" aria-label="Main">${nav}</nav>
+      <nav class="sections" aria-label="Main">${nav}</nav>
       ${themeControl("desk", dark)}
     </div>
   </div>
   <header class="masthead">
-    <h1 class="wordmark"><a href="#">Yogan Hockey</a></h1>
+    <${nameplate} class="wordmark"><a href="${esc(pageHref(null))}">Yogan Hockey</a></${nameplate}>
     <p class="masthead__date">${esc(slate.date)}</p>
   </header>
   <div class="dateline">
     <div class="dateline__rules">
       <p class="dateline__inner">
         <span class="dateline__wide">Tonight: ${c.total} games${c.live ? ` · ${c.live} live` : ""}${c.toCome ? ` · ${c.toCome} to come` : ""}${c.final ? ` · ${c.final} final` : ""}</span>
-        <span class="dateline__wide">Picks this season: ${slate.record.right} right, ${slate.record.wrong} wrong</span>
-        <span class="dateline__narrow">${c.total} games${c.live ? ` · ${c.live} live` : ""}${c.final ? ` · ${c.final} final` : ""} · Picks ${slate.record.right}–${slate.record.wrong}</span>
+        <span class="dateline__wide">Picks this season: ${season.right} right, ${season.wrong} wrong</span>
+        <span class="dateline__narrow">${c.total} games${c.live ? ` · ${c.live} live` : ""}${c.final ? ` · ${c.final} final` : ""} · Picks ${season.right}–${season.wrong}</span>
       </p>
       ${themeControl("phone", dark)}
     </div>
@@ -122,9 +159,10 @@ function story(g) {
   </article>`;
 }
 
-function briefs(list) {
-  if (list.length === 0) return "";
-  const rows = list
+// A brief: the game on one line, its status and its pick on the next. Home's are the games that
+// do not lead; the Picks page's are the whole slate.
+function briefRows(list) {
+  return list
     .map((g) => {
       const status =
         g.status === "scheduled" ? g.start : g.status === "live" ? `Live · ${g.detail}` : g.detail;
@@ -139,17 +177,22 @@ function briefs(list) {
     </li>`;
     })
     .join("");
+}
+
+function briefs(list) {
+  if (list.length === 0) return "";
   return `
   <section class="briefs" aria-labelledby="briefs-h">
     <h2 class="label" id="briefs-h">Around the league</h2>
-    <ul class="brief-list">${rows}</ul>
+    <ul class="brief-list">${briefRows(list)}</ul>
   </section>`;
 }
 
 // The written pieces (#217), in the leads' grid: what each is and its day, its headline (a link
 // to its own page), its first paragraph cut at five lines, and that a model wrote it and when.
-// With none (`?pieces=0`) the section is not drawn at all.
-function pieces(list) {
+// With none (`?pieces=0`) the section is not drawn at all. The Picks page's columns are drawn the
+// same, under a label of their own.
+function pieces(list, label = PIECES_LABEL, id = "pieces-h") {
   if (list.length === 0) return "";
   const stories = list
     .map(
@@ -162,8 +205,8 @@ function pieces(list) {
     )
     .join("");
   return `
-  <section class="pieces" aria-labelledby="pieces-h">
-    <h2 class="label" id="pieces-h">${esc(PIECES_LABEL)}</h2>
+  <section class="pieces" aria-labelledby="${id}">
+    <h2 class="label" id="${id}">${esc(label)}</h2>
     <div class="piece-list">${stories}</div>
   </section>`;
 }
@@ -245,6 +288,138 @@ function lower() {
   </div>`;
 }
 
+/* ---------- the Picks page (#218) ---------- */
+
+// A red label over a plain rule, with a count beside it in quiet agate: the site's SectionHeader.
+function sectionHead(id, title, count) {
+  const quiet = count ? ` <span class="label__count">${esc(count)}</span>` : "";
+  return `<div class="section-head"><h2 class="label" id="${id}">${esc(title)}${quiet}</h2></div>`;
+}
+
+// A big figure over the words that say what it counts: the record, the run.
+function stat(figure, name) {
+  return `<div class="stat"><dt class="stat__name">${esc(name)}</dt><dd class="stat__figure">${esc(figure)}</dd></div>`;
+}
+
+// One way of cutting the picks, in agate: a row for each part with how many picks it has, how
+// many were right and wrong, and the share that were right in bold. A part with no picks has its
+// row and no share, so the table is the same shape from the season's first week.
+function split(id, title, of, rows) {
+  const head = ["Picks", "Right", "Wrong", "Pct"]
+    .map((name) => `<th scope="col" class="fig">${name}</th>`)
+    .join("");
+  const body = rows
+    .map(
+      (row) =>
+        `<tr><td class="split__name">${esc(row.name)}</td><td class="dim">${row.right + row.wrong}</td><td>${row.right}</td><td>${row.wrong}</td><td class="strong">${share(row)}</td></tr>`,
+    )
+    .join("");
+  return `
+  <div class="split">
+    <h3 class="split__title" id="${id}">${esc(title)}</h3>
+    <div class="split__table">
+      <table class="agate" aria-labelledby="${id}">
+        <thead><tr><th scope="col">${of}</th>${head}</tr></thead>
+        <tbody>${body}</tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+// The week's best or worst call: a red line saying which, and the call as a sentence that links
+// to its game.
+function callLine(name, call) {
+  if (call == null) return "";
+  return `<div class="call"><dt class="kicker">${esc(name)}</dt><dd class="call__sentence"><a href="#">${esc(callSentence(call))}</a></dd></div>`;
+}
+
+// The figures: the week's record, the run and the season's record as big figures; then the week
+// by day and the season by how sure the pick was and by which team was picked; then the week's
+// best and worst calls. Before any pick is decided (`?figures=0`), a sentence.
+function figures(f) {
+  const { week, run } = f;
+  if (week == null || run == null) {
+    return `
+  <section class="figures" aria-labelledby="figures-h">
+    ${sectionHead("figures-h", weekLabel({ current: true }))}
+    <p class="empty">${esc(noFigures(f.awaiting))}</p>
+  </section>`;
+  }
+  const streak = runWords(run);
+  const calls =
+    week.best || week.worst
+      ? `<dl class="calls">${callLine(BEST_CALL, week.best)}${callLine(WORST_CALL, week.worst)}</dl>`
+      : "";
+  return `
+  <section class="figures" aria-labelledby="figures-h">
+    ${sectionHead("figures-h", weekLabel(week), weekSpan(week))}
+    <dl class="stats">
+      ${stat(record(week.tally), week.current ? "This week" : "That week")}
+      ${stat(streak.figure, streak.key)}
+      ${stat(record(f.season), "This season")}
+    </dl>
+    <div class="splits">
+      ${split(
+        "split-day",
+        "By day",
+        "Day",
+        week.days.map((day) => ({ ...day, name: slateDay(day.date) })),
+      )}
+      ${split(
+        "split-sure",
+        "By how sure, this season",
+        "Chance",
+        f.bands.map((band) => ({ ...band, name: bandLabel(band) })),
+      )}
+      ${split("split-side", "By side, this season", "Pick", [
+        { ...f.sides.home, name: SIDE_LABELS.home },
+        { ...f.sides.road, name: SIDE_LABELS.road },
+      ])}
+    </div>
+    ${calls}
+  </section>`;
+}
+
+// The figures the address asks for: the sample picks', none at all, or a mid-season's big three.
+function picksFigures() {
+  if (params.get("figures") === "0") {
+    return { ...PICKS, season: { right: 0, wrong: 0 }, run: null, week: null };
+  }
+  if (params.get("season") === "mid") {
+    return {
+      ...PICKS,
+      season: PICKS_MID.season,
+      run: PICKS_MID.run,
+      week: { ...PICKS.week, tally: PICKS_MID.week },
+    };
+  }
+  return PICKS;
+}
+
+// `?page=picks`: the title and what a pick is, the figures, tonight's games each as a brief with
+// its pick, and the columns in the pieces' grid.
+function picksPage() {
+  const games = slate.games;
+  const count = games.length > 0 ? `${games.length} game${games.length === 1 ? "" : "s"}` : "";
+  const columns =
+    params.get("columns") === "0"
+      ? []
+      : COLUMN_KINDS.flatMap((kind) => COLUMNS.filter((column) => column.kind === kind));
+  return `
+    <main id="content" class="picks">
+      <div>
+        <header class="page-head"><h1 class="band-title">${esc(PICKS_TITLE)}</h1></header>
+        <p class="deck picks__lede">${esc(PICKS_LEDE)}</p>
+      </div>
+      ${figures(picksFigures())}
+      <section class="picks-tonight" aria-labelledby="tonight-h">
+        ${sectionHead("tonight-h", TONIGHT_LABEL, count)}
+        <ul class="brief-list">${briefRows(games)}</ul>
+      </section>
+      ${pieces(columns, COLUMNS_LABEL, "columns-h")}
+    </main>`;
+}
+
 function switcher() {
   if (params.get("chrome") === "0") return "";
   const link = (key, text) => {
@@ -257,9 +432,7 @@ function switcher() {
 
 function render() {
   const { leads, briefs: rest } = leadsAndBriefs(slate.games);
-  document.getElementById("app").innerHTML = `
-  <div class="page">
-    ${masthead()}
+  const home = () => `
     <main id="content">
       <section class="roundup" aria-labelledby="roundup-h">
         <h2 class="label" id="roundup-h">NHL Roundup</h2>
@@ -269,7 +442,10 @@ function render() {
       ${pieces(PIECES.slice(0, Number(params.get("pieces") ?? PIECES.length)))}
       ${news(params.get("news") === "0" ? [] : NEWS)}
       ${lower()}
-    </main>
+    </main>`;
+  document.getElementById("app").innerHTML = `
+  <div class="page">
+    ${masthead()}${onPicks ? picksPage() : home()}
     <footer class="footer"><p>Scores and stats from <a href="#">ESPN</a>. Yogan Hockey is a family project, not affiliated with ESPN or the NHL.</p></footer>
   </div>
   ${switcher()}`;

@@ -106,12 +106,24 @@ A live story swaps its heavy top rule to `--live`.
   - Line two, right, is the pick: "MTL 52%" plus a mark when final, or "No pick".
 - Briefs are separated by dotted rules. This keeps a 16-game night scannable.
 
+**Notes on the league: the written pieces** (#217).
+- Under the briefs and above ESPN's headlines, a band of its own (the band's gap above it): the red label "Notes on the league" with 16px under it, as "NHL Roundup" has, then up to three pieces in the leads' grid (`repeat(auto-fit, minmax(300px, 1fr))`), each under the leads' heavy rule. A piece, top to bottom, 10px apart:
+  - the **kicker**, in the leads' kicker type: what the piece is and the day it is about, "Preview · Tue Oct 6", "Recap · Mon Oct 5", "Standings · Tue Oct 6" (a kind with no word of its own is "The league"). Never "tonight" or "last night": a piece outlives the night.
+  - the **headline**, Newsreader 700 at 26px on 1.12, tracked -0.01em, balanced. It is smaller than a lead's 34 to 40px because it is a sentence of up to ninety letters where a lead's is two clubs and a score; it runs two or three lines. It links to the piece's page and is underlined under the pointer.
+  - the **deck**: the piece's first paragraph in the serif (17px on 1.45, `--note`), cut at five lines.
+  - the **byline** in agate (13px, `--aside`, the TV line's type): "Written by a model · Tue Oct 6 · 11:16 AM", the time in the visitor's zone.
+- The order does not change through the day: preview, recap, standings; a kind Home has no place for comes after, newest first.
+- One piece alone has the whole row; its headline and deck stop at 680px. Two share it.
+- A score or a record in a piece ("5-3", "2-0-0") never breaks across lines, as no record does.
+- **A piece leaves Home 30 hours after it was written.** The Writer replaces each kind daily, and the night's recap can wait six hours for a late final; past that the Writer has missed a run, and a preview is gone by 5 p.m. Eastern the next day, before that evening's games (not before an afternoon's). Each morning until the Writer's run the preview shown is the day before's, which its kicker's date says. Its own page stays.
+- **With no pieces the section is not drawn**: no label, no rule, no gap (`?pieces=0` on the prototype and on `/skeleton/dashboard`; `?pieces=1` or `2` on the prototype draws so many). That is before the Writer has published one, after 30 hours of its failing, or D1 not answering.
+
 **Headlines from ESPN: the news** (#217).
 - Under the briefs, in the briefs' form: a red label over a plain rule, then ESPN's NHL headlines in an `auto-fill, minmax(min(340px, 100%), 1fr)` list, rows parted by dotted rules. Six at most, in ESPN's order, which is three columns of two at a desk (the briefs have four: a headline is a sentence, not a score), two of three on a tablet and one column on a phone. The band's gap above it (44px, 32 on a phone).
 - A row is the headline in the serif (Newsreader 700, 18px on 1.25, tracked -0.005em: it reads) over the day and time ESPN published it in agate (13px, `--aside`: "Mon Oct 12 · 5:18 PM", in the visitor's zone as every time on the site is). A headline with no time has no second line.
 - The whole row is one link to the article on ESPN, in the same tab as the footer's credit is; its headline is underlined under the pointer. A row with its time is 60px tall or more, and no row is under 44px (a one-line headline with no time would be 42), so a thumb has it.
 - **With no news the section is not drawn**: no label, no rule, no gap, and the lower band follows the briefs. That is ESPN's news not answering or having changed shape for more than six hours (until then the last list read is shown), never having been read, or being empty (`?news=0` on the prototype and on `/skeleton/dashboard`).
-- **Where the written pieces will go** (#217, a later slice; nothing is drawn for them now): directly above this list, in a band of their own under the briefs, as two or three stories in the leads' grid (the heavy rule, a kicker saying a model wrote it and when, a serif headline that links to the piece's page, a deck). The headlines then read as the agate under those stories, as the briefs do under the leads.
+- The written pieces are directly above this list (next), so the headlines read as the agate under them, as the briefs do under the leads.
 
 **Lower band** (heavy rule above). Desktop: Standings (`flex: 999 1 560px`) beside an aside (`flex: 1 1 300px`).
 - **Standings:** a serif title and a "Full standings" link. East and West agate tables sit side by side, each under a red label with an ink underline. Columns are Team (agate name), GP (in `--aside`), W, L, OT and **PTS** (bold).
@@ -129,6 +141,7 @@ A live story swaps its heavy top rule to `--live`.
 | Two-part dateline | One line: "3 games · 3 final · Picks 29–14", with one icon button at its right end that switches theme (moon by day, sun by night; named "Day" or "Night"). The line is 44px for the button, over a hairline |
 | Story grid | Stories stacked; headline 34px |
 | Briefs in 4 columns | One column |
+| Written pieces in 3 columns | Stacked, 28px apart, the headline still 26px; its link reaches a thumb's 44px |
 | Headlines from ESPN in 3 columns | One column, each row a link at least 44px tall (60px with its time) |
 | Standings beside the aside | Order: **Picks box** (row layout) → **Standings**; "Tonight at a glance" is hidden because the dateline carries it |
 | East and West side by side | An Eastern/Western segmented control (`role="group"`, `aria-pressed`, 44px) shows one table at a time |
@@ -147,6 +160,7 @@ The prototype draws Home only. Every other route is built from the same tokens, 
 - **Teams** (`/nhl?tab=teams`) is a list in CSS columns read down each column, not a table.
 - **A team's page** opens as a story does: the heavy rule, a red kicker (place, conference, division), the club's name as a serif headline with its mark, then Next Game, and Schedule, Roster and Stats as tabs. The name is always one line: it is the headline's size where the longest name ("Columbus Blue Jackets") fits the column at it with 2.5% to spare, which is from 435px up, and 8.45% of the column's width under that, as the wordmark shrinks under 390px (#225). In a schedule a win is bold and a loss grey. An opponent is its agate name on a phone and its whole name from `sm` up, in the Next Game card and in the schedule alike.
 - **A game's page** opens with the same story a lead on Home is (kicker, headline, deck, line score with the club marks and the shots, pick line, TV), then the rink, the penalty box and the plays. The rink is ink on paper with the one red for a goal; saves, shots and hits are told apart by weight and filling, with a key under the ice, and no club's colour is used. The score is in the story's header and over the ice.
+- **A written piece's page** (`/pieces/<date>-<kind>`, #217) opens as a story does: the heavy rule, a red kicker (what it is and the day written out, "Preview · Monday, October 12"), and the piece's headline at a lead's size, which is the page's `h1`, held to 760px. Under it the byline in agate ("Written by a model · Mon Oct 12 · 11:16 AM"), then the paragraphs in the serif at the deck's size on 1.5, 14px apart, in a 680px column (about 75 letters a line), in `--foreground`: they are read, not glanced at. Under a hairline, in 13px agate in `--aside`, one paragraph naming the model and saying how the piece was checked; then "back to tonight". Figures are tabular, as on every page but Home. An address that is no piece's is the site's not-found page.
 - **Players** is a search and agate rows; a player's page is a serif title with his position and club, and ledgers for his season, games and career.
 - **Not found and error pages** are a page title and a sentence of serif prose with a way back; the page of last resort, for a request the site could not answer at all (`apps/web/lib/render-failure.ts`), repeats the wordmark and its double rule in a device's own serif.
 - **An empty state** is a sentence of serif prose (`emptyProse`), never a box.

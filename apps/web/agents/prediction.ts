@@ -7,6 +7,7 @@ import {
   predictionOutputSchema,
   type RecentGame,
 } from "@yogan-hockey/schemas";
+import { jsonAnswer } from "./model-answer";
 
 /** The model a Prediction is asked of, twice at most (spec section 6). */
 export const PRIMARY_MODEL = "@cf/openai/gpt-oss-120b";
@@ -183,39 +184,12 @@ export function predictionRequest(inputs: PredictionInputs) {
 /** The body of one model call. Both models are sent the same one. */
 export type PredictionRequest = ReturnType<typeof predictionRequest>;
 
-/** Finds the model's words in what the binding answered: the two models answer in two shapes. */
-function answerOf(raw: unknown): unknown {
-  if (typeof raw !== "object" || raw === null) return raw;
-  // The plain Workers AI shape. In JSON mode `response` is already an object.
-  if ("response" in raw && raw.response != null) return raw.response;
-  // The OpenAI chat shape.
-  if ("choices" in raw && Array.isArray(raw.choices)) {
-    const [choice] = raw.choices as { message?: { content?: unknown } }[];
-    return choice?.message?.content ?? null;
-  }
-  return raw;
-}
-
-/** The JSON object in a model's text, which may be wrapped in a code fence or a sentence. */
-function jsonIn(text: string): unknown {
-  const start = text.indexOf("{");
-  const end = text.lastIndexOf("}");
-  if (start === -1 || end <= start) return null;
-  try {
-    return JSON.parse(text.slice(start, end + 1));
-  } catch {
-    return null;
-  }
-}
-
 /**
  * The Prediction in what a model answered, or null when it is not one: no JSON, a team that is
  * not playing, a probability out of range, reasoning of the wrong length. Nothing is repaired
  * beyond finding the JSON; an answer either passes the schema or does not count.
  */
 export function readModelAnswer(raw: unknown, teams: [string, string]): PredictionOutput | null {
-  const answer = answerOf(raw);
-  const value = typeof answer === "string" ? jsonIn(answer) : answer;
-  const parsed = predictionOutputSchema(teams).safeParse(value);
+  const parsed = predictionOutputSchema(teams).safeParse(jsonAnswer(raw));
   return parsed.success ? parsed.data : null;
 }

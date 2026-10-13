@@ -156,3 +156,28 @@ export const spelled = (n, capital = true) => {
   const w = WORDS[n] ?? String(n);
   return capital ? w : w.toLowerCase();
 };
+
+/* ---------- the written pieces (#217) ---------- */
+
+/** The label over Home's pieces. */
+export const PIECES_LABEL = "Notes on the league";
+
+const KIND_WORDS = { preview: "Preview", recap: "Recap", league: "Standings" };
+const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+/** The red line over a piece: what it is and the day it is about, "Preview · Mon Oct 12". */
+export function pieceKicker(piece) {
+  const day = new Date(`${piece.date}T00:00:00Z`);
+  return `${KIND_WORDS[piece.kind] ?? "The league"} · ${DAYS[day.getUTCDay()]} ${MONTHS[day.getUTCMonth()]} ${day.getUTCDate()}`;
+}
+
+/** A piece's words as printed: a score or a record in them never breaks across lines. */
+export const unbroken = (text) => text.replace(/\d+(?:-\d+)+/g, rec);
+
+/** Before the time a piece was written, wherever a piece is shown. */
+export const WRITTEN_BY = "Written by a model";
+
+/** Under a piece on its own page, in small agate: who wrote it and what it was checked against. */
+export const howWritten = (model) =>
+  `A model (${model}) wrote this from the standings, scores and picks this site holds, and no person edited it. Before it was published the site checked it against those figures: every team, player and score it names is among them, and every pick is the site's own.`;

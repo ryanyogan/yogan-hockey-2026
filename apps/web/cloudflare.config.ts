@@ -32,6 +32,7 @@ export default defineConfig({
         GameAgent: exports.durableObject({ storage: "sqlite" }),
         ScoreboardAgent: exports.durableObject({ storage: "sqlite" }),
         SkeletonAgent: exports.durableObject({ storage: "sqlite" }),
+        WriterAgent: exports.durableObject({ storage: "sqlite" }),
       },
       env: {
         ASSETS: bindings.assets(),
@@ -47,6 +48,8 @@ export default defineConfig({
         AI: bindings.ai(process.env.AI_REMOTE === "1" ? { dev: { remote: true } } : undefined),
         ScoreboardAgent: bindings.durableObject({ worker: NAME, exportName: "ScoreboardAgent" }),
         SkeletonAgent: bindings.durableObject({ worker: NAME, exportName: "SkeletonAgent" }),
+        // The written pieces (#217). Nothing connects to it: it runs on its own schedules.
+        WriterAgent: bindings.durableObject({ worker: NAME, exportName: "WriterAgent" }),
       },
     };
   }),

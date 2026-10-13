@@ -1,4 +1,4 @@
-import type { Play } from "@yogan-hockey/schemas";
+import type { Play, WritingFacts } from "@yogan-hockey/schemas";
 import { sql } from "drizzle-orm";
 import {
   check,
@@ -100,6 +100,49 @@ export const predictions = sqliteTable(
     check(
       "predictions_made_has_pick_check",
       sql`${table.status} = 'failed' or (${table.pickTeamId} is not null and ${table.winProbability} is not null and ${table.reasoning} is not null and ${table.keyFactors} is not null)`,
+    ),
+  ],
+);
+
+/**
+ * One row per piece a model wrote and the check read (#217): the published ones, which pages
+ * read, and the rejected ones, kept with the reasons. A date and a kind have one published piece
+ * at most, which the index on `slug` enforces; a rejected try shares the slug it would have had.
+ */
+export const pieces = sqliteTable(
+  "pieces",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    /** The piece's address: its date and kind, "2026-10-12-preview". */
+    slug: text("slug").notNull(),
+    /** "recap", "preview", "league": a plain word, so a new kind needs no migration. */
+    kind: text("kind").notNull(),
+    /** The slate's date the piece is about: YYYY-MM-DD in US Eastern time. */
+    date: text("date").notNull(),
+    status: text("status", { enum: ["published", "rejected"] }).notNull(),
+    headline: text("headline").notNull(),
+    /** Paragraphs of plain text, a blank line between them. */
+    body: text("body").notNull(),
+    /** An ISO 8601 UTC instant. */
+    writtenAt: text("written_at").notNull(),
+    model: text("model").notNull(),
+    /** Always "model": the row itself says who wrote it. */
+    writtenBy: text("written_by", { enum: ["model"] }).notNull(),
+    /** Why the check refused it. Null on a published row. */
+    reasons: text("reasons", { mode: "json" }).$type<string[]>(),
+    /** What the model was given, and what the piece was checked against. */
+    facts: text("facts", { mode: "json" }).$type<WritingFacts>().notNull(),
+  },
+  (table) => [
+    uniqueIndex("pieces_published_slug_idx")
+      .on(table.slug)
+      .where(sql`${table.status} = 'published'`),
+    index("pieces_kind_written_idx").on(table.kind, table.writtenAt),
+    check("pieces_status_check", sql`${table.status} in ('published', 'rejected')`),
+    check("pieces_written_by_check", sql`${table.writtenBy} = 'model'`),
+    check(
+      "pieces_rejected_has_reasons_check",
+      sql`(${table.status} = 'published') = (${table.reasons} is null)`,
     ),
   ],
 );

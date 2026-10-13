@@ -1,4 +1,4 @@
-import type { News, SeasonRecord, StandingsTable } from "@yogan-hockey/schemas";
+import type { News, Piece, SeasonRecord, StandingsTable } from "@yogan-hockey/schemas";
 import {
   Ledger,
   LedgerBody,
@@ -15,6 +15,7 @@ import { emptyProse } from "../story/type";
 import { agate, link, more, ruledLabel } from "./agate";
 import { Conferences, Glance, PicksBox } from "./lower-band";
 import { HomeNews } from "./news";
+import { HomePieces } from "./pieces";
 import { type Picks, Roundup } from "./roundup";
 
 const FULL_STANDINGS = nhlHref({ tab: "standings", view: "conference" });
@@ -119,30 +120,34 @@ function Standings({ tables }: { tables: StandingsTable[] | null }) {
 }
 
 /**
- * Home (`docs/design/agate.md` § Page anatomy): the roundup's leads and briefs, ESPN's headlines,
- * then, under a heavy rule, the standings beside The Picks and tonight at a glance. On a phone the lower band
+ * Home (`docs/design/agate.md` § Page anatomy): the roundup's leads and briefs, the written
+ * pieces, ESPN's headlines, then, under a heavy rule, the standings beside The Picks and tonight at a glance. On a phone the lower band
  * is one column in another order: the picks, then the standings.
  *
  * The route hands in what its loader read: `picks`, the made picks of today's games by game id,
  * `record`, the season's, and `standings`, each conference's top eight (`topOfConferences`), or
- * null when they could not be read, and `news`, ESPN's headlines, or null when there are none to
- * list, which leaves their section out. The games are the Scoreboard's.
+ * null when they could not be read, `pieces`, the written pieces of the day, and `news`, ESPN's
+ * headlines: either is null when there are none to show, which leaves its section out. The games
+ * are the Scoreboard's.
  */
 export function Dashboard({
   picks = {},
   record = null,
   standings,
+  pieces = null,
   news = null,
 }: {
   picks?: Picks;
   record?: SeasonRecord | null;
   standings: StandingsTable[] | null;
+  pieces?: Piece[] | null;
   news?: News | null;
 }) {
   return (
     // One child of the shell's `<main>`, which would space several by its own measure.
     <div data-slot="home">
       <Roundup picks={picks} />
+      <HomePieces pieces={pieces} />
       <HomeNews news={news} />
       <div
         data-slot="lower-band"

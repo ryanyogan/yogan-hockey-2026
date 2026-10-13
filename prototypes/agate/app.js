@@ -1,6 +1,7 @@
 // PROTOTYPE (Agate). Draws Home from data.js with the sentences of copy.js.
 // Address options: ?slate=tonight|busy  &theme=light|dark  &chrome=0 (hide the switcher)
 // &picks=1 (the sections with Picks among them)  &at=Standings (the current section)  &news=0 (a day ESPN's news could not be read)
+// &pieces=0 (a day with no written piece)  &pieces=1|2 (only so many of them)
 
 import {
   agateName,
@@ -10,12 +11,16 @@ import {
   headline,
   kicker,
   leadsAndBriefs,
+  PIECES_LABEL,
   pickOutcome,
   pickSentence,
+  pieceKicker,
   spelled,
   tonightPicks,
+  unbroken,
+  WRITTEN_BY,
 } from "./copy.js";
-import { NEWS, SLATES, STANDINGS } from "./data.js";
+import { NEWS, PIECES, SLATES, STANDINGS } from "./data.js";
 
 const params = new URLSearchParams(location.search);
 const slateKey = params.get("slate") === "busy" ? "busy" : "tonight";
@@ -141,6 +146,28 @@ function briefs(list) {
   </section>`;
 }
 
+// The written pieces (#217), in the leads' grid: what each is and its day, its headline (a link
+// to its own page), its first paragraph cut at five lines, and that a model wrote it and when.
+// With none (`?pieces=0`) the section is not drawn at all.
+function pieces(list) {
+  if (list.length === 0) return "";
+  const stories = list
+    .map(
+      (p) => `<article class="piece">
+      <p class="piece__kicker">${esc(pieceKicker(p))}</p>
+      <h3 class="piece__headline"><a href="#">${esc(unbroken(p.headline))}</a></h3>
+      <p class="piece__deck">${esc(unbroken(p.paragraphs[0]))}</p>
+      <p class="piece__byline">${esc(WRITTEN_BY)} · ${esc(p.when)}</p>
+    </article>`,
+    )
+    .join("");
+  return `
+  <section class="pieces" aria-labelledby="pieces-h">
+    <h2 class="label" id="pieces-h">${esc(PIECES_LABEL)}</h2>
+    <div class="piece-list">${stories}</div>
+  </section>`;
+}
+
 // ESPN's headlines (#217), each the whole of a link to ESPN. With none to list (`?news=0`) the
 // section is not drawn at all, and the lower band follows the briefs as it did.
 function news(list) {
@@ -239,6 +266,7 @@ function render() {
         <div class="stories">${leads.map(story).join("")}</div>
       </section>
       ${briefs(rest)}
+      ${pieces(PIECES.slice(0, Number(params.get("pieces") ?? PIECES.length)))}
       ${news(params.get("news") === "0" ? [] : NEWS)}
       ${lower()}
     </main>

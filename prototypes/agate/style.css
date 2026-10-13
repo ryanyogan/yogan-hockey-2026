@@ -552,6 +552,73 @@ button {
   color: var(--aside);
 }
 
+/* ---------- the written pieces (#217) ---------- */
+
+/*
+ * Between the briefs and ESPN's headlines, in the leads' grid and under the leads' heavy rule,
+ * so the headlines read as the agate under these as the briefs do under the leads. A piece's
+ * headline is a sentence of up to ninety letters, so it is 26px where a lead's is 34 to 40; its
+ * deck is the piece's first paragraph, cut at five lines; the agate line says a model wrote it
+ * and when. One piece alone has the whole row, and its lines stop at 680px.
+ */
+.pieces {
+  margin-top: var(--band);
+}
+.pieces > .label {
+  margin-bottom: 16px;
+}
+.piece-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--gap);
+}
+.piece {
+  border-top: 3px solid var(--rule);
+  padding-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+.piece__kicker {
+  margin: 0;
+  font: 600 12px / 1.35 var(--font-agate);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--kicker);
+}
+.piece__headline {
+  margin: 0;
+  max-width: 680px;
+  font: 700 26px / 1.12 var(--font-serif);
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+.piece__headline a {
+  text-decoration: none;
+}
+.piece__headline a:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  color: inherit;
+}
+.piece__deck {
+  margin: 0;
+  max-width: 680px;
+  font: 400 17px / 1.45 var(--font-serif);
+  color: var(--note);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  overflow: hidden;
+}
+.piece__byline {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--aside);
+}
+
 /* ---------- news: ESPN's headlines (#217) ---------- */
 
 /*

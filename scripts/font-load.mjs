@@ -51,6 +51,8 @@ const PATHS = [
   "/nhl/games/401803652",
   // A written piece: there once the sample picks and pieces are seeded (`/skeleton/picks`).
   "/pieces/2026-10-06-preview",
+  // The Picks page: its figures, tonight's picks and the sample columns, seeded as the piece is.
+  "/picks",
 ];
 const WIDTHS = { 390: 844, 1440: 900 };
 const HOLD_MS = 2000;

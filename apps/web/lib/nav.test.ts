@@ -5,14 +5,22 @@ const labelAt = (pathname: string, tab: string | null = null) =>
   currentNavItem(pathname, tab)?.label;
 
 describe("the site navigation", () => {
-  it("keeps the five primary pages visible in the approved order", () => {
+  it("keeps the six primary pages visible in the approved order", () => {
     expect(NAV_ITEMS.map((item) => item.label)).toEqual([
       "Home",
       "Scores",
       "Standings",
       "Teams",
       "Players",
+      "Picks",
     ]);
+  });
+
+  it("marks Picks on its page and on a column's, and no place on a piece of Home's", () => {
+    expect(labelAt("/picks")).toBe("Picks");
+    expect(labelAt("/pieces/2026-10-12-picks-miss")).toBe("Picks");
+    expect(navItemByPathAlone("/pieces/2026-10-12-picks-tonight")?.label).toBe("Picks");
+    expect(labelAt("/pieces/2026-10-12-preview")).toBeUndefined();
   });
 
   it("marks Home on the dashboard and nothing on an unknown path", () => {

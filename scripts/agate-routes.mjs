@@ -40,6 +40,10 @@ const KEPT = new Set([
   "team-not-found-390-light",
   "piece-390-light",
   "piece-1440-dark",
+  "picks-390-light",
+  "picks-390-dark",
+  "picks-1440-light",
+  "picks-1440-dark",
 ]);
 const MAX_HEIGHT = Number(process.env.MAX_HEIGHT ?? 1500);
 const WIDTHS = [390, 1440];
@@ -62,6 +66,7 @@ const ROUTES = [
   { name: "team-not-found", path: "/nhl/teams/leafs", status: 404 },
   // A written piece (#217): the sample preview, which `seedPicks` writes with the picks.
   { name: "piece", path: `/pieces/${PIECE}` },
+  { name: "picks", path: "/picks" },
 ].filter((route) => only == null || route.name.startsWith(only));
 
 /** Runs in the page: everything under `<main>` that is outside the system. */

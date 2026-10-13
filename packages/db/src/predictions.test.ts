@@ -6,6 +6,7 @@ import { saveFinalGame } from "./games.ts";
 import {
   getPrediction,
   getPredictions,
+  getSeasonPicks,
   getSeasonRecord,
   insertPredictionIfAbsent,
 } from "./predictions.ts";
@@ -170,4 +171,32 @@ test("a slate of no games reads as no rows, and one longer than a statement hold
   expect(await getPredictions(db, [...many, "slate-long"])).toEqual(
     new Map([["slate-long", made]]),
   );
+});
+
+test("a season's picks come with their finals, and with null where the game has none", async () => {
+  const season = nextSeason++;
+  await played(season, "picks-final", { home: 4, away: 1 }, "home");
+  await played(season, "picks-failed", { home: 4, away: 1 }, "failed");
+  await played(season, "picks-no-pick", { home: 4, away: 1 });
+  await played(nextSeason++, "picks-other-season", { home: 4, away: 1 }, "home");
+  // Postponed or still to come: made in the season's autumn, and no final in D1.
+  await insertPredictionIfAbsent(
+    db,
+    madePrediction({ gameId: "picks-no-final", madeAt: `${season - 1}-10-08T16:00:00Z` }),
+  );
+  // Never played, and made before the season year turned: the season before's.
+  await insertPredictionIfAbsent(
+    db,
+    madePrediction({ gameId: "picks-older", madeAt: `${season - 1}-04-08T16:00:00Z` }),
+  );
+
+  const picks = await getSeasonPicks(db, season);
+
+  expect(picks.map((pick) => pick.gameId).sort()).toEqual(["picks-final", "picks-no-final"]);
+  const decided = picks.find((pick) => pick.gameId === "picks-final");
+  expect(decided).toMatchObject({
+    pickTeamId: "2",
+    final: { date: "2026-04-15", home: { id: "2", abbreviation: "BUF", score: 4 } },
+  });
+  expect(picks.find((pick) => pick.gameId === "picks-no-final")?.final).toBeNull();
 });

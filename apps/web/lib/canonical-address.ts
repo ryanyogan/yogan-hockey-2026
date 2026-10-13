@@ -6,7 +6,7 @@
 /**
  * Where an address ending in a slash lives, or null for one that ends in none: the same address
  * without it, the query kept. The Worker's entry sends it there for good (308), whatever the
- * method. Left to the router it is a 307, and `/picks/`, a server route, is answered where it is.
+ * method. Left to the router it is a 307.
  *
  * `/` has no slash to lose, and neither has a path of slashes alone.
  */

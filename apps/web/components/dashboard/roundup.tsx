@@ -67,8 +67,11 @@ function Story({
   );
 }
 
-/** A brief: the game on one line, its status and its pick on the next. */
-function Brief({
+/**
+ * A brief: the game on one line, its status and its pick on the next. Home's are the games that
+ * do not lead; the Picks page's are the whole slate (`components/picks/picks-page.tsx`).
+ */
+export function Brief({
   game,
   pick,
   zone,

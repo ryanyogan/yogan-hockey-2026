@@ -16,8 +16,55 @@ const NSH_AT_TOR = { gameId: "401892449", pickTeamId: "21", winProbability: 58 }
 const SAMPLE_FAILED_GAME = "401892450";
 /** Dallas 4 at Buffalo 3 in a shootout, the recorded final (season 2026). */
 const FINAL_GAME = { gameId: "401803652", winnerId: "9", loserId: "2" };
-/** Finished games that exist only here, in the slate's season: they make the season record. */
-const DECIDED = ["right", "right", "right", "wrong", "wrong"] as const;
+/**
+ * Finished games that exist only here, in the slate's season: they make the season record, 3
+ * right and 2 wrong, and the Picks page's figures (#218). Two were played on the Saturday before
+ * the recorded slate's week and three on its Monday, which are the three finals the sample recap
+ * is about (`sample-pieces.ts`): the same clubs, scores and chances. `days` is how long before
+ * the slate's date the game was played; each started at 7 p.m. Eastern or half past.
+ */
+const DECIDED = [
+  {
+    days: 3,
+    at: "23:00",
+    away: { id: "10", abbreviation: "MTL", name: "Montreal Canadiens", score: 2 },
+    home: { id: "21", abbreviation: "TOR", name: "Toronto Maple Leafs", score: 3 },
+    pick: "home",
+    chance: 57,
+  },
+  {
+    days: 3,
+    at: "23:30",
+    away: { id: "9", abbreviation: "DAL", name: "Dallas Stars", score: 4 },
+    home: { id: "2", abbreviation: "BUF", name: "Buffalo Sabres", score: 2 },
+    pick: "home",
+    chance: 55,
+  },
+  {
+    days: 1,
+    at: "23:00",
+    away: { id: "124292", abbreviation: "SEA", name: "Seattle Kraken", score: 5 },
+    home: { id: "23", abbreviation: "WSH", name: "Washington Capitals", score: 3 },
+    pick: "home",
+    chance: 63,
+  },
+  {
+    days: 1,
+    at: "23:30",
+    away: { id: "22", abbreviation: "VAN", name: "Vancouver Canucks", score: 2 },
+    home: { id: "13", abbreviation: "NYR", name: "New York Rangers", score: 6 },
+    pick: "home",
+    chance: 62,
+  },
+  {
+    days: 1,
+    at: "23:30",
+    away: { id: "7", abbreviation: "CAR", name: "Carolina Hurricanes", score: 4 },
+    home: { id: "15", abbreviation: "PHI", name: "Philadelphia Flyers", score: 1 },
+    pick: "away",
+    chance: 78,
+  },
+] as const;
 
 const MODEL = "@cf/openai/gpt-oss-120b";
 
@@ -44,7 +91,7 @@ function made(
 /**
  * Replaces the sample rows: a pick for every game of today's slate but one, which is a failed
  * attempt; a pick for the recorded final, right or wrong as asked; and five decided games in the
- * slate's season. A row the Scoreboard wrote first (a `failed` one, locally) is replaced, which
+ * slate's season (`DECIDED`). A row the Scoreboard wrote first (a `failed` one, locally) is replaced, which
  * nothing else on the site ever does to a prediction.
  */
 export async function seedSamplePicks(finalPick: "right" | "wrong"): Promise<void> {
@@ -69,17 +116,19 @@ export async function seedSamplePicks(finalPick: "right" | "wrong"): Promise<voi
     ),
   );
 
-  const decided: FinalGame[] = DECIDED.map((_, index) => ({
+  const dayBefore = (days: number) =>
+    new Date(Date.parse(`${date}T00:00:00Z`) - days * 86_400_000).toISOString().slice(0, 10);
+  const decided: FinalGame[] = DECIDED.map(({ days, at, home, away }, index) => ({
     id: `sample-pick-${index}`,
-    startTime: `${date}T00:00:00Z`,
+    startTime: `${dayBefore(days)}T${at}:00Z`,
     season: seasonOfSlate(date),
     seasonType: 2,
-    home: { id: "21", abbreviation: "TOR", name: "Toronto Maple Leafs", score: 3 },
-    away: { id: "27", abbreviation: "NSH", name: "Nashville Predators", score: 2 },
+    home,
+    away,
   }));
-  decided.forEach((game, index) => {
-    const pick = DECIDED[index] === "right" ? game.home.id : game.away.id;
-    rows.push(made(game.id, pick, 60, madeAt));
+  DECIDED.forEach(({ days, pick, chance }, index) => {
+    const game = decided[index];
+    if (game) rows.push(made(game.id, game[pick].id, chance, `${dayBefore(days)}T16:02:00Z`));
   });
 
   const db = createDb(env.DB);

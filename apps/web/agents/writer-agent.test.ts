@@ -337,7 +337,6 @@ test("the facts are gathered from ESPN and D1, and a read that fails leaves its 
 
   expect(morning.standings?.rows).toHaveLength(32);
   expect(morning.slate).toEqual([]);
-  expect(morning.unfinished).toBe(false);
   expect(morning.finals).toHaveLength(finals.length);
   expect(morning.finals.every(({ game, plays }) => game.status === "final" && plays === null)).toBe(
     true,
@@ -346,6 +345,59 @@ test("the facts are gathered from ESPN and D1, and a read that fails leaves its 
   // At night the finals are the day's own. Their scoring is not recorded, so each goes without.
   expect(night.finals.map(({ game }) => game.id)).toEqual(finals.map(({ id }) => id));
   expect(night.unfinished).toBe(false);
+});
+
+describe("a real night through the Agent and the check together", () => {
+  // The recorded slate: Buffalo beat Chicago 4-3, and Pittsburgh beat Montreal 6-5 in overtime.
+  const recap = (lead: string) => ({
+    headline: "Penguins win in overtime as Sabres hold off Blackhawks",
+    paragraphs: [
+      lead,
+      "The Penguins needed overtime to get past the Canadiens, 6-5, in the highest-scoring game of the night. Pittsburgh won at home, and the Canadiens left with a point for getting that far.",
+      "The Blackhawks stayed close all night and could not find the tying goal late. Both games were decided by a single goal, which is how most of the night went around the league.",
+    ],
+  });
+  const twoGames = () => {
+    const played = finals.filter(({ home }) => ["BUF", "PIT"].includes(home.abbreviation));
+    const both = played.map((game) => ({ game, plays: null }));
+    return sources({ slate: played, finals: both, unfinished: false });
+  };
+
+  test("a recap that says what happened is published", async () => {
+    answer = () => answering(recap("The Sabres beat the Blackhawks 4-3 at home."));
+    const stub = await writer("true-recap", twoGames, EVENING);
+
+    await runAt(stub, NIGHT);
+
+    expect(logged()).toEqual([]);
+    expect((await getPieceBySlug(db, `${TODAY}-recap`))?.headline).toContain("Penguins");
+  });
+
+  test("the same recap with the winner turned round is not", async () => {
+    answer = () => answering(recap("The Blackhawks beat the Sabres 4-3 on the road."));
+    const stub = await writer("false-recap", twoGames, EVENING);
+
+    await runAt(stub, NIGHT);
+
+    expect(await getPieceBySlug(db, `${TODAY}-recap`)).toBeNull();
+    expect((await getRejectedPieces(db, `${TODAY}-recap`))[0]).toMatchObject({
+      reasons: ['says "The Blackhawks beat the Sabres", and no final in the facts has that result'],
+    });
+  });
+
+  test("a slate that could not be read at night is looked at again, not taken for an empty one", async () => {
+    vi.useRealTimers();
+    vi.stubEnv("ESPN_FIXTURES", "1");
+    const stub = await getAgentByName(exports.WriterAgent, "unread-slate");
+
+    const night = await runInDurableObject(stub, (instance: WriterAgent) =>
+      instance.gatherSources("night", "2026-10-04"),
+    );
+    vi.unstubAllEnvs();
+
+    expect(night.slate).toEqual([]);
+    expect(night.unfinished).toBe(true);
+  });
 });
 
 describe("a piece that fails", () => {

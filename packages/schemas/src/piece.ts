@@ -120,6 +120,7 @@ const MAX_HEADLINE_LENGTH = 90;
 const MIN_PARAGRAPHS = 2;
 const MAX_PARAGRAPHS = 4;
 const MIN_WORDS = 60;
+const MAX_PARAGRAPH_LENGTH = 1200;
 const MAX_WORDS = 260;
 
 const countWords = (text: string) => text.split(/\s+/).filter(Boolean).length;
@@ -139,6 +140,8 @@ export const PieceDraftSchema = z
           .string()
           .trim()
           .min(1)
+          // No paragraph of a piece this short is longer; it also bounds what the check reads.
+          .max(MAX_PARAGRAPH_LENGTH)
           .refine((text) => !text.includes("\n"), "One paragraph each"),
       )
       .min(MIN_PARAGRAPHS)

@@ -1,23 +1,36 @@
-import { exports } from "cloudflare:workers";
-import { getAgentByName } from "agents";
 import { expect, test, vi } from "vitest";
 import { wakeWriterOnce } from "./wake-writer";
-import { MORNING_CRON, NIGHT_CRON, WRITER_NAME } from "./writer-agent";
+import { WriterAgent } from "./writer-agent";
 
-test("the first request of an isolate starts the Writer, which sets its schedules; later ones do nothing", async () => {
+/** Each request's `ctx`: what it was asked to wait for, so the test can wait too. */
+function context() {
   const waited: Promise<unknown>[] = [];
-  const ctx = { waitUntil: vi.fn((work: Promise<unknown>) => void waited.push(work)) };
+  return { waited, waitUntil: vi.fn((work: Promise<unknown>) => void waited.push(work)) };
+}
 
-  wakeWriterOnce(ctx);
-  wakeWriterOnce(ctx);
-  await Promise.all(waited);
+test("a wake that fails is logged, reaches nobody, and is tried again by the next request", async () => {
+  const errors = vi.spyOn(console, "error").mockImplementation(() => {});
+  const wake = vi.spyOn(WriterAgent.prototype, "wake").mockRejectedValueOnce(new Error("down"));
+  const first = context();
+  const second = context();
 
-  expect(ctx.waitUntil).toHaveBeenCalledTimes(1);
-  const writer = await getAgentByName(exports.WriterAgent, WRITER_NAME);
-  expect(await writer.wake()).toEqual(
-    expect.arrayContaining([
-      { callback: "morning", cron: MORNING_CRON },
-      { callback: "night", cron: NIGHT_CRON },
-    ]),
-  );
+  wakeWriterOnce(first);
+  await Promise.all(first.waited);
+  wakeWriterOnce(second);
+  await Promise.all(second.waited);
+
+  expect(errors.mock.calls[0]?.[0]).toBe("Writer: could not be woken");
+  expect(wake).toHaveBeenCalledTimes(2);
+  vi.restoreAllMocks();
+});
+
+test("once the Writer has been woken, later requests of the isolate do nothing", async () => {
+  const wake = vi.spyOn(WriterAgent.prototype, "wake");
+  const later = context();
+
+  wakeWriterOnce(later);
+  wakeWriterOnce(later);
+
+  expect(later.waitUntil).not.toHaveBeenCalled();
+  expect(wake).not.toHaveBeenCalled();
 });

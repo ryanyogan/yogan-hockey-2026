@@ -23,8 +23,11 @@ export function sentencesOf(text: string): string[] {
   for (const match of text.matchAll(/(\S+?)([.!?]+)["')\]]*\s+/g)) {
     const word = (match[1] ?? "").replace(/^["'([]+/, "");
     const stopped = !/[!?]/.test(match[2] ?? "");
-    if (stopped && (/^\p{Lu}$/u.test(word) || ABBREVIATIONS.has(word.toLowerCase()))) continue;
     const end = match.index + match[0].length;
+    const abbreviated = /^\p{Lu}$/u.test(word) || ABBREVIATIONS.has(word.toLowerCase());
+    // "at 10 p.m. The Kraken" is two sentences; "10 p.m. ET" and "10 p.m. on Monday" are one.
+    const timeOfDay = /^[ap]\.m$/i.test(word) && /^(?!ET\b)\p{Lu}/u.test(text.slice(end));
+    if (stopped && abbreviated && !timeOfDay) continue;
     sentences.push(text.slice(start, end).trim());
     start = end;
   }
@@ -66,6 +69,10 @@ const OPENERS = new Set(
   tonight too two under until up was watch we were what when where whether which while who whose
   why will with within without wins yesterday yet you eight eleven twelve
   it's that's there's here's what's tonight's yesterday's today's
+  atop unbeaten winless overall earlier afterward afterwards top lost won led leading trailing
+  third-period second-period first-period faceoff altogether combined between them neither
+  elsewhere nowhere along among apart aside back-to-back best worst biggest closest longest
+  hot cold fresh coming going playing sitting holding having being winning losing
   scoring standings games game teams team clubs club winners losers visitors hosts nights night`
     .split(/\s+/)
     .map(bare),
@@ -222,6 +229,9 @@ function scoresOf(final: WritingFacts["finals"][number]): [number, number][] {
   return scores;
 }
 
+/** A word that makes the score beside it a final score. */
+const RESULT = /\b(?:won|wins|win|beat|beats|defeated|topped|edged|downed|blanked|routed|final)\b/i;
+
 const WON =
   "beat|beats|defeated|defeats|topped|edged|downed|blanked|shut out|outlasted|routed|upset|got past|held off|knocked off|handled|doubled up";
 
@@ -267,11 +277,13 @@ function checkFigures(sentence: string, facts: WritingFacts, index: Index, reaso
   const both = facts.finals.filter((final) => named.has(final.away) && named.has(final.home));
   const either = facts.finals.filter((final) => named.has(final.away) || named.has(final.home));
   const finals = both.length > 0 ? both : named.size > 0 ? either : facts.finals;
+  // Beside a word for winning, a score is the final one, not one the game passed through.
+  const result = RESULT.test(sentence);
   for (const match of text.matchAll(SCORE)) {
     const a = Number(match[1] ?? match[3]);
     const b = Number(match[2] ?? match[4]);
     const reached = finals.some((final) =>
-      scoresOf(final).some(
+      (result ? scoresOf(final).slice(0, 1) : scoresOf(final)).some(
         ([away, home]) => (away === a && home === b) || (away === b && home === a),
       ),
     );
@@ -292,6 +304,42 @@ function checkFigures(sentence: string, facts: WritingFacts, index: Index, reaso
   for (const [figure] of text.matchAll(NUMBER)) {
     if (!index.numbers.has(figure))
       reasons.add(`gives a figure, ${figure}, that is not in the facts`);
+  }
+
+  // "The Capitals won 5-3": the team that won is a final's winner.
+  const winning = new RegExp(
+    `${index.teamSource},? (?:won|wins|win|prevailed)(?![\\p{L}\\d])`,
+    "gu",
+  );
+  for (const [found, winner] of sentence.matchAll(winning)) {
+    const won = index.aliases.get(winner ?? "") ?? new Set();
+    if (facts.finals.length > 0 && !facts.finals.some((final) => won.has(final.winner))) {
+      reasons.add(`says "${found}", and no final in the facts has that result`);
+    }
+  }
+
+  // A points total, a place and a streak are the named team's own, not any number in the facts.
+  if (named.size > 0) {
+    const own = (held: (team: (typeof teams)[number]) => boolean) => teams.some(held);
+    for (const [found, points] of sentence.matchAll(/\b(\d+) points\b/g)) {
+      if (!own((team) => team.points === Number(points))) {
+        reasons.add(`gives "${found}", which is not the named team's total`);
+      }
+    }
+    const placed = /\b(\d+(?:st|nd|rd|th)) (?:in (?:the|its) |place\b)/g;
+    for (const [found, place] of sentence.matchAll(placed)) {
+      if (!own((team) => team.divisionPlace === place)) {
+        reasons.add(`gives "${found.trim()}", which is not the named team's place`);
+      }
+    }
+    const streak =
+      /\b(won|lost|winning|losing|wins|losses)\b[^.;]*?\b(\d+) (?:in a row|straight|consecutive)/g;
+    for (const [found, word, count] of sentence.matchAll(streak)) {
+      const run = `${/^w/.test(word ?? "") ? "won" : "lost"} ${count}`;
+      if (!own((team) => team.streak === run || team.streak?.startsWith(`${run} `) === true)) {
+        reasons.add(`gives a streak, "${found}", which is not the named team's`);
+      }
+    }
   }
 
   const beat = new RegExp(`${index.teamSource} (?:${WON}) ${index.teamSource}`, "gu");
@@ -317,12 +365,17 @@ const FORECAST =
   "will|should|ought to|is going to|are going to|is expected to|are expected to|is likely to|are likely to|is set to|are set to|looks? set to";
 /** Words that turn a sentence about a pick towards the team it was not. */
 const TURNED =
-  /\b(?:against|not|wrong|wrongly|miss|missed|upset|beat|despite|lost|loss|losing|burned|over|but)\b/i;
+  /\b(?:against|wrong|wrongly|miss|missed|upset|beat|despite|lost|loss|losing|burned|over|but)\b/i;
 const RIGHT = /\b(?:right|correct|correctly|held up|came through|paid off|landed)\b/i;
 const WRONG = /\b(?:wrong|wrongly|miss|missed|incorrect|burned|failed|whiffed)\b/i;
 
 /** Rule: nothing contradicts the Predictions, and the piece makes none of its own. */
-function checkPicks(sentence: string, index: Index, reasons: Set<string>): void {
+function checkPicks(
+  sentence: string,
+  index: Index,
+  reasons: Set<string>,
+  before: string | null,
+): void {
   const T = index.teamSource;
   const teamsOf = (alias: string | undefined) =>
     index.aliases.get(alias ?? "") ?? new Set<string>();
@@ -339,12 +392,16 @@ function checkPicks(sentence: string, index: Index, reasons: Set<string>): void 
   claimed(`${T},? (?:is|are|was|were|remains?|gets?|got|stays?) (?:${PICKED})`);
   // "Our pick: Seattle", "the pick is the Kraken", "the nod goes to Seattle".
   claimed(
-    `\\b(?:${PICK_NOUN})(?: here| tonight)?(?: is| are| was| were| goes to| go to| went to|:|,)? (?:on |with |for )?${T}`,
+    `(?<!\\bno )\\b(?:${PICK_NOUN})(?: here| tonight)?(?: is| are| was| were| goes to| go to| went to|:|,)? (?:on |with )?${T}`,
   );
   // "The site picks Seattle", "we lean toward the Kraken".
   claimed(`\\b(?:${PICKS_VERB}) ${T}`);
   // A forecast of the piece's own must be the site's: "Seattle will win".
   claimed(`${T} (?:${FORECAST}) (?:win|beat|take|prevail|come out|edge|handle)`);
+
+  // "Expect Vegas to win", "Vegas has the edge".
+  claimed(`\\b[Ee]xpect ${T} to (?:win|beat|take|prevail|come out|edge|handle)`);
+  claimed(`${T} (?:has|have|holds?|gets?|carr(?:y|ies)) the (?:edge|upper hand|advantage)`);
 
   for (const alias of claims) {
     const teams = teamsOf(alias);
@@ -358,9 +415,12 @@ function checkPicks(sentence: string, index: Index, reasons: Set<string>): void 
     );
   }
 
-  if (!PICK_WORD.test(sentence)) return;
+  // "Picked up 2 points" is no pick.
+  const ofPicks = (text: string) => PICK_WORD.test(text.replace(/\bpick(?:ed|s|ing)? up\b/gi, ""));
+  const carried = before !== null && ofPicks(before) && teamsNamed(sentence, index).size === 0;
+  if (!ofPicks(sentence) && !carried) return;
   // "the pick is Seattle over Vancouver": the team after "over" is the one not picked.
-  for (const match of sentence.matchAll(new RegExp(`\\bover ${T}`, "gu"))) {
+  for (const match of sentence.matchAll(new RegExp(`\\b(?:over|not) ${T}`, "gu"))) {
     const teams = teamsOf(match[1]);
     const picked = playing(teams).filter((game) => game.pick !== null);
     if (picked.length > 0 && picked.every((game) => teams.has(game.pick ?? ""))) {
@@ -368,9 +428,12 @@ function checkPicks(sentence: string, index: Index, reasons: Set<string>): void 
     }
   }
 
-  const named = teamsNamed(sentence, index);
+  const here = teamsNamed(sentence, index);
+  // "Our pick was Buffalo. It was right.": a sentence that names no team speaks of the last one's.
+  const named = here.size === 0 && before !== null ? teamsNamed(before, index) : here;
   const games = playing(named).filter((game) => game.pick !== null);
-  if (claims.length === 0 && games.length > 0 && !TURNED.test(sentence)) {
+  const none = /\bno pick\b/i.test(sentence);
+  if (!none && claims.length === 0 && here.size > 0 && games.length > 0 && !TURNED.test(sentence)) {
     // A sentence about the pick that names only the team the site did not pick.
     if (!games.some((game) => named.has(game.pick ?? ""))) {
       reasons.add(`speaks of the pick and names only a team the site did not pick`);
@@ -390,7 +453,7 @@ function checkPicks(sentence: string, index: Index, reasons: Set<string>): void 
 }
 
 const SAID =
-  /\b(?:said|told|according to|stated|remarked|commented|explained|quipped|insisted|admitted|quoted|reporters?|interview|press conference)\b/i;
+  /\b(?:said|told|called it|called the|according to|stated|remarked|commented|explained|quipped|insisted|admitted|quoted|reporters?|interview|press conference)\b/i;
 
 /** Rule: no quotes, and nobody is given words. */
 function checkQuotes(sentence: string, reasons: Set<string>): void {
@@ -406,12 +469,12 @@ function checkQuotes(sentence: string, reasons: Set<string>): void {
 const NOT_HELD: [string, RegExp][] = [
   [
     "injuries",
-    /\b(?:injur\w*|hurt|concussion|surgery|illness|sidelined|day-to-day|week-to-week|lower-body|upper-body|questionable|doubtful|ailing|rehab\w*)\b/i,
+    /\b(?:injur\w*|hurt|out with|will miss|broken|concussion|surgery|illness|sidelined|day-to-day|week-to-week|lower-body|upper-body|questionable|doubtful|ailing|rehab\w*)\b/i,
   ],
   ["injuries", /\bIR\b/],
   [
     "trades and signings",
-    /\b(?:trad(?:e|es|ed|ing)|waivers?|signed|signing|re-signed|contracts?|extension|free agen\w*|acquired|acquisition|call-up|called up|recalled|sent down|scratch(?:ed|es)?)\b/i,
+    /\b(?:trad(?:e|es|ed|ing)(?! (?:goals|chances|leads|blows))|dealt|waivers?|signed|signing|re-signed|contracts?|extension|free agen\w*|acquired|acquisition|call-up|called up|recalled|sent down|scratch(?:ed|es)?)\b/i,
   ],
   ["suspensions and discipline", /\b(?:suspen\w*|fined|fines)\b/i],
   ["coaches and front offices", /\b(?:coach\w*|general manager|fired|hired)\b/i],
@@ -439,10 +502,12 @@ export function checkPiece(piece: PieceText, facts: WritingFacts): string[] {
   const index = indexOf(facts);
   const reasons = new Set<string>();
   for (const text of [piece.headline, ...piece.paragraphs]) {
+    let before: string | null = null;
     for (const sentence of sentencesOf(text)) {
       checkNames(sentence, index, reasons);
       checkFigures(sentence, facts, index, reasons);
-      checkPicks(sentence, index, reasons);
+      checkPicks(sentence, index, reasons, before);
+      before = sentence;
       checkQuotes(sentence, reasons);
       checkTopics(sentence, reasons);
     }

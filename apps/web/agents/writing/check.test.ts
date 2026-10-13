@@ -46,7 +46,7 @@ describe("every team and player named is in the facts", () => {
   });
 
   test("one club's city with another club's nickname is refused", () => {
-    expect(refused("The Seattle Canucks won.")).toEqual([
+    expect(refused("The Seattle Canucks are next.")).toEqual([
       'names "Seattle Canucks", which is not in the facts',
     ]);
   });
@@ -132,7 +132,7 @@ describe("every score and figure matches the facts", () => {
 
   test("any other figure must be in the facts", () => {
     passes("Seattle has 8 points and has won 3 in a row. The puck drops at 10 p.m. ET.");
-    expect(refused("Seattle has 13 points.")).toEqual([
+    expect(refused("Seattle has 13 goals.")).toEqual([
       "gives a figure, 13, that is not in the facts",
     ]);
     expect(refused("Beniers scored at 14:02 of the 1st.")).toEqual([
@@ -206,9 +206,9 @@ describe("nothing contradicts the Predictions", () => {
 describe("no quotes from real people", () => {
   test("quotation marks of any kind are refused", () => {
     for (const quoted of [
-      'Beniers called it "a good night" for Seattle.',
-      "Beniers called it “a good night” for Seattle.",
-      "Beniers called it 'a good night' for Seattle.",
+      'Beniers had "a good night" for Seattle.',
+      "Beniers had “a good night” for Seattle.",
+      "Beniers had 'a good night' for Seattle.",
     ]) {
       expect(refused(quoted)).toEqual(["uses quotation marks: a piece quotes nobody"]);
     }
@@ -241,6 +241,50 @@ describe("nothing the facts do not hold", () => {
     ["The odds are with Seattle.", "betting"],
   ])("%s", (sentence, topic) => {
     expect(refused(sentence).join("\n")).toContain(`speaks of ${topic}`);
+  });
+});
+
+describe("what a review found passing that was not so", () => {
+  test("a points total, a place and a streak are the named team's own", () => {
+    passes("Seattle sits 1st in the Pacific Division with 8 points and has won 3 in a row.");
+    expect(refused("Buffalo has won 4 in a row.")).toHaveLength(1);
+    expect(refused("Seattle sits 8th in the Pacific Division with 3 points.")).toHaveLength(2);
+  });
+
+  test("the team said to have won is the winner, and its score is the final one", () => {
+    passes("The Kraken won 5-3 on Sunday.");
+    expect(refused("The Capitals won 5-3 on Sunday.")).toHaveLength(1);
+    expect(refused("The Kraken beat the Capitals 2-1 on Sunday.")).toEqual([
+      "gives a score of 2-1 that matches no final in the facts",
+    ]);
+  });
+
+  test("a verdict on a pick in the sentence after it is read against that pick", () => {
+    passes("Our pick was Seattle. It was right.");
+    expect(refused("Our pick was Buffalo. It was right.")).toEqual([
+      "says a pick was right that the facts mark wrong",
+    ]);
+  });
+
+  test("a forecast in other words is still held to the pick", () => {
+    expect(refused("Expect Vegas to win this one.")).toHaveLength(1);
+    expect(refused("Vegas has the edge tonight.")).toHaveLength(1);
+    expect(refused("The pick is not Seattle.")).toHaveLength(1);
+  });
+
+  test("ordinary sentences a recap and a preview need are not refused", () => {
+    passes(
+      "Tom Wilson picked up 2 goals for Washington. The teams traded goals in the 3rd.",
+      "The site has no pick for Dallas at Vancouver.",
+      "The puck drops at 10 p.m. The Kraken are the pick at 63%.",
+      "Atop the Pacific Division, Seattle has 8 points. Winless in 4, the Sabres are 7th in the Atlantic Division.",
+    );
+  });
+
+  test("words given to a player without a verb of saying, and an absence, are refused", () => {
+    expect(refused("Tom Wilson called it the best game Washington has played.")).toHaveLength(1);
+    expect(refused("Tom Wilson is out with a broken hand.")).toHaveLength(1);
+    expect(refused("Seattle dealt Jared McCann to Dallas after the game.")).toHaveLength(1);
   });
 });
 

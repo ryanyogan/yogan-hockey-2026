@@ -148,6 +148,8 @@ export class WriterAgent extends Agent<Env> {
       }
       const facts = writingFacts(sources);
       const db = createDb(this.env.DB);
+      // A piece left waiting from another day is not written now as if it were today's.
+      for (const [key, job] of this.#jobs()) if (job.date !== date) this.ctx.storage.kv.delete(key);
       for (const kind of EDITIONS[edition] as readonly PieceKind[]) {
         const slug = pieceSlug(date, kind.kind);
         const given = kind.facts(facts);
@@ -155,10 +157,16 @@ export class WriterAgent extends Agent<Env> {
         const job: Job = { slug, kind: kind.kind, date, facts: given, calls: 0, refused: [] };
         this.ctx.storage.kv.put(JOB_PREFIX + slug, job);
       }
-      if (this.#jobs().length > 0)
-        await this.schedule(0, "writeNext", undefined, { idempotent: true });
     } catch (error) {
       console.error(`Writer: the ${edition} pieces for ${date} were not started`, error);
+    }
+    // Whatever was noted before a failure is still written.
+    try {
+      if (this.#jobs().length > 0) {
+        await this.schedule(0, "writeNext", undefined, { idempotent: true });
+      }
+    } catch (error) {
+      console.error("Writer: the waiting pieces were not set going", error);
     }
   }
 
@@ -202,7 +210,8 @@ export class WriterAgent extends Agent<Env> {
       }
     };
     const standings = await read("the standings", () => getStandings());
-    const slate = (await read(`the slate of ${date}`, () => getScoreboard(date)))?.games ?? [];
+    const slateRead = await read(`the slate of ${date}`, () => getScoreboard(date));
+    const slate = slateRead?.games ?? [];
     let finals: FactSources["finals"];
     if (edition === "night") {
       finals = [];
@@ -219,7 +228,9 @@ export class WriterAgent extends Agent<Env> {
     const predictions =
       (await read("the Predictions", () => getPredictions(createDb(this.env.DB), ids))) ??
       new Map();
-    const unfinished = slate.some(({ status }) => status === "scheduled" || status === "live");
+    // A slate that could not be read is not a finished one: the night looks again.
+    const unfinished =
+      slateRead === null || slate.some(({ status }) => status === "scheduled" || status === "live");
     return { date, standings, finals, slate, predictions, unfinished };
   }
 

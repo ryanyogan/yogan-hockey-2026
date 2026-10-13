@@ -12,7 +12,7 @@ test("a row of stories has a column for each, three at most, between two ink rul
 });
 
 test("a hairline parts two columns, and the row's ends are the page's own margins", () => {
-  const [first, middle, last] = [0, 1, 2].map((index) => column(index, 3));
+  const [first, middle, last] = [column(0, 3), column(1, 3), column(2, 3)];
   expect(has(first, "md:border-l") || has(first, "md:pl-6")).toBe(false);
   expect(has(first, "md:pr-6")).toBe(true);
   expect(has(middle, "md:border-l") && has(middle, "md:pl-6") && has(middle, "md:pr-6")).toBe(true);

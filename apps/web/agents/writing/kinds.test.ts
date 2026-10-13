@@ -148,6 +148,16 @@ test("a column that says only what its facts hold passes the check", () => {
   ).toEqual([]);
 });
 
+test("a sentence about the picks' count is not read as one about the pick beside it", () => {
+  const sentences = [
+    "The picks had been right 7 times this week before the Sabres.",
+    "Our pick was the Sabres at 55 percent. The picks were still right more often than not.",
+    "The picks have won 4 in a row, and the Sabres were not among them.",
+  ];
+
+  for (const sentence of sentences) expect(checkPiece(columnWith(sentence), missFacts)).toEqual([]);
+});
+
 test.each([
   ["the pick turned round", "Our pick was Dallas at 55 percent.", "says the pick is Dallas"],
   ["a count the facts do not hold", "The picks went 8-2 this week.", "gives a score of 8-2"],
@@ -155,6 +165,32 @@ test.each([
   ["a winner that was not", "The Sabres beat the Stars.", "no final in the facts has that result"],
   ["a miss called a hit", "The pick on Buffalo was right.", "says a pick was right"],
   ["a run that is not the picks'", "The picks have 5 right in a row.", "gives a run of the picks"],
+  [
+    "a day's count as the game's score",
+    "The Stars beat the Sabres 3-1 on Sunday.",
+    "gives a score of 3-1",
+  ],
+  ["the season's count as the week's", "The picks went 12-9 this week.", "gives a score of 12-9"],
+  [
+    "a run that went the other way",
+    "The picks have missed 4 in a row.",
+    "gives a run of the picks",
+  ],
+  [
+    "a run with no word for the picks",
+    "We have been right 9 straight.",
+    "gives a run of the picks",
+  ],
+  [
+    "a run beside a team",
+    "The picks have 5 right in a row, the Sabres among them.",
+    "gives a run of the picks",
+  ],
+  [
+    "a team's streak passed off as the picks'",
+    "Our pick was the Sabres, who have won 4 in a row.",
+    "which is not the named team's",
+  ],
   ["a quote", "Buffalo said it “was not our night”.", "a piece quotes nobody"],
   ["a game it was not given", "The Kraken beat the Capitals 5-3.", "which is not in the facts"],
   ["a forecast of its own", "The Stars will win again.", "says the pick is"],

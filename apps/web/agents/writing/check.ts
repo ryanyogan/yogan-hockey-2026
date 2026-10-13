@@ -97,14 +97,26 @@ const resultsOf = (facts: WritingFacts) => [
 ];
 type Result = ReturnType<typeof resultsOf>[number];
 
-/** The counts of right and wrong picks the facts hold, "7-3": the season's, a week's, a day's. */
-function talliesOf(facts: WritingFacts): Set<string> {
+const tallyText = ({ right, wrong }: { right: number; wrong: number }) => `${right}-${wrong}`;
+const WEEKDAY = "Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday";
+/** What a count of picks is said of: the picks, their record, a season, a week or a day. */
+const TALLY_WORD = new RegExp(`\\b(?:picks?|record|season|weeks?|${WEEKDAY})\\b`, "i");
+
+/**
+ * The counts of right and wrong picks a sentence may give, "7-3": the season's, a week's, a
+ * day's. Only a sentence about the picks' count gives one: it names no team, has no word for
+ * winning a game, and says what the count is of. One that speaks of the week and not the season
+ * gives the week's or a day's, and one that speaks of the season alone gives the season's, so
+ * the season's record does not pass as a week's.
+ */
+function talliesOf(facts: WritingFacts, sentence: string, teamNamed: boolean): Set<string> {
   const week = facts.picks?.week;
-  return new Set(
-    [facts.picksRecord, week, ...(week?.days ?? [])]
-      .filter((tally) => tally != null)
-      .map(({ right, wrong }) => `${right}-${wrong}`),
-  );
+  if (teamNamed || RESULT.test(sentence) || !TALLY_WORD.test(sentence)) return new Set();
+  const ofWeek = /\bweeks?\b/i.test(sentence);
+  const ofSeason = /\bseason\b/i.test(sentence);
+  const season = ofWeek && !ofSeason ? [] : [facts.picksRecord];
+  const weeks = ofSeason && !ofWeek ? [] : [week, ...(week?.days ?? [])];
+  return new Set([...season, ...weeks].filter((tally) => tally != null).map(tallyText));
 }
 
 /** A game of the facts as the pick rules need it. */
@@ -163,7 +175,16 @@ function indexOf(facts: WritingFacts) {
       outcome: pick?.outcome,
     })),
   ];
-  return { aliases, teamNames, personNames, words, numbers, teamSource, games };
+  return {
+    aliases,
+    teamNames,
+    personNames,
+    words,
+    numbers,
+    teamSource,
+    games,
+    counted: facts.picks !== undefined,
+  };
 }
 type Index = ReturnType<typeof indexOf>;
 
@@ -300,7 +321,7 @@ function checkFigures(sentence: string, facts: WritingFacts, index: Index, reaso
   const either = results.filter((final) => named.has(final.away) || named.has(final.home));
   const finals = both.length > 0 ? both : named.size > 0 ? either : results;
   // "The picks went 7-3": a count of right and wrong picks, in that order, is no game's score.
-  const tallies = talliesOf(facts);
+  const tallies = talliesOf(facts, sentence, named.size > 0);
   // Beside a word for winning, a score is the final one, not one the game passed through.
   const result = RESULT.test(sentence);
   for (const match of text.matchAll(SCORE)) {
@@ -344,7 +365,6 @@ function checkFigures(sentence: string, facts: WritingFacts, index: Index, reaso
   }
 
   const picksRun = facts.picks?.run;
-  const ofPicks = /\bpicks?\b/i.test(sentence);
   // A points total, a place and a streak are the named team's own, not any number in the facts.
   if (named.size > 0) {
     const own = (held: (team: (typeof teams)[number]) => boolean) => teams.some(held);
@@ -364,9 +384,16 @@ function checkFigures(sentence: string, facts: WritingFacts, index: Index, reaso
     for (const [found, word, count] of sentence.matchAll(streak)) {
       const winning = /^w/.test(word ?? "");
       const run = `${winning ? "won" : "lost"} ${count}`;
-      // "The picks have won 4 in a row, the Kraken among them": the run is the picks' own.
+      // "The picks have won 4 in a row, the Kraken among them": the run is the picks' own when
+      // "picks" is what won, with no comma and no team between the word and the count.
+      const subject = new RegExp(
+        `\\bpicks\\b[^.;,]*?\\b${count} (?:in a row|straight|consecutive)`,
+        "i",
+      );
+      const said = subject.exec(sentence)?.[0];
       if (
-        ofPicks &&
+        said !== undefined &&
+        teamsNamed(said, index).size === 0 &&
         picksRun?.length === Number(count) &&
         (picksRun.outcome === "right") === winning
       )
@@ -375,11 +402,25 @@ function checkFigures(sentence: string, facts: WritingFacts, index: Index, reaso
         reasons.add(`gives a streak, "${found}", which is not the named team's`);
       }
     }
-  } else if (ofPicks && facts.picks) {
-    // With no team named, so many in a row is the picks' run: "4 right in a row", "2 straight misses".
-    const inARow = /\b(\d+) (?:right |wrong )?(?:in a row|straight|consecutive)/g;
-    for (const [found, count] of sentence.matchAll(inARow)) {
-      if (picksRun?.length !== Number(count)) {
+  }
+  if (facts.picks) {
+    const RUN = "in a row|straight|consecutive";
+    const turned = (text: string): "right" | "wrong" | null => {
+      const right = /\b(?:right|correct|won|wins|winning|hits?)\b/i.test(text);
+      const wrong = /\b(?:wrong|miss(?:es|ed)?|lost|losing|losses)\b/i.test(text);
+      return right === wrong ? null : right ? "right" : "wrong";
+    };
+    // So many "right in a row" is the picks' run wherever it stands, and with no team named so
+    // is any "4 in a row": the length is the run's, and so is the way it went.
+    const counted = new RegExp(
+      named.size > 0
+        ? `\\b(\\d+) (?:right|wrong) (?:${RUN})`
+        : `\\b(\\d+) (?:right |wrong )?(?:${RUN})`,
+      "g",
+    );
+    for (const [found, count] of sentence.matchAll(counted)) {
+      const went = turned(found) ?? (named.size > 0 ? null : turned(sentence));
+      if (picksRun?.length !== Number(count) || (went !== null && went !== picksRun.outcome)) {
         reasons.add(`gives a run of the picks, "${found}", which is not the one in the facts`);
       }
     }
@@ -483,7 +524,9 @@ function checkPicks(
     }
   }
   const marked = games.filter((game) => game.outcome !== undefined);
-  if (marked.length > 0) {
+  // "The picks were right 7 times this week": said of the count a column is given, not of one pick.
+  const ofTheCount = index.counted && /\bpicks\b/i.test(sentence) && !/\bpick\b/i.test(sentence);
+  if (marked.length > 0 && !ofTheCount) {
     const right = RIGHT.test(sentence);
     const wrong = WRONG.test(sentence);
     if (right && !wrong && marked.every((game) => game.outcome === "wrong")) {

@@ -356,5 +356,5 @@ export class WriterAgent extends Agent<Env> {
 /** Every kind the Writer writes, the morning's and then the night's. */
 const KINDS: readonly PieceKind[] = Object.values(EDITIONS).flat();
 const isFinal = (game: Game) => game.status === "final";
-/** The day the cap counts by. UTC's, so the morning and the night that follows share one. */
+/** The day the cap counts by. UTC's, so a night and the morning after it share one. */
 const today = () => new Date().toISOString().slice(0, 10);

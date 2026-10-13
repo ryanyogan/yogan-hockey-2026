@@ -162,7 +162,7 @@ export function sampleDashboard({
  *   `picks` gives half its games a pick and the season a record.
  * - `empty`: a day with no games.
  * - `tonight` and `busy`: the Agate prototype's two slates with their picks and records, which
- *   `scripts/agate-home-compare.mjs` measures against the prototype.
+ *   `scripts/front-page-check.mjs` measures against the front page's handoff (#240).
  * - `news` false: no headlines, as when ESPN's news cannot be read.
  * - `pieces` false: no written pieces, as before the Writer has published one. Otherwise they are
  *   the samples themselves, not D1's rows, so the page is the same whether or not they are seeded.

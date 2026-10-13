@@ -2,8 +2,9 @@
 
 Yogan Hockey as the sports section of a newspaper. Ryan picked this direction ("B · Agate") out of three on Oct 11, 2026, after desktop and phone artboards. It is the visual target, and has been the whole site's look since #168 to #174; the tuned ledger (`tuned-ledger.md`) is superseded. Features and behaviour are the Parity Reference's; only the look and the page structure are Agate's.
 
-- Prototype: `prototypes/agate` (`pnpm prototype:agate`, port 5129). It is the pixel target.
-- Screenshots: `docs/design/agate/home-{tonight|busy}-{390|1440}-{light|dark}.png`.
+- **Since #240 (Oct 13, 2026) Home, the masthead, the footer and the colour tokens are the front page's**: Ryan's handoff in issue #240 and its two artboards, `docs/design/front-page/Main.dc.html` (day) and `Night.dc.html` (night, lifted), 1280px wide, plain inline-styled HTML to be read for exact values. § "The front page" below describes them, and `node scripts/front-page-check.mjs` measures Home against the handoff's acceptance lines. Where this document and that section disagree about Home, the masthead, the footer or a colour, that section is right; § "Page anatomy (Home)" and § "Phone" are kept as the history of what Home was.
+- Prototype: `prototypes/agate` (`pnpm prototype:agate`, port 5129). It is the pixel target for every route but Home, and it no longer draws the masthead, the footer or Home as the site does.
+- Screenshots: Home is `docs/design/front-page/home{,-finals,-busy}-{390|1440}-{light|dark}.png` (Home in fixture mode, then the prototype's two slates on `/skeleton/dashboard`); the other routes are in `docs/design/agate/`.
 - Copy rules: `prototypes/agate/copy.js`. Every sentence the page prints, as pure functions.
 
 ## The idea in four lines
@@ -19,25 +20,26 @@ These are the values in `packages/ui/src/theme.css`. `.dark` is next-themes' cla
 
 | Token | Day | Night | Use | Contrast (day / night) |
 |---|---|---|---|---|
-| `--background` | `#fafaf8` | `#121212` | page | — |
-| `--foreground` | `#111111` | `#eceae4` | text, filled marks | 18.0 (16.4) / 15.5 (13.7) |
+| `--background` | `#fafaf8` | `#1b1b19` | page | — |
+| `--foreground` | `#111111` | `#ece9e1` | text, filled marks | 18.0 (16.4) / 14.2 (12.6) |
 | `--note` | `#2b2a27` | `#d6d3cc` | serif decks, prose | 13.7 (12.4) / 12.5 (11.0) |
-| `--label` | `#5c5a55` | `#a3a09a` | column heads, counts | 6.5 (5.9) / 7.1 (6.3) |
-| `--aside` | `#5c5a55` | `#a3a09a` | records, GP, TV line, footer | 6.5 (5.9) / 7.1 (6.3) |
-| `--kicker` | `#c8102e` | `#ff5a5f` | labels, kickers, current nav, live | 5.6 (5.1) / 6.1 (5.4) |
-| `--live` | `= --kicker` | `= --kicker` | live dot, live rule, live status | 5.6 (5.1) / 6.1 (5.4) |
-| `--highlight` | `#f0efeb` | `#1f1f1e` | row under the pointer | — |
-| `--rule` | `#111111` | `#eceae4` | heavy and plain rules | — |
-| `--rule-head` | `#d5d3ce` | `#34332f` | hairline under column heads | decorative |
-| `--border` | `#c9c6bf` | `#4a4843` | **dotted** rule between agate rows | decorative |
-| `--positive` | `#166534` | `#4ade80` | a goal difference above zero | 6.8 (6.1) / 10.7 (9.4) |
-| `--negative` | `#c81e1e` | `#f87171` | a goal difference below zero | 5.4 (4.9) / 6.7 (5.9) |
+| `--label` | `#5c5a55` | `#b3afa6` | column heads, counts | 6.5 (5.9) / 7.8 (7.0) |
+| `--aside` | `#5c5a55` | `#b3afa6` | records, GP, TV line, footer | 6.5 (5.9) / 7.8 (7.0) |
+| `--kicker` | `#c8102e` | `#ff5a5f` | labels, kickers, current nav, live | 5.6 (5.1) / 5.6 (5.0) |
+| `--live` | `= --kicker` | `= --kicker` | live dot, live rule, live status | 5.6 (5.1) / 5.6 (5.0) |
+| `--highlight` | `#f0efeb` | `#262522` | row under the pointer | — |
+| `--rule` | `= --foreground` | `= --foreground` | ink rules: structure | — |
+| `--hairline` | `= --border` | `= --border` | the front page's quiet rule: between rows, between columns (#240) | decorative: 1.6 / 2.0 |
+| `--rule-head` | `#d5d3ce` | `#3b3934` | hairline under column heads | decorative |
+| `--border` | `#c9c6bf` | `#504c45` | **dotted** rule between agate rows | decorative |
+| `--positive` | `#166534` | `#5ad48a` | a goal difference above zero, a pick that was right | 6.8 (6.1) / 9.2 (8.1) |
+| `--negative` | `#c81e1e` | `#ff7b7b` | a goal difference below zero, a pick that was wrong | 5.4 (4.9) / 6.8 (6.1) |
 
 shadcn roles (`--primary`, `--secondary`, `--muted`, `--accent`, `--popover`…) follow the same values: primary is ink on paper, secondary/muted/accent is `--highlight`.
 
 There is no tint for a live row: the prototype defined `--live-tint` and drew nothing with it, so the token is gone (#174).
 
-The installed site's colours are these too: `THEME_COLORS = { light: "#fafaf8", dark: "#121212" }` and `INK_COLORS = { light: "#111111", dark: "#eceae4" }` in `apps/web/lib/install.ts`, which the manifest, the `theme-color` meta and `pnpm app-icons` (the icons and splash screens in `apps/web/public/icons/`) all read.
+The installed site's colours are these too: `THEME_COLORS = { light: "#fafaf8", dark: "#1b1b19" }` and `INK_COLORS = { light: "#111111", dark: "#ece9e1" }` in `apps/web/lib/install.ts`, which the manifest, the `theme-color` meta and `pnpm app-icons` (the icons and splash screens in `apps/web/public/icons/`) all read.
 
 ## Type
 
@@ -59,6 +61,37 @@ Both faces are self-hosted: the font files are the site's own (`apps/web/public/
 
 All numbers are `tabular-nums`. Records never break across lines: wrap them in word joiners (`rec()` in copy.js) or `white-space: nowrap`.
 
+## The front page (#240)
+
+Home is a broadsheet's front page, and the masthead and footer are a broadsheet's on every route. The artboards in `docs/design/front-page/` hold the exact values; `apps/web/components/dashboard/front.ts` holds Home's classes and `components/shell/masthead.tsx` the masthead's.
+
+**Three rules, and no other line.** Nothing is boxed, filled, rounded or shadowed, by day or by night; `--muted` is for a hover or a pressed state only.
+
+| Rule | CSS | Where |
+|---|---|---|
+| Ink | `1px solid var(--rule)` | structure: under the dateline strip and the sections, over and under the roundup's columns, under a section's head and a table's head, over The Picks and Tonight at a glance |
+| Hairline | `1px solid var(--hairline)` | between a table's rows, the headlines, the briefs; between the roundup's columns and the pieces'; between the headlines and the standings |
+| Double | `3px double var(--rule)` | under the wordmark and over the footer, and nowhere else |
+
+The other routes still draw the four rules of § Rules (heavy, plain, hairline under heads, dotted between rows); they were left as they were.
+
+**Frame.** The column is 1200px of text with 32px gutters from `md` and 16px on a phone, on every route (`shell.tsx`). Columns are 32px apart; the roundup's are 24px either side of a hairline. A section's head has 26 to 28px above it and 10 to 12px under, then an ink rule. Home's type is Newsreader at 16px on 1.45 with tabular figures everywhere; labels, kickers, the nav and tables are IBM Plex Sans Condensed, labels 12 to 13px in capitals, tracked .1 to .14em, in `--muted-foreground`.
+
+**Masthead**, top to bottom: the dateline strip (the date, "Picks this season · 31 right · 15 wrong" with the right count in ink, and Day / Night as two 30px boxes, the one shown filled) over an ink rule; the wordmark (`clamp(54px, 9vw, 112px)`, smaller under 400px so it stays one line) with tonight's line under it, over the double rule; the sections, centred, 40px apart, sticky, over an ink rule. A phone's strip is the date and Day / Night, and the line under its wordmark is "9 games · Picks 3–2".
+
+**Home**, top to bottom:
+1. **NHL Roundup**: the title at 26px with a red line beside it saying where the night stands (`roundupKicker`: "Two live", "All three final", "Nine to come", "Four final, one to come"). Up to three leads as columns of one grid between two ink rules, a hairline between columns; the grid stretches them to one height, and each is 300px at the least. In a column: the status in red (with the live dot while it is on) and the venue; the headline at 34px; the deck; the line score; and on the column's floor ("margin-top: auto") the pick, "Our pick: Florida, 62% — Wrong" with the verdict in `--negative` or `--positive`, and the networks parted by " · ". One or two leads have one or two columns. With no games the sentence stands between the two rules.
+2. **Around the league**: the games that do not lead, as briefs over hairlines. Absent with three games or fewer.
+3. **Notes on the league**: the written pieces as ruled columns, as the leads are. Absent when there are none.
+4. **Headlines** (7 of 12 columns): ESPN's, the latest first, "From ESPN · Mon Oct 12" beside the title; each a row of a 72px time and the headline at 19px, 64px tall at the least, over a hairline. An item of another day than the latest says its day where the rest say their time. Under them **The Picks** (the record at 64px, the sentence under it) and **Tonight at a glance** (three figures at 40px), each under an ink rule.
+5. **Standings** (5 of 12, a hairline to its left): both conferences, one over the other, each under its name in capitals; "Full standings →" at the end of the head.
+
+On a phone it is one column in that order, the standings last under a hairline, every grid one column.
+
+**Footer**: the double rule, the credit on the left and "Yogan Hockey · 2026" on the right.
+
+**Checked by** `node scripts/front-page-check.mjs <site>` (column heights, every rule's kind, nothing filled, night's colours and contrast, no overflow and one column at 360 and 390), `e2e/dashboard.spec.ts`, and `scripts/tap-targets.mjs`.
+
 ## Rules
 
 | Rule | CSS | Where |
@@ -71,6 +104,8 @@ All numbers are `tabular-nums`. Records never break across lines: wrap them in w
 A live story swaps its heavy top rule to `--live`.
 
 ## Page anatomy (Home)
+
+> History since #240: Home and the masthead are § "The front page" above. This is what they were.
 
 **Masthead** (the sections' bar is above the wordmark again, restyled, since Oct 12 2026; #216 had put the sections under it)
 - The **sections' bar** is the first thing on the page at every width: a heavy rule, a 44px line, a plain rule (48px, `--section-nav`, which is also the page's `scroll-padding-top`). It is `position: sticky`: it stays at the top of the screen as the page scrolls, below the status bar of an installed site (`--safe-top`).

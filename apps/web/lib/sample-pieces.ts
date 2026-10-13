@@ -8,8 +8,7 @@ import type { Piece } from "@yogan-hockey/schemas";
  * note are of the recorded slate (Tue Oct 6) and standings, with the sample picks of
  * `sample-picks.ts`, and the recap, dated the night before, is of the three finals the Agate
  * prototype's first slate has, since no recorded slate has a night of finals. The Agate
- * prototype draws the same three (`prototypes/agate/data.js`), which is what lets
- * `scripts/agate-home-compare.mjs` measure Home against it word for word.
+ * prototype draws the same three (`prototypes/agate/data.js`).
  */
 
 const MODEL = "@cf/openai/gpt-oss-120b";

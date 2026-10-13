@@ -1,36 +1,41 @@
-// Takes the masthead's kept pictures (`docs/design/agate/masthead`): the Agate prototype's
-// (`after-*`), and the site's (`site-*`) when it is given one.
+// Takes the site's kept pictures of the masthead (`docs/design/agate/masthead/site-*`): the top
+// of Home at each width in both themes, the sections under the pointer, and the sections stuck
+// to the top of a scrolled page.
 //
-//   node scripts/agate-masthead-shots.mjs <prototype> [site]
+//   node scripts/agate-masthead-shots.mjs <site> [out-dir]
 //
-// <prototype> is `PORT=<n> pnpm prototype:agate`; [site] is a dev server in fixture mode. It
-// prints the width of each section's cell, and exits 1 when a page scrolls sideways or, on a
-// phone, the sections do. Both draw six sections (Picks is the sixth: #218), a size down below
-// 390px, so the phone is shot at 360 and 375 as well as 390.
+// <site> is a dev server in fixture mode. It prints the width of each section's cell, and exits
+// 1 when a page scrolls sideways or, on a phone, the sections do. The six sections go a size
+// down below 390px, so the phone is shot at 360 and 375 as well as 390. The masthead is
+// specified by `docs/design/front-page` (#240), which `scripts/front-page-check.mjs` measures.
 
 import { mkdirSync } from "node:fs";
+import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "@playwright/test";
 
-const [prototype, site] = process.argv.slice(2);
-if (!prototype) {
-  console.error("usage: node scripts/agate-masthead-shots.mjs <prototype> [site]");
+const [site, outDir] = process.argv.slice(2);
+if (!site) {
+  console.error("usage: node scripts/agate-masthead-shots.mjs <site> [out-dir]");
   process.exit(2);
 }
-const out = fileURLToPath(new URL("../docs/design/agate/masthead/", import.meta.url));
+const out = outDir
+  ? `${resolve(outDir)}/`
+  : fileURLToPath(new URL("../docs/design/agate/masthead/", import.meta.url));
 mkdirSync(out, { recursive: true });
+const NAV = 'nav[aria-label="Site"]';
 
 const browser = await chromium.launch();
 let failed = 0;
 
 /** One picture of the top of a page. `scroll` is how far down it is first; `hover` what the pointer is on. */
-async function shot(name, url, width, { nav, theme = "light", hover, scroll, height } = {}) {
+async function shot(name, path, width, { theme = "light", hover, scroll, height = 340 } = {}) {
   const context = await browser.newContext({
     viewport: { width, height: 900 },
     colorScheme: theme,
   });
   const page = await context.newPage();
-  await page.goto(url, { waitUntil: "networkidle" });
+  await page.goto(site + path, { waitUntil: "networkidle" });
   await page.evaluate(() => document.fonts.ready);
   if (scroll) await page.evaluate((y) => scrollTo(0, y), scroll);
   if (hover) await page.hover(hover);
@@ -43,53 +48,24 @@ async function shot(name, url, width, { nav, theme = "light", hover, scroll, hei
         (cell) => Math.round(cell.getBoundingClientRect().width * 10) / 10,
       ),
     };
-  }, nav);
+  }, NAV);
   const sideways =
     measured.page !== width || (width < 768 && measured.sections[0] > measured.sections[1]);
   if (sideways) failed++;
   console.log(`${name}: cells ${measured.cells.join(", ")}${sideways ? "; SCROLLS SIDEWAYS" : ""}`);
-  await page.screenshot({
-    path: `${out}${name}.png`,
-    clip: { x: 0, y: 0, width, height: height ?? (width < 768 ? 300 : 340) },
-  });
+  await page.screenshot({ path: `${out}${name}.png`, clip: { x: 0, y: 0, width, height } });
   await context.close();
 }
 
-const proto = (name, query, width, options) =>
-  shot(name, `${prototype}/?slate=busy&chrome=0&${query}`, width, { nav: ".sections", ...options });
 for (const theme of ["light", "dark"])
-  for (const width of [390, 1440])
-    await proto(`after-${width}-${theme}`, `theme=${theme}`, width, { theme });
-await proto("after-360-light", "theme=light", 360);
+  for (const width of [390, 1440]) await shot(`site-${width}-${theme}`, "/", width, { theme });
+for (const width of [360, 375, 768, 1024]) await shot(`site-${width}-light`, "/", width);
 // The pointer on Teams, the page in Standings.
-await proto("after-hover-1440-light", "theme=light&at=Standings", 1440, {
-  hover: ".sections a:nth-child(4)",
-  height: 120,
-});
+await shot("site-hover-1440-light", "/nhl?tab=standings", 1440, { hover: `${NAV} a:nth-child(4)` });
 for (const width of [390, 1440])
-  await proto(`after-stuck-${width}-light`, "theme=light&at=Scores", width, {
+  await shot(`site-stuck-${width}-light`, "/nhl?tab=standings", width, {
     scroll: 700,
     height: 200,
   });
-for (const width of [375, 768])
-  await proto(`after-${width}-light`, "theme=light", width, { height: 200 });
-
-if (site) {
-  const here = (name, path, width, options) =>
-    shot(name, site + path, width, { nav: 'nav[aria-label="Site"]', ...options });
-  for (const theme of ["light", "dark"])
-    for (const width of [390, 1440]) await here(`site-${width}-${theme}`, "/", width, { theme });
-  for (const width of [360, 375, 768, 1024])
-    await here(`site-${width}-light`, "/", width, { height: 200 });
-  await here("site-hover-1440-light", "/nhl?tab=standings", 1440, {
-    hover: 'nav[aria-label="Site"] a:nth-child(4)',
-    height: 120,
-  });
-  for (const width of [390, 1440])
-    await here(`site-stuck-${width}-light`, "/nhl?tab=standings", width, {
-      scroll: 700,
-      height: 200,
-    });
-}
 await browser.close();
 process.exit(failed === 0 ? 0 : 1);

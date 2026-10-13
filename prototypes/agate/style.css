@@ -36,21 +36,22 @@
   --tap: 44px;
 }
 
+/* The night of the front page's handoff (#240, docs/design/front-page), as theme.css has it. */
 .dark {
   color-scheme: dark;
-  --background: #121212;
-  --foreground: #eceae4;
+  --background: #1b1b19;
+  --foreground: #ece9e1;
   --note: #d6d3cc;
-  --label: #a3a09a;
-  --aside: #a3a09a;
-  --border: #4a4843;
-  --rule-head: #34332f;
-  --rule: #eceae4;
+  --label: #b3afa6;
+  --aside: #b3afa6;
+  --border: #504c45;
+  --rule-head: #3b3934;
+  --rule: #ece9e1;
   --kicker: #ff5a5f;
   --live-tint: #2a1516;
-  --highlight: #1f1f1e;
-  --positive: #4ade80;
-  --negative: #f87171;
+  --highlight: #262522;
+  --positive: #5ad48a;
+  --negative: #ff7b7b;
 }
 
 @media (max-width: 767.98px) {

@@ -2,6 +2,8 @@
 
 Throwaway. This is Home, and the Picks page (#218) at `?page=picks`, in the Agate look Ryan approved on Oct 11 2026, and the pixel target for the production port. The spec is [docs/design/agate.md](../../docs/design/agate.md).
 
+Since #240 the prototype is no longer the target for everything. Home, the masthead, the footer and the colour tokens are specified by [docs/design/front-page/](../../docs/design/front-page/) and measured by `node scripts/front-page-check.mjs`. The prototype is still the visual target for the other routes, and `copy.js` is still the source of the sentences. Its night colours are the new ones, so those routes are compared in the right colours.
+
 ## Run it
 
 ```sh

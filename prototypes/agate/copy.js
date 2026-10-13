@@ -157,6 +157,32 @@ export const spelled = (n, capital = true) => {
   return capital ? w : w.toLowerCase();
 };
 
+/* ---------- the front page (#240) ---------- */
+
+/** "Our pick: Florida, 62% — Wrong": a decided pick's sentence ends at its chance, the verdict after a dash. */
+export function pickLine(g) {
+  const sentence = pickSentence(g);
+  if (sentence == null) return null;
+  const outcome = pickOutcome(g);
+  return { sentence: outcome == null ? sentence : sentence.replace(/\.$/, ""), outcome };
+}
+
+/** The networks showing a game: "ESPN+ · Scripps Sports · MSGB". */
+export const onTv = (tv) => tv?.join(" · ") || null;
+
+/** The line beside "NHL Roundup": "Two live", "All three final", "Nine to come", "Four final, one to come". */
+export function roundupKicker(games) {
+  const { live, toCome, final } = counts(games);
+  if (live > 0) return `${spelled(live)} live`;
+  if (toCome === 0) {
+    if (final === 0) return null;
+    if (final === 1) return "Final";
+    return final === 2 ? "Both final" : `All ${spelled(final, false)} final`;
+  }
+  const left = `${spelled(toCome, final === 0)} to come`;
+  return final === 0 ? left : `${spelled(final)} final, ${left}`;
+}
+
 /* ---------- the written pieces (#217) ---------- */
 
 /** The label over Home's pieces. */

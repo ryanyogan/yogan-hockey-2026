@@ -1,7 +1,7 @@
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
-import { HomeNews } from "../components/dashboard/news";
+import { HomeNews, newestFirst } from "../components/dashboard/news";
 import { cachedNews } from "./espn";
 import { readHomeNews } from "./home-news";
 import { forget } from "./kv-cache";
@@ -158,10 +158,38 @@ test("each News item is one link to ESPN, with the time it was published where E
     { id: "2", headline: "Headline 2", url: "https://www.espn.com/nhl/2", published: null },
   ]);
 
-  expect(html).toContain("Headlines from ESPN");
+  expect(html).toContain(">Headlines</h2>");
   expect(html.match(/<a href="https:\/\/www\.espn\.com\/nhl\/[12]"/g)).toHaveLength(2);
-  // The server's time is Eastern, and says so.
-  expect(html).toContain("Mon Oct 12</time> · <time");
-  expect(html).toContain("5:17 PM ET</time>");
-  expect(html.match(/data-slot="news-when"/g)).toHaveLength(1);
+  // The day is said once, beside the title; the server's is Eastern, and says so.
+  expect(html).toContain("From ESPN · Mon Oct 12, ET");
+  expect(html.match(/<time /g)).toHaveLength(1);
+  expect(html).toContain('<time dateTime="2026-10-12T21:17:00Z">5:17 PM</time>');
+});
+
+test("the headlines are the latest first, and one of another day says its day", () => {
+  const item = (id: string, published: string | null) => ({
+    id,
+    headline: `Headline ${id}`,
+    url: `https://www.espn.com/nhl/${id}`,
+    published,
+  });
+  const news = [
+    item("untimed", null),
+    item("yesterday", "2026-10-12T03:30:00Z"),
+    item("evening", "2026-10-13T01:05:00Z"),
+    item("afternoon", "2026-10-12T21:17:00Z"),
+  ];
+
+  expect(newestFirst(news).map(({ id }) => id)).toEqual([
+    "evening",
+    "afternoon",
+    "yesterday",
+    "untimed",
+  ]);
+  const html = drawn(news);
+  // 03:30 UTC on the 12th is 11:30 PM on Sunday the 11th in the East.
+  expect(html).toContain("From ESPN · Mon Oct 12, ET");
+  expect(html).toContain(">9:05 PM</time>");
+  expect(html).toContain(">Sun Oct 11</time>");
+  expect(html).not.toContain("11:30 PM");
 });

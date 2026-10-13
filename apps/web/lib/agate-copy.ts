@@ -200,6 +200,25 @@ export function gamePickOutcome(
 }
 
 /**
+ * A pick as the front page's stories write it (#240): the sentence, and the verdict that follows
+ * it after a dash once the game is final, "Our pick: Florida, 62% — Wrong". A decided pick's
+ * sentence ends at its chance, since the verdict ends the line. Null with no pick to show.
+ */
+export function pickLine(
+  prediction: Prediction,
+  game: ScoreboardGame,
+): { sentence: string; outcome: "right" | "wrong" | null } | null {
+  const sentence = pickSentence(prediction, game);
+  if (sentence == null) return null;
+  const outcome = gamePickOutcome(prediction, game);
+  return { sentence: outcome == null ? sentence : sentence.replace(/\.$/, ""), outcome };
+}
+
+/** The networks showing a game, parted as the masthead's lines are. Null for a game nobody shows. */
+export const onTv = (broadcasts: readonly string[] | undefined): string | null =>
+  broadcasts?.join(SEPARATOR) || null;
+
+/**
  * What the roundup says with no game to lead with. Without a date the Scoreboard has not
  * answered, which is not a day off.
  */
@@ -293,6 +312,24 @@ export function spelled(count: number, capital = true): string {
 export function tonightPicksSentence({ right, decided }: PickTally): string | null {
   if (decided === 0) return null;
   return `${spelled(right)} of ${spelled(decided, false)} tonight.`;
+}
+
+/**
+ * The line beside "NHL Roundup" on the front page (#240): where the night stands. Games in
+ * progress are the news while there are any; then "All three final", "Nine to come", or both
+ * counts on a night between the two. A postponed game is not counted, and a night with nothing
+ * to count says nothing.
+ */
+export function roundupKicker(games: readonly ScoreboardGame[]): string | null {
+  const { live, upcoming, final } = slateCounts([...games]);
+  if (live > 0) return `${spelled(live)} live`;
+  if (upcoming === 0) {
+    if (final === 0) return null;
+    if (final === 1) return "Final";
+    return final === 2 ? "Both final" : `All ${spelled(final, false)} final`;
+  }
+  const toCome = `${spelled(upcoming, final === 0)} to come`;
+  return final === 0 ? toCome : `${spelled(final)} final, ${toCome}`;
 }
 
 /** A season with a pick decided, or null. */

@@ -15,10 +15,13 @@ import {
   nickname,
   noGames,
   noStandings,
+  onTv,
+  pickLine,
   pickSentence,
   picksNote,
   picksScore,
   rec,
+  roundupKicker,
   seasonPicksSentence,
   spelled,
   statusText,
@@ -697,4 +700,64 @@ test("a side's shots are counted in words that agree with the number", async () 
   expect(shotsOnGoal(0)).toBe("0 shots");
   expect(shotsOnGoal(1)).toBe("1 shot");
   expect(shotsOnGoal(27)).toBe("27 shots");
+});
+
+describe("the front page's lines (#240)", () => {
+  const some = (status: ScoreboardGame["status"], count: number) =>
+    Array.from({ length: count }, () =>
+      game(
+        status,
+        [
+          ["CAR", "1-1-1"],
+          ["MTL", "1-0-1"],
+        ],
+        null,
+      ),
+    );
+
+  test("the line beside 'NHL Roundup' says where the night stands, live games first", () => {
+    expect(roundupKicker(some("final", 3))).toBe("All three final");
+    expect(roundupKicker(some("final", 2))).toBe("Both final");
+    expect(roundupKicker(some("final", 1))).toBe("Final");
+    expect(roundupKicker(some("final", 12))).toBe("All 12 final");
+    expect(roundupKicker([...some("live", 2), ...some("final", 4), ...some("scheduled", 3)])).toBe(
+      "Two live",
+    );
+    expect(roundupKicker(some("scheduled", 9))).toBe("Nine to come");
+    expect(roundupKicker([...some("final", 4), ...some("scheduled", 1)])).toBe(
+      "Four final, one to come",
+    );
+  });
+
+  test("a postponed game is not counted, and a night with nothing to count says nothing", () => {
+    expect(roundupKicker([...some("final", 3), ...some("postponed", 1)])).toBe("All three final");
+    expect(roundupKicker(some("postponed", 1))).toBeNull();
+    expect(roundupKicker([])).toBeNull();
+  });
+
+  test("a decided pick's line ends at its chance, for the verdict that follows the dash", () => {
+    expect(pickLine(pick(WSH, "WSH", 63), WSH)).toEqual({
+      sentence: "Our pick: Washington, 63%",
+      outcome: "wrong",
+    });
+    expect(pickLine(pick(WSH, "SEA", 59), WSH)).toEqual({
+      sentence: "Our pick: Seattle, 59%",
+      outcome: "right",
+    });
+  });
+
+  test("a pick not yet decided is the sentence whole, and no pick is no line", () => {
+    expect(pickLine(pick(NYR_LIVE, "NYR", 53), NYR_LIVE)).toEqual({
+      sentence: "Our pick: N.Y. Rangers, 53%.",
+      outcome: null,
+    });
+    expect(pickLine(failed(WSH), WSH)).toBeNull();
+    expect(pickLine(undefined, WSH)).toBeNull();
+  });
+
+  test("the networks showing a game are parted as the masthead's lines are", () => {
+    expect(onTv(["ESPN+", "Scripps Sports", "MSGB"])).toBe("ESPN+ · Scripps Sports · MSGB");
+    expect(onTv([])).toBeNull();
+    expect(onTv(undefined)).toBeNull();
+  });
 });

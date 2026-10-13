@@ -8,7 +8,7 @@ const GAME_ID = "401892449";
 type Game = { id: string; home: object; away: object; [field: string]: unknown };
 type Slate = { games: Game[]; [field: string]: unknown };
 
-test("Home writes the slate up as leads and briefs, and follows the Scoreboard without a game changing place until its status does", async ({
+test("Home writes the slate up as ruled columns and briefs, and follows the Scoreboard without a game changing place until its status does", async ({
   page,
 }) => {
   // The browser still holds the favorites an earlier build of the site kept there (#223).
@@ -34,10 +34,17 @@ test("Home writes the slate up as leads and briefs, and follows the Scoreboard w
   await expect(page).toHaveTitle("Yogan Hockey");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Yogan Hockey");
 
-  // The roundup: three leads, each a story, and the rest as briefs.
+  // The roundup: three leads, each a column of one ruled row, and the rest as briefs.
   const roundup = page.getByRole("region", { name: "NHL Roundup" });
   const briefs = page.getByRole("region", { name: "Around the league" });
   await expect(roundup.getByRole("article")).toHaveCount(3);
+  await expect(roundup.locator('[data-slot="roundup-kicker"]')).toHaveText("Nine to come");
+  // The columns are one height, whatever each holds, and end on the same floor.
+  const boxes = await roundup
+    .getByRole("article")
+    .evaluateAll((columns) => columns.map((column) => column.getBoundingClientRect()));
+  expect(new Set(boxes.map((box) => box.height)).size).toBe(1);
+  expect(new Set(boxes.map((box) => box.top)).size).toBe(1);
   await expect(briefs.getByRole("listitem")).toHaveCount(6);
   const gameLink = `a[href="/nhl/games/${GAME_ID}"]`;
   const toronto = roundup.getByRole("article").filter({ has: page.locator(gameLink) });
@@ -54,9 +61,10 @@ test("Home writes the slate up as leads and briefs, and follows the Scoreboard w
   await expect(lineScore.getByRole("rowheader")).toHaveText(["Nashville", "Toronto"]);
   await expect(toronto.locator('[data-slot="story-pick"]')).toHaveText("Our pick: Toronto, 58%.");
   await expect(toronto.locator('[data-slot="pick-outcome"]')).toHaveCount(0);
-  await expect(toronto.locator('[data-slot="on-tv"]')).toHaveText("On TV ESPN+, Scripps Sports");
+  await expect(toronto.locator('[data-slot="on-tv"]')).toHaveText("On TV: ESPN+ · Scripps Sports");
   // ESPN's headlines (the recorded news), each a link out to ESPN, and in the page as it was sent.
-  const news = page.getByRole("region", { name: "Headlines from ESPN" });
+  const news = page.getByRole("region", { name: "Headlines" });
+  await expect(news.locator('[data-slot="news-from"]')).toHaveText(/^From ESPN · \w{3} \w{3} \d+$/);
   await expect(news.getByRole("listitem")).toHaveCount(6);
   await expect(news.getByRole("link").first()).toHaveAttribute(
     "href",
@@ -69,7 +77,8 @@ test("Home writes the slate up as leads and briefs, and follows the Scoreboard w
   const initialOrder = await order();
   expect(initialOrder).toHaveLength(9);
 
-  // The lower band. Standings: each conference's top eight, each team a link, and a way to the rest.
+  // Standings: each conference's top eight, one table over the other, each team a link, and a
+  // way to the rest.
   const standings = page.getByRole("region", { name: "Standings" });
   for (const conference of ["Eastern Conference", "Western Conference"]) {
     const table = standings.getByRole("table", { name: conference });
@@ -109,6 +118,7 @@ test("Home writes the slate up as leads and briefs, and follows the Scoreboard w
   );
   // The dot is for the eye: "Live" is in the words.
   await expect(toronto.locator('[data-slot="live-dot"]')).toHaveAttribute("aria-hidden", "true");
+  await expect(roundup.locator('[data-slot="roundup-kicker"]')).toHaveText("One live");
   await expect(toronto.getByRole("heading")).toHaveText("Predators 0, Maple Leafs 0");
   await expect(toronto.getByRole("columnheader")).toHaveText(["Team", "Rec", "Now"]);
   await expect(toronto.locator('[data-slot="pick-outcome"]')).toHaveCount(0);
@@ -140,27 +150,14 @@ test("Home writes the slate up as leads and briefs, and follows the Scoreboard w
   await expect(roundup.locator(gameLink)).toHaveCount(0);
   await expect(picks).toContainText("Right on 60% of games this season. One of one tonight.");
 
-  // On a phone the standings show one conference at a time, by the control above them.
+  // On a phone the page is one column: both conferences, one over the other, the glance under
+  // the picks, each lead under the one before; nothing scrolls sideways.
   await page.setViewportSize({ width: 390, height: 844 });
-  const control = standings.getByRole("group", { name: "Conference" });
-  await expect(control.getByRole("button", { name: "Eastern" })).toHaveAttribute(
-    "aria-pressed",
-    "true",
-  );
-  await expect(standings.getByRole("table")).toHaveCount(1);
-  const eastern = await standings.getByRole("table").getByRole("row").nth(1).textContent();
-  await control.getByRole("button", { name: "Western" }).click();
-  await expect(control.getByRole("button", { name: "Western" })).toHaveAttribute(
-    "aria-pressed",
-    "true",
-  );
-  await expect(control.getByRole("button", { name: "Eastern" })).toHaveAttribute(
-    "aria-pressed",
-    "false",
-  );
-  await expect(standings.getByRole("table")).toHaveCount(1);
-  await expect(standings.getByRole("table").getByRole("row").nth(1)).not.toHaveText(eastern ?? "");
-  // The phone's dateline says the counts, so the glance is not drawn; nothing scrolls sideways.
-  await expect(page.getByRole("region", { name: "Tonight at a glance" })).toHaveCount(0);
+  await expect(standings.getByRole("table")).toHaveCount(2);
+  await expect(page.getByRole("region", { name: "Tonight at a glance" })).toBeVisible();
+  const lefts = await roundup
+    .getByRole("article")
+    .evaluateAll((columns) => columns.map((column) => column.getBoundingClientRect().left));
+  expect(new Set(lefts).size).toBe(1);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
 });

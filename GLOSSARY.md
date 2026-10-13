@@ -68,6 +68,10 @@ _Avoid_: Eyebrow, overline, tag
 A game in one serif line: the winner first once it is final ("Kraken 5, Capitals 3"), away then home before that.
 _Avoid_: Title, heading
 
+**News item**:
+One of ESPN's NHL headlines as Home lists it under "Headlines from ESPN": the headline's words, when ESPN published it, and the page of ESPN's it leads to. The list is the News.
+_Avoid_: Headline (that is a game's), article, story, post
+
 **Deck**:
 The sentence under a Headline, built only from the game's data: "The Kraken win on the road and move to 4-2-0."
 _Avoid_: Subhead, summary, blurb

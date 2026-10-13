@@ -1,5 +1,6 @@
 import type {
   GameSummary,
+  News,
   PlayerCareer,
   PlayerGameLog,
   PlayerProfile,
@@ -12,6 +13,7 @@ import type {
 } from "@yogan-hockey/schemas";
 import { type Endpoint, endpoints } from "./endpoints.ts";
 import { EspnFetchError, EspnParseError } from "./errors.ts";
+import { translateNews } from "./news.ts";
 import {
   translatePlayer,
   translatePlayerCareer,
@@ -139,4 +141,9 @@ export async function searchPlayers(query: string): Promise<PlayerSearchResult[]
   const wanted = query.trim();
   if (wanted === "") return [];
   return translatePlayerSearch(await read(endpoints.playerSearch(wanted)), wanted);
+}
+
+/** The league's headlines from ESPN, six at most, each with the page of ESPN's it leads to. */
+export async function getNews(): Promise<News> {
+  return translateNews(await read(endpoints.news()));
 }

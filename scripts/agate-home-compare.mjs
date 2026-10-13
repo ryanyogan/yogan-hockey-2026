@@ -12,7 +12,8 @@
 // Every element a selector finds is compared with the one in the same place on the other page:
 // its type, its rules, paddings and margins, its grid, and its box (the place measured from the
 // top of `<main>`, since the mastheads above are not the same slate). The standings' clubs differ
-// (the site's are the recorded fixtures), which their fixed columns do not show.
+// (the site's are the recorded fixtures), which their fixed columns do not show. The headlines
+// are the same on both: the prototype's are the recorded news, which fixture mode answers.
 //
 // Home is built of the `packages/ui` primitives, which draw three things another way than the
 // prototype's CSS does, to the same picture; the script reads each as what is drawn:
@@ -65,6 +66,13 @@ const PARTS = [
   ["brief pick", ".brief__pick", '[data-slot="brief-pick"]'],
   ["brief mark", ".brief .mark", '[data-slot="brief"] [data-slot="pick-outcome"]'],
   ["brief no pick", ".brief__pick .dim", '[data-slot="brief-pick"] > span:not([data-slot])'],
+  ["news", ".news", '[data-slot="news"]'],
+  ["news label", ".news > .label", "#news-heading"],
+  ["news list", ".news-list", '[data-slot="news"] ul'],
+  ["news item", ".news-item", '[data-slot="news-item"]'],
+  ["news link", ".news-item a", '[data-slot="news-item"] a'],
+  ["news headline", ".news__headline", '[data-slot="news-headline"]'],
+  ["news when", ".news__when", '[data-slot="news-when"]'],
   ["lower band", ".lower", '[data-slot="lower-band"]'],
   ["standings", ".standings", '[data-slot="standings"]'],
   ["standings head", ".band-head", '[data-slot="standings"] > div:first-child'],

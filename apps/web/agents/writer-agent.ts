@@ -1,8 +1,15 @@
 import { exports } from "cloudflare:workers";
-import { createDb, getPieceBySlug, getPredictions, savePiece } from "@yogan-hockey/db";
+import {
+  createDb,
+  getPieceBySlug,
+  getPredictions,
+  getSeasonPicks,
+  savePiece,
+} from "@yogan-hockey/db";
 import { getGameSummary, getScoreboard, getStandings } from "@yogan-hockey/espn";
 import { type Game, pieceSlug, type StoredPiece, type WritingFacts } from "@yogan-hockey/schemas";
 import { Agent, getAgentByName } from "agents";
+import { seasonOfSlate } from "../lib/picks";
 import { SCOREBOARD_CONNECTION } from "../lib/scoreboard-connection";
 import { AI_GATEWAY_ID } from "./prediction";
 import { withTimeout } from "./with-timeout";
@@ -68,12 +75,12 @@ type ModelCalls = { date: string; count: number };
 export type EditionSources = FactSources & { unfinished: boolean };
 
 /**
- * The Writer (#217): two or three short pieces a day on the league, written by a model from facts
- * the site holds, checked against those facts (`writing/check.ts`) and stored in D1. One instance.
+ * The Writer (#217): two or three short pieces a day on the league, and up to three columns on the
+ * site's picks for the Picks page (#218), written by a model from facts the site holds, checked against those facts (`writing/check.ts`) and stored in D1. One instance.
  * Nothing connects to it and it holds no state a page is sent: pages read its pieces from D1.
  *
  * It runs on two cron schedules of its own, set when it starts: `morning`, before the slate, for
- * the preview and the note on the league, and `night`, after the last final, for the recap. Each
+ * the preview, the note on the league and the columns, and `night`, after the last final, for the recap. Each
  * only works out what there is to write and notes it in storage; `writeNext` then makes one model
  * call per run, as the Scoreboard does for its Predictions.
  *
@@ -152,10 +159,15 @@ export class WriterAgent extends Agent<Env> {
       for (const [key, job] of this.#jobs()) if (job.date !== date) this.ctx.storage.kv.delete(key);
       for (const kind of EDITIONS[edition] as readonly PieceKind[]) {
         const slug = pieceSlug(date, kind.kind);
-        const given = kind.facts(facts);
-        if (given === null || (await getPieceBySlug(db, slug)) !== null) continue;
-        const job: Job = { slug, kind: kind.kind, date, facts: given, calls: 0, refused: [] };
-        this.ctx.storage.kv.put(JOB_PREFIX + slug, job);
+        // One kind that cannot be started (a column's figures, say) leaves the others their turn.
+        try {
+          const given = kind.facts(facts);
+          if (given === null || (await getPieceBySlug(db, slug)) !== null) continue;
+          const job: Job = { slug, kind: kind.kind, date, facts: given, calls: 0, refused: [] };
+          this.ctx.storage.kv.put(JOB_PREFIX + slug, job);
+        } catch (error) {
+          console.error(`Writer: ${slug} was not started`, error);
+        }
       }
     } catch (error) {
       console.error(`Writer: the ${edition} pieces for ${date} were not started`, error);
@@ -228,10 +240,17 @@ export class WriterAgent extends Agent<Env> {
     const predictions =
       (await read("the Predictions", () => getPredictions(createDb(this.env.DB), ids))) ??
       new Map();
+    // The Picks page's columns are the morning's, and so are the season's picks they are told.
+    const seasonPicks =
+      edition === "morning"
+        ? await read("the season's picks", () =>
+            getSeasonPicks(createDb(this.env.DB), seasonOfSlate(date)),
+          )
+        : null;
     // A slate that could not be read is not a finished one: the night looks again.
     const unfinished =
       slateRead === null || slate.some(({ status }) => status === "scheduled" || status === "live");
-    return { date, standings, finals, slate, predictions, unfinished };
+    return { date, standings, finals, slate, predictions, seasonPicks, unfinished };
   }
 
   /** Asks the Scoreboard for today's games, which makes it look at ESPN if it has not lately. */
@@ -256,9 +275,7 @@ export class WriterAgent extends Agent<Env> {
   async #writeOnce(key: string, job: Job): Promise<void> {
     const { slug, facts } = job;
     const model = WRITING_MODEL_OF_EACH_CALL[job.calls];
-    const kind = Object.values(EDITIONS)
-      .flat()
-      .find((known: PieceKind) => known.kind === job.kind);
+    const kind = KINDS.find((known) => known.kind === job.kind);
     // Every call was made and the piece was not settled (a restart during the last one), or the
     // kind is one this deploy no longer writes.
     if (model === undefined || kind === undefined) {
@@ -314,9 +331,15 @@ export class WriterAgent extends Agent<Env> {
     }
   }
 
-  /** Every piece still to be written, with its key. */
+  /**
+   * Every piece still to be written, with its key, in the order the editions name their kinds:
+   * Home's pieces before the Picks page's columns, whatever order storage lists the slugs in.
+   */
   #jobs(): [string, Job][] {
-    return [...this.ctx.storage.kv.list<Job>({ prefix: JOB_PREFIX })];
+    const order = KINDS.map(({ kind }) => kind);
+    return [...this.ctx.storage.kv.list<Job>({ prefix: JOB_PREFIX })].sort(
+      ([, a], [, b]) => order.indexOf(a.kind) - order.indexOf(b.kind),
+    );
   }
 
   #modelCallsToday(): number {
@@ -330,6 +353,8 @@ export class WriterAgent extends Agent<Env> {
   }
 }
 
+/** Every kind the Writer writes, the morning's and then the night's. */
+const KINDS: readonly PieceKind[] = Object.values(EDITIONS).flat();
 const isFinal = (game: Game) => game.status === "final";
 /** The day the cap counts by. UTC's, so the morning and the night that follows share one. */
 const today = () => new Date().toISOString().slice(0, 10);

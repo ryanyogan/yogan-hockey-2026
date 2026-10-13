@@ -91,6 +91,46 @@ export const FactGameSchema = z.object({
 });
 export type FactGame = z.infer<typeof FactGameSchema>;
 
+const FactTallySchema = z.object({
+  right: z.number().int().nonnegative(),
+  wrong: z.number().int().nonnegative(),
+});
+
+/**
+ * One decided pick as a column on the picks is told it (#218): a finished game from D1's own
+ * record, which holds the score and not how the game was decided or who scored.
+ */
+export const FactCallSchema = FactFinalSchema.omit({ decidedIn: true, goals: true }).extend({
+  /** The day the game was played, "Saturday, October 10". */
+  day: z.string().min(1),
+  pick: FactPickSchema.extend({ outcome: z.enum(["right", "wrong"]) }),
+});
+export type FactCall = z.infer<typeof FactCallSchema>;
+
+/**
+ * The Picks page's figures as a column is told them: the same ones the page prints
+ * (`apps/web/lib/picks-figures.ts`), so a column and the page beside it cannot disagree.
+ */
+export const FactPicksSchema = z.object({
+  /** The Monday-to-Sunday week the page shows: this one, or the last that had a result. */
+  week: FactTallySchema.extend({
+    /** "Monday, October 5" */
+    from: z.string().min(1),
+    /** "Sunday, October 11" */
+    to: z.string().min(1),
+    /** Each day of it that had a decided pick. */
+    days: z.array(FactTallySchema.extend({ day: z.string().min(1) })),
+  }).nullable(),
+  /** The latest picks that ended the same way: 4 right, or 2 wrong. */
+  run: z
+    .object({ outcome: z.enum(["right", "wrong"]), length: z.number().int().positive() })
+    .nullable(),
+  /** The week's firmest pick that came in, and its firmest that lost. */
+  best: FactCallSchema.nullable(),
+  worst: FactCallSchema.nullable(),
+});
+export type FactPicks = z.infer<typeof FactPicksSchema>;
+
 /**
  * Everything a piece may say: the model is sent this and nothing else, and the check reads a
  * piece against it. A new source (ESPN's headlines, the picks' record) is a new optional field
@@ -110,9 +150,9 @@ export const WritingFactsSchema = z.object({
   /** People a piece may name beyond the scorers and their assists. */
   people: z.array(z.string().min(1)).optional(),
   /** How the site's picks have done this season. */
-  picksRecord: z
-    .object({ right: z.number().int().nonnegative(), wrong: z.number().int().nonnegative() })
-    .optional(),
+  picksRecord: FactTallySchema.optional(),
+  /** The week's picks in figures, for the Picks page's columns. */
+  picks: FactPicksSchema.optional(),
 });
 export type WritingFacts = z.infer<typeof WritingFactsSchema>;
 

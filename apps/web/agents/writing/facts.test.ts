@@ -1,6 +1,6 @@
 import { translateGameSummary, translateScoreboard, translateStandings } from "@yogan-hockey/espn";
-import type { StoredPrediction } from "@yogan-hockey/schemas";
-import { expect, test } from "vitest";
+import type { Game, SeasonPick, StoredPrediction } from "@yogan-hockey/schemas";
+import { expect, test, vi } from "vitest";
 import recordedSlate from "../../../../packages/espn/fixtures/scoreboard.json";
 import recordedFinals from "../../../../packages/espn/fixtures/scoreboard-20261003.json";
 import recordedStandings from "../../../../packages/espn/fixtures/standings.json";
@@ -142,6 +142,104 @@ test("without the standings the teams are the ones playing, with the records the
     nickname: "Maple Leafs",
     record: slate.find(({ id }) => id === NSH_AT_TOR)?.home.record,
   });
+});
+
+/** A pick of a finished game as D1 holds it: on the winner or the loser, on a given day. */
+function seasonPick(game: Game, on: "winner" | "loser", chance: number, date: string): SeasonPick {
+  const side = ({ id, abbreviation, name, score }: Game["home"]) => ({
+    id,
+    abbreviation,
+    name,
+    score,
+  });
+  const winner = game.home.score > game.away.score ? game.home : game.away;
+  const loser = winner === game.home ? game.away : game.home;
+  return {
+    gameId: game.id,
+    pickTeamId: (on === "winner" ? winner : loser).id,
+    winProbability: chance,
+    final: {
+      date,
+      startTime: `${date}T23:00:00.000Z`,
+      home: side(game.home),
+      away: side(game.away),
+    },
+  };
+}
+const [first, second, third] = finals as [Game, Game, Game];
+const season = [
+  seasonPick(first, "loser", 66.4, "2026-10-05"),
+  seasonPick(second, "winner", 58, "2026-10-05"),
+  seasonPick(third, "winner", 61, "2026-10-06"),
+  // Made and not decided: it is in no count.
+  { gameId: NSH_AT_TOR, pickTeamId: TORONTO, winProbability: 61.4, final: null },
+];
+const sources = { date: "2026-10-06", standings, finals: [], slate, predictions: new Map() };
+
+test("with the season's picks, the facts hold the Picks page's figures in words a column can use", () => {
+  const { picksRecord, picks } = writingFacts({ ...sources, seasonPicks: season });
+  const loser = first.home.score > first.away.score ? first.away : first.home;
+  const winner = loser === first.home ? first.away : first.home;
+
+  expect(picksRecord).toEqual({ right: 2, wrong: 1 });
+  expect(picks?.week).toEqual({
+    from: "Monday, October 5",
+    to: "Sunday, October 11",
+    right: 2,
+    wrong: 1,
+    days: [
+      { day: "Monday, October 5", right: 1, wrong: 1 },
+      { day: "Tuesday, October 6", right: 1, wrong: 0 },
+    ],
+  });
+  expect(picks?.run).toEqual({ outcome: "right", length: 2 });
+  expect(picks?.worst).toEqual({
+    game: first.id,
+    day: "Monday, October 5",
+    away: first.away.abbreviation,
+    home: first.home.abbreviation,
+    awayScore: first.away.score,
+    homeScore: first.home.score,
+    winner: winner.abbreviation,
+    pick: { team: loser.abbreviation, winProbability: 66, outcome: "wrong" },
+  });
+  expect(picks?.best).toMatchObject({ game: third.id, pick: { outcome: "right" } });
+});
+
+test("without the season's picks the facts hold no figures of them", () => {
+  expect(writingFacts(sources)).not.toHaveProperty("picks");
+  expect(writingFacts({ ...sources, seasonPicks: null })).not.toHaveProperty("picksRecord");
+});
+
+test("before any pick is decided there is a record of none, and no week, run or call", () => {
+  const { picksRecord, picks } = writingFacts({ ...sources, seasonPicks: season.slice(3) });
+
+  expect(picksRecord).toEqual({ right: 0, wrong: 0 });
+  expect(picks).toEqual({ week: null, run: null, best: null, worst: null });
+});
+
+test("a call between clubs the facts cannot name is left out, and the counts stay", () => {
+  const { picks, picksRecord } = writingFacts({
+    ...sources,
+    standings: null,
+    slate: [],
+    seasonPicks: season,
+  });
+
+  expect(picksRecord).toEqual({ right: 2, wrong: 1 });
+  expect(picks).toMatchObject({ best: null, worst: null });
+});
+
+test("picks that cannot be counted leave the figures out and the rest of the facts standing", () => {
+  const errors = vi.spyOn(console, "error").mockImplementation(() => {});
+  const broken = [{ ...season[0], final: { date: "2026-10-05" } }] as unknown as SeasonPick[];
+
+  const written = writingFacts({ ...sources, seasonPicks: broken });
+
+  expect(written).not.toHaveProperty("picks");
+  expect(written.slate.length).toBeGreaterThan(0);
+  expect(errors).toHaveBeenCalled();
+  errors.mockRestore();
 });
 
 test("nothing ESPN sends beyond the named fields reaches the facts", () => {

@@ -1,5 +1,6 @@
 import {
   divisionPlace,
+  type FactCall,
   type FactFinal,
   type FactGame,
   type FactGoal,
@@ -8,11 +9,13 @@ import {
   type GameSide,
   type Play,
   pickOutcome,
+  type SeasonPick,
   type Standings,
   type StoredPrediction,
   type WritingFacts,
 } from "@yogan-hockey/schemas";
 import { ordinal } from "../../lib/ordinal";
+import { type Call, picksFigures } from "../../lib/picks-figures";
 
 /** The NHL's day is Eastern time's, and so is every time a piece prints. */
 const NHL_TIME_ZONE = "America/New_York";
@@ -122,6 +125,24 @@ function factPick(game: Game, prediction: StoredPrediction | undefined): FactGam
   return { team: side.abbreviation, winProbability: Math.round(prediction.winProbability) };
 }
 
+/**
+ * The picks' figures, or nothing where there are no picks to count or they cannot be counted:
+ * the columns are then not written, and the pieces that need none of this still are.
+ */
+function columnFigures(
+  seasonPicks: FactSources["seasonPicks"],
+  date: string,
+  teams: Map<string, FactTeam>,
+): Pick<WritingFacts, "picks" | "picksRecord"> {
+  if (!seasonPicks) return {};
+  try {
+    return picksFacts(seasonPicks, date, teams);
+  } catch (error) {
+    console.error("Writer: the picks' figures could not be worked out", error);
+    return {};
+  }
+}
+
 /** What a facts bundle is assembled from: all of it the site's own reads. */
 export type FactSources = {
   /** The slate's date, `YYYY-MM-DD`. */
@@ -134,7 +155,67 @@ export type FactSources = {
   slate: Game[];
   /** The site's prediction rows for any of those games, by game id. */
   predictions: Map<string, StoredPrediction>;
+  /**
+   * Every pick of the season with its final (`getSeasonPicks`), for the Picks page's columns.
+   * Left out or null, the facts hold no figures of the picks and no column is written.
+   */
+  seasonPicks?: readonly SeasonPick[] | null;
 };
+
+/**
+ * One of the week's calls as a column is told it, or null when a team of it is not among the
+ * facts' teams: D1's record of a final has a club's whole name and nothing to part it by, so
+ * without the standings there is no telling "Golden Knights" from "Knights".
+ */
+function factCall(call: Call | null, won: boolean, teams: Map<string, FactTeam>): FactCall | null {
+  if (call === null) return null;
+  const { picked, opponent } = call;
+  if (!teams.has(picked.abbreviation) || !teams.has(opponent.abbreviation)) return null;
+  const [away, home] = call.pickedHome ? [opponent, picked] : [picked, opponent];
+  const [awayScore, homeScore] = call.pickedHome
+    ? [call.score.opponent, call.score.picked]
+    : [call.score.picked, call.score.opponent];
+  return {
+    game: call.gameId,
+    day: dayName(call.date),
+    away: away.abbreviation,
+    home: home.abbreviation,
+    awayScore,
+    homeScore,
+    winner: (won ? picked : opponent).abbreviation,
+    pick: {
+      team: picked.abbreviation,
+      winProbability: Math.round(call.winProbability),
+      outcome: won ? "right" : "wrong",
+    },
+  };
+}
+
+/**
+ * The picks' figures as a column is told them: the ones the Picks page prints, from the one
+ * module that works them out, so the page and a column beside it are of the same count.
+ */
+function picksFacts(
+  seasonPicks: readonly SeasonPick[],
+  date: string,
+  teams: Map<string, FactTeam>,
+): Pick<WritingFacts, "picks" | "picksRecord"> {
+  const { season, week, run } = picksFigures(seasonPicks, date);
+  return {
+    picksRecord: season,
+    picks: {
+      week: week && {
+        from: dayName(week.start),
+        to: dayName(week.end),
+        ...week.tally,
+        days: week.days.map(({ date: day, right, wrong }) => ({ day: dayName(day), right, wrong })),
+      },
+      run,
+      best: factCall(week?.best ?? null, true, teams),
+      worst: factCall(week?.worst ?? null, false, teams),
+    },
+  };
+}
 
 /**
  * The facts a piece is written from and checked against (#217). Built field by field, so nothing
@@ -186,5 +267,6 @@ export function writingFacts(sources: FactSources): WritingFacts {
       venue: game.venue,
       pick: factPick(game, predictions.get(game.id)),
     })),
+    ...columnFigures(sources.seasonPicks, date, teams),
   };
 }

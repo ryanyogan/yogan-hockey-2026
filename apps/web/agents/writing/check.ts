@@ -86,6 +86,27 @@ const OPENERS = new Set(
  */
 const ORDINARY_OPENER = /^\p{Lu}\p{Ll}+(?:ing|ed|ly)$|^Twice$|^Thrice$/u;
 
+/** The week's calls a column is given (#218): finished games like the finals, known only by their scores. */
+const callsOf = (facts: WritingFacts) =>
+  [facts.picks?.best, facts.picks?.worst].filter((call) => call != null);
+
+/** Every finished game the facts hold: the finals, and the calls with no goals to them. */
+const resultsOf = (facts: WritingFacts) => [
+  ...facts.finals,
+  ...callsOf(facts).map((call) => ({ ...call, goals: null })),
+];
+type Result = ReturnType<typeof resultsOf>[number];
+
+/** The counts of right and wrong picks the facts hold, "7-3": the season's, a week's, a day's. */
+function talliesOf(facts: WritingFacts): Set<string> {
+  const week = facts.picks?.week;
+  return new Set(
+    [facts.picksRecord, week, ...(week?.days ?? [])]
+      .filter((tally) => tally != null)
+      .map(({ right, wrong }) => `${right}-${wrong}`),
+  );
+}
+
 /** A game of the facts as the pick rules need it. */
 type PickedGame = { teams: [string, string]; pick: string | null; outcome?: "right" | "wrong" };
 
@@ -136,7 +157,7 @@ function indexOf(facts: WritingFacts) {
       teams: [away, home] as [string, string],
       pick: pick?.team ?? null,
     })),
-    ...facts.finals.map(({ away, home, pick }) => ({
+    ...resultsOf(facts).map(({ away, home, pick }) => ({
       teams: [away, home] as [string, string],
       pick: pick?.team ?? null,
       outcome: pick?.outcome,
@@ -217,7 +238,7 @@ const blank = (text: string, pattern: RegExp) =>
   text.replace(pattern, (found) => " ".repeat(found.length));
 
 /** Every score a final passed through, away then home: 0-0, each goal, and the final itself. */
-function scoresOf(final: WritingFacts["finals"][number]): [number, number][] {
+function scoresOf(final: Result): [number, number][] {
   const scores: [number, number][] = [[final.awayScore, final.homeScore]];
   let away = 0;
   let home = 0;
@@ -239,6 +260,7 @@ const WON =
 function checkFigures(sentence: string, facts: WritingFacts, index: Index, reasons: Set<string>) {
   const named = teamsNamed(sentence, index);
   const teams = facts.teams.filter((team) => named.size === 0 || named.has(team.team));
+  const results = resultsOf(facts);
   let text = sentence;
 
   const records = new Set(
@@ -259,7 +281,7 @@ function checkFigures(sentence: string, facts: WritingFacts, index: Index, reaso
   for (const [found, first, firstScore, second, secondScore] of text.matchAll(line)) {
     const a = index.aliases.get(first ?? "") ?? new Set();
     const b = index.aliases.get(second ?? "") ?? new Set();
-    const played = facts.finals.some(
+    const played = results.some(
       (final) =>
         (a.has(final.away) &&
           b.has(final.home) &&
@@ -274,14 +296,17 @@ function checkFigures(sentence: string, facts: WritingFacts, index: Index, reaso
   }
   text = blank(text, line);
 
-  const both = facts.finals.filter((final) => named.has(final.away) && named.has(final.home));
-  const either = facts.finals.filter((final) => named.has(final.away) || named.has(final.home));
-  const finals = both.length > 0 ? both : named.size > 0 ? either : facts.finals;
+  const both = results.filter((final) => named.has(final.away) && named.has(final.home));
+  const either = results.filter((final) => named.has(final.away) || named.has(final.home));
+  const finals = both.length > 0 ? both : named.size > 0 ? either : results;
+  // "The picks went 7-3": a count of right and wrong picks, in that order, is no game's score.
+  const tallies = talliesOf(facts);
   // Beside a word for winning, a score is the final one, not one the game passed through.
   const result = RESULT.test(sentence);
   for (const match of text.matchAll(SCORE)) {
     const a = Number(match[1] ?? match[3]);
     const b = Number(match[2] ?? match[4]);
+    if (match[1] !== undefined && tallies.has(`${a}-${b}`)) continue;
     const reached = finals.some((final) =>
       (result ? scoresOf(final).slice(0, 1) : scoresOf(final)).some(
         ([away, home]) => (away === a && home === b) || (away === b && home === a),
@@ -291,7 +316,7 @@ function checkFigures(sentence: string, facts: WritingFacts, index: Index, reaso
   }
   text = blank(text, SCORE);
 
-  const picks = [...facts.slate, ...facts.finals].flatMap(({ pick }) => (pick ? [pick] : []));
+  const picks = [...facts.slate, ...results].flatMap(({ pick }) => (pick ? [pick] : []));
   for (const [found, percent] of text.matchAll(PERCENT)) {
     const held = picks.some(
       (pick) =>
@@ -313,11 +338,13 @@ function checkFigures(sentence: string, facts: WritingFacts, index: Index, reaso
   );
   for (const [found, winner] of sentence.matchAll(winning)) {
     const won = index.aliases.get(winner ?? "") ?? new Set();
-    if (facts.finals.length > 0 && !facts.finals.some((final) => won.has(final.winner))) {
+    if (results.length > 0 && !results.some((final) => won.has(final.winner))) {
       reasons.add(`says "${found}", and no final in the facts has that result`);
     }
   }
 
+  const picksRun = facts.picks?.run;
+  const ofPicks = /\bpicks?\b/i.test(sentence);
   // A points total, a place and a streak are the named team's own, not any number in the facts.
   if (named.size > 0) {
     const own = (held: (team: (typeof teams)[number]) => boolean) => teams.some(held);
@@ -335,9 +362,25 @@ function checkFigures(sentence: string, facts: WritingFacts, index: Index, reaso
     const streak =
       /\b(won|lost|winning|losing|wins|losses)\b[^.;]*?\b(\d+) (?:in a row|straight|consecutive)/g;
     for (const [found, word, count] of sentence.matchAll(streak)) {
-      const run = `${/^w/.test(word ?? "") ? "won" : "lost"} ${count}`;
+      const winning = /^w/.test(word ?? "");
+      const run = `${winning ? "won" : "lost"} ${count}`;
+      // "The picks have won 4 in a row, the Kraken among them": the run is the picks' own.
+      if (
+        ofPicks &&
+        picksRun?.length === Number(count) &&
+        (picksRun.outcome === "right") === winning
+      )
+        continue;
       if (!own((team) => team.streak === run || team.streak?.startsWith(`${run} `) === true)) {
         reasons.add(`gives a streak, "${found}", which is not the named team's`);
+      }
+    }
+  } else if (ofPicks && facts.picks) {
+    // With no team named, so many in a row is the picks' run: "4 right in a row", "2 straight misses".
+    const inARow = /\b(\d+) (?:right |wrong )?(?:in a row|straight|consecutive)/g;
+    for (const [found, count] of sentence.matchAll(inARow)) {
+      if (picksRun?.length !== Number(count)) {
+        reasons.add(`gives a run of the picks, "${found}", which is not the one in the facts`);
       }
     }
   }
@@ -346,7 +389,7 @@ function checkFigures(sentence: string, facts: WritingFacts, index: Index, reaso
   for (const [found, winner, loser] of sentence.matchAll(beat)) {
     const won = index.aliases.get(winner ?? "") ?? new Set();
     const lost = index.aliases.get(loser ?? "") ?? new Set();
-    const happened = facts.finals.some((final) => {
+    const happened = results.some((final) => {
       const beaten = final.winner === final.away ? final.home : final.away;
       return won.has(final.winner) && lost.has(beaten);
     });

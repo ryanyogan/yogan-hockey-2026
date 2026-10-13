@@ -22,13 +22,13 @@
   --safe-right: env(safe-area-inset-right, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
-  /* The sections' row, which stays at the top of the screen: its rules (3, 2, 1, 1) and 44px. */
-  --section-nav: 3.1875rem;
+  /* The sections' bar, which stays at the top of the screen: its rules (3 and 1) and 44px. */
+  --section-nav: 3rem;
 }
 
 /*
  * Whatever the browser scrolls into view (a focused link, a `#` target) stops short of the
- * sections' row, which itself stops below the status bar.
+ * sections' bar, which itself stops below the status bar.
  */
 html {
   scroll-padding-top: calc(var(--section-nav) + var(--safe-top));

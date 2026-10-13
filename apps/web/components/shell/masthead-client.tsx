@@ -16,13 +16,26 @@ import { wordmark } from "./wordmark";
  * own costs about as much again on every page.
  */
 
-/**
- * A section: 13px semibold capitals, 44px to press, the current one in the one red. On a phone
- * 3px either side and tracked at .06em, not .1em: six sections fit a 390px phone's row (350px of
- * its 358), and five a 360px one's.
+/*
+ * What marks a cell of the sections' bar, a section or a theme: a 3px segment of rule along its
+ * foot, on the bar's own rule. It is always there, clear until it is wanted, so marking a cell
+ * moves nothing. The 3px above the word keep it in the middle of the 44px.
  */
-const SECTION =
-  "inline-flex min-h-11 items-center font-semibold text-[13px] leading-none tracking-[0.1em] uppercase hover:text-label aria-[current=page]:text-kicker max-md:px-[3px] max-md:tracking-[0.06em]";
+const CELL =
+  "relative inline-flex min-h-11 items-center border-transparent border-b-[3px] pt-[3px] font-semibold uppercase leading-none focus-visible:outline-offset-[-2px]";
+/* The hairline between a cell and the one before it, at a desk. */
+const DIVIDER =
+  "md:before:absolute md:before:top-[calc(50%-5px)] md:before:left-0 md:before:h-[13px] md:before:border-border md:before:border-l";
+
+/**
+ * A section: 14px semibold capitals tracked at .14em, 44px to press. The current one is in the
+ * one red and so is its segment; the one under the pointer has an ink segment.
+ *
+ * On a phone the cells share the bar's width, each as wide as its word and an even part of what
+ * is left and never under 44px, at 13px and .06em with 3px either side: five fit a 360px phone,
+ * and six a 390px one.
+ */
+const SECTION = `${CELL} px-[18px] text-[14px] tracking-[0.14em] md:not-first:before:absolute md:not-first:before:top-[calc(50%-5px)] md:not-first:before:left-0 md:not-first:before:h-[13px] md:not-first:before:border-border md:not-first:before:border-l hover:[&:not([aria-current])]:border-rule aria-[current=page]:border-kicker aria-[current=page]:text-kicker max-md:min-w-11 max-md:flex-[1_0_auto] max-md:justify-center max-md:px-[3px] max-md:text-[13px] max-md:tracking-[0.06em]`;
 
 function Sections({ current }: { current: NavItem | undefined }) {
   return NAV_ITEMS.map((item) => (
@@ -45,7 +58,7 @@ function Sections({ current }: { current: NavItem | undefined }) {
 export function Wordmark() {
   const Tag = usePathname() === "/" ? "h1" : "p";
   return (
-    <Tag data-slot="wordmark" className={`mt-[18px] md:mt-7 ${wordmark}`}>
+    <Tag data-slot="wordmark" className={`mt-[18px] md:mt-8 ${wordmark}`}>
       <Link href="/">Yogan Hockey</Link>
     </Tag>
   );
@@ -59,32 +72,31 @@ export function SectionLinks() {
   return <Sections current={currentNavItem(usePathname(), useSearchParam("tab"))} />;
 }
 
-/** The dateline's one line of type: three parts across a desk, one on a phone. */
+/** The dateline's one line of type: two parts, one at each end, at a desk; one on a phone. */
 const DATELINE_LINE =
   "flex flex-wrap gap-x-6 gap-y-1.5 py-[9px] font-medium text-[12px] text-note uppercase leading-[1.3] tracking-[0.06em] md:justify-between md:py-2 md:text-[13px] md:text-foreground";
 
 /**
- * The dateline's line and the rule under it, around whatever is written on it. The rule above it
- * is the sections' row's. On a phone the line is over a hairline and ends with the theme's one
+ * The dateline's line between the double rule (3px, a 2px gap, 1px) and the rule under it, around
+ * whatever is written on it. On a phone the line is over a hairline and ends with the theme's one
  * button, which makes it 44px tall.
  *
  * With no children it holds the line's height, so nothing under it moves when the words arrive.
  */
 function DatelineFrame({ children }: { children?: ReactNode }) {
   return (
-    <div
-      data-slot="dateline"
-      className="flex items-center justify-between gap-x-2 border-rule-head border-b md:block md:border-rule"
-    >
-      <p className={DATELINE_LINE}>{children ?? <span aria-hidden="true">&nbsp;</span>}</p>
-      <ThemeControl className="flex md:hidden" />
+    <div data-slot="dateline" className="mt-3 border-rule border-t-[3px] pt-[2px] md:mt-5">
+      <div className="flex items-center justify-between gap-x-2 border-rule border-y max-md:border-b-rule-head md:block">
+        <p className={DATELINE_LINE}>{children ?? <span aria-hidden="true">&nbsp;</span>}</p>
+        <ThemeControl className="flex md:hidden" />
+      </div>
     </div>
   );
 }
 
 /**
- * The dateline, current without a refresh: the date, where tonight's games stand, and the
- * season's record of the picks. The sentences are `dateline()`'s. It reads the page's one
+ * The dateline, current without a refresh: where tonight's games stand, and the season's record
+ * of the picks. The sentences are `dateline()`'s. It reads the page's one
  * Scoreboard socket through `useScoreboard()`.
  */
 export function Dateline({ record }: { record: SeasonRecord | null }) {
@@ -104,8 +116,9 @@ export function Dateline({ record }: { record: SeasonRecord | null }) {
 }
 
 /**
- * The slate's date, "Sunday, October 11": the phone's line under the wordmark. Before the
- * Scoreboard's first poll it holds the line's height.
+ * The slate's date, "Sunday, October 11": the first part of the sections' bar, or the line under
+ * the wordmark where the bar has no room. Before the Scoreboard's first poll it holds the line's
+ * height.
  */
 export function MastheadDate() {
   return datelineDate(useScoreboard().date) ?? "\u00a0";
@@ -149,24 +162,23 @@ const MOON = (
 );
 
 /*
- * A theme's button. From `md` up: a cell with its word, as tall as the sections' row, whose
- * rules are its top and bottom. On a phone: its icon alone in a 44px square, the word kept for a
- * screen reader.
+ * A theme's button. From `md` up: a cell of the sections' bar with its word, a hairline between
+ * the two. On a phone: its icon alone in a 44px square, the word kept for a screen reader.
  */
-const THEME_BUTTON =
-  "inline-flex min-h-11 cursor-pointer items-center gap-1.5 px-3 font-semibold text-[12px] leading-none tracking-[0.12em] uppercase max-md:w-11 max-md:justify-center max-md:px-0";
+const THEME_BUTTON = `${CELL} cursor-pointer gap-1.5 px-[14px] text-[12px] tracking-[0.14em] max-md:w-11 max-md:justify-center max-md:border-b-0 max-md:px-0 max-md:pt-0`;
 /*
- * The button of the theme shown is filled in, and on a phone it is the one not drawn: the phone
- * has one button, which leads to the other theme (a moon by day, a sun by night). Both are
- * written out for each theme, under `dark:` for one of them: which is shown is CSS's to say,
- * since the server does not know the theme.
+ * The button of the theme shown is in ink over an ink segment, the other in the label's grey
+ * until the pointer is on it. On a phone the one shown is the one not drawn: the phone has one
+ * button, which leads to the other theme (a moon by day, a sun by night). Both are written out
+ * for each theme, under `dark:` for one of them: which is shown is CSS's to say, since the server
+ * does not know the theme.
  */
 const DAY_BUTTON =
-  "max-md:hidden md:bg-foreground md:text-background dark:max-md:inline-flex dark:md:bg-transparent dark:md:text-foreground";
-const NIGHT_BUTTON = "dark:max-md:hidden dark:md:bg-foreground dark:md:text-background";
+  "max-md:hidden md:border-rule dark:max-md:inline-flex dark:md:border-transparent dark:md:text-label dark:md:hover:text-foreground";
+const NIGHT_BUTTON = `${DIVIDER} md:text-label md:hover:text-foreground dark:max-md:hidden dark:md:border-rule dark:md:text-foreground`;
 
 /**
- * The theme: Day and Night, the one shown filled in; on a phone, one icon button that switches
+ * The theme: Day and Night, the one shown marked; on a phone, one icon button that switches
  * to the other. The values are next-themes' `light` and `dark`. Until a button is first pressed
  * the site follows the operating system; after that the choice is remembered. `aria-pressed`
  * says which is shown once the browser knows.
@@ -191,7 +203,7 @@ export function ThemeControl({ className }: { className: string }) {
   };
   return (
     // biome-ignore lint/a11y/useSemanticElements: a fieldset is for a form's fields.
-    <div role="group" aria-label="Theme" className={`gap-1 max-md:-mr-2.5 ${className}`}>
+    <div role="group" aria-label="Theme" className={`max-md:-mr-2.5 ${className}`}>
       <button
         ref={day}
         type="button"

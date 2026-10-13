@@ -45,7 +45,15 @@ const PARTS = [
     box: ["y", "height"],
   },
   {
-    part: "sections' row",
+    part: "date on the sections' bar",
+    proto: ".section-row__date",
+    site: '[data-slot="section-date"]',
+    at: [1440],
+    type: true,
+    box: ["x", "y", "height"],
+  },
+  {
+    part: "sections' bar",
     proto: ".section-row",
     site: '[data-slot="section-nav"]',
     position: true,
@@ -100,6 +108,12 @@ const PARTS = [
     part: "dateline",
     proto: ".dateline",
     site: '[data-slot="dateline"]',
+    box: ["x", "y", "width", "height"],
+  },
+  {
+    part: "dateline's rules",
+    proto: ".dateline__rules",
+    site: '[data-slot="dateline"] > div',
     box: ["x", "y", "width", "height"],
   },
   {
@@ -222,7 +236,7 @@ for (const width of WIDTHS) {
           path: `${outDir}/${name}-${width}-${theme}-foot.png`,
           clip: { x: 0, y: 900 - 140, width, height: 140 },
         });
-        // The sections' row is measured where it is drawn, not where it sticks.
+        // Everything is measured with the page at its top.
         await page.evaluate(() => scrollTo(0, 0));
       }
       const measured = {};

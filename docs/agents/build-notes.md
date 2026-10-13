@@ -2,6 +2,20 @@
 
 What earlier tickets learned that the code does not show. Read before building; add a line when you learn something the next subagent would otherwise rediscover. Keep each note to what cannot be found by reading the code.
 
+## The sections' bar is above the wordmark (Oct 12 2026, no ticket)
+
+- **Ryan's sentence was the spec**: "lets go back to adding the header links above, just give them more style", said of #216 live. `docs/design/agate.md` § Masthead and its "Calls made while building" hold the design and each decision.
+- **`justify-self` moves a block box too.** The tablet's `justify-self: start` on the sections shrank the phone's `display: block` bar to the width of its words until it was reset (Chromium 153): the alignment properties are no longer a grid's and a flex box's alone.
+- **A cell's mark is a border that is always there**, clear until wanted, with 3px of padding above the word to keep it in the middle. A mark drawn only when wanted (a border added, or an underline) makes the current cell 3px taller than the others before the eye sees why.
+- **`hover:[&:not([aria-current])]:border-rule`**, not `hover:border-rule` with `aria-[current=page]:border-kicker` after it: which of two one-variant classes wins is the order Tailwind writes them in, and the current section must stay red under the pointer.
+- **Tailwind 4.3's `not-first:` stacks with `md:` and `before:`** (`md:not-first:before:border-l`): the hairline between two cells is the second cell's `::before`, with no element for it.
+- **The phone's cells grow (`flex: 1 0 auto`) and have `min-width: 44px`**, where #216's were as wide as their words and spread with `justify-content: space-between`. "Home" alone is 42px wide in the prototype's font, under the 44px `tap-targets.mjs` asks for; grown, the narrowest cell is 50px at 360.
+- **`node scripts/agate-masthead-shots.mjs <prototype> [site]`** retakes `docs/design/agate/masthead` and prints each cell's width; it exits 1 when the sections scroll sideways on a phone. The prototype's `?picks=1` is where six sections are measured (#218) and `?at=Standings` moves the current one. The `before-*` pictures there are #216's and are not retaken.
+- **`docs/design/agate/news/`'s pictures are the site's**: `/` at 390 and 1440 in both themes, and `/skeleton/dashboard?slate=tonight&news=0` at 1440, each the whole page from a fixture dev server. No script takes them.
+- **`dateline().wide` has two parts now**, not three: the date is `datelineDate`'s and is drawn on the bar (from `lg`) or under the wordmark. With no pick decided the desk's dateline is one part, at the left.
+- **`WIDTH=360 node scripts/tap-targets.mjs` still fails on the not-found page's "Back to tonight" (84x18)**, as it did on #216. It is the page's, not the masthead's.
+- **`scripts/install-check.mjs` was changed and not run** (the bar above the wordmark on a phone on its side): it needs the full Chromium in a real profile.
+
 ## ESPN's headlines on Home (#217, slice A)
 
 - **The endpoint is `site.api.espn.com/apis/site/v2/sports/hockey/nhl/news?limit=12`.** Left to itself it sends six articles; `limit` is honoured (50 gave 50, 237 KB; 12 is 49 KB). The list is ESPN's editors' mix, each article with a `type`: `HeadlineNews`, `Story`, `Recap`, `Preview` and `Media` (a video). It is not only the NHL: a college coaching story and fantasy columns were in it on the day it was recorded. Twelve are asked for and six listed (`NEWS_LIMIT` in `packages/schemas`), because videos are left out and so is an article that cannot be read.
